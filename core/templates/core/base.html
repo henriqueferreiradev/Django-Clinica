@@ -4,10 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Clínica</title>
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
 
 </head>
 <body>
+    <div class="sidebar">
+        <h2>Clínica</h2>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'pacientes' %}">Pacientes</a>
+        <a href="{% url 'agendamento' %}">Agendamentos</a>
+        <a href="{% url 'profissionais' %}">Profissionais</a>
+        <a href="{% url 'financeiro' %}">Financeiro</a>
+        <a href="{% url 'config' %}">Configurações</a>
+        <a href="{% url 'logout' %}">Sair</a>
+    </div>
+    
     {% block content %}{% endblock %}
+    {% block extra_css %}{% endblock %}
 </body>
 </html>

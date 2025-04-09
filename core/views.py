@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
+from .models import Paciente
 
 def login_view(request):
     login_form = AuthenticationForm(request, data=request.POST or None)
@@ -24,8 +25,6 @@ def login_view(request):
         'register_form': register_form
     })
 
-def register_view(request):
-    ...
 def logout_view(request):
     logout(request)
     return redirect('login')
@@ -34,10 +33,26 @@ def dashboard_view(request):
     return render(request, 'core/dashboard.html')
 
 def pacientes_view(request):
-    return render(request, 'core/pacientes.html')
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        cpf = request.POST.get('cpf')
+        telefone = request.POST.get('telefone')
+        Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone)
+        return redirect('pacientes')
+    
+    pacientes = Paciente.objects.all()
+    return render(request, 'core/pacientes.html', {'pacientes': pacientes})
+
 
 def profissionais_view(request):
     return render(request, 'core/profissionais.html')
 
 def financeiro_view(request):
-    return render(request, 'core/ficanceiro.html')
+    return render(request, 'core/financeiro.html')
+
+def agendamento_view(request):
+    return render(request, 'core/agendamentos.html')
+
+def configuracao_view(request):
+    return render(request, 'core/configuracoes.html')
+

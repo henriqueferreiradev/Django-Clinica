@@ -1,1 +1,14 @@
-opa
+{% extends 'core/base.html' %}
+{% load static %}
+
+
+
+{% block title %}Financeiro | Clínica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/financeiro.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1>Bem-vindo à página inicial</h1>
+{% endblock %}

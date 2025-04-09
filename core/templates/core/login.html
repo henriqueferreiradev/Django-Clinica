@@ -1,6 +1,12 @@
-{% extends 'core/base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Clínica</title>
+    <link rel="stylesheet" href="{% static 'core/css/login.css' %}">
 
-{% block content %}
+</head>
 <div class="login-container">
     <h2>Login</h2>
     <form method="post">
@@ -9,4 +15,4 @@
         <button type="submit">Entrar</button>
     </form>
 </div>
-{% endblock %}
+

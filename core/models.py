@@ -32,13 +32,14 @@ class Especialidade(models.Model):
 class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     nome =  models.CharField(max_length=255)
-    nascimento = models.DateField()
-    documento = models.CharField(max_length=20)
-    email = models.EmailField(blank=True, null=True)
-    telefone = models.CharField(max_length=20)
-    endereco = models.TextField(blank=True, null=True)
-    observacoes = models.TextField(blank=True, null=True)
-    data_cadastro = models.DateField(blank=True, null=True)
+    cpf = models.CharField(max_length=14, blank=True, null=True)
+    telefone = models.CharField(max_length=20, blank=True, null=True)
+    #endereco = models.TextField(blank=True, null=True)
+    #observacoes = models.TextField(blank=True, null=True)
+    #data_cadastro = models.DateField(blank=True, null=True)
+    def __str__(self):
+        return self.nome
+     
     
 class Funcionario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
