@@ -37,6 +37,7 @@ class Paciente(models.Model):
     #endereco = models.TextField(blank=True, null=True)
     #observacoes = models.TextField(blank=True, null=True)
     #data_cadastro = models.DateField(blank=True, null=True)
+    ativo = models.BooleanField(default=True)
     def __str__(self):
         return self.nome
      

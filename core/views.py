@@ -4,6 +4,7 @@ from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Paciente
+from django.db.models import Q
 
 def login_view(request):
     login_form = AuthenticationForm(request, data=request.POST or None)
@@ -40,7 +41,13 @@ def pacientes_view(request):
         Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone)
         return redirect('pacientes')
     
-    pacientes = Paciente.objects.all()
+    query = request.GET.get('q')
+    pacientes = Paciente.objects.filter(ativo=True)
+    
+    if query:
+        pacientes = Paciente.objects.filter(nome__icontains=query)
+    else:
+        pacientes = Paciente.objects.all()
     return render(request, 'core/pacientes.html', {'pacientes': pacientes})
 
 
