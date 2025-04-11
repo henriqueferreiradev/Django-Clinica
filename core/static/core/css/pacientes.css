@@ -54,6 +54,7 @@ html {
     width: 100%;
     border-collapse: collapse;
     background-color: white;
+    table-layout: fixed;
 }
 
 .tabela-head thead {
@@ -70,7 +71,11 @@ html {
     border-collapse: collapse;
     background-color: white;
 }
-
+table td, table th {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 th,
 td {
     padding: 12px 15px;

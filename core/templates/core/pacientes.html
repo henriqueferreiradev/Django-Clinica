@@ -107,8 +107,11 @@
             const rows = document.querySelectorAll("table tbody tr");
 
             rows.forEach(function (row) {
-                const nome = row.querySelector("td").textContent.toLowerCase();
-                row.style.display = nome.includes(search) ? "" : "none";
+                const nome = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
+                const cpf = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+
+                const match = nome.includes(search) || cpf.includes(search);
+                row.style.display = match ? "" : "none";
             });
         });
     </script>
