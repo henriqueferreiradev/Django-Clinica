@@ -12,8 +12,8 @@
     <div class="topbar">
         <h1>Pacientes</h1>
         <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Buscar paciente aqui">
-          
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
+
         </form>
         <div>
 
@@ -25,33 +25,60 @@
     <div class="content">
         <div class="content-header">
             <h2>Lista de Pacientes</h2>
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                <a href="?q={{ query }}&page=1">«</a>
+                <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">‹</a>
+                {% endif %}
+
+                <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+                {% if page_obj.has_next %}
+                <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">›</a>
+                <a href="?q={{ query }}&page={{ page_obj.paginator.num_pages }}">»</a>
+                {% endif %}
+            </div>
             <button class="btn-add" onclick="abrirModal()">+ Novo Paciente</button>
+
+        </div>
+        <div class="tabela-container">
+            <table class="tabela-head">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Telefone</th>
+                        <th>Cadastro</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="tabela-body-scroll">
+                <table class="tabela-body">
+                    <tbody>
+                        {% for paciente in page_obj %}
+                        <tr>
+                            <td>{{ paciente.nome }}</td>
+                            <td>{{ paciente.cpf }}</td>
+                            <td>{{ paciente.telefone }}</td>
+                            <td>{{ paciente.data_cadastro|date:'d/m/Y' }}</td>
+                            <td class="actions">
+                                <button class="view-btn">Ver</button>
+                                <button class="edit-btn">Editar</button>
+                                <button class="delete-btn">Excluir</button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">Nenhum paciente encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>Telefone</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for paciente in pacientes %}
-                <tr>
-                    <td>{{ paciente.nome }}</td>
-                    <td>{{ paciente.cpf }}</td>
-                    <td>{{ paciente.telefone }}</td>
-                    <td class="actions">
-                        <button class="view-btn">Ver</button>
-                        <button class="edit-btn">Editar</button>
-                        <button class="delete-btn">Excluir</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
         <div class="modal-overlay" id="modalOverlay">
             <div class="modal">
                 <form method="post">

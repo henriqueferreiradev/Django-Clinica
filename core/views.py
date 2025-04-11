@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Paciente
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 def login_view(request):
     login_form = AuthenticationForm(request, data=request.POST or None)
@@ -41,14 +42,19 @@ def pacientes_view(request):
         Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone)
         return redirect('pacientes')
     
-    query = request.GET.get('q')
-    pacientes = Paciente.objects.filter(ativo=True)
+    query = request.GET.get('q','').strip()
     
-    if query:
-        pacientes = Paciente.objects.filter(nome__icontains=query)
-    else:
-        pacientes = Paciente.objects.all()
-    return render(request, 'core/pacientes.html', {'pacientes': pacientes})
+    pacientes = Paciente.objects.filter(ativo=True).order_by('-id')
+    
+    if query in [None, '', "None"]:
+        query = ''
+        pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf_icontains=query))
+        
+        
+    paginator = Paginator(pacientes, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'core/pacientes.html', {'page_obj': page_obj, 'query': query})
 
 
 def profissionais_view(request):

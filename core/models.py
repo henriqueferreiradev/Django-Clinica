@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from datetime import date
 TIPOS_USUARIO = [
     ('admin', 'Administrador'),
     ('profissional', 'Profissional'),
@@ -14,7 +14,7 @@ FORMAS_PAGAMENTO = [
     ('credito', 'Cartão de Crédito'),
     ('dinheiro', 'Dinheiro'),
 ]
-
+ 
 class User(AbstractUser):
     tipo = models.CharField(max_length=20, choices=TIPOS_USUARIO)
     telefone = models.CharField(max_length=20, blank=True, null=True)
@@ -36,7 +36,9 @@ class Paciente(models.Model):
     telefone = models.CharField(max_length=20, blank=True, null=True)
     #endereco = models.TextField(blank=True, null=True)
     #observacoes = models.TextField(blank=True, null=True)
-    #data_cadastro = models.DateField(blank=True, null=True)
+    
+    
+    data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
     def __str__(self):
         return self.nome
