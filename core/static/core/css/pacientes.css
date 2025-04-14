@@ -82,7 +82,10 @@ td {
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
-
+tr.inativo {
+    background-color: #f6a1a1; /* cinza claro */
+    color: red;
+}
 .tabela-body tr:hover {
     background-color: #f9f9f9;
 }
@@ -161,7 +164,24 @@ td {
     flex: 1;
 }
 
-.pagination a {
-    border: 1px solid black;
+.pagination button {
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
     background-color: #007b63;
+    color: white;
+}
+.tabela_infos-dados {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* opcional */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white; /* ou outra cor pra dar contraste */
+    padding: 10px 20px; /* espaçamento interno */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1); /* sombra superior pra destacar */
+    z-index: 1000; /* garante que fique acima do conteúdo */
 }

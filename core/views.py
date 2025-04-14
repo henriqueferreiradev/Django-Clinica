@@ -1,11 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
+from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Paciente
 from django.db.models import Q
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.views.decorators.csrf import csrf_exempt
+
 
 def login_view(request):
     login_form = AuthenticationForm(request, data=request.POST or None)
@@ -35,26 +38,77 @@ def dashboard_view(request):
     return render(request, 'core/dashboard.html')
 
 def pacientes_view(request):
+    mostrar_todos = request.GET.get('mostrar_todos') == 'on'
+    filtra_inativo = request.GET.get('filtra_inativo') == 'on'
+
     if request.method == 'POST':
+        if 'delete_id' in request.POST:
+            delete_id = request.POST.get('delete_id')
+            paciente = Paciente.objects.get(id=delete_id)
+            paciente.ativo = False
+            paciente.save()
+            return redirect('pacientes')
+
+        # Edição ou criação
+        paciente_id = request.POST.get('paciente_id')
         nome = request.POST.get('nome')
         cpf = request.POST.get('cpf')
         telefone = request.POST.get('telefone')
-        Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone)
+
+        if paciente_id:
+            paciente = Paciente.objects.get(id=paciente_id)
+            paciente.nome = nome
+            paciente.cpf = cpf
+            paciente.telefone = telefone
+            paciente.ativo = True
+            paciente.save()
+        else:
+            # Garante que nome foi enviado
+            if nome:
+                Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone, ativo=True)
+
         return redirect('pacientes')
-    
-    query = request.GET.get('q','').strip()
-    
-    pacientes = Paciente.objects.filter(ativo=True).order_by('-id')
-    
-    if query in [None, '', "None"]:
-        query = ''
-        pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf_icontains=query))
-        
-        
+
+    # Se for GET, continua aqui:
+    query = request.GET.get('q', '').strip()
+
+    if mostrar_todos:
+        pacientes = Paciente.objects.all().order_by('-id')
+    elif filtra_inativo:
+        pacientes = Paciente.objects.filter(ativo=False)
+    else:
+        pacientes = Paciente.objects.filter(ativo=True).order_by('-id')
+
+    total_ativos = Paciente.objects.filter(ativo=True).count()
+
+    if query:
+        pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf__icontains=query))
+
     paginator = Paginator(pacientes, 12)
     page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    return render(request, 'core/pacientes.html', {'page_obj': page_obj, 'query': query})
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    return render(request, 'core/pacientes.html', {
+        'page_obj': page_obj,
+        'query': query,
+        'total_ativos': total_ativos,
+        'mostrar_todos': mostrar_todos,
+        'filtra_inativo': filtra_inativo,
+    })
+
+@csrf_exempt
+def reativar_paciente(request, id):
+    if request.method == 'POST':
+        paciente = get_object_or_404(Paciente, id=id)
+        paciente.ativo = True
+        paciente.save()
+        return JsonResponse({'status': 'ok'})
+    return JsonResponse({'status': 'erro'}, status=400)
 
 
 def profissionais_view(request):

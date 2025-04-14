@@ -10,4 +10,5 @@ urlpatterns = [
     path('financeiro/', views.financeiro_view, name='financeiro'),
     path('agendamento/', views.agendamento_view, name='agendamento'),
     path('config/', views.configuracao_view, name='config'),
+    path('reativar-paciente/<int:id>/', views.reativar_paciente, name='reativar_paciente'),
 ]

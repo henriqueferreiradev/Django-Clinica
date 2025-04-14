@@ -25,19 +25,25 @@
     <div class="content">
         <div class="content-header">
             <h2>Lista de Pacientes</h2>
-            <div class="pagination">
-                {% if page_obj.has_previous %}
-                <a href="?q={{ query }}&page=1">«</a>
-                <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">‹</a>
-                {% endif %}
+            <form id="paginator-form" method="get">
+                <input type="hidden" name="q" value="{{ query }}">
+                <input type="hidden" id="page-input" name="page" value="{{ page_obj.number }}">
 
-                <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
 
-                {% if page_obj.has_next %}
-                <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">›</a>
-                <a href="?q={{ query }}&page={{ page_obj.paginator.num_pages }}">»</a>
-                {% endif %}
-            </div>
+                    <button type="button" onclick="setPage({{ page_obj.previous_page_number }}, event)">‹</button>
+                    {% endif %}
+
+                    <span>{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+                    {% if page_obj.has_next %}
+                    <button type="button" onclick="setPage({{ page_obj.next_page_number }}, event)">›</button>
+
+                    {% endif %}
+                </div>
+            </form>
+
             <button class="btn-add" onclick="abrirModal()">+ Novo Paciente</button>
 
         </div>
@@ -58,15 +64,30 @@
                 <table class="tabela-body">
                     <tbody>
                         {% for paciente in page_obj %}
-                        <tr>
+                        <tr class="{% if not paciente.ativo %}inativo{% endif %}">
                             <td>{{ paciente.nome }}</td>
                             <td>{{ paciente.cpf }}</td>
                             <td>{{ paciente.telefone }}</td>
                             <td>{{ paciente.data_cadastro|date:'d/m/Y' }}</td>
                             <td class="actions">
                                 <button class="view-btn">Ver</button>
-                                <button class="edit-btn">Editar</button>
-                                <button class="delete-btn">Excluir</button>
+                                <button class="edit-btn" data-id="{{ paciente.id }}" data-nome="{{ paciente.nome }}"
+                                    data-cpf="{{ paciente.cpf }}" data-telefone="{{ paciente.telefone }}"
+                                    onclick="abrirModalEditar(this)">
+                                    Editar
+                                </button>
+
+                                {% if paciente.ativo %}
+                                <form method="post" action="{% url 'pacientes' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_id" value="{{ paciente.id }}">
+                                    <button type="submit"
+                                        onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</button>
+                                </form>
+                                {% else %}
+                                <button class="reativar-btn"
+                                    onclick="reativarPaciente({{ paciente.id }})">Reativar</button>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
@@ -76,43 +97,47 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <div class="tabela_infos-dados">
+                    <p>Pacientes ativos: {{ total_ativos }} </p>
+                    <form method="get" style="display: inline;">
+                        <label class="label_inativos">
+                            <input type="checkbox" name="mostrar_todos" onchange="this.form.submit()"
+                                {% if mostrar_todos %}checked{% endif %}>
+                            Mostrar inativos
+                        </label>
+                    </form>
+                    <form method="get" style="display: inline;">
+                        <label class="label_inativos">
+                            <input type="checkbox" name="filtra_inativo" onchange="this.form.submit()"
+                                {% if filtra_inativo %}checked{% endif %}>
+                            Mostrar apenas inativos
+                        </label>
+                    </form>
+                </div>
             </div>
         </div>
 
         <div class="modal-overlay" id="modalOverlay">
             <div class="modal">
-                <form method="post">
+                <form method="post" id="formPaciente">
                     {% csrf_token %}
-                    <h3>Cadastrar Paciente</h3>
-                    <input type="text" name="nome" placeholder="Nome do paciente" required>
-                    <input type="text" name="cpf" placeholder="CPF" required>
-                    <input type="text" name="telefone" placeholder="Telefone" required>
+                    <h3 id="modalTitulo">Cadastrar Paciente</h3>
+
+                    <input type="hidden" name="paciente_id" id="pacienteId">
+                    <input type="text" name="nome" id="nomeInput" placeholder="Nome do paciente" required>
+                    <input type="text" name="cpf" id="cpfInput" placeholder="CPF" required>
+                    <input type="text" name="telefone" id="telefoneInput" placeholder="Telefone" required>
+
+
                     <button type="submit">Salvar</button>
                     <button type="button" class="close-modal" onclick="fecharModal()">Cancelar</button>
                 </form>
             </div>
         </div>
     </div>
+    {% endblock %}
 
-    <script>
-        function abrirModal() {
-            document.getElementById("modalOverlay").style.display = "flex";
-        }
-
-        function fecharModal() {
-            document.getElementById("modalOverlay").style.display = "none";
-        }
-        document.querySelector('input[name="q"]').addEventListener('keyup', function () {
-            const search = this.value.toLowerCase();
-            const rows = document.querySelectorAll("table tbody tr");
-
-            rows.forEach(function (row) {
-                const nome = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
-                const cpf = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
-
-                const match = nome.includes(search) || cpf.includes(search);
-                row.style.display = match ? "" : "none";
-            });
-        });
-    </script>
+    {% block scripts %}
+    <script src="https://unpkg.com/imask"></script>
+    <script src="{% static '/core/js/pacientes/base.js' %}"></script>
     {% endblock %}
