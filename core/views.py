@@ -80,6 +80,7 @@ def pacientes_view(request):
         pacientes = Paciente.objects.filter(ativo=True).order_by('-id')
 
     total_ativos = Paciente.objects.filter(ativo=True).count()
+    
 
     if query:
         pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf__icontains=query))

@@ -83,8 +83,11 @@ td {
     border-bottom: 1px solid #ddd;
 }
 tr.inativo {
-    background-color: #f6a1a1; /* cinza claro */
+    background-color: #f6a1a15b; /* cinza claro */
     color: red;
+}
+tr.inativo:hover {
+    background-color: #000 /
 }
 .tabela-body tr:hover {
     background-color: #f9f9f9;
@@ -175,13 +178,7 @@ tr.inativo {
 .tabela_infos-dados {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* opcional */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: white; /* ou outra cor pra dar contraste */
-    padding: 10px 20px; /* espaçamento interno */
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.1); /* sombra superior pra destacar */
-    z-index: 1000; /* garante que fique acima do conteúdo */
+    gap: 1em;
+ 
+ 
 }
