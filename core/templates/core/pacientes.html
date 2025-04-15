@@ -13,12 +13,9 @@
         <h1>Pacientes</h1>
         <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
             <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-
         </form>
         <div>
-
             <div class="user-info">Olá, {{ user.username }}</div>
-
         </div>
     </div>
 

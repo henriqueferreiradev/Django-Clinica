@@ -1,11 +1,21 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
 body {
+    background-color: #f4f6f8;
+    display: flex;
+    min-height: 100vh;
     margin: 0;
     font-family: Arial, sans-serif;
-    display: flex;
+    overflow: hidden;
 }
 
 .content {
-    padding: 30px;
+    padding: 1em;
 }
 
 .content-header {
@@ -32,22 +42,13 @@ body {
     background-color: #007b63;
 }
 
-body,
-html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-    /* impede rolagem da página */
-}
 
 .tabela-container {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 25px);
-    /* ocupa até 25px do fim da tela */
     margin: 0 1em;
-    /* espaço lateral, se quiser */
+ 
 }
 
 .tabela-head {
@@ -87,7 +88,7 @@ tr.inativo {
     color: red;
 }
 tr.inativo:hover {
-    background-color: #000 /
+    background-color: #000;
 }
 .tabela-body tr:hover {
     background-color: #f9f9f9;
@@ -182,3 +183,4 @@ tr.inativo:hover {
  
  
 }
+

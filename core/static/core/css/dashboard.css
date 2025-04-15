@@ -9,11 +9,13 @@ body {
     background-color: #f4f6f8;
     display: flex;
     min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
 }
-
 /* Conteúdo */
 .content {
-    padding: 20px;
+    padding: 1em;
     flex: 1;
     overflow-y: auto;
 }
@@ -89,3 +91,4 @@ th {
 .avisos li {
     margin-bottom: 10px;
 }
+

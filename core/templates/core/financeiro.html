@@ -6,9 +6,19 @@
 {% block title %}Financeiro | Clínica{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/financeiro.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/agendamentos.css' %}">
 {% endblock %}
 
 {% block content %}
-<h1>Bem-vindo à página inicial</h1>
+<div class="main">
+
+    <div class="topbar">
+      <h1>Agenda</h1>
+      <div class="user-info">Olá, {{ user.username }}</div>
+    </div>
+  
+    <div class="content">
+  
+  </div>
+</div>
 {% endblock %}

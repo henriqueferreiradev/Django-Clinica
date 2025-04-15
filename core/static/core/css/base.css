@@ -81,7 +81,7 @@ body {
 /* Topbar */
 .topbar {
     background-color: #ffffff;
-    padding: 15px 30px;
+    padding: 1em;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
