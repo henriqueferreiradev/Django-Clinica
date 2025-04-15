@@ -4,22 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Clínica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+    
 
 </head>
 <body>
     <div class="sidebar">
         <h2>Clínica</h2>
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'pacientes' %}">Pacientes</a>
-        <a href="{% url 'agendamento' %}">Agendamentos</a>
-        <a href="{% url 'profissionais' %}">Profissionais</a>
-        <a href="{% url 'financeiro' %}">Financeiro</a>
-        <a href="{% url 'config' %}">Configurações</a>
-        <a href="{% url 'logout' %}">Sair</a>
+        <ul>
+            <li>
+                <a href="{% url 'dashboard' %}">
+                    <i class="fa-solid fa-house"></i></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'agendamento' %}">
+                    <i class="fas fa-calendar-alt"></i> Agendamentos
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'pacientes' %}">
+                    <i class="fa-solid fa-people-group"></i> Pacientes
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'profissionais' %}">
+                    <i class="fa-solid fa-user-doctor"></i> Profissionais
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'financeiro' %}">
+                    <i class="fa-solid fa-sack-dollar"></i> Financeiro
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'config' %}">
+                    <i class="fas fa-calendar-alt"></i> Configurações
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}">
+                    <i class="fa-solid fa-power-off"></i>Sair
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="main">
+        {% block topbar %}{% endblock %}
+        {% block content %}{% endblock %}
     </div>
     
-    {% block content %}{% endblock %}
+    
     {% block scripts %}{% endblock %}
     {% block extra_css %}{% endblock %}
 

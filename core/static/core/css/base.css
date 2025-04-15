@@ -46,7 +46,7 @@ body {
     width: 220px;
     background-color: #0c0c22;
     color: white;
-    padding: 30px 20px;
+    padding: 1em;
     display: flex;
     flex-direction: column;
 }
@@ -56,6 +56,11 @@ body {
     margin-bottom: 30px;
     text-align: center;
 }
+.sidebar ul li {
+    display: flex;
+    align-items: center;
+    gap: 1em;    
+}
 
 .sidebar a {
     color: white;
@@ -63,10 +68,16 @@ body {
     margin-bottom: 15px;
     padding: 10px;
     border-radius: 5px;
-    display: block;
-    transition: background 0.2s;
-}
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    transition: background 0.5s;
+    width: 100%;
 
+}
+.sidebar a i {
+    font-size: 24px;
+}
 .sidebar a:hover {
     background-color: #34495e;
 }
@@ -92,8 +103,25 @@ body {
     font-size: 20px;
     color: #333;
 }
+.topbar input {
+    text-align: center;
 
+}
 .user-info {
     font-size: 14px;
     color: #666;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    width: 400px;
+}
+
+.search-form input {
+    width: 400px;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex: 1;
 }

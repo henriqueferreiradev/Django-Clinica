@@ -9,16 +9,16 @@
 <link rel="stylesheet" href="{% static 'core/css/agendamentos.css' %}">
 {% endblock %}
 
-{% block content %}
-<div class="main">
-
-    <div class="topbar">
-      <h1>Agenda</h1>
-      <div class="user-info">Olá, {{ user.username }}</div>
-    </div>
-  
-    <div class="content">
-  
-  </div>
+{% block topbar %}
+<div class="topbar">
+    <h1>Pacientes</h1>
+    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+        <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
+    </form>
+    <div class="user-info">Olá, {{ user.username }}</div>
 </div>
+{% endblock %}
+
+{% block content %}
+
 {% endblock %}

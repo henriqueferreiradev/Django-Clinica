@@ -153,20 +153,6 @@ tr.inativo:hover {
     color: white;
 }
 
-.search-form {
-    margin-bottom: 1rem;
-    display: flex;
-    gap: 0.5rem;
-    width: 400px;
-}
-
-.search-form input {
-    width: 400px;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    flex: 1;
-}
 
 .pagination button {
     border: none;
