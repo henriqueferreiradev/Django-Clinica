@@ -8,7 +8,7 @@ body {
 }
 
 header {
-    background-color: #4a90e2;
+    background-color: #7E4397;
     color: white;
     text-align: center;
     padding: 40px 20px;
@@ -44,7 +44,7 @@ body {
 /* Menu lateral */
 .sidebar {
     width: 220px;
-    background-color: #0c0c22;
+    background-color: #7E4397;
     color: white;
     padding: 1em;
     display: flex;

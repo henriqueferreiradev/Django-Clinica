@@ -25,6 +25,7 @@ class User(AbstractUser):
     
 class Especialidade(models.Model):
     nome = models.CharField(max_length=100)
+    ativo = models.BooleanField(default=True)
     
     def __str__(self):
         return self.nome
@@ -44,7 +45,7 @@ class Paciente(models.Model):
         return self.nome
      
     
-class Funcionario(models.Model):
+class Profissional(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     cargo = models.CharField(max_length=30, choices=[
         ('profissional', 'Profissional'),
@@ -60,7 +61,7 @@ class Funcionario(models.Model):
     
 class Pagamento(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    profissional = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, blank=True)
+    profissional = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True, blank=True)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     forma_pagamento = models.CharField(max_length=20, choices=FORMAS_PAGAMENTO)
     servico = models.CharField(max_length=100)

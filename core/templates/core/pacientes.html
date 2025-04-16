@@ -82,7 +82,7 @@
                                     onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</button>
                             </form>
                             {% else %}
-                            <button class="reativar-btn" onclick="reativarPaciente({{ paciente.id }})">Reativar</button>
+                            <span>Inativo</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -134,6 +134,7 @@
 {% endblock %}
 
 {% block scripts %}
+
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>
 {% endblock %}

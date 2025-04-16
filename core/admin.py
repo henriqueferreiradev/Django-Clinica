@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Paciente, Funcionario, Pagamento, Especialidade
+from .models import User, Paciente, Profissional, Pagamento, Especialidade
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 class UserAdmin(BaseUserAdmin):
@@ -11,6 +11,6 @@ class UserAdmin(BaseUserAdmin):
     
 admin.site.register(User, UserAdmin)
 admin.site.register(Paciente)
-admin.site.register(Funcionario)
+admin.site.register(Profissional)
 admin.site.register(Pagamento)
 admin.site.register(Especialidade)

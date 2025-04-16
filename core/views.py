@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Paciente
+from .models import Paciente, Especialidade
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.csrf import csrf_exempt
@@ -112,8 +112,75 @@ def reativar_paciente(request, id):
     return JsonResponse({'status': 'erro'}, status=400)
 
 
+@csrf_exempt
+def reativar_especialidade(request, id):
+    if request.method == 'POST':
+        especialidade = get_object_or_404(Especialidade, id=id)
+        especialidade.ativo = True
+        especialidade.save()
+        return JsonResponse({'status': 'ok'})
+    return JsonResponse({'status': 'erro'}, status=400)
+
 def profissionais_view(request):
-    return render(request, 'core/profissionais.html')
+    mostrar_todos = request.GET.get('mostrar_todos') == 'on'
+    filtra_inativo = request.GET.get('filtra_inativo') == 'on'
+
+    if request.method == 'POST':
+            if 'delete_id' in request.POST:
+                delete_id = request.POST.get('delete_id')
+                especialidades = Especialidade.objects.get(id=delete_id)
+                especialidades.ativo = False
+                especialidades.save()
+                return redirect('profissionais')
+
+            # Edição ou criação
+            especialidade_id = request.POST.get('especialidade_id')
+            nome_especialidade = request.POST.get('especialidade')
+ 
+
+            if especialidade_id:
+                especialidades = Especialidade.objects.get(id=especialidade_id)
+                especialidades.nome = nome_especialidade
+                especialidades.ativo = True
+                especialidades.save()
+            else:
+                # Garante que nome foi enviado
+                if nome_especialidade:
+                    Especialidade.objects.create(nome=nome_especialidade, ativo=True)
+
+    query = request.GET.get('q', '').strip()
+
+    if mostrar_todos:
+        especialidades = Especialidade.objects.all().order_by('-id')
+    elif filtra_inativo:
+        especialidades = Especialidade.objects.filter(ativo=False)
+    else:
+        especialidades = Especialidade.objects.filter(ativo=True).order_by('-id')
+
+    total_ativos = Especialidade.objects.filter(ativo=True).count()
+    
+
+    if query:
+        especialidades = especialidades.filter(Q(nome__icontains=query))
+
+    paginator = Paginator(especialidades, 12)
+    page_number = request.GET.get("page")
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    return render(request, 'core/profissionais.html', {
+        'page_obj': page_obj,
+        'query': query,
+        'total_ativos': total_ativos,
+        'mostrar_todos': mostrar_todos,
+        'filtra_inativo': filtra_inativo,
+    })
+
+
 
 def financeiro_view(request):
     return render(request, 'core/financeiro.html')
