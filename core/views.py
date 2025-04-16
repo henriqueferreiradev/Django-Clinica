@@ -4,10 +4,11 @@ from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Paciente, Especialidade
+from .models import Paciente, Especialidade, ESTADO_CIVIL
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 
 def login_view(request):
@@ -34,9 +35,13 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+
+@login_required(login_url='login')
 def dashboard_view(request):
     return render(request, 'core/dashboard.html')
 
+
+@login_required(login_url='login')
 def pacientes_view(request):
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'
     filtra_inativo = request.GET.get('filtra_inativo') == 'on'
@@ -100,6 +105,7 @@ def pacientes_view(request):
         'total_ativos': total_ativos,
         'mostrar_todos': mostrar_todos,
         'filtra_inativo': filtra_inativo,
+        'estado_civil_choices': ESTADO_CIVIL,
     })
 
 @csrf_exempt
@@ -120,7 +126,7 @@ def reativar_especialidade(request, id):
         especialidade.save()
         return JsonResponse({'status': 'ok'})
     return JsonResponse({'status': 'erro'}, status=400)
-
+@login_required(login_url='login')
 def profissionais_view(request):
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'
     filtra_inativo = request.GET.get('filtra_inativo') == 'on'
@@ -181,13 +187,17 @@ def profissionais_view(request):
     })
 
 
-
+@login_required(login_url='login')
 def financeiro_view(request):
     return render(request, 'core/financeiro.html')
 
+
+@login_required(login_url='login')
 def agendamento_view(request):
     return render(request, 'core/agendamentos.html')
 
+
+@login_required(login_url='login')
 def configuracao_view(request):
     return render(request, 'core/configuracoes.html')
 

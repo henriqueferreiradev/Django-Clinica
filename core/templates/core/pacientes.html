@@ -117,19 +117,71 @@
         <div class="modal">
             <form method="post" id="formPaciente">
                 {% csrf_token %}
-                <h3 id="modalTitulo">Cadastrar Paciente</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 id="modalTitulo">Cadastrar Paciente</h3>
+                    <button type="button" class="close-modal" onclick="fecharModal()">X</button>
+                </div>
+                <div class="modal-dados">
+                    <div>
+                        <input type="hidden" name="paciente_id" id="pacienteId">
+                        <input type="text" name="nome" id="nomeInput" placeholder="Nome Completo *" required>
+                        <div class="modal-dados-doc">
+                            <input type="text" name="rg" id="rgInput" placeholder="RG" required>
+                            <input type="text" name="cpf" id="cpfInput" placeholder="CPF" required>
+                            <input type="date" name="nascimento" id="nascimentoInput" placeholder="Data de Nascimento"
+                                required>
+                        </div>
+                        <div class="modal-dados-doc">
+                            <input type="text" name="cor" id="corInput" placeholder="Cor / Raça PRECISA SER SELECT"
+                                required>
+                            <input type="text" name="sexo" id="sexoInput" placeholder="Sexo PRECISA SER SELECT"
+                                required>
+                            <input type="text" name="naturalidade" id="naturalidadeInput" placeholder="Naturalidade"
+                                required>
+                            <input type="text" name="uf" id="ufInput" placeholder="UFlidade PRECISA SER SELECT"
+                                required>
+                        </div>
+                    </div>
 
-                <input type="hidden" name="paciente_id" id="pacienteId">
-                <input type="text" name="nome" id="nomeInput" placeholder="Nome do paciente" required>
-                <input type="text" name="cpf" id="cpfInput" placeholder="CPF" required>
-                <input type="text" name="telefone" id="telefoneInput" placeholder="Telefone" required>
+
+                    <div>
+                        <input type="text" name="nomeSocial" id="nomeSocialInput" placeholder="Nome Social/Apelido *"
+                            required>
+                        <select name="estado_civil" id="estadoCivilInput" class='input-style' required>
+                            <option value="" disabled selected>Estado Civil...</option>
+                            {% for value, label in estado_civil_choices %}
+                            <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
+                                {{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="midia" id="midiaInput" placeholder="Midia PRECISA SER SELECT" required>
+
+                    </div>
+                    <div>
 
 
+                        <label for="fotoInput" class="foto-perfil-container">
+                            <img id="previewImagem"
+                                src="{% if paciente.foto_perfil %}{{ paciente.foto_perfil.url }}{% endif %}" alt="Foto"
+                                onerror="this.style.display='none'">
+                            <div class="foto-placeholder">Selecionar<br>Imagem</div>
+                            <input type="file" id="fotoInput" name="foto_perfil" class="foto-perfil-input"
+                                accept="image/*">
+                        </label>
+                    </div>
+
+
+                </div>
+                <div> Endereço e contato
+                    <input type="text" name="telefone" id="telefoneInput" placeholder="Telefone" required>
+
+                </div>
                 <button type="submit">Salvar</button>
-                <button type="button" class="close-modal" onclick="fecharModal()">Cancelar</button>
+
             </form>
         </div>
     </div>
+    
 </div>
 {% endblock %}
 

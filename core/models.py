@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from datetime import date
+
 TIPOS_USUARIO = [
     ('admin', 'Administrador'),
     ('profissional', 'Profissional'),
@@ -14,7 +15,7 @@ FORMAS_PAGAMENTO = [
     ('credito', 'Cartão de Crédito'),
     ('dinheiro', 'Dinheiro'),
 ]
- 
+
 class User(AbstractUser):
     tipo = models.CharField(max_length=20, choices=TIPOS_USUARIO)
     telefone = models.CharField(max_length=20, blank=True, null=True)
@@ -29,12 +30,18 @@ class Especialidade(models.Model):
     
     def __str__(self):
         return self.nome
-    
+ESTADO_CIVIL = [
+    ('solteiro(a)','Solteiro(a)'),
+    ('casado(a)','Casado(a)'),
+    ('divoriado(a)','Divorciado(a)'),
+]
 class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     nome =  models.CharField(max_length=255)
     cpf = models.CharField(max_length=14, blank=True, null=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
+    
+    estado_civil = models.CharField(default='solteiro(a)',max_length=20, choices=ESTADO_CIVIL)
     #endereco = models.TextField(blank=True, null=True)
     #observacoes = models.TextField(blank=True, null=True)
     
