@@ -142,7 +142,7 @@
             <form method="post" id="formPaciente">
                 {% csrf_token %}
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 id="modalTitulo">Cadastrar Paciente</h3>
+                    <h3 id="modalTitulo">Cadastrar Paciente <span id="pacienteNome" style="display:none;">{{ paciente.nome }}</span></h3>
                     <button type="button" class="close-modal" onclick="fecharModal()">X</button>
                 </div>
                 <div class="modal-dados">

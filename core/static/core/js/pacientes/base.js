@@ -120,7 +120,9 @@ function abrirModalEditar(botao) {
 
 
 
-    document.getElementById('modalTitulo').textContent = "Editar Paciente";
+    document.getElementById('modalTitulo').textContent = 'Editar Paciente - ' + botao.dataset.nome;
+
+
 
 
     document.getElementById('modalOverlay').style.display = 'flex';

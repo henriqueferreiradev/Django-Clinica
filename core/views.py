@@ -45,6 +45,7 @@ def dashboard_view(request):
 def pacientes_view(request):
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'
     filtra_inativo = request.GET.get('filtra_inativo') == 'on'
+    situacao = request.GET.get('situacao') == True
     
     if request.method == 'POST':
         if 'delete_id' in request.POST:
