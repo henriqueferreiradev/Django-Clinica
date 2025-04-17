@@ -4,12 +4,12 @@ from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Paciente, Especialidade, ESTADO_CIVIL
+from .models import Paciente, Especialidade, ESTADO_CIVIL, MIDIA_ESCOLHA, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-
+from datetime import datetime
 
 def login_view(request):
     login_form = AuthenticationForm(request, data=request.POST or None)
@@ -45,7 +45,7 @@ def dashboard_view(request):
 def pacientes_view(request):
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'
     filtra_inativo = request.GET.get('filtra_inativo') == 'on'
-
+    
     if request.method == 'POST':
         if 'delete_id' in request.POST:
             delete_id = request.POST.get('delete_id')
@@ -59,18 +59,63 @@ def pacientes_view(request):
         nome = request.POST.get('nome')
         cpf = request.POST.get('cpf')
         telefone = request.POST.get('telefone')
-
+        rg = request.POST.get('rg')
+        nascimento = request.POST.get('nascimento')
+        cor_raca = request.POST.get('cor')
+        sexo = request.POST.get('sexo')
+        naturalidade = request.POST.get('naturalidade')
+        uf = request.POST.get('uf')
+        nomeSocial = request.POST.get('nomeSocial')
+        estado_civil = request.POST.get('estado_civil')
+        midia = request.POST.get('midia')
+        cep = request.POST.get('cep')
+        rua = request.POST.get('rua')
+        numero = request.POST.get('numero')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+        celular = request.POST.get('celular')
+        telEmergencia = request.POST.get('telEmergencia')
+        email = request.POST.get('email')
+        observacao = request.POST.get('observacao')
+        
         if paciente_id:
             paciente = Paciente.objects.get(id=paciente_id)
             paciente.nome = nome
             paciente.cpf = cpf
             paciente.telefone = telefone
+            paciente.rg = rg
+            paciente.nascimento = nascimento
+            paciente.cor_raca = cor_raca
+            paciente.sexo = sexo
+            paciente.naturalidade = naturalidade
+            paciente.uf = uf
+            paciente.nomeSocial = nomeSocial
+            paciente.estado_civil = estado_civil
+            paciente.midia = midia
+            paciente.cep = cep
+            paciente.rua = rua
+            paciente.numero = numero
+            paciente.bairro = bairro
+            paciente.cidade = cidade
+            paciente.estado = estado
+            paciente.celular = celular
+            paciente.telEmergencia = telEmergencia
+            paciente.email = email
+            paciente.observacao = observacao
+             
             paciente.ativo = True
             paciente.save()
         else:
             # Garante que nome foi enviado
             if nome:
-                Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone, ativo=True)
+                Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone,
+                                        rg=rg,data_nascimento=nascimento,
+                                        cor_raca=cor_raca, sexo=sexo, naturalidade=naturalidade,
+                                        uf=uf,nomeSocial=nomeSocial,estado_civil=estado_civil,
+                                        midia=midia, cep=cep, rua=rua, numero=numero,bairro=bairro,
+                                        cidade=cidade,estado=estado,celular=celular, telEmergencia=telEmergencia,
+                                        email=email, observacao=observacao ,ativo=True)
 
         return redirect('pacientes')
 
@@ -106,6 +151,10 @@ def pacientes_view(request):
         'mostrar_todos': mostrar_todos,
         'filtra_inativo': filtra_inativo,
         'estado_civil_choices': ESTADO_CIVIL,
+        'midia_choices': MIDIA_ESCOLHA,
+        'sexo_choices': SEXO_ESCOLHA,
+        'uf_choices': UF_ESCOLHA,
+        'cor_choices': COR_RACA,
     })
 
 @csrf_exempt
@@ -126,6 +175,9 @@ def reativar_especialidade(request, id):
         especialidade.save()
         return JsonResponse({'status': 'ok'})
     return JsonResponse({'status': 'erro'}, status=400)
+
+
+
 @login_required(login_url='login')
 def profissionais_view(request):
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'

@@ -15,7 +15,71 @@ FORMAS_PAGAMENTO = [
     ('credito', 'Cartão de Crédito'),
     ('dinheiro', 'Dinheiro'),
 ]
+ESTADO_CIVIL = [
+    ('solteiro(a)','Solteiro(a)'),
+    ('casado(a)','Casado(a)'),
+    ('divoriado(a)','Divorciado(a)'),
+    ('viuvo(a))','Viúvo(a)'),
+    ('uniao estavel','União estável'),
+]
 
+COR_RACA = [
+    ('branca','Branca'),
+    ('preta','Preta'),
+    ('parda','Parda'),
+    ('amarela','Amarela'),
+    ('indígena','Indígena'),
+    ('prefiro não informar','Prefiro não informar'),
+]
+
+SEXO_ESCOLHA = [
+    ('masculino','Masculino'),
+    ('feminino','Feminino'),
+    ('outro','Outro'),
+    ('prefiro não informar','Prefiro não informar'),
+
+]
+
+UF_ESCOLHA = [
+    ('AC', 'Acre'),
+    ('AL', 'Alagoas'),
+    ('AP', 'Amapá'),
+    ('AM', 'Amazonas'),
+    ('BA', 'Bahia'),
+    ('CE', 'Ceará'),
+    ('DF', 'Distrito Federal'),
+    ('ES', 'Espírito Santo'),
+    ('GO', 'Goiás'),
+    ('MA', 'Maranhão'),
+    ('MT', 'Mato Grosso'),
+    ('MS', 'Mato Grosso do Sul'),
+    ('MG', 'Minas Gerais'),
+    ('PA', 'Pará'),
+    ('PB', 'Paraíba'),
+    ('PR', 'Paraná'),
+    ('PE', 'Pernambuco'),
+    ('PI', 'Piauí'),
+    ('RJ', 'Rio de Janeiro'),
+    ('RN', 'Rio Grande do Norte'),
+    ('RS', 'Rio Grande do Sul'),
+    ('RO', 'Rondônia'),
+    ('RR', 'Roraima'),
+    ('SC', 'Santa Catarina'),
+    ('SP', 'São Paulo'),
+    ('SE', 'Sergipe'),
+    ('TO', 'Tocantins'),
+]
+
+MIDIA_ESCOLHA = [
+    ('indicacao', 'Indicação'),
+    ('redes_sociais', 'Redes Sociais (Instagram, Facebook etc.)'),
+    ('google_site', 'Google / Site'),
+    ('outdoor_panfleto', 'Outdoor / Panfleto'),
+    ('evento', 'Evento'),
+    ('tv_radio', 'TV / Rádio'),
+    ('whatsapp', 'WhatsApp'),
+    ('outro', 'Outro'),
+]
 class User(AbstractUser):
     tipo = models.CharField(max_length=20, choices=TIPOS_USUARIO)
     telefone = models.CharField(max_length=20, blank=True, null=True)
@@ -30,22 +94,33 @@ class Especialidade(models.Model):
     
     def __str__(self):
         return self.nome
-ESTADO_CIVIL = [
-    ('solteiro(a)','Solteiro(a)'),
-    ('casado(a)','Casado(a)'),
-    ('divoriado(a)','Divorciado(a)'),
-]
+
 class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     nome =  models.CharField(max_length=255)
+    rg = models.CharField(max_length=12, blank=True, null=True)
     cpf = models.CharField(max_length=14, blank=True, null=True)
+    data_nascimento = models.DateField(blank=True, null=True)
+    cor_raca = models.CharField(default='branco', max_length=20, choices=COR_RACA)
+    sexo = models.CharField(max_length=20, choices=SEXO_ESCOLHA)
+    naturalidade = models.CharField(max_length=50 )
+    uf = models.CharField(max_length=50, choices=UF_ESCOLHA)
+    nomeSocial = models.CharField(max_length=100, blank=True, null=True)
+    estado_civil = models.CharField(max_length=20, choices=ESTADO_CIVIL)
+    midia = models.CharField(max_length=30, choices=MIDIA_ESCOLHA)
+
+    cep = models.CharField(max_length=10, blank=True, null=True)
+    rua = models.TextField(max_length=255, blank=True, null=True)
+    numero = models.TextField(max_length=255, blank=True, null=True)
+    bairro = models.TextField(max_length=100, blank=True, null=True)
+    cidade = models.TextField(max_length=100, blank=True, null=True)
+    estado = models.TextField(max_length=100, blank=True, null=True)
+    email = models.EmailField(max_length=255, blank=True, null=True)
+    observacao = models.TextField(max_length=5000, blank=True, null=True)    
     telefone = models.CharField(max_length=20, blank=True, null=True)
-    
-    estado_civil = models.CharField(default='solteiro(a)',max_length=20, choices=ESTADO_CIVIL)
-    #endereco = models.TextField(blank=True, null=True)
-    #observacoes = models.TextField(blank=True, null=True)
-    
-    
+    celular  = models.CharField(max_length=20, blank=True, null=True)
+    telEmergencia = models.CharField(max_length=20, blank=True, null=True)
+     
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
     def __str__(self):
