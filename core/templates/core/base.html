@@ -1,63 +1,125 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" dir="ltr">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Clínica</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
-    
+  <meta charset="UTF-8">
+  <title>Ponto de Equilíbrio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 </head>
-<body>
-    <div class="sidebar">
-        <h2>Clínica</h2>
-        <ul>
-            <li>
-                <a href="{% url 'dashboard' %}">
-                    <i class="fa-solid fa-house"></i></i> Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'agendamento' %}">
-                    <i class="fas fa-calendar-alt"></i> Agendamentos
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'pacientes' %}">
-                    <i class="fa-solid fa-people-group"></i> Pacientes
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'profissionais' %}">
-                    <i class="fa-solid fa-user-doctor"></i> Profissionais
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'financeiro' %}">
-                    <i class="fa-solid fa-sack-dollar"></i> Financeiro
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'config' %}">
-                    <i class="fas fa-calendar-alt"></i> Configurações
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'logout' %}">
-                    <i class="fa-solid fa-power-off"></i>Sair
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="main">
-        {% block topbar %}{% endblock %}
-        {% block content %}{% endblock %}
-    </div>
-    
-    
-    {% block scripts %}{% endblock %}
-    {% block extra_css %}{% endblock %}
 
+<body>
+  <div class="sidebar close">
+    <div class="logo-details">
+      <img class='logo_img ' src="{% static 'core/img/icons/logoRoxoFull.png' %}" alt="logo Ponto de Equilíbrio">
+  
+        <span class="logo_name">Ponto de <strong>Equilíbrio</strong></span>
+ 
+
+
+    </div>
+    <ul class="nav-links">
+      <li>
+        <a href="{% url 'dashboard' %}">
+          <i class='bx bx-grid-alt'></i>
+          <span class="link_name">Dashboard</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{% url 'dashboard' %}">Dashboard</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <div class="iocn-link">
+          <a href="{% url 'pacientes' %}">
+            <i class='bx bx-collection'></i>
+            <span class="link_name">Pacientes</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow'></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="#">Pacientes</a></li>
+          <li><a href="{% url 'pacientes' %}">Listar Pacientes</a></li>
+          <li><a href="{% url 'cadastrar_paciente' %}">Novo Paciente</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <div class="iocn-link">
+          <a href="#">
+            <i class='bx bx-book-alt'></i>
+            <span class="link_name">Profissionais</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow'></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="#">Profissionais</a></li>
+          <li><a href="{% url 'profissionais' %}">Listar Profissionais</a></li>
+          <li><a href="#">Novo Profissional</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="{% url 'financeiro' %}">
+          <i class='bx bx-pie-chart-alt-2'></i>
+          <span class="link_name">Financeiro</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{% url 'financeiro' %}">Financeiro</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class='bx bx-line-chart'></i>
+          <span class="link_name">Relatórios</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Relatórios</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="{% url 'config' %}">
+          <i class='bx bx-cog'></i>
+          <span class="link_name">Configurações</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{% url 'config' %}">Configurações</a></li>
+        </ul>
+      </li>
+
+      <li>
+        <div class="profile-details">
+          <div class="profile-content">
+            <img src="{% static 'core/img/perfil.png' %}" alt="profileImg">
+          </div>
+          <div class="name-job">
+            <div class="profile_name">Henrique Ferreira</div>
+            <div class="job">Administrador</div>
+          </div>
+          <a href="{% url 'logout' %}">
+            <i class='bx bx-log-out'></i>
+          </a>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <section class="home-section">
+    <div class="home-content">
+      {% block topbar %}{% endblock %}
+      {% block content %}{% endblock %}
+    </div>
+  </section>
+  {% block scripts %}{% endblock %}
+  <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
+  {% block extra_css %}{% endblock %}
+
+  
 </body>
+
 </html>

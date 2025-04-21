@@ -1,0 +1,88 @@
+ @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+ :root {
+   --roxoPrincipal: #7F4396;
+   --roxoPrincipal-hover: #76378f;
+   --verdePrincipal: #92cbad;
+   --branco: #FFF;
+   --cinzaBorda: #ccc;
+   --fontePrincipal: 'Inter';
+ }
+
+
+ .content {
+   background: #f4f6f8;
+   border-radius: 15px;
+   overflow: hidden;
+   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+   padding: 1em;
+   margin-top: 1em;
+ }
+
+ .content-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 25px;
+ }
+
+ .content-header h2 {
+   margin: 0;
+ }
+
+ .btn-add {
+   padding: 10px 15px;
+   background-color: #009578;
+   color: white;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+ }
+
+ .btn-add:hover {
+   background-color: #007b63;
+ }
+
+ .formField {
+   margin: 1.5em;
+   position: relative;
+ }
+
+ .formField .input-s {
+   padding: .7em;
+   outline: none;
+   border: 1px solid var(--cinzaBorda);
+   border-radius: 50px;
+   background-color: var(--branco);
+   color: var(--cinzaBorda);
+   font-size: 14px;
+   font-weight: 400;
+   transition: 0.3s ease-in-out;
+   box-shadow: 0 0 0 5px transparent;
+ }
+
+ .formField .input-s:hover,
+ .formField .input-s:focus {
+   box-shadow: 1px 0px 3px var(--roxoPrincipal);
+   border: 1px solid var(--roxoPrincipal);
+ }
+
+ .formField .span-s {
+   position: absolute;
+   left: 0;
+   top: 0;
+   padding: .6em;
+   color: var(--cinzaBorda);
+   font-size: 16px;
+   font-weight: 400;
+   transition: 0.3s ease-in-out;
+   pointer-events: none;
+ }
+
+ .formField .input-s:focus+.span-s,
+ .formField .input-s:valid+.span-s {
+   transform: translateY(-30px) translateX(-5px) scale(0.95);
+   transition: 0.3s ease-in-out;
+   color: var(--roxoPrincipal);
+   font-weight: 550;
+ }

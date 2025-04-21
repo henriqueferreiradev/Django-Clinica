@@ -11,11 +11,18 @@
 
 {% block topbar %}
 <div class="topbar">
-    <h1>Profissionais</h1>
-    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+    <i class='bx bx-menu'></i>
+    <span class="text">Profissionais</span>
+    <form method="GET" action="{% url 'profissionais' %}" class="search-form" type="search">
         <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
     </form>
-    <div class="user-info">Olá, {{ user.username }}</div>
+    <div class="name-job">
+        <div class="profile_name">Henrique Ferreira</div>
+      </div>
+      <a href="{% url 'logout' %}">
+        <i class='bx bx-log-out'></i>
+      </a>
+    </div>
 </div>
 {% endblock %}
 {% block content %}
@@ -47,7 +54,7 @@
     </div>
     <div class="tabela-container">
    
- 
+
 
             <div class="modal-overlay" id="modalOverlay">
                 <div class="modal">

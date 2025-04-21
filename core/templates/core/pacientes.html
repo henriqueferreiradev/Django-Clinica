@@ -11,11 +11,21 @@
 
 {% block topbar %}
 <div class="topbar">
-    <h1>Pacientes</h1>
-    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-        <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-    </form>
-    <div class="user-info">Olá, {{ user.username }}</div>
+    <div class="topbar-div">
+        <i class='bx bx-menu'></i>
+        <span class="text">Pacientes</span>
+        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
+        </form>
+    </div>
+    <div class="topbar-div">
+        <div class="name-job">
+            <div class="profile_name">Olá, {{ user.username }}</div>
+        </div>
+        <a href="{% url 'logout' %}">
+            <i class='bx btn-sair bx-log-out'></i>
+        </a>
+    </div>
 </div>
 {% endblock %}
 {% block content %}
@@ -44,6 +54,40 @@
         <button class="btn-add" onclick="abrirModal()">+ Novo Paciente</button>
 
     </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>Nascimento</th>
+                    <th>Cadastro</th>
+                    <th>Classe</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Maria Clara</td>
+                    <td>000.000.000-00</td>
+                    <td>(00) 00000-0000</td>
+                    <td>00/00/0000</td>
+                    <td>00/00/0000</td>
+                    <td><span class="badge grade-simples">Premium</span></td>
+                    <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
+                        <div class="dropdown">
+                            <button>Ver detalhes</button>
+                            <button>Editar</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!--
     <div class="tabela-container">
         <div class="tabela-body-scroll">
             <table class="tabela">
@@ -131,24 +175,26 @@
                 </form>
               </div>
           </div>
-          
-         
-
-          
     </div>
-
+-->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <form method="post" id="formPaciente">
                 {% csrf_token %}
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 id="modalTitulo">Cadastrar Paciente <span id="pacienteNome" style="display:none;">{{ paciente.nome }}</span></h3>
+                    <h3 id="modalTitulo">Cadastrar Paciente <span id="pacienteNome" style="display:none;">{{
+                            paciente.nome }}</span></h3>
                     <button type="button" class="close-modal" onclick="fecharModal()">X</button>
                 </div>
                 <div class="modal-dados">
                     <div>
+                        <div class="form">
+                            <input type="text" name="nome" id="nomeInput" placeholder="Nome Completo *" required>
+
+                            <span class="input-border"></span>
+                        </div>
                         <input type="hidden" name="paciente_id" id="pacienteId">
-                        <input type="text" name="nome" id="nomeInput" placeholder="Nome Completo *" required>
+
                         <div class="modal-dados-doc">
                             <input type="text" name="rg" id="rgInput" placeholder="RG" required>
                             <input type="text" name="cpf" id="cpfInput" placeholder="CPF" required>
@@ -163,25 +209,25 @@
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
-                                <select name="sexo" id="sexoInput" class='input-style' required>
-                                    <option value="" disabled selected>Sexo...</option>
-                                    {% for value, label in sexo_choices %}
-                                    <option value="{{ value }}" {% if paciente.sexo == value %}selected{% endif %}>
-                                        {{ label }}</option>
-                                    {% endfor %}
-                                </select>
+                            <select name="sexo" id="sexoInput" class='input-style' required>
+                                <option value="" disabled selected>Sexo...</option>
+                                {% for value, label in sexo_choices %}
+                                <option value="{{ value }}" {% if paciente.sexo == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
                             <input type="text" name="naturalidade" id="naturalidadeInput" placeholder="Naturalidade"
                                 required>
-                                <select name="uf" id="ufInput" class='input-style' required>
-                                    <option value="" disabled selected>Mídia...</option>
-                                    {% for value, label in uf_choices %}
-                                    <option value="{{ value }}" {% if paciente.uf == value %}selected{% endif %}>
-                                        {{ label }}</option>
-                                    {% endfor %}
-                                </select>
+                            <select name="uf" id="ufInput" class='input-style' required>
+                                <option value="" disabled selected>Mídia...</option>
+                                {% for value, label in uf_choices %}
+                                <option value="{{ value }}" {% if paciente.uf == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
-
+                    
 
                     <div>
                         <input type="text" name="nomeSocial" id="nomeSocialInput" placeholder="Nome Social/Apelido *"
@@ -200,26 +246,24 @@
                                 {{ label }}</option>
                             {% endfor %}
                         </select>
-                        
+
 
                     </div>
                     <div class="upload">
                         <label for="fotoInput" class="foto-perfil-container">
-                      
-                          <img
-                            id="previewImagem"
-                            src="{% if paciente.foto_perfil %}{{ paciente.foto_perfil.url }}{% else %}{% static 'core/img/default.png' %}{% endif %}"
-                            alt="Foto"
-                            class="foto-perfil"
-                          />
-                      
-                          <div class="overlay-text">Mudar foto</div>
-                      
-                          <input type="file" id="fotoInput" name="foto_perfil" class="foto-perfil-input" accept="image/*">
+
+                            <img id="previewImagem"
+                                src="{% if paciente.foto_perfil %}{{ paciente.foto_perfil.url }}{% else %}{% static 'core/img/default.png' %}{% endif %}"
+                                alt="Foto" class="foto-perfil" />
+
+                            <div class="overlay-text">Mudar foto</div>
+
+                            <input type="file" id="fotoInput" name="foto_perfil" class="foto-perfil-input"
+                                accept="image/*">
                         </label>
-                      </div>
-                      
-                      
+                    </div>
+
+
 
 
                 </div>
@@ -246,7 +290,7 @@
                         <input type="textarea" name='observacao' id="observacaoInput" placeholder="Observações">
                         <button type="submit">Salvar</button>
                     </div>
-                    
+
 
             </form>
         </div>
@@ -258,6 +302,7 @@
 {% block scripts %}
 
 <script src="https://unpkg.com/imask"></script>
+
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>
 <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
 {% endblock %}

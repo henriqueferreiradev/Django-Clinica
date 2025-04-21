@@ -158,25 +158,8 @@ def pacientes_view(request):
         'cor_choices': COR_RACA,
     })
 
-@csrf_exempt
-def reativar_paciente(request, id):
-    if request.method == 'POST':
-        paciente = get_object_or_404(Paciente, id=id)
-        paciente.ativo = True
-        paciente.save()
-        return JsonResponse({'status': 'ok'})
-    return JsonResponse({'status': 'erro'}, status=400)
-
-
-@csrf_exempt
-def reativar_especialidade(request, id):
-    if request.method == 'POST':
-        especialidade = get_object_or_404(Especialidade, id=id)
-        especialidade.ativo = True
-        especialidade.save()
-        return JsonResponse({'status': 'ok'})
-    return JsonResponse({'status': 'erro'}, status=400)
-
+def cadastrar_pacientes_view(request):
+    return render(request, 'core/pacientes/cadastrar_paciente.html')
 
 
 @login_required(login_url='login')

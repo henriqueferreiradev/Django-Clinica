@@ -1,4 +1,28 @@
+var dropdown = document.getElementsByClassName("dropdown-btn");
 
+for (let i = 0; i < dropdown.length; i++) {
+    dropdown[i].addEventListener("click", function () {
+        // Fecha todos os submenus
+        for (let j = 0; j < dropdown.length; j++) {
+            if (dropdown[j] !== this) {
+                dropdown[j].classList.remove("active");
+                let otherDropdownContent = dropdown[j].nextElementSibling;
+                if (otherDropdownContent) {
+                    otherDropdownContent.style.display = "none";
+                }
+            }
+        }
+
+        // Alterna o submenu clicado
+        this.classList.toggle("active");
+        var dropdownContent = this.nextElementSibling;
+        if (dropdownContent.style.display === "block") {
+            dropdownContent.style.display = "none";
+        } else {
+            dropdownContent.style.display = "block";
+        }
+    });
+}
 function setPage(pageNumber, event) {
     event.preventDefault();
     document.getElementById("page-input").value = pageNumber;
@@ -59,7 +83,7 @@ function abrirModal() {
 
 }
 function abrirModalVisulizar() {
-    
+
 }
 
 function abrirModalEditar(botao) {
@@ -150,3 +174,16 @@ document.querySelector('input[name="q"]').addEventListener('keyup', function () 
     });
 })
 
+function toggleDropdown(btn) {
+    const dropdown = btn.nextElementSibling;
+    document.querySelectorAll('.dropdown').forEach(d => {
+      if (d !== dropdown) d.style.display = 'none';
+    });
+    dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.action-btn')) {
+      document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
+    }
+  });

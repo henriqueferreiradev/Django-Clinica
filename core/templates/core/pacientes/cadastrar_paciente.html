@@ -1,0 +1,59 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
+{% endblock %}
+
+{% block topbar %}
+<div class="topbar">
+    <div class="topbar-div">
+        <i class='bx bx-menu'></i>
+        <span class="text">Cadastrar pacientes</span>
+        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
+        </form>
+    </div>
+    <div class="topbar-div">
+        <div class="name-job">
+            <div class="profile_name">Olá, {{ user.username }}</div>
+        </div>
+        <a href="{% url 'logout' %}">
+            <i class='bx btn-sair bx-log-out'></i>
+        </a>
+    </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="content">
+    <div class="formField">
+        <input class='input-s'required="" type="text" />
+        <span class="span-s">Nome</span>
+    </div>
+    <div class="formField">
+        <input class='input-s'required="" type="text" />
+        <span class="span-s">Sobrenome</span>
+    </div>
+    <div class="formField">
+        <input class='input-s'required="" type="text" />
+        <span class="span-s">RG</span>
+    </div>
+    <div class="formField">
+        <input class='input-s'required="" type="text" />
+        <span class="span-s">CPF</span>
+    </div>
+    <div class="formField">
+        <input class='input-s'required="" type="text" />
+        <span class="span-s">Nome</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://unpkg.com/imask"></script>
+
+<script src="{% static '/core/js/pacientes/base.js' %}"></script>
+<script src="{% static '/core/js/pacientes/cep.js' %}"></script>
+{% endblock %}
