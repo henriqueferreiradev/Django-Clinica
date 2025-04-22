@@ -177,13 +177,35 @@ document.querySelector('input[name="q"]').addEventListener('keyup', function () 
 function toggleDropdown(btn) {
     const dropdown = btn.nextElementSibling;
     document.querySelectorAll('.dropdown').forEach(d => {
-      if (d !== dropdown) d.style.display = 'none';
+        if (d !== dropdown) d.style.display = 'none';
     });
     dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-  }
+}
 
-  document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (!e.target.closest('.action-btn')) {
-      document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
+        document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
     }
-  });
+});
+
+document.getElementById("file").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById("previewImage");
+    const uploadContent = document.getElementById("uploadContent");
+
+    if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+            uploadContent.style.display = "none"; // esconde o conteúdo
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = "";
+        preview.style.display = "none";
+        uploadContent.style.display = "flex"; // mostra o conteúdo de novo
+    }
+});

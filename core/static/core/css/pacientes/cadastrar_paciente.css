@@ -2,16 +2,18 @@
 
  :root {
    --roxoPrincipal: #7F4396;
-   --roxoPrincipal-hover: #76378f;
+   --roxoPrincipal-hover: #76378f11;
+   --roxoPrincipal-hover2: #76378f;
    --verdePrincipal: #92cbad;
    --branco: #FFF;
+   --preto: #000;
    --cinzaBorda: #ccc;
    --fontePrincipal: 'Inter';
  }
 
 
  .content {
-   background: #f4f6f8;
+   background: var(--branco);
    border-radius: 15px;
    overflow: hidden;
    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
@@ -44,29 +46,70 @@
  }
 
  .formField {
-   margin: 1.5em;
+   margin: .7em;
    position: relative;
+   width: 100%;
  }
+/* Esconde o valor da data até clicar */
+.date-s::-webkit-datetime-edit {
+  color: transparent;
+}
+.date-s:focus::-webkit-datetime-edit,
+.date-s:valid::-webkit-datetime-edit {
+  color: var(--cinzaBorda); /* ou a cor do texto que quiser */
+}
 
  .formField .input-s {
-   padding: .7em;
-   outline: none;
-   border: 1px solid var(--cinzaBorda);
-   border-radius: 50px;
-   background-color: var(--branco);
-   color: var(--cinzaBorda);
-   font-size: 14px;
-   font-weight: 400;
-   transition: 0.3s ease-in-out;
-   box-shadow: 0 0 0 5px transparent;
+  
+  padding: 0.7em;
+  outline: none;
+  border: 1px solid var(--cinzaBorda);
+  border-radius: 15px;
+  background-color: var(--roxoPrincipal-hover);
+  color: var(--cinzaBorda);
+  font-size: 14px;
+  font-weight: 400;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 0 0 5px transparent;
+  width: 100%;
+  appearance: none; /* Remove o estilo padrão do select */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 1em center;
+  background-size: 1em;
+  cursor: pointer;
+  box-sizing: border-box; 
  }
-
+ .formField .select-s {
+  padding: 0.7em;
+  padding-right: 2.5em; /* espaço pra seta */
+  outline: none;
+  border: 1px solid var(--cinzaBorda);
+  border-radius: 15px;
+  background-color: var(--roxoPrincipal-hover);
+  color: var(--preto);
+  font-size: 14px;
+  font-weight: 400;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 0 0 5px transparent;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+ 
+}
  .formField .input-s:hover,
  .formField .input-s:focus {
    box-shadow: 1px 0px 3px var(--roxoPrincipal);
    border: 1px solid var(--roxoPrincipal);
+   color: var(--cinzaBorda);
  }
-
+.form_cadastro-adicionais {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
  .formField .span-s {
    position: absolute;
    left: 0;
@@ -79,6 +122,11 @@
    pointer-events: none;
  }
 
+ .formField .textarea-s {
+    width: 80%;
+    height: 100%;
+ }
+
  .formField .input-s:focus+.span-s,
  .formField .input-s:valid+.span-s {
    transform: translateY(-30px) translateX(-5px) scale(0.95);
@@ -86,3 +134,142 @@
    color: var(--roxoPrincipal);
    font-weight: 550;
  }
+
+
+
+.select-icon {
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--preto);
+  font-size: 1.2em;
+}
+ 
+ 
+.file-upload-form {
+  width: 50%;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.file-upload-label input {
+  display: none;
+}
+.file-upload-label svg {
+  height: 50px;
+  fill: var(--roxoPrincipal);
+  margin-bottom: 20px;
+}
+.file-upload-label {
+  cursor: pointer;
+  background-color: #ddd;
+  padding: 30px 70px;
+  border-radius: 25px;
+  border: 2px dashed var(--roxoPrincipal);
+  box-shadow: 0px 0px 200px -50px rgba(0, 0, 0, 0.719);
+}
+.file-upload-design {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  padding: 10px;
+  gap: 10px;
+  text-align: center;
+}
+.browse-button {
+  background-color: var(--roxoPrincipal);
+  padding: 5px 15px;
+  border-radius: 10px;
+  color: white;
+  transition: all 0.3s;
+}
+.browse-button:hover {
+  background-color:  var(--roxoPrincipal-hover2);
+}
+
+.form_div {
+  display: flex;
+  
+   
+}
+
+.form_div .div_forms {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 50%;
+  padding: 1em 0;
+}
+.div_forms .form_cadastro-nomes {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+ 
+
+.form_titulo {
+  background-color: var(--roxoPrincipal);
+  padding: 1em;
+  border-radius: 15px 15px 0 0 ;
+  color: var(--branco);
+  font-size: 18px;
+  font-weight: 600 ;
+}
+
+.file-upload-label {
+  cursor: pointer;
+  background-color: #ddd;
+  padding: 30px 70px;
+  border-radius: 25px;
+  border: 2px dashed var(--roxoPrincipal);
+  box-shadow: 0px 0px 200px -50px rgba(0, 0, 0, 0.719);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 820px;
+  height: 300px; /* altura fixa para evitar deslocamento */
+  position: relative;
+  overflow: hidden;
+}
+
+.file-upload-label input {
+  display: none;
+}
+
+.file-upload-design {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-align: center;
+  z-index: 1;
+}
+
+.browse-button {
+  background-color: var(--roxoPrincipal);
+  padding: 5px 15px;
+  border-radius: 10px;
+  color: white;
+  transition: all 0.3s;
+}
+
+.browse-button:hover {
+  background-color: var(--roxoPrincipal-hover2);
+}
+
+#previewImage {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+  border-radius: 25px;
+}

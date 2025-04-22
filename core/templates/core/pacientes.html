@@ -202,13 +202,7 @@
                                 required>
                         </div>
                         <div class="modal-dados-doc">
-                            <select name="cor" id="corInput" class='input-style' required>
-                                <option value="" disabled selected>Cor / Raça...</option>
-                                {% for value, label in cor_choices %}
-                                <option value="{{ value }}" {% if paciente.cor_raca == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
+
                             <select name="sexo" id="sexoInput" class='input-style' required>
                                 <option value="" disabled selected>Sexo...</option>
                                 {% for value, label in sexo_choices %}
