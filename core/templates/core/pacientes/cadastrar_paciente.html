@@ -52,14 +52,16 @@
                             <input class='input-s' name="cpf" id="cpfInput" type="text" required />
                             <span class="span-s">CPF</span>
                         </div>
-                   
 
-                   
+
+
                         <div class="formField">
                             <input class='input-s date-s' type="date" name="nascimento" id="nascimentoInput" required />
                             <span class="span-s">Nascimento</span>
                         </div>
                     </div>
+
+
                     <div class="form_cadastro-nomes">
                         <div class="formField">
                             <select name="cor" id="corInput" class='input-s'>
@@ -70,10 +72,6 @@
                                 {% endfor %}
                             </select>
                         </div>
-                  
-
-
-                    
                         <div class="formField">
                             <select name="sexo" id="sexoInput" class='input-s' required>
                                 <option value="" disabled selected>Sexo...</option>
@@ -93,165 +91,158 @@
                             </select>
                         </div>
                     </div>
-                 
-                        <div class="form_cadastro-nomes">
-                            <div class="formField">
-                                <input class='input-s' name="naturalidade" id="naturalidadeInput" type="text"
-                                    required />
-                                <span class="span-s">Naturalidade</span>
-                            </div>
 
-                            <div class="formField">
-                                <select name="uf" id="ufInput" class='input-s' required>
-                                    <option value="" disabled selected>UF...</option>
-                                    {% for value, label in uf_choices %}
-                                    <option value="{{ value }}" {% if paciente.uf == value %}selected{% endif %}>
-                                        {{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="formField">
-                                <select name="midia" id="midiaInput" class='input-s' required>
-                                    <option value="" disabled selected>Mídia...</option>
-                                    {% for value, label in midia_choices %}
-                                    <option value="{{ value }}" {% if paciente.midia == value %}selected{% endif %}>
-                                        {{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s' name="naturalidade" id="naturalidadeInput" type="text" required />
+                            <span class="span-s">Naturalidade</span>
                         </div>
-                 
 
-                        
-                   
+                        <div class="formField">
+                            <select name="uf" id="ufInput" class='input-s' required>
+                                <option value="" disabled selected>UF...</option>
+                                {% for value, label in uf_choices %}
+                                <option value="{{ value }}" {% if paciente.uf == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="formField">
+                            <select name="midia" id="midiaInput" class='input-s' required>
+                                <option value="" disabled selected>Mídia...</option>
+                                {% for value, label in midia_choices %}
+                                <option value="{{ value }}" {% if paciente.midia == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="div_forms">
                     <div class="form_cadastro-nomes">
                         <div class="formField">
-                            <textarea class='input-s textarea-s' type="textarea" name='observacao' id="observacaoInput" required></textarea>
-                            <span class="span-s">Observação</span>        
+                            <textarea class='input-s textarea-s' type="textarea" name='observacao' id="observacaoInput"
+                                required></textarea>
+                            <span class="span-s">Observação</span>
                         </div>
-                      
-                            <form class="file-upload-form">
-                                <label class="file-upload-label" for="file" id="fileLabel">
-                                  <div class="file-upload-design" id="uploadContent">
+
+                        <form class="file-upload-form">
+                            <label class="file-upload-label" for="file" id="fileLabel">
+                                <div class="file-upload-design" id="uploadContent">
                                     <svg height="1em" viewBox="0 0 640 512">
-                                      <path
-                                        d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z">
-                                      </path>
+                                        <path
+                                            d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z">
+                                        </path>
                                     </svg>
                                     <p>Arraste aqui a imagem</p>
                                     <p>ou</p>
                                     <span class="browse-button">Procure a imagem</span>
-                                  </div>
-                              
-                                  <!-- Preview cobrindo tudo -->
-                                  <img id="previewImage" />
-                              
-                                  <input type="file" id="file" accept="image/*" />
-                                </label>
-                              </form>
- 
+                                </div>
 
+                                <!-- Preview cobrindo tudo -->
+                                <img id="previewImage" />
 
+                                <input type="file" id="file" accept="image/*" />
+                            </label>
+                        </form>
                     </div>
                 </div>
-                                 
             </div>
-            <button type="submit">Salvar</button>
-                
-         
         </div>
+    </div>
 
-        <div class="form_cadastro-endereco">
-            <div class="form_titulo">Endereços e Contatos</div>
+    <div class="form_cadastro-endereço">
+        <div class="form_titulo">Endereços e Contatos</div>
+        <div class="form_div">
+            <div class="div_forms">
+                <!--ENDEREÇO-->
+                <div class="form_cadastro-nomes">
+                    <div class="formField">
+                        <input class='input-s' type="text" name="cep" id="cepInput" required>
+                        <span class="span-s">CEP*</span>
+                    </div>
+                    <button type="button" id="btn-cep" onclick="buscarCep()">...</button>
+                    <div class="formField">
+                        <input class='input-s' type="text" name='rua' id="ruaInput" required>
+                        <span class="span-s">Rua*</span>
+                    </div>
 
-            <!--ENDEREÇO-->
-            <div class="formField">
-                <input class='input-s' type="text" name="cep" id="cepInput" required>
-                <span class="span-s">CEP*</span>
+                    <div class="formField">
+                        <input class='input-s' type="text" name='numero' id="numero" required>
+                        <span class="span-s">Numero*</span>
+                    </div>
+
+                </div>
+
+                <div class="formField">
+                    <input class='input-s' type="text" name='complemento' id="complementoInput" required>
+                    <span class="span-s">Complemento</span>
+                </div>
+                <div class="formField">
+                    <input class='input-s' type="text" name='bairro' id="bairro" required>
+                    <span class="span-s">Bairro*</span>
+                </div>
+
+                <div class="formField">
+                    <input class='input-s' type="text" name='cidade' id="cidade" required>
+                    <span class="span-s">Cidade*</span>
+                </div>
             </div>
-            <button type="button" id="btn-cep" onclick="buscarCep()">...</button>
-            <div class="formField">
-                <input class='input-s' type="text" name='rua' id="ruaInput" required>
-                <span class="span-s">Rua*</span>
-            </div>
-
-            <div class="formField">
-                <input class='input-s' type="text" name='numero' id="numero" required>
-                <span class="span-s">Numero*</span>
-            </div>
-
-            <div class="formField">
-                <input class='input-s' type="text" name='complemento' id="complementoInput" required>
-                <span class="span-s">Complemento</span>
-            </div>
-
-            <div class="formField">
-                <input class='input-s' type="text" name='bairro' id="bairro" required>
-                <span class="span-s">Bairro*</span>
-            </div>
-
-            <div class="formField">
-                <input class='input-s' type="text" name='cidade' id="cidade" required>
-                <span class="span-s">Cidade*</span>
-            </div>
-
             <!--FIM - ENDEREÇO-->
 
             <!--CONTATO-->
+            <div class="div_forms">
+                <div class="form_cadastro-nomes">
+                    <div class="formField">
+                        <input class='input-s' type="text" name="telefone" id="telefoneInput" required>
+                        <span class="span-s">Telefone*</span>
+                    </div>
 
-            <div class="formField">
-                <input class='input-s' type="text" name="telefone" id="telefoneInput" required>
-                <span class="span-s">Telefone*</span>
+
+                    <div class="formField">
+                        <input class='input-s' type="text" name="celular" id="celularInput" required>
+                        <span class="span-s">Celular*</span>
+                    </div>
+                </div>
+
+                <!--CONTATO DE EMERGENCIA-->
+                <div class="form_cadastro-nomes">
+                    <div class="formField">
+                        <input class='input-s' type="text" name="nomeEmergencia" id="nomeEmergenciaInput" required>
+                        <span class="span-s">Nome*</span>
+                    </div>
+
+                    <div class="formField">
+                        <select name="vinculo" id="vinculoInput" class='input-s' required>
+                            <option value="" disabled selected>Vínculo...</option>
+                            {% for value, label in midia_choices %}
+                            <!--MUDAR DEPOIS-->
+                            <option value="{{ value }}" {% if paciente.midia == value %}selected{% endif %}>
+                                {{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="formField">
+                        <input class='input-s' type="text" name="telEmergencia" id="telEmergenciaInput" required>
+                        <span class="span-s">Telefone de emergencia*</span>
+                    </div>
+                </div>
+                <div class="formField">
+                    <input class='input-s' type="text" name="email" id="emailInput" required>
+                    <span class="span-s">Email*</span>
+                </div>
+
+                <button type="submit">Salvar</button>
+
             </div>
-
-
-            <div class="formField">
-                <input class='input-s' type="text" name="celular" id="celularInput" required>
-                <span class="span-s">Celular*</span>
-            </div>
-
-
-            <!--CONTATO DE EMERGENCIA-->
-
-            <div class="formField">
-                <input class='input-s' type="text" name="nomeEmergencia" id="nomeEmergenciaInput" required>
-                <span class="span-s">Nome*</span>
-            </div>
-
-            <div class="formField">
-                <select name="vinculo" id="vinculoInput" class='input-s' required>
-                    <option value="" disabled selected>Vínculo...</option>
-                    {% for value, label in midia_choices %} <!--MUDAR DEPOIS-->
-                    <option value="{{ value }}" {% if paciente.midia == value %}selected{% endif %}>
-                        {{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="formField">
-                <input class='input-s' type="text" name="telEmergencia" id="telEmergenciaInput" required>
-                <span class="span-s">Telefone de emergencia*</span>
-            </div>
-
-            <div class="formField">
-                <input class='input-s' type="text" name="email" id="emailInput" required>
-                <span class="span-s">Email*</span>
-            </div>
-
-
-
-
-
-
-
-
 
         </div>
 
 
+
     </div>
+
     {% endblock %}
 
     {% block scripts %}

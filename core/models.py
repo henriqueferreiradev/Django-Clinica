@@ -4,8 +4,10 @@ from datetime import date
 
 TIPOS_USUARIO = [
     ('admin', 'Administrador'),
+    ('secretaria', "Secretaria"),
+    ('recepcionista','Recepcionista'),
     ('profissional', 'Profissional'),
-    ('paciente', 'Paciente'),
+    ('paciente', 'Paciente'), # talvez nao use
     
 ]
 
@@ -15,21 +17,52 @@ FORMAS_PAGAMENTO = [
     ('credito', 'Cartão de Crédito'),
     ('dinheiro', 'Dinheiro'),
 ]
+
 ESTADO_CIVIL = [
+    # padrao "Não informado"
     ('solteiro(a)','Solteiro(a)'),
     ('casado(a)','Casado(a)'),
-    ('divoriado(a)','Divorciado(a)'),
+    ('divorciado(a)','Divorciado(a)'),
     ('viuvo(a))','Viúvo(a)'),
     ('uniao estavel','União estável'),
 ]
 
 COR_RACA = [
+    # padrao "Não informado"
     ('branca','Branca'),
     ('preta','Preta'),
     ('parda','Parda'),
     ('amarela','Amarela'),
     ('indígena','Indígena'),
     ('prefiro não informar','Prefiro não informar'),
+]
+TIPO_FUNCIONARIO = [
+    ('funcionario', 'Funcionário'),
+    ('sublocatario', 'Sublocatário'),
+    ('parceiro', 'Parceiro'),
+]
+VINCULO = [
+    ('pai', 'Pai'),
+    ('mae', 'Mãe'),
+    ('padrasto', 'Padrasto'),
+    ('madrasta', 'Madrasta'),
+    ('filho_filha', 'Filho(a)'),
+    ('irmao_irma', 'Irmão(ã)'),
+    ('avo_avó', 'Avô(ó)'),
+    ('neto_neta', 'Neto(a)'),
+    ('tio_tia', 'Tio(a)'),
+    ('primo_prima', 'Primo(a)'),
+    ('sobrinho_sobrinha', 'Sobrinho(a)'),
+    ('cunhado_cunhada', 'Cunhado(a)'),
+    ('genro_nora', 'Genro/Nora'),
+    ('sogro_sogra', 'Sogro(a)'),
+    ('marido_esposa', 'Marido/Esposa'),
+    ('companheiro_companheira', 'Companheiro(a)'),
+    ('namorado_namorada', 'Namorado(a)'),
+    ('amigo_amiga', 'Amigo(a)'),
+    ('vizinho_vizinha', 'Vizinho(a)'),
+    ('colega_trabalho', 'Colega de trabalho'),
+    ('outro', 'Outro'),
 ]
 
 SEXO_ESCOLHA = [
