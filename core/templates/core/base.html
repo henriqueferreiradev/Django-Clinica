@@ -4,9 +4,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Ponto de Equilíbrio</title>
+  <title>{% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png">
   <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 </head>
@@ -58,7 +58,7 @@
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Profissionais</a></li>
           <li><a href="{% url 'profissionais' %}">Listar Profissionais</a></li>
-          <li><a href="#">Novo Profissional</a></li>
+          <li><a href="{% url 'cadastrar_profissional' %}">Novo Profissional</a></li>
         </ul>
       </li>
 

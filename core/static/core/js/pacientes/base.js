@@ -1,28 +1,4 @@
-var dropdown = document.getElementsByClassName("dropdown-btn");
-
-for (let i = 0; i < dropdown.length; i++) {
-    dropdown[i].addEventListener("click", function () {
-        // Fecha todos os submenus
-        for (let j = 0; j < dropdown.length; j++) {
-            if (dropdown[j] !== this) {
-                dropdown[j].classList.remove("active");
-                let otherDropdownContent = dropdown[j].nextElementSibling;
-                if (otherDropdownContent) {
-                    otherDropdownContent.style.display = "none";
-                }
-            }
-        }
-
-        // Alterna o submenu clicado
-        this.classList.toggle("active");
-        var dropdownContent = this.nextElementSibling;
-        if (dropdownContent.style.display === "block") {
-            dropdownContent.style.display = "none";
-        } else {
-            dropdownContent.style.display = "block";
-        }
-    });
-}
+ 
 function setPage(pageNumber, event) {
     event.preventDefault();
     document.getElementById("page-input").value = pageNumber;
@@ -173,39 +149,3 @@ document.querySelector('input[name="q"]').addEventListener('keyup', function () 
         row.style.display = match ? "" : "none";
     });
 })
-
-function toggleDropdown(btn) {
-    const dropdown = btn.nextElementSibling;
-    document.querySelectorAll('.dropdown').forEach(d => {
-        if (d !== dropdown) d.style.display = 'none';
-    });
-    dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-}
-
-document.addEventListener('click', function (e) {
-    if (!e.target.closest('.action-btn')) {
-        document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
-    }
-});
-
-document.getElementById("file").addEventListener("change", function (event) {
-    const file = event.target.files[0];
-    const preview = document.getElementById("previewImage");
-    const uploadContent = document.getElementById("uploadContent");
-
-    if (file && file.type.startsWith("image/")) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.style.display = "block";
-            uploadContent.style.display = "none"; // esconde o conteúdo
-        };
-
-        reader.readAsDataURL(file);
-    } else {
-        preview.src = "";
-        preview.style.display = "none";
-        uploadContent.style.display = "flex"; // mostra o conteúdo de novo
-    }
-});

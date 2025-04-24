@@ -1,18 +1,18 @@
 {% extends 'core/base.html' %}
 
 {% load static %}
-{% block title %}Cadastrar Paciente - Ponto de Equilíbrio{% endblock %}
+{% block title %}Cadastrar Profissional - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/profissionais/cadastrar_profissional.css' %}">
 {% endblock %}
 
 {% block topbar %}
 <div class="topbar">
     <div class="topbar-div">
         <i class='bx bx-menu'></i>
-        <span class="text">Cadastrar pacientes</span>
+        <span class="text">Cadastrar Profissional</span>
         <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui">
         </form>
     </div>
     <div class="topbar-div">
@@ -51,6 +51,10 @@
                         <div class="formField">
                             <input class='input-s' name="cpf" id="cpfInput" type="text" required />
                             <span class="span-s">CPF*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' name="cnpj" id="cnpjInput" type="text" required />
+                            <span class="span-s">CNPJ*</span>
                         </div>
 
 

@@ -312,7 +312,7 @@ button:hover {
   width: 100%;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   border-radius: 15px;
-  padding: 0 1em;
+  padding: .5em 1em;
 }
 
 .topbar-div {

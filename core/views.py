@@ -145,7 +145,7 @@ def pacientes_view(request):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
 
-    return render(request, 'core/pacientes.html', {
+    return render(request, 'core/pacientes/pacientes.html', {
         'page_obj': page_obj,
         'query': query,
         'total_ativos': total_ativos,
@@ -161,6 +161,8 @@ def pacientes_view(request):
 def cadastrar_pacientes_view(request):
     return render(request, 'core/pacientes/cadastrar_paciente.html')
 
+def cadastrar_profissionais_view(request):
+    return render(request, 'core/profissionais/cadastrar_profissional.html')
 
 @login_required(login_url='login')
 def profissionais_view(request):
