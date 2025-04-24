@@ -7,6 +7,7 @@
   --branco: #FFF;
   --fontePrincipal: 'Inter';
 }
+
 * {
   margin: 0;
   padding: 0;
@@ -17,6 +18,7 @@
 body {
   overflow: hidden;
 }
+
 /*
 input
 {
@@ -31,6 +33,7 @@ input
 select {
   border: none;
 }
+
 button {
   padding: .7em 2em;
   background-color: var(--roxoPrincipal);
@@ -337,7 +340,7 @@ button:hover {
   margin-left: 20px;
 }
 
- 
+
 .home-section .home-content .bx-menu,
 .home-section .home-content .text {
   color: #11101d;
@@ -360,10 +363,10 @@ button:hover {
   font-weight: 600;
 }
 
- 
 
 
-@media screen and (max-width: 400px) {
+
+@media screen and (max-width: 768px) {
   .sidebar {
     width: 240px;
   }
@@ -376,6 +379,14 @@ button:hover {
     width: 240px;
   }
 
+  .search-form input[type="text"]  {
+    display: none;
+  }
+
+  .home-section .home-content .text{
+    font-size: 16px;
+  }
+
   .sidebar.close .profile-details {
     background: none;
   }
@@ -383,7 +394,7 @@ button:hover {
   .sidebar.close .profile-details {
     width: 78px;
   }
-
+ 
   .home-section {
     left: 240px;
     width: calc(100% - 240px);

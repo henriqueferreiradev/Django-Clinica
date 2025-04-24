@@ -13,7 +13,9 @@
 }
 
 
-.content {
+.content {  
+  
+
   background: var(--branco);
   border-radius: 15px;
   overflow: hidden;
@@ -21,7 +23,7 @@
   padding: 1em;
   margin-top: 1em;
   color: var(--preto);
-  height: calc(95vh - 4em);
+  min-height: calc(95vh - 4em);
 }
 
 .content-header {
@@ -38,12 +40,10 @@
   justify-content: center;
   /* espaço entre os campos */
 }
-
-
-
+ 
 
 #btn-cep {
-
+  
   height: 40px;
   font-size: 16px;
   border-radius: 5px;
@@ -143,6 +143,7 @@ select {
 
 
 }
+
 .input-s:focus,
 .input-s.input-preenchido {
   box-shadow: 1px 0px 3px var(--roxoPrincipal);
@@ -288,4 +289,61 @@ select {
 
 .custum-file-upload input {
   display: none;
+}
+
+@media (max-width: 1572px) and (min-width: 600px) {
+  .content   {
+ 
+  transform: scale(0.8);
+    
+  }
+
+ 
+  .form_cadastro-pessoa .form_cadastro-endereco {
+    width: 50%;
+  }
+
+  .form_cadastro {
+    transform: scale(0.8);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .form_div {
+    flex-direction: column;
+
+  }
+
+  .form_div .div_forms {
+    width: 100%;
+
+  }
+
+  .search_form {
+    display: none;
+  }
+
+  .div_forms .form_cadastro-nomes {
+    align-items: center;
+  }
+
+  .form_cadastro-nomes {
+    flex-direction: column;
+
+  }
+
+  .form_cadastro-nomes .field_cep,
+  .form_cadastro-nomes .field_70,
+  #btn-cep {
+    flex-basis: 100%;
+    width: 100%;
+  }
+
+  .custum-file-upload {
+    width: 100%;
+  }
+
+  .form_cadastro-endereco {
+    width: 100%;
+  }
 }
