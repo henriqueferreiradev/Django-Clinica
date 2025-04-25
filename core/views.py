@@ -216,7 +216,7 @@ def profissionais_view(request):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
 
-    return render(request, 'core/profissionais.html', {
+    return render(request, 'core/profissionais/profissionais.html', {
         'page_obj': page_obj,
         'query': query,
         'total_ativos': total_ativos,

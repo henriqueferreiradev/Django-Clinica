@@ -13,23 +13,22 @@
 }
 
 
-.content {  
-  
-
+.content {
   background: var(--branco);
   border-radius: 15px;
-  overflow: hidden;
+  overflow: auto;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
   padding: 1em;
   margin-top: 1em;
   color: var(--preto);
-  min-height: calc(95vh - 4em);
+  height: calc(95vh - 4em);
+
 }
 
 .content-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+
+
   margin-bottom: 25px;
 }
 
@@ -40,10 +39,11 @@
   justify-content: center;
   /* espaço entre os campos */
 }
+
  
 
 #btn-cep {
-  
+
   height: 40px;
   font-size: 16px;
   border-radius: 5px;
@@ -88,7 +88,6 @@
   padding: 0.7em;
   outline: none;
   border: 2px solid var(--verdePrincipal);
-
   border-radius: 5px;
   color: var(--preto);
   font-size: 14px;
@@ -104,6 +103,8 @@
   background-size: 1em;
   cursor: pointer;
   box-sizing: border-box;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 select {
@@ -122,6 +123,8 @@ select {
   background-size: 16px;
   cursor: pointer;
   transition: border-color 0.2s;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 
 }
 
@@ -139,7 +142,7 @@ select {
   font-weight: 400;
   transition: 0.3s ease-in-out;
   box-shadow: 0 0 0 5px transparent;
-  width: 100%;
+
 
 
 }
@@ -178,8 +181,7 @@ select {
 .formField .textarea-s {
   flex-grow: 1;
   resize: none;
-  min-height: 100%;
-  /* para ocupar tudo */
+  height: 100%;
 
 }
 
@@ -194,22 +196,20 @@ select {
 
 .form_div {
   border: 1px solid var(--roxoPrincipal);
-  border-radius: 15px;
+  border-radius:  0 0 15px 15px;
   display: flex;
-  padding: 2em;
-  margin: 1em 0;
+  padding: 1em;
+  margin: 0  0 1em 0;
 
 }
 
-
-.form_div .div_forms {
+.div_forms {
   display: flex;
+  justify-content: center;
   flex-direction: column;
-  justify-content: space-between;
-  width: 50%;
-
-
+  width: 100%;
 }
+
 
 .div_forms .form_cadastro-nomes {
   display: flex;
@@ -241,20 +241,13 @@ select {
   z-index: 2;
 }
 
-.form_cadastro-endereco {
-  display: flex;
-  flex-direction: column;
-}
-
-
 .custum-file-upload {
-  height: 250px;
-  width: 60%;
-  display: flex;
+  height: 200px;
+   display: flex;
   flex-direction: column;
   align-items: space-between;
   gap: 20px;
-  cursor: pointer;
+  cursor: pointer; 
   align-items: center;
   justify-content: center;
   border: 2px solid var(--verdePrincipal);
@@ -262,6 +255,7 @@ select {
   padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0px 48px 35px -48px #e8e8e8;
+  margin: .6em;
 }
 
 .custum-file-upload .icon {
@@ -271,7 +265,7 @@ select {
 }
 
 .custum-file-upload .icon svg {
-  height: 80px;
+  height: 50px;
   fill: var(--roxoPrincipal);
 }
 
@@ -284,66 +278,13 @@ select {
 .custum-file-upload .text span {
   font-weight: 400;
   color: var(--roxoPrincipal);
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .custum-file-upload input {
   display: none;
 }
 
-@media (max-width: 1572px) and (min-width: 600px) {
-  .content   {
- 
-  transform: scale(0.8);
-    
-  }
-
- 
-  .form_cadastro-pessoa .form_cadastro-endereco {
-    width: 50%;
-  }
-
-  .form_cadastro {
-    transform: scale(0.8);
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .form_div {
-    flex-direction: column;
-
-  }
-
-  .form_div .div_forms {
-    width: 100%;
-
-  }
-
-  .search_form {
-    display: none;
-  }
-
-  .div_forms .form_cadastro-nomes {
-    align-items: center;
-  }
-
-  .form_cadastro-nomes {
-    flex-direction: column;
-
-  }
-
-  .form_cadastro-nomes .field_cep,
-  .form_cadastro-nomes .field_70,
-  #btn-cep {
-    flex-basis: 100%;
-    width: 100%;
-  }
-
-  .custum-file-upload {
-    width: 100%;
-  }
-
-  .form_cadastro-endereco {
-    width: 100%;
-  }
+.content::-webkit-scrollbar-thumb {
+  background-color: var(--roxoPrincipal);
 }

@@ -1,18 +1,47 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
-    <title>Clínica</title>
+    <title>Login - Ponto de Equilíbrio</title>
+    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="{% static 'core/css/login.css' %}">
 
 </head>
-<div class="login-container">
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Entrar</button>
-    </form>
-</div>
 
+<body>
+    <body>
+        <div class="login-wrapper">
+            <form class='login-container' method="post">
+                {% csrf_token %}
+                <h2 class="login_titulo">Bem vindo!</h2>
+ 
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Usuário</label>
+                    <div class="input-wrapper">
+                        <i class='bx bx-user'></i>
+                        {{ form.username }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}">Senha</label>
+                    <div class="input-wrapper">
+                        <i class='bx bx-lock-alt'></i>
+                        {{ form.password }}
+                    </div>
+                </div>
+                <button type="submit">Entrar</button>
+            </form>
+    
+            <div class="image-side">
+                <img src="{% static 'core/img/icons/bg_login.png' %}" alt="">
+            </div>
+        </div>
+    </body>
+    
+
+</body>
+
+</html>

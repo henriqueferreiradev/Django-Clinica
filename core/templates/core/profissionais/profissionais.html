@@ -11,24 +11,27 @@
 
 {% block topbar %}
 <div class="topbar">
-    <i class='bx bx-menu'></i>
-    <span class="text">Profissionais</span>
-    <form method="GET" action="{% url 'profissionais' %}" class="search-form" type="search">
-        <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-    </form>
-    <div class="name-job">
-        <div class="profile_name">Henrique Ferreira</div>
-      </div>
-      <a href="{% url 'logout' %}">
-        <i class='bx bx-log-out'></i>
-      </a>
+    <div class="topbar-div">
+        <i class='bx bx-menu'></i>
+        <span class="text">Profissionais</span>
+        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui">
+        </form>
+    </div>
+    <div class="topbar-div">
+        <div class="name-job">
+            <div class="profile_name">Olá, {{ user.username }}</div>
+        </div>
+        <a href="{% url 'logout' %}">
+            <i class='bx btn-sair bx-log-out'></i>
+        </a>
     </div>
 </div>
 {% endblock %}
 {% block content %}
 <div class="content">
     <div class="content-header">
-        <h2>Lista de Profissionais</h2>
+        <h2>Lista de Pacientes</h2>
         <form id="paginator-form" method="get">
             <input type="hidden" name="q" value="{{ query }}">
             <input type="hidden" id="page-input" name="page" value="{{ page_obj.number }}">
@@ -47,89 +50,36 @@
                 {% endif %}
             </div>
         </form>
-        <div>
-            <button class="btn-add" onclick="abrirModal()">+ Nova Especialidade</button>
-            <button class="btn-add" onclick="abrirModal()">+ Novo Profissional</button>
-        </div>
+
+        <button class="btn-add" onclick="abrirModal()">+ Novo Paciente</button>
+
     </div>
-    <div class="tabela-container">
+    <div class="card-grid">
    
-
-
-            <div class="modal-overlay" id="modalOverlay">
-                <div class="modal">
-                    <form method="post" id="formEspecialidade">
-                        {% csrf_token %}
-                        <h3 id="modalTitulo">Cadastrar Paciente</h3>
-                        <div class="overlay-profissionais">
-                            <div>
-                                <input type="hidden" name="especialidade_id" id="especialidadeId">
-                                <input type="text" name="especialidade" id="nomeInput" placeholder="Nome do paciente" required>
-                                <form method="get" style="display: inline;">
-                                    <label class="label_inativos">
-                                        <input type="checkbox" name="filtra_inativo" onchange="this.form.submit()"
-                                            {% if filtra_inativo %}checked{% endif %}>
-                                        Mostrar apenas inativos
-                                    </label>
-                                </form>
-                            </div>
-                            <div>
-                                <table class="tabela-head">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Especialidade</th>
-                                            <th>Ações</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-
-                                <div class="tabela-body-scroll">
-                                    <table class="tabela-body">
-                                        <tbody>
-                                            {% for especialidade in page_obj %}
-                                            <tr class="{% if not especialidade.ativo %}inativo{% endif %}">
-                                                <td>{{ especialidade.id }}</td>
-                                                <td>{{ especialidade.nome }}</td>
  
-                                                <td class="actions">
-                                                    <button class="view-btn">Ver</button>
-                                                    <button class="edit-btn" data-id="{{ paciente.id }}"
-                                                        data-nome="{{ paciente.nome }}" data-cpf="{{ paciente.cpf }}"
-                                                        data-telefone="{{ paciente.telefone }}"
-                                                        onclick="abrirModalEditar(this)">
-                                                        Editar
-                                                    </button>
-
-                                                    {% if especialidade.ativo %}
-                                                    <form method="post"
-                                                        style="display:inline;">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="delete_id" value="{{ paciente.id }}">
-                                                        <button type="submit"
-                                                            onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</button>
-                                                    </form>
-                                                    {% else %}
-                                                    <span>Inativo</span>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                            {% empty %}
-                                            <tr>
-                                                <td colspan="5">Nenhum profissional encontrado.</td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <button type="submit">Salvar</button>
-                            <button type="button" class="close-modal" onclick="fecharModal()">Cancelar</button>
-                    </form>
-                </div>
+          <div class="card">
+            <i class='bx bx-dots-horizontal-rounded menu-icon'></i>
+            <div class="avatar"></div>
+            <div class="name">Kathley Sobrenome</div>
+            <div class="subject">Fisioterapia - 120939-F</div>
+            <div class="icons">
+              <span>(21) 98900-0000</span>
+              <span>henriquef501@gmail.com</span>
             </div>
-        </div>
+          </div>
+
+          <div class="card">
+            <i class='bx bx-dots-horizontal-rounded menu-icon'></i>
+            <div class="avatar"></div>
+            <div class="name">Tati Não sei oq</div>
+            <div class="subject">Nutrição - 120939-F</div>
+            <div class="icons">
+                <span>(21) 98890-0000</span>
+                <span>taynara@saskekun.com</span>
+            </div>
+          </div>
+ 
+      </div>
         {% endblock %}
 
         {% block scripts %}
