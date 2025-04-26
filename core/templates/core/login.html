@@ -10,14 +10,14 @@
     <link rel="stylesheet" href="{% static 'core/css/login.css' %}">
 
 </head>
-
-<body>
+ 
     <body>
+      
         <div class="login-wrapper">
             <form class='login-container' method="post">
                 {% csrf_token %}
-                <h2 class="login_titulo">Bem vindo!</h2>
- 
+                <h2 class="login_titulo">Boas vindas!</h2>
+                <p class="login-subtitulo">Faça login para acessar o sistema</p>
                 <div class="form-group">
                     <label for="{{ form.username.id_for_label }}">Usuário</label>
                     <div class="input-wrapper">
@@ -34,14 +34,10 @@
                 </div>
                 <button type="submit">Entrar</button>
             </form>
-    
-            <div class="image-side">
-                <img src="{% static 'core/img/icons/bg_login.png' %}" alt="">
-            </div>
+ 
         </div>
     </body>
     
-
-</body>
+ 
 
 </html>
