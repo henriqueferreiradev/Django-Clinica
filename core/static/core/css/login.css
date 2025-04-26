@@ -18,9 +18,8 @@ body {
   background-size: cover;
   margin: 0;
   padding: 0;
-
   box-sizing: border-box;
-  background-color: var(--branco);
+ 
   font-family: var(--fontePrincipal);
   font-weight: 400;
   height: 100vh;
@@ -29,55 +28,75 @@ body {
 
 }
 
-.login-wrapper {
+.container {
+
   display: flex;
   height: 100vh;
   width: 100%;
-
 }
 
-
-.login-container {
+.left-side {
+  background-color: var(--branco);
+  width: 40%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 50vw;
   align-items: center;
-  gap: 1em;
-  background-color: var(--branco);
+  justify-content: center;
+  text-align: center;
+  padding: 2em;
   border-radius: 0 50px 50px 0;
 }
 
-h2 {
-  font-size: 36px;
-  color: var(--roxoPrincipal);
+.left-side .logo {
+  width: 300px;
+  margin-bottom: 1em;
 }
 
-button {
-  width: 30%;
-  padding: .8em;
-  border: none;
-  border-radius: 10px;
-  font-size: 20px;
+.left-side h1 {
+  color: #7f4396;
+  font-size: 30px;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+}
+
+.left-side p {
+  color: #7f4396;
+  opacity: 0.7;
+  font-size: 16px;
+}
+
+.right-side {
+ 
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0 30px 30px 0;
+}
+
+.login-container {
+  width: 70%;
+  max-width: 400px;
+  text-align: center;
   color: var(--branco);
-  background-color: var(--roxoPrincipal);
-  margin-top: 2em;
 }
 
-.login-container label {
-  font-size: 16px;
-  margin-left: 15px;
+.login-container h2 {
+  margin-bottom: 2em;
+  font-weight: 600;
 }
 
-.login-container input {
-  padding: 1em;
-  border-radius: 10px;
-  outline: none;
-  border: none;
+.form-group {
+  margin-bottom: 1.5em;
+}
+
+.form-group input {
   width: 100%;
+  padding: 0.8em;
+  border: none;
+  border-bottom: 1px solid #ccc;
   font-size: 16px;
-  background-color: var(--roxoPrincipal-hover);
-  margin: 1em 0;
+  outline: none;
 }
 
 .input-wrapper {
@@ -92,28 +111,9 @@ button {
   color: var(--roxoPrincipal);
   z-index: 100;
   font-size: 29px;
+
 }
 
 .input-wrapper input {
   padding-left: 50px;
 }
-
-.image-side {
-  width: 60%;
-  height: 100%;
-
-}
-
-.image-side img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-
-}
-
-input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px var(--roxoPrincipal-hover) inset !important;
-  -webkit-text-fill-color: #000 !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
