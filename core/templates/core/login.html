@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Login - Ponto de Equilíbrio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'core/css/login.css' %}" />
@@ -27,7 +28,7 @@
                 <div class="form-group">
                     <label for="{{ form.username.id_for_label }}">Usuário</label>
                     <div class="input-wrapper">
-                        <i class="bx bx-user"></i>
+                       <!-- <i class="bx bx-user"></i>-->
                         {{ form.username }}
                     </div>
                 </div>
@@ -35,7 +36,7 @@
                 <div class="form-group">
                     <label for="{{ form.password.id_for_label }}">Senha</label>
                     <div class="input-wrapper">
-                        <i class="bx bx-lock-alt"></i>
+                     <!--   <i class="bx bx-lock-alt"></i> -->
                         {{ form.password }}
                     </div>
                 </div>

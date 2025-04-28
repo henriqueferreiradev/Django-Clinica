@@ -27,7 +27,7 @@ body {
   overflow: hidden;
 
 }
- 
+
 .container {
 
   display: flex;
@@ -75,6 +75,7 @@ body {
 }
 
 .login-container {
+ 
   width: 100%;
   text-align: center;
   color: var(--branco);
@@ -159,7 +160,58 @@ button {
 }
 
 @media (max-width: 768px) {
-  .content {
+  body {
+    padding: 0;
+  }
+  .container {
     flex-direction: column;
   }
+
+  .left-side, .right-side {
+    width: 100%;
+    
+    border-radius: 0;
+    
+  }
+  .left-side {
+    height: 40%;
+    padding: 0;
+  }
+  .right-side {
+    height: 60%;
+     
+  }
+  .login-container h2 {
+    font-size: 42px;
+  }
+
+  .login-container p {
+    font-size: 32px;
+    margin-bottom: 2em;
+  }
+
+  .form-group label {
+    font-size: 32px;
+    
+  }
+
+  .input-wrapper {
+    width: 60%; /* inputs mais largos */
+  }
+
+  .input-wrapper input {
+    font-size: 18px;
+ 
+  }
+
+  button {
+    width: 60%;
+    margin: 20px auto 0;
+    font-size: 18px;
+   
+  }
+  .left-side .logo  {
+    width: 200px;
+  }
+  .left-side .logo 
 }
