@@ -63,6 +63,21 @@
       </li>
 
       <li>
+        <div class="iocn-link">
+          <a href="#">
+            <i class='bx bx-food-menu'></i>
+            <span class="link_name">Agenda</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow'></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="#">Agenda</a></li>
+          <li><a href="{% url 'agenda' %}">Ver agenda</a></li>
+          <li><a href="{% url 'novo_agendamento' %}">Novo agendamento</a></li>
+        </ul>
+      </li>
+
+      <li>
         <a href="{% url 'financeiro' %}">
           <i class='bx bx-pie-chart-alt-2'></i>
           <span class="link_name">Financeiro</span>

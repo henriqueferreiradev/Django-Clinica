@@ -72,7 +72,7 @@
   width: 100%;
 }
 
-/* Esconde o valor da data até clicar */
+ 
 .date-s::-webkit-datetime-edit {
   color: transparent;
 }

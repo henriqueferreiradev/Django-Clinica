@@ -229,10 +229,14 @@ def profissionais_view(request):
 def financeiro_view(request):
     return render(request, 'core/financeiro.html')
 
+@login_required(login_url='login')
+def agenda_view(request):
+    return render(request, 'core/agendamentos/agenda.html')
+
 
 @login_required(login_url='login')
-def agendamento_view(request):
-    return render(request, 'core/agendamentos.html')
+def novo_agendamento_view(request):
+    return render(request, 'core/agendamentos/novo_agendamento.html')
 
 
 @login_required(login_url='login')
