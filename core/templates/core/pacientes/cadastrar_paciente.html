@@ -253,7 +253,8 @@
 
     {% block scripts %}
 
-    <script src="https://unpkg.com/imask"></script>
-    <script src="{% static '/core/js/pacientes/base.js' %}"></script>
-    <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
+        <script src="https://unpkg.com/imask"></script>
+        <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
+        <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
+        <script src="{% static '/core/js/base/cep.js' %}"></script>
     {% endblock %}

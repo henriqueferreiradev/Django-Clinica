@@ -1,88 +1,103 @@
-{% extends 'core/base.html' %}
-{% load static %}
-
-
-
-{% block title %}Profissionais - Ponto de Equilíbrio{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/profissionais.css' %}">
-{% endblock %}
-
-{% block topbar %}
+{% extends 'core/base.html' %} {% load static %} {% block title %}Profissionais
+- Ponto de Equilíbrio{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/profissionais.css' %}" />
+{% endblock %} {% block topbar %}
 <div class="topbar">
-    <div class="topbar-div">
-        <i class='bx bx-menu'></i>
-        <span class="text">Profissionais</span>
-        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui">
-        </form>
+  <div class="topbar-div">
+    <i class="bx bx-menu"></i>
+    <span class="text">Profissionais</span>
+    <form
+      method="GET"
+      action="{% url 'pacientes' %}"
+      class="search-form"
+      type="search"
+    >
+      <input
+        type="text"
+        name="q"
+        value="{{ query|default:'' }}"
+        placeholder="Buscar profissional aqui"
+      />
+    </form>
+  </div>
+  <div class="topbar-div">
+    <div class="name-job">
+      <div class="profile_name">Olá, {{ user.username }}</div>
     </div>
-    <div class="topbar-div">
-        <div class="name-job">
-            <div class="profile_name">Olá, {{ user.username }}</div>
-        </div>
-        <a href="{% url 'logout' %}">
-            <i class='bx btn-sair bx-log-out'></i>
-        </a>
-    </div>
+    <a href="{% url 'logout' %}">
+      <i class="bx btn-sair bx-log-out"></i>
+    </a>
+  </div>
 </div>
-{% endblock %}
-{% block content %}
+{% endblock %} {% block content %}
 <div class="content">
-    <div class="content-header">
-        <h2>Lista de Pacientes</h2>
-        <form id="paginator-form" method="get">
-            <input type="hidden" name="q" value="{{ query }}">
-            <input type="hidden" id="page-input" name="page" value="{{ page_obj.number }}">
+  <div class="content-header">
+    <h2>Lista de Pacientes</h2>
+    <form id="paginator-form" method="get">
+      <input type="hidden" name="q" value="{{ query }}" />
+      <input
+        type="hidden"
+        id="page-input"
+        name="page"
+        value="{{ page_obj.number }}"
+      />
 
-            <div class="pagination">
-                {% if page_obj.has_previous %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
 
-                <button type="button" onclick="setPage({{ page_obj.previous_page_number }}, event)">‹</button>
-                {% endif %}
+        <button
+          type="button"
+          onclick="setPage({{ page_obj.previous_page_number }}, event)"
+        >
+          ‹
+        </button>
+        {% endif %}
 
-                <span>{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        <span>{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
 
-                {% if page_obj.has_next %}
-                <button type="button" onclick="setPage({{ page_obj.next_page_number }}, event)">›</button>
+        {% if page_obj.has_next %}
+        <button
+          type="button"
+          onclick="setPage({{ page_obj.next_page_number }}, event)"
+        >
+          ›
+        </button>
 
-                {% endif %}
-            </div>
-        </form>
-
-        <button class="btn-add" onclick="abrirModal()">+ Novo Paciente</button>
-
-    </div>
-    <div class="card-grid">
-   
- 
-          <div class="card">
-            <i class='bx bx-dots-horizontal-rounded menu-icon'></i>
-            <div class="avatar"></div>
-            <div class="name">Kathley Sobrenome</div>
-            <div class="subject">Fisioterapia - 120939-F</div>
-            <div class="icons">
-              <span>(21) 98900-0000</span>
-              <span>henriquef501@gmail.com</span>
-            </div>
-          </div>
-
-          <div class="card">
-            <i class='bx bx-dots-horizontal-rounded menu-icon'></i>
-            <div class="avatar"></div>
-            <div class="name">Tati Não sei oq</div>
-            <div class="subject">Nutrição - 120939-F</div>
-            <div class="icons">
-                <span>(21) 98890-0000</span>
-                <span>taynara@saskekun.com</span>
-            </div>
-          </div>
- 
+        {% endif %}
       </div>
-        {% endblock %}
+    </form>
+    <div>
+      <button class="btn" onclick="abrirModal()">
+        + Add Especialidade
+      </button>
+      <button class="btn" onclick="window.location.href='{% url 'cadastrar_paciente' %}'">+ Add Paciente</button>
+    </div>
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <i class="bx bx-dots-horizontal-rounded menu-icon"></i>
+      <div class="avatar"></div>
+      <div class="name">Kathley Sobrenome</div>
+      <div class="subject">Fisioterapia - 120939-F</div>
+      <div class="icons">
+        <span>(21) 98900-0000</span>
+        <span>henriquef501@gmail.com</span>
+      </div>
+    </div>
 
-        {% block scripts %}
-        <script src="https://unpkg.com/imask"></script>
-        <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
-        {% endblock %}
+    <div class="card">
+      <i class="bx bx-dots-horizontal-rounded menu-icon"></i>
+      <div class="avatar"></div>
+      <div class="name">Tati Não sei oq</div>
+      <div class="subject">Nutrição - 120939-F</div>
+      <div class="icons">
+        <span>(21) 98890-0000</span>
+        <span>taynara@saskekun.com</span>
+      </div>
+    </div>
+  </div>
+  {% endblock %} {% block scripts %}
+  <script src="https://unpkg.com/imask"></script>
+  <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
+  {% endblock %}
+</div>

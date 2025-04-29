@@ -1,18 +1,18 @@
 {% extends 'core/base.html' %}
 
 {% load static %}
-{% block title %}Cadastrar Profissional - Ponto de Equilíbrio{% endblock %}
+{% block title %}Cadastrar Paciente - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/profissionais/cadastrar_profissional.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
 {% endblock %}
 
 {% block topbar %}
 <div class="topbar">
     <div class="topbar-div">
         <i class='bx bx-menu'></i>
-        <span class="text">Cadastrar Profissional</span>
+        <span class="text">Cadastrar pacientes</span>
         <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
         </form>
     </div>
     <div class="topbar-div">
@@ -34,11 +34,11 @@
                 <div class="div_forms">
                     <div class="form_cadastro-nomes">
                         <div class="formField">
-                            <input class='input-s capitalize-input' type="text" name="nome" id="nomeInput" required>
+                            <input class='input-s' type="text" name="nome" id="nomeInput" required>
                             <span class="span-s">Nome*</span>
                         </div>
                         <div class="formField">
-                            <input class='input-s capitalize-input' name="sobrenome" id="sobrenomeInput" type="text" required />
+                            <input class='input-s' name="sobrenome" id="sobrenomeInput" type="text" required />
                             <span class="span-s">Sobrenome*</span>
                         </div>
                     </div>
@@ -51,10 +51,6 @@
                         <div class="formField">
                             <input class='input-s' name="cpf" id="cpfInput" type="text" required />
                             <span class="span-s">CPF*</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s' name="cnpj" id="cnpjInput" type="text" required />
-                            <span class="span-s">CNPJ*</span>
                         </div>
 
 
@@ -112,57 +108,20 @@
                             <span class="span-s">UF*</span>
                         </div>
                         <div class="formField">
-                            <select name="especialidade" id="especialidadeInput" class='input-s' required>
+                            <select name="midia" id="midiaInput" class='input-s' required>
 
-                                {% for value, label in especialidade_choices %}
-                                <option value="{{ value }}" {% if paciente.especialidade == value %}selected{% endif %}>
+                                {% for value, label in midia_choices %}
+                                <option value="{{ value }}" {% if paciente.midia == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
 
                             </select>
-                            <span class="span-s">Especialidade</span>
+                            <span class="span-s">Como nos conheceu?*</span>
                         </div>
                     </div>
+ 
                     <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <select name="conselho" id="conselhoInput" class='input-s' required>
-                                {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Conselho Principal*</span>
-                        </div>
-                        <div class="formField">
-                            <select name="conselho" id="conselhoInput" class='input-s' >
-                                {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Conselho Complementar</span>
-                        </div>
-                        <div class="formField">
-                            <select name="conselho" id="conselhoInput" class='input-s' >
-                                {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Conselho Complementar</span>
-                        </div>
-                        <div class="formField">
-                            <select name="conselho" id="conselhoInput" class='input-s' >
-                                {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Conselho Complementar</span>
-                        </div>
-                    </div>
-                        <div class="form_cadastro-nomes">
-                        
+
                         <label for="file" class="custum-file-upload">
                             <div class="text">
                                 <span>Imagem de perfil</span>
@@ -267,7 +226,7 @@
                     </div>
                     <div class="form_cadastro-nomes">
                         <div class="formField">
-                            <input class='input-s capitalize-input' type="text" name="nomeEmergencia" id="nomeEmergenciaInput" required>
+                            <input class='input-s' type="text" name="nomeEmergencia" id="nomeEmergenciaInput" required>
                             <span class="span-s">Contato de emergência*</span>
                         </div>
 
@@ -289,12 +248,12 @@
                 </div>
             </div>
         </div>
-        {% endblock %}
+    </div>
+    {% endblock %}
 
-        {% block scripts %}
+    {% block scripts %}
 
-        <script src="https://unpkg.com/imask"></script>
-        <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
-        <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
-        <script src="{% static '/core/js/base/cep.js' %}"></script>
-        {% endblock %}
+    <script src="https://unpkg.com/imask"></script>
+    <script src="{% static '/core/js/pacientes/base.js' %}"></script>
+    <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
+    {% endblock %}

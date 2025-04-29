@@ -185,15 +185,13 @@ select {
 
 }
 
-.formField .input-s:focus+.span-s,
-.formField .input-s:valid+.span-s {
+.formField .input-s:focus + .span-s,
+.formField .input-s.input-preenchido + .span-s {
   transform: translateY(-30px) translateX(-5px) scale(0.95);
   transition: 0.3s ease-in-out;
   color: var(--roxoPrincipal);
   font-weight: 550;
-
 }
-
 .form_div {
   border: 1px solid var(--roxoPrincipal);
   border-radius:  0 0 15px 15px;

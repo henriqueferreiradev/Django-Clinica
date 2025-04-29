@@ -182,16 +182,16 @@ button {
      
   }
   .login-container h2 {
-    font-size: 42px;
+    font-size: 28px;
   }
 
   .login-container p {
-    font-size: 32px;
+    font-size: 20px;
     margin-bottom: 2em;
   }
 
   .form-group label {
-    font-size: 32px;
+    font-size: 20px;
     
   }
 
@@ -213,5 +213,5 @@ button {
   .left-side .logo  {
     width: 200px;
   }
-  .left-side .logo 
+  
 }

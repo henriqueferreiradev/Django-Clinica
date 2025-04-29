@@ -25,5 +25,5 @@ function buscarCep() {
             console.error(error);
         });
 
-    return false; // impede o envio automático do form até você decidir
+    return false; 
 }

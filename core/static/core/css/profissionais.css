@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
-  --roxoPrincipal: #7F4396;
-  --roxoPrincipal-hover: #76378f11;
-  --roxoPrincipal-hover2: #76378f;
-  --verdePrincipal: #92cbad;
-  --branco: #FFF;
-  --preto: #000;
-  --cinzaBorda: #ccc;
-  --cinzaEscuro: #6e6e6e;
-  --fontePrincipal: 'Inter';
+    --roxoPrincipal: #7F4396;
+    --roxoPrincipal-hover: #76378f11;
+    --roxoPrincipal-hover2: #76378f;
+    --verdePrincipal: #92cbad;
+    --branco: #FFF;
+    --preto: #000;
+    --cinzaBorda: #ccc;
+    --cinzaEscuro: #6e6e6e;
+    --fontePrincipal: 'Inter';
 }
 
 
@@ -40,7 +40,9 @@
     margin: 0;
 }
 
- 
+.btn {
+    padding: 1em;
+}
 
 .card-grid {
     display: grid;
@@ -49,13 +51,14 @@
 }
 
 .card {
-    position: relative; /* Necessário para posicionar o ícone dentro */
+    position: relative;
+    /* Necessário para posicionar o ícone dentro */
     background: white;
     border-radius: 16px;
     padding: 20px;
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    
+
 }
 
 .menu-icon {
