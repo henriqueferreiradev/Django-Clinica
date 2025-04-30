@@ -3,22 +3,41 @@
 
 
 
-{% block title %}Financeiro | Clínica{% endblock %}
+{% block title %}Configurações - Ponto de Equilíbrio{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/agendamentos.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/configuracoes.css' %}">
 {% endblock %}
 
-{% block content %}
-<div class="main">
-
-    <div class="topbar">
-      <h1>Configurações</h1>
-      <div class="user-info">Olá, {{ user.username }}</div>
+{% block topbar %}
+<div class="topbar">
+    <div class="topbar-div">
+        <i class='bx bx-menu'></i>
+        <span class="text">Configurações</span>
+         
     </div>
-  
-    <div class="content">
-  
-  </div>
+    <div class="topbar-div">
+        <div class="name-job">
+            <div class="profile_name">Olá, {{ user.username }}</div>
+        </div>
+        <a href="{% url 'logout' %}">
+            <i class='bx btn-sair bx-log-out'></i>
+        </a>
+    </div>
 </div>
+{% endblock %}
+{% block content %}
+<div class="content">
+  <form method="post">
+        {% csrf_token %}
+     <input type="text" id="nome" name="nome"><br><br>
+     <input type="color" id="cor" name="cor" value="#4a90e2"><br><br>
+     <button type="submit">Salvar</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/imask"></script>
+<script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
 {% endblock %}

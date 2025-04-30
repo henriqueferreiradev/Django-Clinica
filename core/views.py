@@ -241,5 +241,22 @@ def novo_agendamento_view(request):
 
 @login_required(login_url='login')
 def configuracao_view(request):
-    return render(request, 'core/configuracoes.html')
+
+    if request.method == "POST":
+        nome = request.POST.get('nome')
+        cor = request.POST.get('cor')
+        ativo = True
+        if nome and cor: 
+            try:
+                Especialidade.objects.create(nome=nome, cor=cor, ativo=True)
+            except Exception as e:
+                print("Erro ao salvar especialidade:", e)
+            
+            
+        return redirect('config')
+        
+    especialidades = Especialidade.objects.all()	
+    return render(request, 'core/configuracoes.html', {
+        'especialidades': especialidades
+    })
 

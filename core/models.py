@@ -123,6 +123,7 @@ class User(AbstractUser):
     
 class Especialidade(models.Model):
     nome = models.CharField(max_length=100)
+    cor = models.CharField(max_length=7)
     ativo = models.BooleanField(default=True)
     
     def __str__(self):
