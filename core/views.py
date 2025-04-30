@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Paciente, Especialidade, ESTADO_CIVIL, MIDIA_ESCOLHA, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA
+from .models import Paciente, Especialidade, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.csrf import csrf_exempt
@@ -156,13 +156,140 @@ def pacientes_view(request):
         'sexo_choices': SEXO_ESCOLHA,
         'uf_choices': UF_ESCOLHA,
         'cor_choices': COR_RACA,
+        
     })
 
 def cadastrar_pacientes_view(request):
-    return render(request, 'core/pacientes/cadastrar_paciente.html')
+    mostrar_todos = request.GET.get('mostrar_todos') == 'on'
+    filtra_inativo = request.GET.get('filtra_inativo') == 'on'
+    situacao = request.GET.get('situacao') == True
+    
+    if request.method == 'POST':
+        if 'delete_id' in request.POST:
+            delete_id = request.POST.get('delete_id')
+            paciente = Paciente.objects.get(id=delete_id)
+            paciente.ativo = False
+            paciente.save()
+            return redirect('pacientes')
+
+        # Edição ou criação
+        paciente_id = request.POST.get('paciente_id')
+        nome = request.POST.get('nome')
+        cpf = request.POST.get('cpf')
+        telefone = request.POST.get('telefone')
+        rg = request.POST.get('rg')
+        nascimento = request.POST.get('nascimento')
+        try:
+            nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
+        except ValueError:
+            ...
+        cor_raca = request.POST.get('cor')
+        sexo = request.POST.get('sexo')
+        naturalidade = request.POST.get('naturalidade')
+        uf = request.POST.get('uf')
+        nomeSocial = request.POST.get('nomeSocial')
+        estado_civil = request.POST.get('estado_civil')
+        midia = request.POST.get('midia')
+        cep = request.POST.get('cep')
+        rua = request.POST.get('rua')
+        numero = request.POST.get('numero')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+        celular = request.POST.get('celular')
+        telEmergencia = request.POST.get('telEmergencia')
+        email = request.POST.get('email')
+        observacao = request.POST.get('observacao')
+        
+        if paciente_id:
+            paciente = Paciente.objects.get(id=paciente_id)
+            paciente.nome = nome
+            paciente.cpf = cpf
+            paciente.telefone = telefone
+            paciente.rg = rg
+            paciente.nascimento = nascimento
+            paciente.cor_raca = cor_raca
+            paciente.sexo = sexo
+            paciente.naturalidade = naturalidade
+            paciente.uf = uf
+            paciente.nomeSocial = nomeSocial
+            paciente.estado_civil = estado_civil
+            paciente.midia = midia
+            paciente.cep = cep
+            paciente.rua = rua
+            paciente.numero = numero
+            paciente.bairro = bairro
+            paciente.cidade = cidade
+            paciente.estado = estado
+            paciente.celular = celular
+            paciente.telEmergencia = telEmergencia
+            paciente.email = email
+            paciente.observacao = observacao
+             
+            paciente.ativo = True
+            paciente.save()
+        else:
+            # Garante que nome foi enviado
+            if nome:
+                Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone,
+                                        rg=rg,data_nascimento=nascimento_formatada,
+                                        cor_raca=cor_raca, sexo=sexo, naturalidade=naturalidade,
+                                        uf=uf,nomeSocial=nomeSocial,estado_civil=estado_civil,
+                                        midia=midia, cep=cep, rua=rua, numero=numero,bairro=bairro,
+                                        cidade=cidade,estado=estado,celular=celular, telEmergencia=telEmergencia,
+                                        email=email, observacao=observacao ,ativo=True)
+
+        return redirect('pacientes')
+
+    # Se for GET, continua aqui:
+    query = request.GET.get('q', '').strip()
+
+    if mostrar_todos:
+        pacientes = Paciente.objects.all().order_by('-id')
+    elif filtra_inativo:
+        pacientes = Paciente.objects.filter(ativo=False)
+    else:
+        pacientes = Paciente.objects.filter(ativo=True).order_by('-id')
+
+    total_ativos = Paciente.objects.filter(ativo=True).count()
+    
+
+    if query:
+        pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf__icontains=query))
+
+    paginator = Paginator(pacientes, 12)
+    page_number = request.GET.get("page")
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    return render(request, 'core/pacientes/cadastrar_paciente.html', {
+        'page_obj': page_obj,
+        'query': query,
+        'total_ativos': total_ativos,
+        'mostrar_todos': mostrar_todos,
+        'filtra_inativo': filtra_inativo,
+        'estado_civil_choices': ESTADO_CIVIL,
+        'midia_choices': MIDIA_ESCOLHA,
+        'sexo_choices': SEXO_ESCOLHA,
+        'uf_choices': UF_ESCOLHA,
+        'cor_choices': COR_RACA,
+        'vinculo_choices': VINCULO,
+    })
+  
 
 def cadastrar_profissionais_view(request):
-    return render(request, 'core/profissionais/cadastrar_profissional.html')
+    return render(request, 'core/profissionais/cadastrar_profissional.html', {
+        'estado_civil_choices': ESTADO_CIVIL,
+        'midia_choices': MIDIA_ESCOLHA,
+        'sexo_choices': SEXO_ESCOLHA,
+        'uf_choices': UF_ESCOLHA,
+        'cor_choices': COR_RACA,
+        'vinculo_choices': VINCULO,
+    })
 
 @login_required(login_url='login')
 def profissionais_view(request):
