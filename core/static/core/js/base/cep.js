@@ -10,20 +10,31 @@ function buscarCep() {
         .then(response => response.json())
         .then(data => {
             if (data.erro) {
-                alert('CEP não encontrado ',{cep});
-                console.log(cep)
+                alert('CEP não encontrado ', { cep });
+                console.log(cep);
                 return;
             }
 
-            document.getElementById('ruaInput').value = data.logradouro || '';
-            document.getElementById('bairro').value = data.bairro || '';
-            document.getElementById('cidade').value = data.localidade || '';
-            document.getElementById('estado').value = data.uf || '';
+            const rua = document.getElementById('ruaInput');
+            const bairro = document.getElementById('bairro');
+            const cidade = document.getElementById('cidade');
+            const estado = document.getElementById('estado');
+
+            rua.value = data.logradouro || '';
+            bairro.value = data.bairro || '';
+            cidade.value = data.localidade || '';
+            estado.value = data.uf || '';
+
+            // Forçar o "input" para o label subir
+            rua.dispatchEvent(new Event('input'));
+            bairro.dispatchEvent(new Event('input'));
+            cidade.dispatchEvent(new Event('input'));
+            estado.dispatchEvent(new Event('input'));
         })
         .catch(error => {
             alert('Erro ao buscar o CEP');
             console.error(error);
         });
 
-    return false; 
+    return false;
 }

@@ -40,7 +40,7 @@
   /* espaço entre os campos */
 }
 
- 
+
 
 #btn-cep {
 
@@ -72,7 +72,7 @@
   width: 100%;
 }
 
- 
+
 .date-s::-webkit-datetime-edit {
   color: transparent;
 }
@@ -185,19 +185,20 @@ select {
 
 }
 
-.formField .input-s:focus + .span-s,
-.formField .input-s.input-preenchido + .span-s {
+.formField .input-s:focus+.span-s,
+.formField .input-s.input-preenchido+.span-s {
   transform: translateY(-30px) translateX(-5px) scale(0.95);
   transition: 0.3s ease-in-out;
   color: var(--roxoPrincipal);
   font-weight: 550;
 }
+
 .form_div {
   border: 1px solid var(--roxoPrincipal);
-  border-radius:  0 0 15px 15px;
+  border-radius: 0 0 15px 15px;
   display: flex;
   padding: 1em;
-  margin: 0  0 1em 0;
+  margin: 0 0 1em 0;
 
 }
 
@@ -231,6 +232,7 @@ select {
   align-items: center;
   justify-content: space-between;
 }
+
 .btn-save {
   padding: .5em 2em;
   align-items: center;
@@ -243,6 +245,7 @@ select {
   cursor: pointer;
   font-weight: 600;
 }
+
 #previewImage {
   display: none;
   width: 100%;
@@ -255,11 +258,11 @@ select {
 
 .custum-file-upload {
   height: 200px;
-   display: flex;
+  display: flex;
   flex-direction: column;
   align-items: space-between;
   gap: 20px;
-  cursor: pointer; 
+  cursor: pointer;
   align-items: center;
   justify-content: center;
   border: 2px solid var(--verdePrincipal);
@@ -299,4 +302,26 @@ select {
 
 .content::-webkit-scrollbar-thumb {
   background-color: var(--roxoPrincipal);
+}
+
+.custum-file-upload {
+  position: relative;
+  overflow: hidden;
+}
+
+.custum-file-upload img#preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: none;
+  z-index: 1;
+}
+
+.custum-file-upload>*:not(#preview) {
+  position: relative;
+  z-index: 1;
 }

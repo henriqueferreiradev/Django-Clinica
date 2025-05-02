@@ -14,7 +14,7 @@
     <div class="topbar-div">
         <i class='bx bx-menu'></i>
         <span class="text">Configurações</span>
-         
+
     </div>
     <div class="topbar-div">
         <div class="name-job">
@@ -28,12 +28,26 @@
 {% endblock %}
 {% block content %}
 <div class="content">
-  <form method="post">
-        {% csrf_token %}
-     <input type="text" id="nome" name="nome"><br><br>
-     <input type="color" id="cor" name="cor" value="#4a90e2"><br><br>
-     <button type="submit">Salvar</button>
-  </form>
+
+    <div class="grid-config">
+        <div class="form form-1">
+            <h3></h3>
+            <form class="formField" method="post">
+                {% csrf_token %}
+                <input class="input-s" type="text" id="nome" name="nome"><br><br>
+                <input class="" type="color" id="cor" name="cor" value="#4a90e2"><br><br>
+                <button type="submit">Salvar</button>
+            </form>
+        </div>
+        <div class="form form-2"></div>
+        <div class="form form-3"></div>
+        <div class="form form-4"></div>
+        <div class="form form-5"></div>
+        <div class="form form-6"></div>
+
+
+    </div>
+
 </div>
 {% endblock %}
 

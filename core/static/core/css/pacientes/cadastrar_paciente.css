@@ -217,14 +217,14 @@ select {
 
 }
 .btn-save {
-  padding: 1em 2em;
+  padding:.5em 2em;
   align-items: center;
   background-color: var(--branco);
   color: var(--roxoPrincipal);
   border-radius: 15px;
   border: none;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   font-weight: 600;
 }
