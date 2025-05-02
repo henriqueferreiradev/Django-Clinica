@@ -1,6 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from datetime import date
+from django.utils.text import slugify
+import os
+
+def caminho_foto_paciente(instance, filename):
+    nome = slugify(instance.nome)
+    extensao = os.path.splitext(filename)[1]
+    return f'imagens/pacientes/{instance.id}_{nome}/foto_perfil{extensao}'
 
 TIPOS_USUARIO = [
     ('admin', 'Administrador'),
@@ -143,6 +150,7 @@ class Paciente(models.Model):
     naturalidade = models.CharField(max_length=50 )
     uf = models.CharField(max_length=50, choices=UF_ESCOLHA)
     midia = models.CharField(max_length=30, choices=MIDIA_ESCOLHA)
+    foto = models.ImageField(upload_to=caminho_foto_paciente, blank=True, null=True)
     observacao = models.TextField(max_length=5000, blank=True, null=True)
 
     cep = models.CharField(max_length=10, blank=True, null=True)
@@ -156,7 +164,7 @@ class Paciente(models.Model):
     telefone = models.CharField(max_length=20, blank=True, null=True)
     celular  = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(max_length=255, blank=True, null=True)
-    contatoEmergencia = models.CharField(max_length=100)
+    nomeEmergencia = models.CharField(max_length=100)
     vinculo = models.CharField(max_length=100, choices=VINCULO)
     telEmergencia = models.CharField(max_length=20, blank=True, null=True)
      

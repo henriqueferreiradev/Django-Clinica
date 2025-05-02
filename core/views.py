@@ -159,6 +159,7 @@ def pacientes_view(request):
         
     })
 
+@login_required(login_url='login')
 def cadastrar_pacientes_view(request):
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'
     filtra_inativo = request.GET.get('filtra_inativo') == 'on'
@@ -175,9 +176,10 @@ def cadastrar_pacientes_view(request):
         # Edição ou criação
         paciente_id = request.POST.get('paciente_id')
         nome = request.POST.get('nome')
-        cpf = request.POST.get('cpf')
-        telefone = request.POST.get('telefone')
+        sobrenome = request.POST.get('sobrenome')
+        nomeSocial = request.POST.get('nomeSocial')
         rg = request.POST.get('rg')
+        cpf = request.POST.get('cpf')
         nascimento = request.POST.get('nascimento')
         try:
             nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
@@ -185,63 +187,81 @@ def cadastrar_pacientes_view(request):
             ...
         cor_raca = request.POST.get('cor')
         sexo = request.POST.get('sexo')
+        estado_civil = request.POST.get('estado_civil')
         naturalidade = request.POST.get('naturalidade')
         uf = request.POST.get('uf')
-        nomeSocial = request.POST.get('nomeSocial')
-        estado_civil = request.POST.get('estado_civil')
         midia = request.POST.get('midia')
+        foto = request.FILES.get('foto')
+        observacao = request.POST.get('observacao')
+
         cep = request.POST.get('cep')
         rua = request.POST.get('rua')
         numero = request.POST.get('numero')
         bairro = request.POST.get('bairro')
         cidade = request.POST.get('cidade')
         estado = request.POST.get('estado')
+
+        telefone = request.POST.get('telefone')
         celular = request.POST.get('celular')
-        telEmergencia = request.POST.get('telEmergencia')
         email = request.POST.get('email')
-        observacao = request.POST.get('observacao')
+        nomeEmergencia = request.POST.get('nomeEmergencia')
+        vinculo = request.POST.get('vinculo')
+        telEmergencia = request.POST.get('telEmergencia')
+        
+        
         
         if paciente_id:
             paciente = Paciente.objects.get(id=paciente_id)
             paciente.nome = nome
-            paciente.cpf = cpf
-            paciente.telefone = telefone
+            paciente.sobrenome = sobrenome
+            paciente.nomeSocial = nomeSocial
             paciente.rg = rg
+            paciente.cpf = cpf
             paciente.nascimento = nascimento
             paciente.cor_raca = cor_raca
             paciente.sexo = sexo
+            paciente.estado_civil = estado_civil
             paciente.naturalidade = naturalidade
             paciente.uf = uf
-            paciente.nomeSocial = nomeSocial
-            paciente.estado_civil = estado_civil
             paciente.midia = midia
+            paciente.foto = foto
+            paciente.observacao = observacao
+
             paciente.cep = cep
             paciente.rua = rua
             paciente.numero = numero
             paciente.bairro = bairro
             paciente.cidade = cidade
             paciente.estado = estado
+
+            paciente.telefone = telefone
             paciente.celular = celular
-            paciente.telEmergencia = telEmergencia
             paciente.email = email
-            paciente.observacao = observacao
+            paciente.nomeEmergencia = nomeEmergencia
+            paciente.vinculo = vinculo
+            paciente.telEmergencia = telEmergencia
              
             paciente.ativo = True
             paciente.save()
         else:
             # Garante que nome foi enviado
             if nome:
-                Paciente.objects.create(nome=nome, cpf=cpf, telefone=telefone,
+                paciente = Paciente.objects.create(nome=nome, sobrenome=sobrenome, nomeSocial=nomeSocial, cpf=cpf,
+                                        vinculo=vinculo,
                                         rg=rg,data_nascimento=nascimento_formatada,
                                         cor_raca=cor_raca, sexo=sexo, naturalidade=naturalidade,
-                                        uf=uf,nomeSocial=nomeSocial,estado_civil=estado_civil,
+                                        uf=uf,estado_civil=estado_civil,
                                         midia=midia, cep=cep, rua=rua, numero=numero,bairro=bairro,
-                                        cidade=cidade,estado=estado,celular=celular, telEmergencia=telEmergencia,
+                                        cidade=cidade,estado=estado,telefone=telefone, celular=celular, 
+                                        nomeEmergencia=nomeEmergencia, telEmergencia=telEmergencia,
                                         email=email, observacao=observacao ,ativo=True)
+            if foto:
+                paciente.foto = foto
+                paciente.save()
+        
+        messages.success(request, f'Paciente { paciente.nome } cadastrado com sucesso!!')
+        return redirect('cadastrar_paciente')
 
-        return redirect('pacientes')
-
-    # Se for GET, continua aqui:
     query = request.GET.get('q', '').strip()
 
     if mostrar_todos:

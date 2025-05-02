@@ -244,15 +244,6 @@ select {
   justify-content: space-between;
 }
 
-#previewImage {
-  display: none;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 15px;
-  position: relative;
-  z-index: 2;
-}
 
 .custum-file-upload {
   height: 200px;
@@ -300,4 +291,26 @@ select {
 
 .content::-webkit-scrollbar-thumb {
   background-color: var(--roxoPrincipal);
+}
+
+.custum-file-upload {
+  position: relative;
+  overflow: hidden;
+}
+ 
+.custum-file-upload img#preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: none;
+  z-index: 1;
+}
+
+.custum-file-upload > *:not(#preview) {
+  position: relative;
+  z-index: 1;
 }
