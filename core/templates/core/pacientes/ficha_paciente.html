@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha de cadastro - {{ paciente.nome }}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+    :root {
+      --roxoPrincipal: #7F4396;
+      --roxoPrincipal-hover: #76378f11;
+      --roxoPrincipal-hover2: #76378f;
+      --verdePrincipal: #92cbad;
+      --branco: #FFF;
+      --preto: #000;
+      --cinzaBorda: #ccc;
+      --cinzaEscuro: #6e6e6e;
+      --fontePrincipal: 'Inter';
+    }
+
+    @media print {
+      .no-print {
+        display: none;
+      }
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      font-family: var(--fontePrincipal);
+      margin: 0;
+      padding: 20px;
+      height: 100vh;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      text-align: start;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      border: none;
+
+    }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+
+
+      font-size: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: .5px solid #000;
+    }
+
+    td,
+    th {
+      border: .5px solid #000;
+      padding: 6px;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: var(--roxoPrincipal-hover);
+      text-align: left;
+    }
+
+    h3 {
+      margin: 20px 0 10px;
+      color: var(--preto);
+      text-align: center;
+
+    }
+
+    table:first-of-type tr:first-child th:first-child {
+      border-top-left-radius: 8px;
+    }
+
+    table:first-of-type tr:first-child th:last-child {
+      border-top-right-radius: 8px;
+    }
+
+    
+    table:last-of-type tr:last-child td:first-child {
+      border-bottom-left-radius: 8px;
+    }
+
+    table:last-of-type tr:last-child td:last-child {
+      border-bottom-right-radius: 8px;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo_img {
+      width: 400px;
+      height: auto;
+      text-align: center;
+    }
+
+
+
+    footer p {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--roxoPrincipal);
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body onload=" window.print()">
+  <div class="container">
+    <div class="header">
+      <img class="logo_img" src="/static/core/img/icons/logoCompleto.png" alt="logo Completo">
+      <h2>Ficha de Cadastro do Paciente</h2>
+    </div>
+    <table>
+      <h3>Informações Pessoais</h3>
+      <tr>
+        <th>Nome</th>
+        <td colspan="3">{{ paciente.nome }} {{ paciente.sobrenome }}</td>
+      </tr>
+      <tr>
+        <th>Nome Social</th>
+        <td>{{ paciente.nomeSocial }}</td>
+        <th>Data de Nascimento</th>
+        <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
+      </tr>
+      <tr>
+        <th>RG</th>
+        <td>{{ paciente.rg }}</td>
+        <th>CPF</th>
+        <td>{{ paciente.cpf }}</td>
+      </tr>
+      <tr>
+        <th>Cor/Raça</th>
+        <td>{{ paciente.get_cor_raca_display }}</td>
+        <th>Sexo</th>
+        <td>{{ paciente.get_sexo_display }}</td>
+      </tr>
+      <tr>
+        <th>Estado Civil</th>
+        <td>{{ paciente.get_estado_civil_display }}</td>
+        <th>Naturalidade</th>
+        <td>{{ paciente.naturalidade }}</td>
+      </tr>
+      <tr>
+        <th>UF</th>
+        <td>{{ paciente.get_uf_display }}</td>
+        <th>Como conheceu a clínica?</th>
+        <td>{{ paciente.get_midia_display }}</td>
+      </tr>
+      <tr>
+        <th>Observações</th>
+        <td colspan="3">{{ paciente.observacao }}</td>
+      </tr>
+    </table>
+
+    <h3>Endereço</h3>
+    <table>
+      <tr>
+        <th>Rua</th>
+        <td colspan="3">{{ paciente.rua }}</td>
+
+      </tr>
+      <tr>
+        <th>Número</th>
+        <td>{{ paciente.numero }}</td>
+
+        <th>Complemento</th>
+        <td>{{ paciente.complemento }}</td>
+      </tr>
+      <tr>
+        <th>Bairro</th>
+        <td>{{ paciente.bairro }}</td>
+        <th>Cidade</th>
+        <td>{{ paciente.cidade }}</td>
+      </tr>
+      <tr>
+        <th>Estado</th>
+        <td>{{ paciente.estado }}</td>
+        <th>CEP</th>
+        <td>{{ paciente.cep }}</td>
+      </tr>
+    </table>
+
+    <h3>Contatos</h3>
+    <table>
+      <tr>
+        <th>Telefone</th>
+        <td>{{ paciente.telefone }}</td>
+        <th>Celular</th>
+        <td>{{ paciente.celular }}</td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td colspan="3">{{ paciente.email }}</td>
+      </tr>
+      <tr>
+        <th>Contato de Emergência</th>
+        <td>{{ paciente.nomeEmergencia }}</td>
+        <th>Vínculo</th>
+        <td>{{ paciente.get_vinculo_display }}</td>
+      </tr>
+      <tr>
+        <th>Telefone de Emergência</th>
+        <td colspan="3">{{ paciente.telEmergencia }}</td>
+      </tr>
+    </table>
+
+    <footer>
+      <p>Av. Prof Romanda Gonçalves, nº 2657 | Itaipu Niterói-RJ | 21 3254-7682 | 21 990841-8739</p>
+    </footer>
+  </div>
+</body>
+
+</html>

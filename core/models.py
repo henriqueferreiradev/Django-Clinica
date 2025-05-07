@@ -119,6 +119,15 @@ MIDIA_ESCOLHA = [
     ('tv_radio', 'TV / Rádio'),
     ('whatsapp', 'WhatsApp'),
     ('outro', 'Outro'),
+] 
+
+CONSELHO_ESCOLHA = [
+    ("cref", 'CREF'),
+    ("crefito", 'CREFITO'),
+    ("cfn", 'CFN'),
+    ("crbm", 'CRBM'),
+    ("coren", 'COREN'),
+    ("cra", 'CRA'),
 ]
 class User(AbstractUser):
     tipo = models.CharField(max_length=20, choices=TIPOS_USUARIO)
@@ -140,7 +149,7 @@ class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     nome =  models.CharField(max_length=100)
     sobrenome =  models.CharField(max_length=150,blank=True, null=True)
-    nomeSocial = models.CharField(max_length=100, blank=True, null=True)
+    nomeSocial = models.CharField(default='Não informado', max_length=100, blank=True)
     rg = models.CharField(max_length=12, blank=True, null=True)
     cpf = models.CharField(max_length=14, blank=True, null=True)
     data_nascimento = models.DateField(blank=True, null=True)
@@ -176,11 +185,6 @@ class Paciente(models.Model):
     
 class Profissional(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    cargo = models.CharField(max_length=30, choices=[
-        ('profissional', 'Profissional'),
-        ('recepcionista', 'Recepcionista'),
-        ('admin', 'Administrador'),
-    ])
     especialidade = models.ForeignKey(Especialidade, on_delete=models.SET_NULL, null=True, blank=True)
     comissao = models.DecimalField(max_digits=5,decimal_places=2, default=0.0)
     horario_trabalho = models.TextField(blank=True, null=True)

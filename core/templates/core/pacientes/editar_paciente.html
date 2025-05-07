@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 
 {% load static %}
-{% block title %}Cadastrar Paciente - Ponto de Equilíbrio{% endblock %}
+{% block title %}Editar Paciente - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
@@ -11,7 +11,7 @@
 <div class="topbar">
     <div class="topbar-div">
         <i class='bx bx-menu'></i>
-        <span class="text">Cadastrar pacientes</span>
+        <span class="text">Editar pacientes {{ paciente.nome }}</span>
         <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
             <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
         </form>
@@ -62,16 +62,16 @@
                     <div class="div_forms">
                         <div class="form_cadastro-nomes">
                             <div class="formField">
-                                <input class='input-s capitalize-input' type="text" name="nome" id="nomeInput" required>
+                                <input class='input-s capitalize-input' value='{{ paciente.nome }}' type="text" name="nome" id="nomeInput" required>
                                 <span class="span-s">Nome*</span>
                             </div>
                             <div class="formField">
-                                <input class='input-s capitalize-input' name="sobrenome" id="sobrenomeInput" type="text"
+                                <input class='input-s capitalize-input' value='{{ paciente.sobrenome }}' name="sobrenome" id="sobrenomeInput" type="text"
                                     required />
                                 <span class="span-s">Sobrenome*</span>
                             </div>
                             <div class="formField">
-                                <input class='input-s capitalize-input' type="text" name="nomeSocial"
+                                <input class='input-s capitalize-input' value='{{ paciente.nomeSocial }}' type="text" name="nomeSocial"
                                     id="nomeSocialInput">
                                 <span class="span-s">Nome Social</span>
                             </div>
@@ -79,18 +79,18 @@
 
                         <div class="form_cadastro-nomes">
                             <div class="formField">
-                                <input class='input-s' name="rg" id="rgInput" type="text">
+                                <input class='input-s' value='{{ paciente.rg }}' name="rg" id="rgInput" type="text">
                                 <span class="span-s">RG</span>
                             </div>
                             <div class="formField">
-                                <input class='input-s' name="cpf" id="cpfInput" type="text" required />
+                                <input class='input-s' value='{{ paciente.cpf }}' name="cpf" id="cpfInput" type="text" required />
                                 <span class="span-s">CPF*</span>
                             </div>
 
 
 
                             <div class="formField">
-                                <input class='input-s date-s' type="text" name="nascimento" id="nascimentoInput"
+                                <input class='input-s date-s' value='{{ paciente.data_nascimento }}' type="text" name="nascimento" id="nascimentoInput"
                                     required />
                                 <span class="span-s">Nascimento*</span>
                             </div>
@@ -100,7 +100,7 @@
                                 <select name="cor" id="corInput" class='input-s'>
                                     <option value="" disabled selected></option>
                                     {% for value, label in cor_choices %}
-                                    <option value="{{ value }}" {% if paciente.cor_rac == value %}selected{% endif %}>{{ label }}</option>
+                                    <option value="{{ value }}" {% if paciente.cor_raca == value %}selected{% endif %}>{{ label }}</option>
                                     {% endfor %}
                                 </select>
                                 <span class="span-s">Cor/Raça</span>
@@ -129,7 +129,7 @@
 
                         <div class="form_cadastro-nomes">
                             <div class="formField">
-                                <input class='input-s' name="naturalidade" id="naturalidadeInput" type="text"
+                                <input class='input-s' value='{{ paciente.naturalidade }}' name="naturalidade" id="naturalidadeInput" type="text"
                                     required />
                                 <span class="span-s">Naturalidade*</span>
                             </div>
@@ -159,9 +159,16 @@
                         <div class="form_cadastro-nomes">
 
                             <label for="file" class="custum-file-upload">
+                                
+                                {% if paciente.foto %}
+                                <img id="preview" src="{{ paciente.foto.url }}" alt="Foto atual"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                           object-fit: cover; border-radius: 10px; z-index: 1000; display: block;">
+                            {% else %}
                                 <img id="preview" src="#" alt="Preview da imagem"
-                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                                       object-fit: cover; border-radius: 10px; display: none; z-index:5;">
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                           object-fit: cover; border-radius: 10px; z-index: 1000; display: none;">
+                            {% endif %}
                                 <div class="text">
                                     <span>Imagem de perfil</span>
                                 </div>
@@ -185,8 +192,8 @@
                             </label>
  
                             <div class="formField">
-                                <textarea class='input-s textarea-s' value='{{ paciente.observacao }}' maxlength="500" oninput="atualizarContador()" type="textarea" name='observacao'
-                                    id="observacaoInput" ></textarea>
+                                <textarea class='input-s textarea-s'  maxlength="500" oninput="atualizarContador()" type="textarea" name='observacao'
+                                    id="observacaoInput" >{{ paciente.observacao }}</textarea>
                                 <span class="span-s">Observação</span>
                                 <p class='contador'><span id="contador">0</span>/500 caracteres</p>
                             </div>
@@ -203,38 +210,38 @@
 
                         <div class="form_cadastro-nomes">
                             <div class="formField field_cep">
-                                <input class=' input-s' type="text" name="cep" id="cepInput" required>
+                                <input class=' input-s' value='{{ paciente.cep }}' type="text" name="cep" id="cepInput" required>
                                 <span class="span-s">CEP*</span>
                             </div>
                             <button type="button" id="btn-cep" onclick="buscarCep()">...</button>
                             <div class="formField field_rua">
-                                <input class='input-s capitalize-input' type="text" name='rua' id="ruaInput" required>
+                                <input class='input-s capitalize-input' value='{{ paciente.rua }}' type="text" name='rua' id="ruaInput" required>
                                 <span class="span-s">Rua*</span>
                             </div>
                         </div>
                         <div class="form_cadastro-nomes">
                             <div class="formField">
-                                <input class='input-s field_numero' type="text" name='numero' id="numero" required>
+                                <input class='input-s field_numero' value='{{ paciente.numero }}' type="text" name='numero' id="numero" required>
                                 <span class="span-s">Numero*</span>
                             </div>
 
                             <div class="formField">
-                                <input class='input-s capitalize-input' type="text" name='complemento' id="complementoInput" required>
+                                <input class='input-s capitalize-input' value='{{ paciente.complemento }}' type="text" name='complemento' id="complementoInput">
                                 <span class="span-s">Complemento</span>
                             </div>
                         </div>
                         <div class="form_cadastro-nomes">
                             <div class="formField">
-                                <input class='input-s capitalize-input' type="text" name='bairro' id="bairro" required>
+                                <input class='input-s capitalize-input'value='{{ paciente.bairro }}' type="text" name='bairro' id="bairro" required>
                                 <span class="span-s">Bairro*</span>
                             </div>
 
                             <div class="formField">
-                                <input class='input-s capitalize-input' type="text" name='cidade' id="cidade" required>
+                                <input class='input-s capitalize-input' value='{{ paciente.cidade }}' type="text" name='cidade' id="cidade" required>
                                 <span class="span-s">Cidade*</span>
                             </div>
                             <div class="formField">
-                                <input class='input-s' type="text" name='estado' id="estado" required>
+                                <input class='input-s' value='{{ paciente.estado }}' type="text" name='estado' id="estado" required>
                                 <span class="span-s">UF*</span>
                             </div>
                         </div>
@@ -246,13 +253,13 @@
 
                         <div class="form_cadastro-nomes">
                             <div class="formField">
-                                <input class='input-s' type="text" name="telefone" id="telefoneInput" required>
+                                <input class='input-s' value='{{ paciente.telefone }}' type="text" name="telefone" id="telefoneInput" required>
                                 <span class="span-s">Telefone</span>
                             </div>
 
 
                             <div class="formField">
-                                <input class='input-s' type="text" name="celular" id="celularInput" required>
+                                <input class='input-s' value='{{ paciente.celular }}' type="text" name="celular" id="celularInput" required>
                                 <span class="span-s">Celular*</span>
                             </div>
 
@@ -261,14 +268,14 @@
                         <div class="form_cadastro-nomes">
 
                             <div class="formField">
-                                <input class='input-s' type="text" name="email" id="emailInput" required>
+                                <input class='input-s' value='{{ paciente.email }}' type="text" name="email" id="emailInput" required>
                                 <span class="span-s">Email*</span>
                             </div>
 
                         </div>
                         <div class="form_cadastro-nomes">
                             <div class="formField">
-                                <input class='input-s capitalize-input' type="text" name="nomeEmergencia"
+                                <input class='input-s capitalize-input' value='{{ paciente.nomeEmergencia }}' type="text" name="nomeEmergencia"
                                     id="nomeEmergenciaInput" required>
                                 <span class="span-s">Contato de emergência*</span>
                             </div>
@@ -276,7 +283,7 @@
                             <div class="formField">
                                 <select name="vinculo" id="vinculoInput" class='input-s' required>
                                     <option value="" disabled selected></option>
-                                    {% for value, label in vinculo_choices %} <!--MUDAR DEPOIS-->
+                                    {% for value, label in vinculo_choices %} 
                                     <option value="{{ value }}" {% if paciente.vinculo == value %}selected{% endif %}>
                                         {{ label }}</option>
                                     {% endfor %}
@@ -285,7 +292,7 @@
                             </div>
 
                             <div class="formField">
-                                <input class='input-s' type="text" name="telEmergencia" id="telEmergenciaInput"
+                                <input class='input-s' value='{{ paciente.telEmergencia }}' type="text" name="telEmergencia" id="telEmergenciaInput"
                                     required>
                                 <span class="span-s">Telefone de emergência*</span>
                             </div>

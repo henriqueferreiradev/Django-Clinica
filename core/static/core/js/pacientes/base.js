@@ -1,20 +1,32 @@
- 
+function abrirFicha(url) {
+    const novaAba = window.open(url, '_blank');
+    novaAba.onload = function () {
+      novaAba.print();
+    };
+  }
+
 function previewImage(event) {
     const preview = document.getElementById('preview');
     const file = event.target.files[0];
 
     if (file) {
         const reader = new FileReader();
+
         reader.onload = function(e) {
             preview.src = e.target.result;
-            preview.style.display = 'block';
+            preview.style.display = 'block'; // Exibe a imagem
         };
+
         reader.readAsDataURL(file);
-    } else {
-        preview.src = '#';
-        preview.style.display = 'none';
     }
 }
+
+function atualizarContador() {
+    const textarea = document.getElementById('observacaoInput');
+    const contador = document.getElementById('contador');
+    contador.textContent = textarea.value.length;
+}
+
 function setPage(pageNumber, event) {
     event.preventDefault();
     document.getElementById("page-input").value = pageNumber;
@@ -69,89 +81,63 @@ function inputMasks() {
         }
     }
 }
-function abrirModal() {
-    document.getElementById("modalOverlay").style.display = "flex";
-    inputMasks()
+function montarEndereco(data) {
+    const partes = []
+
+    if (data.rua) partes.push(data.rua)
+    if (data.numero) partes.push(data.numero)
+    if (data.complemento) partes.push(data.complemento)
+    if (data.bairro) partes.push(data.bairro)
+
+    const cidadeEstado = []
+   
+    if (data.cidade) partes.push(data.cidade)
+    if (data.estado) partes.push(data.estado)
+    if (cidadeEstado.length) partes.push(cidadeEstado.join(' -'))
+
+    if (data.cep) partes.push(`CEP: ${data.cep}`)
+
+    return partes.join(', ')
 
 }
-function abrirModalVisulizar() {
 
-}
-
-function abrirModalEditar(botao) {
-    inputMasks()
-    const id = botao.dataset.id;
-    const nome = botao.dataset.nome;
-    const cpf = botao.dataset.cpf;
-    const telefone = botao.dataset.telefone;
-    const rg = botao.dataset.rg;
-    const data_nascimento = botao.dataset.data_nascimento;
-    const cor = botao.dataset.cor_raca;
-    const sexo = botao.dataset.sexo;
-    const naturalidade = botao.dataset.naturalidade;
-    const uf = botao.dataset.uf;
-    const apelido = botao.dataset.apelido;
-    const estado_civil = botao.dataset.estado_civil;
-    const midia = botao.dataset.midia;
-
-
-    const cep = botao.dataset.cep;
-    const rua = botao.dataset.rua;
-    const numero = botao.dataset.numero;
-    const bairro = botao.dataset.bairro;
-    const cidade = botao.dataset.cidade;
-    const estado = botao.dataset.estado;
-    const celular = botao.dataset.celular;
-    const telEmergencia = botao.dataset.telEmergencia;
-    const email = botao.dataset.email;
-    const observacao = botao.dataset.observacao;
-
-
-    // cadastro paciente
-    document.getElementById('pacienteId').value = id;
-    document.getElementById('nomeInput').value = nome;
-    document.getElementById('cpfInput').value = cpf;
-    document.getElementById('rgInput').value = rg
-    document.getElementById('nascimentoInput').value = data_nascimento
-    document.getElementById('corInput').value = cor
-    document.getElementById('sexoInput').value = sexo
-    document.getElementById('naturalidadeInput').value = naturalidade
-    document.getElementById('ufInput').value = uf
-    document.getElementById('nomeSocialInput').value = apelido
-    document.getElementById('estadoCivilInput').value = estado_civil
-    document.getElementById('midiaInput').value = midia
-
-    // cadastro endereço
-    document.getElementById('cepInput').value = cep
-    document.getElementById('ruaInput').value = rua
-    document.getElementById('numero').value = numero
-    document.getElementById('bairro').value = bairro
-    document.getElementById('cidade').value = cidade
-    document.getElementById('estado').value = estado
-    document.getElementById('telefoneInput').value = telefone;
-    document.getElementById('celularInput').value = celular;
-    document.getElementById('telEmergenciaInput').value = telEmergencia;
-    document.getElementById('emailInput').value = email;
-    document.getElementById('observacaoInput').value = observacao;
-
-
-
-    document.getElementById('modalTitulo').textContent = 'Editar Paciente - ' + botao.dataset.nome;
-
-
-
-
-    document.getElementById('modalOverlay').style.display = 'flex';
+function abrirModal(pacienteId) {
+    console.log("Chamando modal para o paciente:", pacienteId);
+    fetch(`/api/paciente/${pacienteId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const endereco = montarEndereco(data)
+            document.getElementById('pacienteNome').innerText = `Perfil do paciente - ${data.nome} ${data.sobrenome}`;
+            document.getElementById('pacienteNascimento').innerText = `Nascimento: ${data.nascimento}`;
+            document.getElementById('pacienteIdade').innerText = data.idade;
+            document.getElementById('pacienteRg').innerText = data.rg;
+            document.getElementById('pacienteCpf').innerText = data.cpf;
+            document.getElementById('pacienteTelefone').innerText = data.telefone;
+            document.getElementById('pacienteCelular').innerText = data.celular;
+            document.getElementById('pacienteCor').innerText = data.cor_raca;
+            document.getElementById('pacienteSexo').innerText = data.sexo;
+            document.getElementById('pacienteEstadoCivil').innerText = data.estado_civil;
+            document.getElementById('pacienteEmail').innerText = data.email;
+            document.getElementById('pacienteEndereco').innerText = endereco;
+            document.getElementById('pacienteObs').innerText = data.observacao;
+            const img = document.getElementById('pacienteFoto');
+         
+            
+            if (data.foto) {
+              img.src = window.location.origin + data.foto;
+            } else {
+              img.src = "/static/core/img/defaultPerfil.png";
+            }
+            // Mostrar modal
+            document.getElementById('modalOverlay').style.display = 'flex';
+        });
 }
 
 function fecharModal() {
     document.getElementById('modalOverlay').style.display = 'none';
-
-
-    document.getElementById('formPaciente').reset();
-    document.getElementById('pacienteId').value = '';
-    document.getElementById('modalTitulo').textContent = "Cadastrar Paciente";
 }
+
+
 
 document.querySelector('input[name="q"]').addEventListener('keyup', function () {
     const search = this.value.toLowerCase();
@@ -165,11 +151,31 @@ document.querySelector('input[name="q"]').addEventListener('keyup', function () 
         row.style.display = match ? "" : "none";
     });
 })
+
+function toggleDropdown(button) {
+    // Fecha qualquer dropdown aberto antes
+    document.querySelectorAll(".dropdown").forEach(drop => {
+        if (drop !== button.nextElementSibling) {
+            drop.style.display = "none";
+        }
+    });
+
+    const dropdown = button.nextElementSibling;
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}
+
+// Fechar dropdown se clicar fora
+document.addEventListener('click', function (e) {
+    if (!e.target.matches('.action-btn')) {
+        document.querySelectorAll('.dropdown').forEach(drop => drop.style.display = 'none');
+    }
+});
+
 function temporizadorAlerta() {
     setTimeout(() => {
         const alert = document.getElementById("alert-container");
         if (alert) alert.style.display = "none";
-      }, 4000); 
+    }, 4000);
 }
 
 temporizadorAlerta()

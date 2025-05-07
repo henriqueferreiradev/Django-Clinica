@@ -137,7 +137,7 @@
                             <select name="conselho" id="conselhoInput" class='input-s' required>
                             <option value="" disabled selected></option>
                                 {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if profissional.conselho_choices == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
@@ -147,7 +147,7 @@
                             <select name="conselho" id="conselhoInput" class='input-s' >
                             <option value="" disabled selected></option>
                                 {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if profissional.conselho_choices == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
@@ -157,7 +157,7 @@
                             <select name="conselho" id="conselhoInput" class='input-s' >
                             <option value="" disabled selected></option>
                                 {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if profissional.conselho_choices == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
@@ -167,7 +167,7 @@
                             <select name="conselho" id="conselhoInput" class='input-s' >
                             <option value="" disabled selected></option>
                                 {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if profissional.conselho_choices == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>

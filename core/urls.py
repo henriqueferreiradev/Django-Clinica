@@ -8,6 +8,8 @@ urlpatterns = [
     
     path('pacientes/', views.pacientes_view, name='pacientes'),
     path('pacientes/cadastrar', views.cadastrar_pacientes_view, name='cadastrar_paciente'),
+    path('pacientes/editar/<int:id>/', views.editar_paciente_view, name='editar_paciente'),
+    path('paciente/<int:id>/ficha/', views.ficha_paciente, name='ficha_paciente'),
 
     path('profissionais/', views.profissionais_view, name='profissionais'),
     path('profissionais/cadastrar', views.cadastrar_profissionais_view, name='cadastrar_profissional'),
@@ -17,5 +19,7 @@ urlpatterns = [
     path('agenda/novo_agendamento', views.novo_agendamento_view, name='novo_agendamento'),
 
     path('config/', views.configuracao_view, name='config'),
+   path('api/paciente/<int:paciente_id>/', views.dados_paciente, name='dados_paciente'),
+ 
  
 ]

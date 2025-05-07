@@ -11,179 +11,175 @@
 
 {% block topbar %}
 <div class="topbar">
-    <div class="topbar-div">
-        <i class='bx bx-menu'></i>
-        <span class="text">Pacientes</span>
-        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-        </form>
+  <div class="topbar-div">
+    <i class='bx bx-menu'></i>
+    <span class="text">Pacientes</span>
+    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+      <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
+    </form>
+  </div>
+  <div class="topbar-div">
+    <div class="name-job">
+      <div class="profile_name">Olá, {{ user.username }}</div>
     </div>
-    <div class="topbar-div">
-        <div class="name-job">
-            <div class="profile_name">Olá, {{ user.username }}</div>
-        </div>
-        <a href="{% url 'logout' %}">
-            <i class='bx btn-sair bx-log-out'></i>
-        </a>
-    </div>
+    <a href="{% url 'logout' %}">
+      <i class='bx btn-sair bx-log-out'></i>
+    </a>
+  </div>
 </div>
 {% endblock %}
 {% block content %}
 <div class="content">
-    <div class="content-header">
-        <h2>Lista de Pacientes</h2>
-        <form id="paginator-form" method="get">
-            <input type="hidden" name="q" value="{{ query }}">
-            <input type="hidden" id="page-input" name="page" value="{{ page_obj.number }}">
+  <div class="content-header">
+    <h2>Lista de Pacientes</h2>
+    <form id="paginator-form" method="get">
+      <input type="hidden" name="q" value="{{ query }}">
+      <input type="hidden" id="page-input" name="page" value="{{ page_obj.number }}">
 
-            <div class="pagination">
-                {% if page_obj.has_previous %}
-
-                <button type="button" onclick="setPage({{ page_obj.previous_page_number }}, event)">‹</button>
-                {% endif %}
-
-                <span>{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-
-                {% if page_obj.has_next %}
-                <button type="button" onclick="setPage({{ page_obj.next_page_number }}, event)">›</button>
-
-                {% endif %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <button type="button" onclick="setPage({{ page_obj.previous_page_number }}, event)">‹</button>
+        {% endif %}
+      
+        <span>
+          {% for num in page_obj.paginator.page_range %}
+            <div 
+              class="page-number {% if page_obj.number == num %}active{% endif %}"
+              onclick="setPage({{ num }}, event)">
+              {{ num }}
             </div>
-        </form>
+          {% endfor %}
+        </span>
+      
+        {% if page_obj.has_next %}
+          <button type="button" onclick="setPage({{ page_obj.next_page_number }}, event)">›</button>
+        {% endif %}
+      </div>
+    </form>
 
-        <button class="btn-add" onclick="abrirModal()">+ Novo Paciente</button>
+    <button  onclick="window.location.href='{% url 'cadastrar_paciente' %}'">+ Add Paciente</button>
 
+  </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Celular</th>
+          <th>Nascimento</th>
+          <th>Cadastro</th>
+          <th>Classe</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for paciente in page_obj %}
+        <tr class="{% if not paciente.ativo %} inativo{% endif %}">
+          <td>{{ paciente.nome }} {{ paciente.sobrenome }}</td>
+          <td>{{ paciente.cpf }}</td>
+          <td>{{ paciente.celular }}</td>
+          <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
+          <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
+          <td><span class="badge grade-simples">Premium</span></td>
+          <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
+            <div class="dropdown">
+              <button onclick="abrirModal({{ paciente.id }})">Ver detalhes</button>
+              <button onclick="window.location.href='{% url 'editar_paciente' paciente.id %}'">Editar</button>
+              <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Gerar Ficha</button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="tabela_infos-dados">
+    <p>Pacientes ativos: {{ total_ativos }}</p>
+    <form method="get" style="display: inline;">
+      <label class="label_inativos">
+        <input type="checkbox" name="mostrar_todos" onchange="this.form.submit()" 
+        {% if mostrar_todos %}checked{% endif %}>
+        Mostrar inativos
+      </label>
+    </form>
+    <form method="get" style="display: inline;">
+      <label class="label_inativos">
+        <input type="checkbox" name="filtra_inativo" onchange="this.form.submit()" 
+        {% if filtra_inativo %}checked{% endif %}>
+        Mostrar apenas inativos
+      </label>
+    </form>
+  </div>
+</div>
+
+
+<div id="modalOverlay" class="overlay" style="display: none;">
+  <div class="modal">
+    <div class="perfil_topbar">
+      <div  class="patient-header">
+        <h2 id="pacienteNome"></h2>
+        <span class="birth" id="pacienteNascimento"></span> 
+        <span class="birth" id="pacienteIdade"></span>
+      </div>
+      <span class="fechar" onclick="fecharModal()">×</span>
     </div>
-    <div class="table-container">
+    <div class="patient-card">
+      <div class="patient-photo">
+        <img id="pacienteFoto" src="" alt="Foto do paciente">
+      </div>
+      <div class="patient-info-table">
         <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>Telefone</th>
-                    <th>Nascimento</th>
-                    <th>Cadastro</th>
-                    <th>Classe</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Maria Clara</td>
-                    <td>000.000.000-00</td>
-                    <td>(00) 00000-0000</td>
-                    <td>00/00/0000</td>
-                    <td>00/00/0000</td>
-                    <td><span class="badge grade-simples">Premium</span></td>
-                    <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
-                        <div class="dropdown">
-                            <button>Ver detalhes</button>
-                            <button>Editar</button>
-                            <button>Gerar Ficha</button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
+          <tbody>
+            <tr>
+              <th>RG</th>
+              <td id="pacienteRg"></td>
+              <th>CPF</th>
+              <td id="pacienteCpf"></td>
+            </tr>
+            <tr>
+              <th>Telefone</th>
+              <td id="pacienteTelefone"></td>
+              <th>Celular</th>
+              <td id="pacienteCelular"></td>
+            </tr>
+            <tr>
+              <th>Cor</th>
+              <td id="pacienteCor"></td>
+              <th>Sexo</th>
+              <td id="pacienteSexo"></td>
+            </tr>
+            <tr>
+              <th>Estado Civil</th>
+              <td id="pacienteEstadoCivil"></td>
+              <th>Email</th>
+              <td id="pacienteEmail"></td>
+            </tr>
+            <tr>
+              <th>Endereço</th>
+              <td colspan="3" id="pacienteEndereco"></td>
+            </tr>
+            <tr>
+              <th>Observação</th>
+              <td colspan="3" id="pacienteObs"></td>
+            </tr>
+          </tbody>
         </table>
-    </div>
-
-
-    <!--
-    <div class="tabela-container">
-        <div class="tabela-body-scroll">
-            <table class="tabela">
-              <thead>
-                <tr>
-                  <th class="col-id">ID</th>
-                  <th class="col-nome">Nome</th>
-                  <th class="col-cpf">CPF</th>
-                  <th class="col-telefone">Telefone</th>
-                  <th class="col-cadastro">Cadastro</th>
-                  <th class="col-acoes">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for paciente in page_obj %}
-                <tr class="{% if not paciente.ativo %}inativo{% endif %}">
-                  <td class="col-id">{{ paciente.id }}</td>
-                  <td class="col-nome">{{ paciente.nome }}</td>
-                  <td class="col-cpf">{{ paciente.cpf }}</td>
-                  <td class="col-telefone">{{ paciente.telefone }}</td>
-                  <td class="col-cadastro">{{ paciente.data_cadastro|date:'d/m/Y' }}</td>
-                  <td class="actions col-acoes">
-                    <button class="view-btn">Ver</button>
-                    <button class="edit-btn"
-                      data-id="{{ paciente.id }}"
-                      data-nome="{{ paciente.nome }}"
-                      data-cpf="{{ paciente.cpf }}"
-                      data-telefone="{{ paciente.telefone }}"
-                      data-rg="{{ paciente.rg }}"
-                      data-data_nascimento="{{ paciente.data_nascimento }}"
-                      data-cor_raca="{{ paciente.cor_raca }}"
-                      data-sexo="{{ paciente.sexo }}"
-                      data-naturalidade="{{ paciente.naturalidade }}"
-                      data-uf="{{ paciente.uf }}"
-                      data-apelido="{{ paciente.apelido }}"
-                      data-estado_civil="{{ paciente.estado_civil }}"
-                      data-midia="{{ paciente.midia }}"
-                      data-cep="{{ paciente.cep }}"
-                      data-rua="{{ paciente.rua }}"
-                      data-numero="{{ paciente.numero }}"
-                      data-bairro="{{ paciente.bairro }}"
-                      data-cidade="{{ paciente.cidade }}"
-                      data-estado="{{ paciente.estado }}"
-                      data-celular="{{ paciente.celular }}"
-                      data-tel_emergencia="{{ paciente.telEmergencia }}"
-                      data-email="{{ paciente.email }}"
-                      data-observacao="{{ paciente.observacao }}"
-                      onclick="abrirModalEditar(this)">
-                      Editar
-                    </button>
-          
-                    {% if paciente.ativo %}
-                    <form method="post" action="{% url 'pacientes' %}" style="display:inline;">
-                      {% csrf_token %}
-                      <input type="hidden" name="delete_id" value="{{ paciente.id }}">
-                      <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</button>
-                    </form>
-                    {% else %}
-                    <span>Inativo</span>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="5">Nenhum paciente encontrado.</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            <div class="tabela_infos-dados">
-                <p>Pacientes ativos: {{ total_ativos }}</p>
-                <form method="get" style="display: inline;">
-                  <label class="label_inativos">
-                    <input type="checkbox" name="mostrar_todos" onchange="this.form.submit()" 
-                    {% if mostrar_todos %}checked{% endif %}>
-                    Mostrar inativos
-                  </label>
-                </form>
-                <form method="get" style="display: inline;">
-                  <label class="label_inativos">
-                    <input type="checkbox" name="filtra_inativo" onchange="this.form.submit()" 
-                    {% if filtra_inativo %}checked{% endif %}>
-                    Mostrar apenas inativos
-                  </label>
-                </form>
-              </div>
-          </div>
-    </div>
--->
+      
  
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </div>
 {% endblock %}
 
 {% block scripts %}
-
+ 
+  
 <script src="https://unpkg.com/imask"></script>
 
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>

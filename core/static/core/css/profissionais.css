@@ -14,7 +14,7 @@
 
 
 .content {
-    background: #f4f6f8;
+    background: var(--branco);
     border-radius: 15px;
     overflow: hidden;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;

@@ -4,13 +4,56 @@ from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Paciente, Especialidade, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA
+from .models import Paciente, Especialidade, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 
+
+def dados_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    
+    if paciente.data_nascimento:
+        nascimento = paciente.data_nascimento
+        hoje = date.today()
+        idade = relativedelta(hoje, nascimento)
+        idade_formatada = f'{idade.years} anos, {idade.months} meses e {idade.days} dias'
+
+    data = {
+        "nome": paciente.nome,
+        "sobrenome": paciente.sobrenome,
+        "nomeSocial": paciente.nomeSocial,
+        "rg": paciente.rg,
+        "cpf": paciente.cpf,
+        "nascimento": paciente.data_nascimento.strftime('%d/%m/%Y') if paciente.data_nascimento else "",
+        "idade":idade_formatada,
+        "cor_raca": paciente.get_cor_raca_display(),  
+        "sexo": paciente.get_sexo_display(),
+        "estado_civil": paciente.get_estado_civil_display(),
+        "naturalidade": paciente.naturalidade,
+        "uf": paciente.uf,
+        "midia": paciente.get_midia_display(),
+        "foto": paciente.foto.url if paciente.foto else "",
+        "observacao": paciente.observacao,
+        "cep": paciente.cep,
+        "rua": paciente.rua,
+        "numero": paciente.numero,
+        "complemento": paciente.complemento,
+        "bairro": paciente.bairro,
+        "cidade": paciente.cidade,
+        "estado": paciente.estado,
+        "telefone": paciente.telefone,
+        "celular": paciente.celular,
+        "email": paciente.email,
+        "nomeEmergencia": paciente.nomeEmergencia,
+        "vinculo": paciente.get_vinculo_display(),
+        "telEmergencia": paciente.telEmergencia,
+        "ativo": paciente.ativo
+    }
+    return JsonResponse(data)
 def login_view(request):
     login_form = AuthenticationForm(request, data=request.POST or None)
     register_form = RegisterForm(request.POST or None)
@@ -197,6 +240,7 @@ def cadastrar_pacientes_view(request):
         cep = request.POST.get('cep')
         rua = request.POST.get('rua')
         numero = request.POST.get('numero')
+        complemento = request.POST.get('complemento')
         bairro = request.POST.get('bairro')
         cidade = request.POST.get('cidade')
         estado = request.POST.get('estado')
@@ -230,6 +274,7 @@ def cadastrar_pacientes_view(request):
             paciente.cep = cep
             paciente.rua = rua
             paciente.numero = numero
+            paciente.complemento = complemento
             paciente.bairro = bairro
             paciente.cidade = cidade
             paciente.estado = estado
@@ -250,7 +295,7 @@ def cadastrar_pacientes_view(request):
                                         vinculo=vinculo,
                                         rg=rg,data_nascimento=nascimento_formatada,
                                         cor_raca=cor_raca, sexo=sexo, naturalidade=naturalidade,
-                                        uf=uf,estado_civil=estado_civil,
+                                        uf=uf,estado_civil=estado_civil, complemento=complemento,
                                         midia=midia, cep=cep, rua=rua, numero=numero,bairro=bairro,
                                         cidade=cidade,estado=estado,telefone=telefone, celular=celular, 
                                         nomeEmergencia=nomeEmergencia, telEmergencia=telEmergencia,
@@ -300,6 +345,68 @@ def cadastrar_pacientes_view(request):
         'vinculo_choices': VINCULO,
     })
   
+def editar_paciente_view(request,id):
+
+    
+    paciente = get_object_or_404(Paciente, id=id)
+
+    if request.method == 'POST':
+        paciente.nome = request.POST.get('nome')
+        paciente.sobrenome = request.POST.get('sobrenome')
+        paciente.nomeSocial = request.POST.get('nomeSocial')
+        paciente.rg = request.POST.get('rg')
+        paciente.cpf = request.POST.get('cpf')
+        
+        nascimento = request.POST.get('nascimento')
+        try:
+            paciente.nascimento = datetime.strptime(nascimento, "%d/%m/%Y").date()
+        except (ValueError, TypeError):
+            paciente.nascimento = None  
+
+        paciente.cor_rac = request.POST.get('cor')
+        paciente.sexo = request.POST.get('sexo')
+        paciente.estado_civil = request.POST.get('estado_civil')
+        paciente.naturalidade = request.POST.get('naturalidade')
+        paciente.uf = request.POST.get('uf')
+        paciente.midia = request.POST.get('midia')
+        paciente.observacao = request.POST.get('observacao')
+
+        paciente.cep = request.POST.get('cep')
+        paciente.rua = request.POST.get('rua')
+        paciente.complemento = request.POST.get('complemento')
+        paciente.numero = request.POST.get('numero')
+        paciente.bairro = request.POST.get('bairro')
+        paciente.cidade = request.POST.get('cidade')
+        paciente.estado = request.POST.get('estado')
+
+        paciente.telefone = request.POST.get('telefone')
+        paciente.celular = request.POST.get('celular')
+        paciente.email = request.POST.get('email')
+        paciente.nomeEmergencia = request.POST.get('nomeEmergencia')
+        paciente.vinculo = request.POST.get('vinculo')
+        paciente.telEmergencia = request.POST.get('telEmergencia')
+
+        if 'foto' in request.FILES:
+            paciente.foto = request.FILES['foto']
+
+        paciente.save()
+        return redirect('pacientes')  
+
+    context = {
+        'paciente': paciente,
+        'estado_civil_choices': ESTADO_CIVIL,
+        'midia_choices': MIDIA_ESCOLHA,
+        'sexo_choices': SEXO_ESCOLHA,
+        'uf_choices': UF_ESCOLHA,
+        'cor_choices': COR_RACA,
+        'vinculo_choices': VINCULO,
+    }
+    return render(request, 'core/pacientes/editar_paciente.html', context)
+ 
+
+def ficha_paciente(request, id):
+    paciente = get_object_or_404(Paciente, id=id)
+    return render(request, 'core/pacientes/ficha_paciente.html', {'paciente': paciente})
 
 def cadastrar_profissionais_view(request):
     return render(request, 'core/profissionais/cadastrar_profissional.html', {
@@ -309,6 +416,7 @@ def cadastrar_profissionais_view(request):
         'uf_choices': UF_ESCOLHA,
         'cor_choices': COR_RACA,
         'vinculo_choices': VINCULO,
+        'conselho_choices': CONSELHO_ESCOLHA,
     })
 
 @login_required(login_url='login')
