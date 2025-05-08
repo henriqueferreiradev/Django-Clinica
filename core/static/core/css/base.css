@@ -45,6 +45,7 @@ button {
   border: none;
   color: var(--branco);
   font-weight: 500;
+  cursor: pointer;
 
 }
 

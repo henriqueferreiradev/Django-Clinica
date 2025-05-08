@@ -28,7 +28,7 @@
 {% endblock %}
 {% block content %}
 <div class="content">
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form_cadastro">
         <div class="form_cadastro-pessoa">
@@ -60,7 +60,7 @@
                             <span class="span-s">CPF*</span>
                         </div>
                         <div class="formField">
-                            <input class='input-s' name="cnpj" id="cnpjInput" type="text" required />
+                            <input class='input-s' name="cnpj" id="cnpjInput" type="text">
                             <span class="span-s">CNPJ*</span>
                         </div>
                         <div class="formField">
@@ -73,7 +73,7 @@
                             <select name="cor" id="corInput" class='input-s' required>
                             <option value="" disabled selected></option>
                                 {% for value, label in cor_choices %}
-                                <option value="{{ value }}" {% if paciente.cor_rac == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if profissional.cor_rac == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
@@ -84,7 +84,7 @@
                             <select name="sexo" id="sexoInput" class='input-s' required>
                             <option value="" disabled selected></option>
                                 {% for value, label in sexo_choices %}
-                                <option value="{{ value }}" {% if paciente.sexo == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if profissional.sexo == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
@@ -94,7 +94,7 @@
                             <select name="estado_civil" id="estadoCivilInput" class='input-s' required>
                             <option value="" disabled selected></option>
                                 {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if paciente.estado_civil == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if profissional.estado_civil == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
@@ -113,7 +113,7 @@
                             <select name="uf" id="ufInput" class='input-s' required>
                             <option value="" disabled selected></option>
                                 {% for value, label in uf_choices %}
-                                <option value="{{ value }}" {% if paciente.uf == value %}selected{% endif %}>
+                                <option value="{{ value }}" {% if profissional.uf == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
@@ -123,9 +123,9 @@
                             <select name="especialidade" id="especialidadeInput" class='input-s' required>
                             <option value="" disabled selected></option>
 
-                                {% for value, label in especialidade_choices %}
-                                <option value="{{ value }}" {% if paciente.especialidade == value %}selected{% endif %}>
-                                    {{ label }}</option>
+                                {% for esp in especialidade_choices %}
+                                <option value="{{ esp.id }}" {% if profissional.especialidade.id == esp.id %}selected{% endif %}>
+                                    {{ esp.nome }}
                                 {% endfor %}
 
                             </select>
@@ -134,9 +134,9 @@
                     </div>
                     <div class="form_cadastro-nomes">
                         <div class="formField">
-                            <select name="conselho" id="conselhoInput" class='input-s' required>
+                            <select name="conselho1" id="conselhoInput" class='input-s' required>
                             <option value="" disabled selected></option>
-                                {% for value, label in estado_civil_choices %}
+                                {% for value, label in conselho_choices %}
                                 <option value="{{ value }}" {% if profissional.conselho_choices == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
@@ -144,34 +144,56 @@
                             <span class="span-s">Conselho Principal*</span>
                         </div>
                         <div class="formField">
-                            <select name="conselho" id="conselhoInput" class='input-s' >
+                            <input class='input-s' name="num1_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho*</span>
+                        </div>
+
+
+                        <div class="formField">
+                            <select name="conselho2" id="conselhoInput" class='input-s' >
                             <option value="" disabled selected></option>
-                                {% for value, label in estado_civil_choices %}
+                                {% for value, label in conselho_choices %}
                                 <option value="{{ value }}" {% if profissional.conselho_choices == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
-                            <span class="span-s">Conselho Complementar</span>
+                            <span class="span-s">Conselho Comp.</span>
                         </div>
                         <div class="formField">
-                            <select name="conselho" id="conselhoInput" class='input-s' >
+                            <input class='input-s' name="num2_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <select name="conselho3" id="conselhoInput" class='input-s' >
                             <option value="" disabled selected></option>
-                                {% for value, label in estado_civil_choices %}
+                                {% for value, label in conselho_choices %}
                                 <option value="{{ value }}" {% if profissional.conselho_choices == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
-                            <span class="span-s">Conselho Complementar</span>
+                            <span class="span-s">Conselho Comp.</span>
                         </div>
                         <div class="formField">
-                            <select name="conselho" id="conselhoInput" class='input-s' >
+                            <input class='input-s' name="num3_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho</span>
+                        </div>
+                        
+                        
+                        <div class="formField">
+                            <select name="conselho4" id="conselhoInput" class='input-s' >
                             <option value="" disabled selected></option>
-                                {% for value, label in estado_civil_choices %}
+                                {% for value, label in conselho_choices %}
                                 <option value="{{ value }}" {% if profissional.conselho_choices == value %}selected{% endif %}>
                                     {{ label }}</option>
                                 {% endfor %}
                             </select>
-                            <span class="span-s">Conselho Complementar</span>
+                            <span class="span-s">Conselho Comp.</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' name="num4_conselho" id="conselho1Input" type="text" >
+                            <span class="span-s"> Nº Conselho</span>
                         </div>
                     </div>
                         <div class="form_cadastro-nomes">

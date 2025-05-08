@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Paciente, Especialidade, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from .models import Paciente, Especialidade,Profissional, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.csrf import csrf_exempt
@@ -54,6 +54,7 @@ def dados_paciente(request, paciente_id):
         "ativo": paciente.ativo
     }
     return JsonResponse(data)
+
 def login_view(request):
     login_form = AuthenticationForm(request, data=request.POST or None)
     register_form = RegisterForm(request.POST or None)
@@ -163,7 +164,7 @@ def pacientes_view(request):
 
         return redirect('pacientes')
 
-    # Se for GET, continua aqui:
+  
     query = request.GET.get('q', '').strip()
 
     if mostrar_todos:
@@ -408,75 +409,139 @@ def ficha_paciente(request, id):
     paciente = get_object_or_404(Paciente, id=id)
     return render(request, 'core/pacientes/ficha_paciente.html', {'paciente': paciente})
 
+
+
 def cadastrar_profissionais_view(request):
+    if request.method == 'POST':
+        if 'delete_id' in request.POST:
+            delete_id = request.POST.get('delete_id')
+            profissional = Profissional.objects.get(id=delete_id)
+            profissional.ativo = False
+            profissional.save()
+            return redirect('profissionals')
+
+        # Criação de novo profissional
+        nome = request.POST.get('nome')
+        sobrenome = request.POST.get('sobrenome')
+        nomeSocial = request.POST.get('nomeSocial')
+        rg = request.POST.get('rg')
+        cpf = request.POST.get('cpf')
+        cnpj = request.POST.get('cnpj')
+        nascimento = request.POST.get('nascimento')
+        try:
+            nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
+        except ValueError:
+            nascimento_formatada = None  # ou algum tratamento específico
+        cor_raca = request.POST.get('cor')
+        sexo = request.POST.get('sexo')
+        estado_civil = request.POST.get('estado_civil')
+        naturalidade = request.POST.get('naturalidade')
+        uf = request.POST.get('uf')
+        especialidade_id = request.POST.get('especialidade')
+        especialidade_obj = Especialidade.objects.get(id=especialidade_id) if especialidade_id else None
+        conselho1 = request.POST.get('conselho1')
+        conselho2 = request.POST.get('conselho2')
+        conselho3 = request.POST.get('conselho3')
+        conselho4 = request.POST.get('conselho4')
+
+        num1_conselho = request.POST.get("num1_conselho")
+        num2_conselho = request.POST.get("num2_conselho")
+        num3_conselho = request.POST.get("num3_conselho")
+        num4_conselho = request.POST.get("num4_conselho")
+
+        midia = request.POST.get('midia')
+        foto = request.FILES.get('foto')
+        observacao = request.POST.get('observacao')
+
+        cep = request.POST.get('cep')
+        rua = request.POST.get('rua')
+        numero = request.POST.get('numero')
+        complemento = request.POST.get('complemento')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+
+        telefone = request.POST.get('telefone')
+        celular = request.POST.get('celular')
+        email = request.POST.get('email')
+        nomeEmergencia = request.POST.get('nomeEmergencia')
+        vinculo = request.POST.get('vinculo')
+        telEmergencia = request.POST.get('telEmergencia')
+
+     
+        if nome:
+    # 1º: Cria o profissional sem a foto
+            profissional = Profissional.objects.create(
+                nome=nome,
+                sobrenome=sobrenome,
+                nomeSocial=nomeSocial,
+                rg=rg,
+                cpf=cpf,
+                cnpj=cnpj,
+                data_nascimento=nascimento_formatada,
+                cor_raca=cor_raca,
+                sexo=sexo,
+                naturalidade=naturalidade,
+                uf=uf,
+                especialidade=especialidade_obj,
+                conselho1=conselho1,
+                conselho2=conselho2,
+                conselho3=conselho3,
+                conselho4=conselho4,
+                num1_conselho=num1_conselho,
+                num2_conselho=num2_conselho,
+                num3_conselho=num3_conselho,
+                num4_conselho=num4_conselho,
+                estado_civil=estado_civil,
+                complemento=complemento,
+                observacao=observacao,
+                cep=cep,
+                rua=rua,
+                numero=numero,
+                bairro=bairro,
+                cidade=cidade,
+                estado=estado,
+                telefone=telefone,
+                celular=celular,
+                nomeEmergencia=nomeEmergencia,
+                vinculo=vinculo,
+                telEmergencia=telEmergencia,
+                email=email,
+                ativo=True
+            )
+
+            # 2º: Agora que o ID existe, atribua a foto
+            if foto:
+                profissional.foto = foto
+                profissional.save()
+    
+    profissionais = Profissional.objects.all().order_by('-id')
+    especialidades = Especialidade.objects.all()
+
+
     return render(request, 'core/profissionais/cadastrar_profissional.html', {
-        'estado_civil_choices': ESTADO_CIVIL,
-        'midia_choices': MIDIA_ESCOLHA,
-        'sexo_choices': SEXO_ESCOLHA,
-        'uf_choices': UF_ESCOLHA,
-        'cor_choices': COR_RACA,
-        'vinculo_choices': VINCULO,
-        'conselho_choices': CONSELHO_ESCOLHA,
-    })
+                        'estado_civil_choices': ESTADO_CIVIL,
+                        'midia_choices': MIDIA_ESCOLHA,
+                        'sexo_choices': SEXO_ESCOLHA,
+                        'uf_choices': UF_ESCOLHA,
+                        'cor_choices': COR_RACA,
+                        'vinculo_choices': VINCULO,
+                        'conselho_choices': CONSELHO_ESCOLHA,
+                        'especialidade_choices': especialidades,
+                        'profissionais': profissionais,
+                        }) 
+
+def editar_profissional_view(request):
+    ...
+
+def ficha_profissional(request):
+    ...
 
 @login_required(login_url='login')
 def profissionais_view(request):
-    mostrar_todos = request.GET.get('mostrar_todos') == 'on'
-    filtra_inativo = request.GET.get('filtra_inativo') == 'on'
-
-    if request.method == 'POST':
-            if 'delete_id' in request.POST:
-                delete_id = request.POST.get('delete_id')
-                especialidades = Especialidade.objects.get(id=delete_id)
-                especialidades.ativo = False
-                especialidades.save()
-                return redirect('profissionais')
-
-            # Edição ou criação
-            especialidade_id = request.POST.get('especialidade_id')
-            nome_especialidade = request.POST.get('especialidade')
- 
-
-            if especialidade_id:
-                especialidades = Especialidade.objects.get(id=especialidade_id)
-                especialidades.nome = nome_especialidade
-                especialidades.ativo = True
-                especialidades.save()
-            else:
-                # Garante que nome foi enviado
-                if nome_especialidade:
-                    Especialidade.objects.create(nome=nome_especialidade, ativo=True)
-
-    query = request.GET.get('q', '').strip()
-
-    if mostrar_todos:
-        especialidades = Especialidade.objects.all().order_by('-id')
-    elif filtra_inativo:
-        especialidades = Especialidade.objects.filter(ativo=False)
-    else:
-        especialidades = Especialidade.objects.filter(ativo=True).order_by('-id')
-
-    total_ativos = Especialidade.objects.filter(ativo=True).count()
-    
-
-    if query:
-        especialidades = especialidades.filter(Q(nome__icontains=query))
-
-    paginator = Paginator(especialidades, 12)
-    page_number = request.GET.get("page")
-    try:
-        page_obj = paginator.get_page(page_number)
-    except PageNotAnInteger:
-        page_obj = paginator.page(1)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
-
+    profissionais = Profissional.objects.all().order_by('-id')
     return render(request, 'core/profissionais/profissionais.html', {
-        'page_obj': page_obj,
-        'query': query,
-        'total_ativos': total_ativos,
-        'mostrar_todos': mostrar_todos,
-        'filtra_inativo': filtra_inativo,
+        "profissionais": profissionais,
     })
 
 

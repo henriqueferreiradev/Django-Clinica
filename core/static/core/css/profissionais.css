@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
-    --roxoPrincipal: #7F4396;
+    --roxoPrincipal: rgb(127, 67, 150);
     --roxoPrincipal-hover: #76378f11;
     --roxoPrincipal-hover2: #76378f;
     --verdePrincipal: #92cbad;
@@ -10,6 +10,7 @@
     --cinzaBorda: #ccc;
     --cinzaEscuro: #6e6e6e;
     --fontePrincipal: 'Inter';
+    --shadowRoxo: rgb(127, 67, 150, 0.5) 0px 3px 8px
 }
 
 
@@ -21,12 +22,21 @@
     padding: 1em;
     margin-top: 1em;
 
-    /* Ajuste para considerar a top bar + 2em de espaço no fim */
     height: calc(100vh - 80px - 2em);
     max-height: calc(100vh - 60px - 2em);
     box-sizing: border-box;
     overflow-y: auto;
-    /* Habilita scroll interno, se necessário */
+
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: var(--roxoPrincipal);
+    border-radius: 50px;
+}
+
+.content::-webkit-scrollbar {
+    background-color: var(--branco);
+    width: 5px;
 }
 
 .content-header {
@@ -34,6 +44,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
+    
 }
 
 .content-header h2 {
@@ -41,7 +52,7 @@
 }
 
 .btn {
-    padding: 1em;
+    cursor: pointer;
 }
 
 .card-grid {
@@ -52,23 +63,22 @@
 
 .card {
     position: relative;
-    /* Necessário para posicionar o ícone dentro */
+
     background: white;
     border-radius: 16px;
     padding: 20px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-
+    box-shadow: var(--shadowRoxo);
+    scale: 1;
+    transition: scale .5s ease-in-out;
 }
 
-.menu-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 20px;
-    color: #888;
-    cursor: pointer;
+.card:hover {
+    scale: 1.05;
+    transition: scale .5s ease-in-out;
 }
+
+
 
 .avatar {
     width: 100px;
@@ -76,6 +86,15 @@
     background: #d6ccfa;
     border-radius: 50%;
     margin: 0 auto 10px;
+}
+
+.avatar img {
+    width: 100px;
+    height: 100px;
+    background: #d6ccfa;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    object-fit: cover;
 }
 
 .name {
@@ -96,4 +115,51 @@
     margin: 5px 5px;
     color: var(--preto);
     justify-content: center;
+}
+
+.action-btn {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: black;
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    font-size: 20px;
+    color: var(--roxoPrincipal);
+    cursor: pointer;
+    padding: 0 .5em;
+
+}
+
+
+.action-btn:hover {
+    background: transparent;
+    color: var(--verdePrincipal);
+}
+
+.dropdown {
+    position: absolute;
+    background: var(--branco);
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    display: none;
+    flex-direction: column;
+    min-width: 120px;
+    z-index: 10;
+    color: black;
+}
+
+.dropdown button {
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: black;
+
+}
+
+.dropdown button:hover {
+    background: #eee;
 }

@@ -164,12 +164,7 @@ function toggleDropdown(button) {
     dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
 }
 
-// Fechar dropdown se clicar fora
-document.addEventListener('click', function (e) {
-    if (!e.target.matches('.action-btn')) {
-        document.querySelectorAll('.dropdown').forEach(drop => drop.style.display = 'none');
-    }
-});
+ 
 
 function temporizadorAlerta() {
     setTimeout(() => {

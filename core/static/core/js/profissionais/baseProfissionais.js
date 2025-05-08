@@ -91,3 +91,14 @@ document.querySelector('input[name="q"]').addEventListener('keyup', function () 
     });
 })
 
+function toggleDropdown(button) {
+    // Fecha qualquer dropdown aberto antes
+    document.querySelectorAll(".dropdown").forEach(drop => {
+        if (drop !== button.nextElementSibling) {
+            drop.style.display = "none";
+        }
+    });
+
+    const dropdown = button.nextElementSibling;
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}

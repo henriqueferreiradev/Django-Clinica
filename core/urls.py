@@ -13,7 +13,9 @@ urlpatterns = [
 
     path('profissionais/', views.profissionais_view, name='profissionais'),
     path('profissionais/cadastrar', views.cadastrar_profissionais_view, name='cadastrar_profissional'),
-
+    path('profissionais/editar/<int:id>/', views.editar_profissional_view, name='editar_profissional'),
+    path('profissional/<int:id>/ficha/', views.ficha_profissional, name='ficha_profissional'),
+ 
     path('financeiro/', views.financeiro_view, name='financeiro'),
     path('agenda/', views.agenda_view, name='agenda'),
     path('agenda/novo_agendamento', views.novo_agendamento_view, name='novo_agendamento'),

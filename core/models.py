@@ -9,6 +9,13 @@ def caminho_foto_paciente(instance, filename):
     extensao = os.path.splitext(filename)[1]
     return f'imagens/pacientes/{instance.id}_{nome}/foto_perfil{extensao}'
 
+
+def caminho_foto_profissional(instance, filename):
+    nome = slugify(instance.nome)
+    extensao = os.path.splitext(filename)[1]
+    return f'imagens/profissionais/{instance.id}_{nome}/foto_perfil{extensao}'
+
+
 TIPOS_USUARIO = [
     ('admin', 'Administrador'),
     ('secretaria', "Secretaria"),
@@ -184,10 +191,63 @@ class Paciente(models.Model):
      
     
 class Profissional(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    nome =  models.CharField(max_length=100)
+    sobrenome =  models.CharField(max_length=150,blank=True, null=True)
+    nomeSocial = models.CharField(default='Não informado', max_length=100, blank=True)
+    rg = models.CharField(max_length=12, blank=True, null=True)
+    cpf = models.CharField(max_length=14, blank=True, null=True)
+    cnpj = models.CharField(max_length=14, blank=True, null=True)
+    data_nascimento = models.DateField(blank=True, null=True)
+    cor_raca = models.CharField(default='Não informado', max_length=20, choices=COR_RACA)
+    sexo = models.CharField(default='Não informado',max_length=20, choices=SEXO_ESCOLHA)
+    estado_civil = models.CharField(default='Não informado',max_length=20, choices=ESTADO_CIVIL)
+    naturalidade = models.CharField(max_length=50 )
+    uf = models.CharField(max_length=50, choices=UF_ESCOLHA)
     especialidade = models.ForeignKey(Especialidade, on_delete=models.SET_NULL, null=True, blank=True)
-    comissao = models.DecimalField(max_digits=5,decimal_places=2, default=0.0)
-    horario_trabalho = models.TextField(blank=True, null=True)
+    conselho1 = models.CharField(max_length=20, choices=CONSELHO_ESCOLHA, blank=True, null=True)
+    num1_conselho = models.CharField(max_length=20,  blank=True, null=True)
+    conselho2 = models.CharField(max_length=20, choices=CONSELHO_ESCOLHA , blank=True, null=True)
+    num2_conselho = models.CharField(max_length=20, blank=True, null=True)    
+    conselho3 = models.CharField(max_length=20, choices=CONSELHO_ESCOLHA, blank=True, null=True)
+    num3_conselho = models.CharField(max_length=20, blank=True, null=True)
+    conselho4 = models.CharField(max_length=20, choices=CONSELHO_ESCOLHA, blank=True, null=True)
+    num4_conselho = models.CharField(max_length=20, blank=True, null=True)
+    foto = models.ImageField(upload_to=caminho_foto_profissional, blank=True, null=True)
+    observacao = models.TextField(max_length=5000, null=True)
+
+
+    cep = models.CharField(max_length=10, blank=True, null=True)
+    rua = models.TextField(max_length=255, blank=True, null=True)
+    numero = models.TextField(max_length=10, blank=True, null=True)
+    complemento = models.TextField(max_length=100, blank=True, null=True)
+    bairro = models.TextField(max_length=100, blank=True, null=True)
+    cidade = models.TextField(max_length=100, blank=True, null=True)
+    estado = models.TextField(max_length=100, blank=True, null=True)
+    
+    telefone = models.CharField(max_length=20, blank=True, null=True)
+    celular  = models.CharField(max_length=20, blank=True, null=True)
+    email = models.EmailField(max_length=255, blank=True, null=True)
+    nomeEmergencia = models.CharField(max_length=100)
+    vinculo = models.CharField(max_length=100, choices=VINCULO)
+    telEmergencia = models.CharField(max_length=20, blank=True, null=True)
+     
+    data_cadastro = models.DateField(default=date.today, blank=True, null=True)
+    ativo = models.BooleanField(default=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
     
     def __str__(self):
         return self.user.get_full_name or self.user.username
