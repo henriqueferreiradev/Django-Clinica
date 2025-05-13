@@ -7,6 +7,7 @@
     --branco: #FFF;
     --cinzaBorda: #ccc;
     --fontePrincipal: 'Inter';
+    --vermelhoInativo: rgb(255, 194, 194)
 }
 
 
@@ -154,11 +155,17 @@
   }
   
 
+.header_buttons {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
 
 
 
-
-
+.inativo {
+    background-color: rgb(255, 194, 194);
+}
 
 
 

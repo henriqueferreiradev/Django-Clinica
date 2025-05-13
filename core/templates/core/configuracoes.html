@@ -31,17 +31,43 @@
 
     <div class="grid-config">
         <div class="form form-1">
-            <h3></h3>
             <form class="formField" method="post">
                 {% csrf_token %}
-                <input class="input-s" type="text" id="nome" name="nome"><br><br>
+                <input type="hidden" name="tipo" value="especialidade">
+                <input class='input-s' placeholder='Nova especialidade' type="text">
+                
                 <input class="" type="color" id="cor" name="cor" value="#4a90e2"><br><br>
                 <button type="submit">Salvar</button>
             </form>
         </div>
-        <div class="form form-2"></div>
-        <div class="form form-3"></div>
-        <div class="form form-4"></div>
+        <div class="form form-2">
+
+        </div>
+        <div class="form form-3">
+            <form class="formField" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="servico">
+                <input class="input-s" name="nome" placeholder="Novo serviço" type="text" required>
+                <input class="input-s" name="valor" placeholder="Valor (R$)" type="number" step="10.00" required>
+                <button type="submit">Salvar</button>
+                <ul>
+                    {% for servico in servicos %}
+                        <li>
+                            {{ servico.nome }} - R$ {{ servico.valor }}
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="tipo" value="inativar_servico">
+                                <input type="hidden" name="servico_id" value="{{ servico.id }}">
+                                <button type="submit" style="border: none; background: none; color: red; cursor: pointer;">✕</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </form>
+        </div>
+        <div class="form form-4">
+            
+        </div>
         <div class="form form-5"></div>
         <div class="form form-6"></div>
 

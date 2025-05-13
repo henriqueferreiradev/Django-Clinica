@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from .models import Paciente
+from .models import Paciente, Profissional
 from .utils import criar_pasta_foto_paciente, criar_pasta_foto_profissional
 import os
 
@@ -38,7 +38,26 @@ def deletar_imagem_antiga(sender, instance, **kwargs):
             os.remove(caminho)
 
 
+@receiver(pre_save, sender=Profissional)
+def deletar_imagem_antiga_profissional(sender, instance, **kwargs):
+    print('Signal pre_save Profissional acionado')
 
+    if not instance.pk:
+        return
+
+    try:
+        profissional_antigo = Profissional.objects.get(pk=instance.pk)
+    except Profissional.DoesNotExist:
+        return
+
+    imagem_antiga = profissional_antigo.foto
+    imagem_nova = instance.foto
+
+    if imagem_antiga and imagem_antiga != imagem_nova:
+        caminho = imagem_antiga.path
+        if os.path.isfile(caminho):
+            print(f'Deletando imagem antiga do Profissional: {caminho}')
+            os.remove(caminho)
 
 
 

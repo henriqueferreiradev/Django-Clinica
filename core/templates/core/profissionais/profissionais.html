@@ -6,7 +6,7 @@
   <div class="topbar-div">
     <i class="bx bx-menu"></i>
     <span class="text">Profissionais</span>
-    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+    <form method="GET" action="{% url 'profissionais' %}" class="search-form" type="search">
       <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui" />
     </form>
   </div>
@@ -58,6 +58,65 @@
 
   {% endfor %}
 
+  <div id="modalOverlay" class="overlay" style="display: none;">
+    <div class="modal">
+      <div class="perfil_topbar">
+        <div  class="patient-header">
+          <h2 id="profissionalNome"></h2>
+          <span class="birth" id="profissionalNascimento"></span> 
+          <span class="birth" id="profissionalIdade"></span>
+        </div>
+        <span class="fechar" onclick="fecharModal()">×</span>
+      </div>
+      <div class="patient-card">
+        <div class="patient-photo">
+          <img id="profissionalFoto" src="" alt="Foto do profissional">
+        </div>
+        <div class="patient-info-table">
+          <table>
+            <tbody>
+              <tr>
+                <th>RG</th>
+                <td id="profissionalRg"></td>
+                <th>CPF</th>
+                <td id="profissionalCpf"></td>
+              </tr>
+              <tr>
+                <th>Telefone</th>
+                <td id="profissionalTelefone"></td>
+                <th>Celular</th>
+                <td id="profissionalCelular"></td>
+              </tr>
+              <tr>
+                <th>Cor</th>
+                <td id="profissionalCor"></td>
+                <th>Sexo</th>
+                <td id="profissionalSexo"></td>
+              </tr>
+              <tr>
+                <th>Estado Civil</th>
+                <td id="profissionalEstadoCivil"></td>
+                <th>Email</th>
+                <td id="profissionalEmail"></td>
+              </tr>
+              <tr>
+                <th>Endereço</th>
+                <td colspan="3" id="profissionalEndereco"></td>
+              </tr>
+              <tr>
+                <th>Observação</th>
+                <td colspan="3" id="profissionalObs"></td>
+              </tr>
+            </tbody>
+          </table>
+        
+   
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 </div>
 {% endblock %} {% block scripts %}
 <script src="https://unpkg.com/imask"></script>

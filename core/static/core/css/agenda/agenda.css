@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+    --roxoPrincipal: rgb(127, 67, 150);
+    --roxoPrincipal-hover: #76378f11;
+    --roxoPrincipal-hover2: #76378f;
+    --verdePrincipal: #92cbad;
+    --branco: #FFF;
+    --preto: #000;
+    --cinzaBorda: #ccc;
+    --cinzaEscuro: #6e6e6e;
+    --fontePrincipal: 'Inter';
+    --shadowRoxo: rgb(127, 67, 150, 0.5) 0px 3px 8px
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--fontePrincipal);
+}
+
+body {
+    background-color: #f4f6f8;
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+
+    overflow: hidden;
+}
+
+
+
+.content {
+    background: var(--branco);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 1em;
+    margin-top: 1em;
+    height: calc(100vh - 80px - 2em);
+    max-height: calc(100vh - 60px - 2em);
+    box-sizing: border-box;
+    overflow-y: auto;
+
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: var(--roxoPrincipal);
+    border-radius: 50px;
+}
+
+.content::-webkit-scrollbar {
+    background-color: var(--branco);
+    width: 5px;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+
+}
+
+.content-header h2 {
+    margin: 0;
+}
+
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.card {
+    position: relative;
+
+    background: white;
+    border-radius: 16px;
+    padding: 0 1em 1em 1em;
+    text-align: center;
+    box-shadow: var(--shadowRoxo);
+    scale: 1;
+    transition: scale .5s ease-in-out;
+}
+
+.card:hover {
+    scale: 1.05;
+    transition: scale .5s ease-in-out;
+}
+
+.nome_profissional {
+    margin: 1em 0;
+    background-color: #76378f;
+    text-align: center;
+    color: var(--branco);
+    font-size: 18px;
+    font-weight: 600;
+    padding: .5em 0;
+    border-radius: 15px
+}
+
+.lista_consulta li {
+    list-style-type: none;
+    background-color: #76378f;
+    margin: .2em 0;
+    border-radius: 10px;
+    color: var(--branco);
+    padding: .5em;
+    font-size: 14px;
+    font-weight: 600;
+
+}
+
+.header-sidebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
+ 
+}
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 450px;
+    height: 100vh;
+    background-color: var(--branco);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    transition: right 0.3s ease;
+    padding: 20px;
+    z-index: 1000;
+    border-radius: 20px 0 0 20px;
+    max-width: 100vh;
+    overflow-y:auto;
+    overflow-x: hidden;
+}
+
+#sidebar.active {
+    right: 0;
+}
+
+#openBtn {
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 900;
+}
+
+#closeBtn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    float: right;
+    color: var(--preto);
+    margin: 0;
+    padding: 0;
+}
+
+
+/*=========================================================*/
+ 
+
+h2 {
+    margin-top: 0;
+}
+
+.formField {
+    margin-bottom: 16px;
+}
+
+.formField label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.formField input[type="text"],
+.formField input[type="date"],
+.formField input[type="time"],
+.formField input[type="number"]
+.formField input[type="radio"],
+.formField select,
+.formField textarea {
+    width: 100%;
+    padding: 10px;
+    border:  1px solid var(--verdePrincipal);
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+ 
+
+.submenu input[type="text"],
+.submenu input[type="date"],
+.submenu input[type="time"],
+.submenu input[type="number"],
+.submenu select,
+.submenu textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--verdePrincipal);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.formRow {
+    display: flex;
+    gap: 12px;
+}
+
+.formField input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.formRow .formField {
+    flex: 1;
+}
+
+.radio-group {
+    margin-bottom: 16px;
+}
+
+.radio-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: normal;
+}
+
+.textarea-large {
+    height: 100px;
+}
+
+.submenu {
+    border-top: 1px solid #ccc;
+}
+
+.submenu-header {
+    cursor: pointer;
+    position: relative;
+    padding: 12px 0;
+    font-weight: 500;
+}
+
+.submenu-header::after {
+    content: '▾';
+    position: absolute;
+    right: 10px;
+    transition: transform 0.2s ease;
+}
+
+.submenu.open .submenu-header::after {
+    transform: rotate(180deg);
+}
+
+.submenu-content {
+    display: none;
+    padding: 10px 0;
+}
+
+.submenu.open .submenu-content {
+    display: block;
+}
+
+button {
+    margin-top: 20px;
+     
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Sugestões de paciente */
+#sugestoes {
+    border: 1px solid #ccc;
+    max-height: 300px;
+    overflow-y: auto;
+    position: absolute;
+    background: white;
+    width: 100%;
+    z-index: 10;
+}

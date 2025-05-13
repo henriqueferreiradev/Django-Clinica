@@ -30,7 +30,9 @@ body {
 
 
 .formField {
-    margin: .7em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
     position: relative;
     width: 100%;
 }
@@ -92,7 +94,7 @@ select {
 }
 
 .formField form .select-s {
-    padding: 0.7em;
+    padding: 0.3em;
     padding-right: 2.5em;
 
     padding-right: 35px;
@@ -133,7 +135,7 @@ select {
     position: absolute;
     left: 0;
     top: 0;
-    padding: .6em;
+    padding: .2em;
     color: var(--preto);
     font-size: 16px;
     font-weight: 400;
@@ -170,9 +172,11 @@ select {
 }
 
 .grid-config>div {
-    background: var(--cinzaBorda);
-    border: 15px;
+    background: var(--branco);
+    border-radius: 15px;
+  
     padding: 1em;
+
 }
 
 .form-1 {

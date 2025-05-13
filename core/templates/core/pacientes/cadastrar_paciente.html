@@ -31,27 +31,6 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        {% if messages %}
-        <div class="messages-container" id="alert-container">
-            {% for message in messages %}
-            <div class="alert {{ message.tags }}">
-                <span class="icon">
-                    {% if message.tags == 'success' %}
-                    ✅
-                    {% elif message.tags == 'warning' %}
-                    ⚠️
-                    {% elif message.tags == 'error' %}
-                    ❌
-                    {% elif message.tags == 'info' %}
-                    ℹ️
-                    {% endif %}
-                </span>
-                {{ message }}
-       
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
         <div class="form_cadastro">
             <div class="form_cadastro-pessoa">
 
@@ -124,8 +103,11 @@
                                 </select>
                                 <span class="span-s">Estado Civil</span>
                             </div>
-
-                        </div>
+                            <div class="formField">
+                                <input class='input-s' name="profissao" id="profissaoInput" type="text">
+                                <span class="span-s">Profissão</span>
+                            </div>
+                        </div> 
 
                         <div class="form_cadastro-nomes">
                             <div class="formField">
@@ -153,6 +135,10 @@
 
                                 </select>
                                 <span class="span-s">Como nos conheceu?*</span>
+                            </div>
+                            <div class="formField">
+                                <input class='input-s' name="redeSocial" id="redeSocialInput" type="text">
+                                <span class="span-s">Rede Social</span>
                             </div>
                         </div>
 
@@ -296,7 +282,30 @@
         </div>
 
     </form>
+    
+    {% if messages %}
+    <div class="messages-container" id="alert-container">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">
+            <span class="icon">
+                {% if message.tags == 'success' %}
+                ✅
+                {% elif message.tags == 'warning' %}
+                ⚠️
+                {% elif message.tags == 'error' %}
+                ❌
+                {% elif message.tags == 'info' %}
+                ℹ️
+                {% endif %}
+            </span>
+            {{ message }}
+   
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     {% endblock %}
+    
 
     {% block scripts %}
 

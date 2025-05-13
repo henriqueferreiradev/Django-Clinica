@@ -3,17 +3,17 @@
 
 
 
-{% block title %}Profissionais - Ponto de Equilíbrio{% endblock %}
+{% block title %}Agenda - Ponto de Equilíbrio{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/profissionais.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/agenda/agenda.css' %}">
 {% endblock %}
 
 {% block topbar %}
 <div class="topbar">
     <div class="topbar-div">
         <i class='bx bx-menu'></i>
-        <span class="text">Profissionais</span>
+        <span class="text">Agenda</span>
         <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
             <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui">
         </form>
@@ -30,59 +30,229 @@
 {% endblock %}
 {% block content %}
 <div class="content">
-    <div class="content-header">
-        <h2>Lista de Pacientes</h2>
-        <form id="paginator-form" method="get">
-            <input type="hidden" name="q" value="{{ query }}">
-            <input type="hidden" id="page-input" name="page" value="{{ page_obj.number }}">
+    <div class="active" id="sidebar">
+        <div class="header-sidebar">
+            <h2>Agendamento</h2>
+            <button id="closeBtn">&times;</button>
 
-            <div class="pagination">
-                {% if page_obj.has_previous %}
+        </div>
+        <div class="formField">
+            <input type="text" id="busca" placeholder="Buscar paciente por nome ou CPF..." autocomplete="off">
+            <input type="hidden" id="paciente_id" />
+            <div id="sugestoes"></div>
+        </div>
 
-                <button type="button" onclick="setPage({{ page_obj.previous_page_number }}, event)">‹</button>
-                {% endif %}
+        <div class="radio-group">
+            <label><input type="radio" name="tipo"> Nova Sessão</label>
+            <label><input type="radio" name="tipo"> Sessão de Pacote Já Assinado</label> 
+            <input type="text" placeholder="Digite o código do pacote"> <!--caso o input acima seja escolhido precisa digitar o codigo do pacote -->
+            <label><input type="radio" name="tipo"> Reposição de Sessão</label>
+        </div>
 
-                <span>{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        <div class="formField">
+            <label>SERVIÇO</label>
+            <select>
+                <option>Sessão Avulsa, Pacote de 10 Sessões etc</option>
+            </select>
+        </div>
 
-                {% if page_obj.has_next %}
-                <button type="button" onclick="setPage({{ page_obj.next_page_number }}, event)">›</button>
-
-                {% endif %}
+        <div class="formRow">
+            <div class="formField">
+                <label>Especialidade</label>
+                <select name="especialidade" id="especialidadeInput" class="input-s" required>
+                    <option value="" disabled selected>Selecione uma especialidade</option>
+                    {% for esp in especialidade_choices %}
+                    <option value="{{ esp.id }}" {% if profissional.especialidade.id == esp.id %}selected{% endif %}>
+                        {{ esp.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
-        </form>
 
-        <button class="btn-add" onclick="abrirModal()">+ Novo Paciente</button>
+            <div class="formField">
+                <label>Profissional 1</label>
+                <select name="profissional" id="profissionalInput" class="input-s" required>
+                    <option value="" disabled selected>Selecione um profissional</option>
+                    {% for profissional in profissionais %}
+                    <option value="{{ profissional.id }}" {% if paciente.profissional.id == profissional.id %}selected{% endif %}>
+                        {{ profissional.nome }} {{ profissional.sobrenome }} 
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
 
+        <div class="formRow">
+            <div class="formField">
+                <label>DATA</label>
+                <input type="text" placeholder="DD/MM AAAA">
+            </div>
+            <div class="formField">
+                <label>Início</label>
+                <input type="time" step="1800" min="08:00" max="18:00">
+            </div>
+            <div class="formField">
+                <label>Fim </label>
+                <input type="time" step="1800" min="08:00" max="18:00">
+            </div>
+        </div>
+
+        <div class="formField">
+            <label><input type="checkbox">Agendamento Recorrente</label> <!--adicionar todas as segundas/tercas....-->
+        </div>
+
+        <div class="formRow">
+            <div class="formField">
+                <input type="text" placeholder="VALOR">
+            </div>
+            <div class="formField">
+                <input type="text" placeholder="Desconto">
+            </div>
+        </div>
+
+        <div class="formField">
+            <label>OBSERVAÇÕES / NOTAS INTERNAS</label>
+            <textarea class="textarea-large"></textarea>
+        </div>
+
+        <!-- Submenus -->
+        <div class="submenu">
+            <div class="submenu-header">Forma de Pagamento</div>
+            <div class="submenu-content">
+                <select>
+                    <option>Pix</option>
+                    <option>Cartão de crédito</option> <!-- -->
+                    <option>Cartão de débito</option> <!-- -->
+                    <option>Dinheiro</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="submenu">
+            <div class="submenu-header">Vínculo com Pacote Existente</div>
+            <div class="submenu-content">
+                
+            </div>
+        </div>
+
+        <div class="submenu">
+            <div class="submenu-header">Tipo de Participação do Profissional 2</div>
+            <div class="submenu-content">
+                <div class="formRow">
+                    <div class="formField">
+                         
+                        <select name="profissional" id="profissionalInput" class="input-s" required>
+                            <option value="" disabled selected>Selecione um profissional</option>
+                            {% for profissional in profissionais %}
+                            <option value="{{ profissional.id }}" {% if paciente.profissional.id == profissional.id %}selected{% endif %}>
+                                {{ profissional.nome }} {{ profissional.sobrenome }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="submenu">
+            <div class="submenu-header">Sala / Ambiente</div>
+            <div class="submenu-content">
+                <select>
+                    <option>Andar 1 - Sala 1</option>
+                    <option>Andar 1 - Sala 2</option>
+                    <option>Andar 1 - Sala 3</option>
+                    <option>Andar 1 - Sala externa</option>
+                    <option>Andar 1 - Personal</option>
+                    <option>Andar 2 - Sala 1</option>
+                    <option>Andar 2 - Sala 2</option>
+                    <option>Andar 2 - Sala 3</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="submenu">
+            <div class="submenu-header">Tags ou Etiquetas</div>
+            <div class="submenu-content">
+                <input type="text" placeholder="Urgente, Primeira vez...">
+            </div>
+        </div>
+
+        <div class="formField">
+            <label>Status</label>
+            <select>
+                <option>✅ Pré-Agendado</option>
+                <option>✅ Agendado</option>
+                <option>✅ Consulta finalizada!</option>
+                <option>❌ D - Desistencia com aviso</option>
+                <option>⚠️ DCR: desistência com remarcação</option>
+                <option>⚠️ FCR: falta com remarcação </option>
+                <option>❌ FC: falta cobrada</option>
+            </select>
+        </div>
+
+        <button>Salvar</button>
+    </div>
+    <div class="content-header">
+        <h2>Consultas do dia</h2>
+
+        <div class="buttons_header">
+
+            <button id="openBtn" class="btn-add">+ Novo Agendamento</button>
+        </div>
     </div>
     <div class="card-grid">
-   
- 
-          <div class="card">
-            <i class='bx bx-dots-horizontal-rounded menu-icon'></i>
-            <div class="avatar"></div>
-            <div class="name">Kathley Sobrenome</div>
-            <div class="subject">Fisioterapia - 120939-F</div>
-            <div class="icons">
-              <span>(21) 98900-0000</span>
-              <span>henriquef501@gmail.com</span>
-            </div>
-          </div>
 
-          <div class="card">
-            <i class='bx bx-dots-horizontal-rounded menu-icon'></i>
-            <div class="avatar"></div>
-            <div class="name">Tati Não sei oq</div>
-            <div class="subject">Nutrição - 120939-F</div>
-            <div class="icons">
-                <span>(21) 98890-0000</span>
-                <span>taynara@saskekun.com</span>
-            </div>
-          </div>
- 
-      </div>
-        {% endblock %}
 
-        {% block scripts %}
-        <script src="https://unpkg.com/imask"></script>
-        <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
-        {% endblock %}
+        <div class="card">
+            <div class="nome_profissional">Tati</div>
+            <ul class="lista_consulta">
+                <li>08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li>08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li>08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li>08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="nome_profissional">Hona</div>
+            <ul class="lista_consulta">
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li style="background-color: #92cbad;">08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="nome_profissional">Nao sei</div>
+            <ul class="lista_consulta">
+                <li>08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+                <li>08:00/09:30 - Henrique 878.755.869-38 - 5/10</li>
+
+            </ul>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/imask"></script>
+<script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
+<script src="{% static '/core/js/agenda/baseAgenda.js' %}"></script>
+{% endblock %}

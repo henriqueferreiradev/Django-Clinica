@@ -144,8 +144,8 @@ document.querySelector('input[name="q"]').addEventListener('keyup', function () 
     const rows = document.querySelectorAll("table tbody tr");
 
     rows.forEach(function (row) {
-        const nome = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
-        const cpf = row.querySelector("td:nth-child(3)").textContent.toLowerCase();
+        const nome = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
+        const cpf = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
 
         const match = nome.includes(search) || cpf.includes(search);
         row.style.display = match ? "" : "none";
@@ -153,17 +153,26 @@ document.querySelector('input[name="q"]').addEventListener('keyup', function () 
 })
 
 function toggleDropdown(button) {
-    // Fecha qualquer dropdown aberto antes
+    const dropdown = button.nextElementSibling;
+
+    // Fecha todos os outros dropdowns
     document.querySelectorAll(".dropdown").forEach(drop => {
-        if (drop !== button.nextElementSibling) {
+        if (drop !== dropdown) {
             drop.style.display = "none";
         }
     });
 
-    const dropdown = button.nextElementSibling;
+    // Alterna o dropdown atual
     dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-}
 
+    // Adiciona o listener global só uma vez
+    document.addEventListener("click", function handleClickOutside(event) {
+        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.style.display = "none";
+            document.removeEventListener("click", handleClickOutside); // Remove após esconder
+        }
+    });
+}
  
 
 function temporizadorAlerta() {

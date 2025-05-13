@@ -11,16 +11,16 @@ function previewImage(event) {
 
     if (file) {
         const reader = new FileReader();
-        reader.onload = function (e) {
+
+        reader.onload = function(e) {
             preview.src = e.target.result;
-            preview.style.display = 'block';
+            preview.style.display = 'block'; // Exibe a imagem
         };
+
         reader.readAsDataURL(file);
-    } else {
-        preview.src = '#';
-        preview.style.display = 'none';
     }
 }
+
 function setPage(pageNumber, event) {
     event.preventDefault();
     document.getElementById("page-input").value = pageNumber;
@@ -42,42 +42,9 @@ function inputMasks() {
         });
     }
 }
-function abrirModal() {
-    document.getElementById("modalOverlay").style.display = "flex";
-    inputMasks()
+ 
 
-}
-
-
-function abrirModalEditar(botao) {
-    inputMasks()
-    const id = botao.dataset.id;
-    const nome_especiad = botao.dataset.nome;
-    const cpf = botao.dataset.cpf;
-    const telefone = botao.dataset.telefone;
-
-
-    document.getElementById('pacienteId').value = id;
-    document.getElementById('nomeInput').value = nome;
-    document.getElementById('cpfInput').value = cpf;
-    document.getElementById('telefoneInput').value = telefone;
-
-
-    document.getElementById('modalTitulo').textContent = "Editar Paciente";
-
-
-    document.getElementById('modalOverlay').style.display = 'flex';
-}
-
-function fecharModal() {
-    document.getElementById('modalOverlay').style.display = 'none';
-
-
-    document.getElementById('formPaciente').reset();
-    document.getElementById('pacienteId').value = '';
-    document.getElementById('modalTitulo').textContent = "Cadastrar Paciente";
-}
-
+ 
 document.querySelector('input[name="q"]').addEventListener('keyup', function () {
     const search = this.value.toLowerCase();
     const rows = document.querySelectorAll("table tbody tr");
@@ -102,3 +69,64 @@ function toggleDropdown(button) {
     const dropdown = button.nextElementSibling;
     dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
 }
+function montarEndereco(data) {
+    const partes = []
+
+    if (data.rua) partes.push(data.rua)
+    if (data.numero) partes.push(data.numero)
+    if (data.complemento) partes.push(data.complemento)
+    if (data.bairro) partes.push(data.bairro)
+
+    const cidadeEstado = []
+   
+    if (data.cidade) partes.push(data.cidade)
+    if (data.estado) partes.push(data.estado)
+    if (cidadeEstado.length) partes.push(cidadeEstado.join(' -'))
+
+    if (data.cep) partes.push(`CEP: ${data.cep}`)
+
+    return partes.join(', ')
+
+}
+function abrirModal(profissionalId) {
+    console.log("Chamando modal para o profissional:", profissionalId);
+    fetch(`/api/profissional/${profissionalId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const endereco = montarEndereco(data)
+            document.getElementById('profissionalNome').innerText = `Perfil do profissional - ${data.nome} ${data.sobrenome}`;
+            document.getElementById('profissionalNascimento').innerText = `Nascimento: ${data.nascimento}`;
+            document.getElementById('profissionalIdade').innerText = data.idade;
+            document.getElementById('profissionalRg').innerText = data.rg;
+            document.getElementById('profissionalCpf').innerText = data.cpf;
+            document.getElementById('profissionalTelefone').innerText = data.telefone;
+            document.getElementById('profissionalCelular').innerText = data.celular;
+            document.getElementById('profissionalCor').innerText = data.cor_raca;
+            document.getElementById('profissionalSexo').innerText = data.sexo;
+            document.getElementById('profissionalEstadoCivil').innerText = data.estado_civil;
+            document.getElementById('profissionalEmail').innerText = data.email;
+            document.getElementById('profissionalEndereco').innerText = endereco;
+            document.getElementById('profissionalObs').innerText = data.observacao;
+            const img = document.getElementById('profissionalFoto');
+         
+            
+            if (data.foto) {
+              img.src = window.location.origin + data.foto;
+            } else {
+              img.src = "/static/core/img/defaultPerfil.png";
+            }
+            // Mostrar modal
+            document.getElementById('modalOverlay').style.display = 'flex';
+        });
+}
+
+function fecharModal() {
+    document.getElementById('modalOverlay').style.display = 'none';
+}
+
+function abrirFicha(url) {
+    const novaAba = window.open(url, '_blank');
+    novaAba.onload = function () {
+      novaAba.print();
+    };
+  }

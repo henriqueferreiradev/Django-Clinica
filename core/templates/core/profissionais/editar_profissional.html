@@ -1,0 +1,353 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Cadastrar Profissional - Ponto de Equilíbrio{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/profissionais/cadastrar_profissional.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
+{% endblock %}
+
+{% block topbar %}
+<div class="topbar">
+    <div class="topbar-div">
+        <i class='bx bx-menu'></i>
+        <span class="text">Cadastrar Profissional</span>
+        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui">
+        </form>
+    </div>
+    <div class="topbar-div">
+        <div class="name-job">
+            <div class="profile_name">Olá, {{ user.username }}</div>
+        </div>
+        <a href="{% url 'logout' %}">
+            <i class='bx btn-sair bx-log-out'></i>
+        </a>
+    </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="content">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form_cadastro">
+        <div class="form_cadastro-pessoa">
+            <div class="form_titulo">Informações pessoais <button class="btn-save" type="submit">Salvar</button></div>
+            <div class="form_div">
+                <div class="div_forms">
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s capitalize-input' value='{{ profissional.nome }}' type="text" name="nome" id="nomeInput" required>
+                            <span class="span-s">Nome*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s capitalize-input' value='{{ profissional.sobrenome }}' name="sobrenome" id="sobrenomeInput" type="text" required />
+                            <span class="span-s">Sobrenome*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s capitalize-input' value='{{ profissional.nomeSocial }}' type="text" name="nomeSocial" id="nomeSocialInput">
+                            <span class="span-s">Nome Social</span>
+                        </div>
+                    </div>
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.rg }}' name="rg" id="rgInput" type="text" required />
+                            <span class="span-s">RG</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.cpf }}' name="cpf" id="cpfInput" type="text" required />
+                            <span class="span-s">CPF*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.cnpj }}' name="cnpj" id="cnpjInput" type="text">
+                            <span class="span-s">CNPJ*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s date-s' value='{{ profissional.data_nascimento }}' type="text" name="nascimento" id="nascimentoInput" required />
+                            <span class="span-s">Nascimento*</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <select name="cor" id="corInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in cor_choices %}
+                                <option value="{{ value }}" {% if profissional.cor_raca == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Cor/Raça</span>
+                        </div>
+
+                        <div class="formField">
+                            <select name="sexo" id="sexoInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in sexo_choices %}
+                                <option value="{{ value }}" {% if profissional.sexo == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Sexo</span>
+                        </div>
+                        <div class="formField">
+                            <select name="estado_civil" id="estadoCivilInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in estado_civil_choices %}
+                                <option value="{{ value }}" {% if profissional.estado_civil == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Estado Civil</span>
+                        </div>
+
+                    </div>
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.naturalidade }}' name="naturalidade" id="naturalidadeInput" type="text" required />
+                            <span class="span-s">Naturalidade*</span>
+                        </div>
+
+                        <div class="formField">
+                            <select name="uf" id="ufInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in uf_choices %}
+                                <option value="{{ value }}" {% if profissional.uf == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">UF*</span>
+                        </div>
+                        <div class="formField">
+                            <select name="especialidade" id="especialidadeInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+
+                                {% for esp in especialidade_choices %}
+                                <option value="{{ esp.id }}" {% if profissional.especialidade.id == esp.id %}selected{% endif %}>
+                                    {{ esp.nome }}
+                                {% endfor %}
+
+                            </select>
+                            <span class="span-s">Especialidade</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <select name="conselho1" id="conselhoInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in conselho_choices %}
+                                <option value="{{ value }}" {% if profissional.conselho1 == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Conselho Principal*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.num1_conselho }}' name="num1_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho*</span>
+                        </div>
+
+
+                        <div class="formField">
+                            <select name="conselho2" id="conselhoInput" class='input-s' >
+                            <option value="" disabled selected></option>
+                                {% for value, label in conselho_choices %}
+                                <option value="{{ value }}" {% if profissional.conselho2  == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Conselho Comp.</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.num2_conselho }}' name="num2_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <select name="conselho3" id="conselhoInput" class='input-s' >
+                            <option value="" disabled selected></option>
+                                {% for value, label in conselho_choices %}
+                                <option value="{{ value }}" {% if profissional.conselho3  == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Conselho Comp.</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.num3_conselho }}' name="num3_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho</span>
+                        </div>
+                        
+                        
+                        <div class="formField">
+                            <select name="conselho4" id="conselhoInput" class='input-s' >
+                            <option value="" disabled selected></option>
+                                {% for value, label in conselho_choices %}
+                                <option value="{{ value }}" {% if profissional.conselho4 == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Conselho Comp.</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.num4_conselho }}' name="num4_conselho" id="conselho1Input" type="text" >
+                            <span class="span-s"> Nº Conselho</span>
+                        </div>
+                    </div>
+                        <div class="form_cadastro-nomes">
+                        
+                            <label for="file" class="custum-file-upload">
+                                
+                                {% if profissional.foto %}
+                                <img id="preview" src="{{ profissional.foto.url }}" alt="Foto atual"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                           object-fit: cover; border-radius: 10px; z-index: 1000; display: block;">
+                            {% else %}
+                                <img id="preview" src="#" alt="Preview da imagem"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                           object-fit: cover; border-radius: 10px; z-index: 1000; display: none;">
+                            {% endif %}
+                                <div class="text">
+                                    <span>Imagem de perfil</span>
+                                </div>
+                                <div class="icon">
+                                    <svg viewBox="0 0 24 24" fill="" xmlns="http://www.w3.org/2000/svg">
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                        </g>
+                                        <g id="SVGRepo_iconCarrier">
+                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z"
+                                                fill=""></path>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="text">
+                                    <span>Clique aqui para enviar a imagem</span>
+                                </div>
+                                <input name='foto' id="file" type="file" accept="image/*" onchange="previewImage(event)">
+                               
+                            </label>
+
+                        <div class="formField">
+                            <textarea class='input-s textarea-s' type="textarea" name='observacao' id="observacaoInput"
+                                required>{{ profissional.observacao}}</textarea>
+                            <span class="span-s">Observação</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form_cadastro-endereco">
+            <div class="form_titulo">Endereço e Contato</div>
+            <div class="form_div">
+                <div class="div_forms">
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField field_cep">
+                            <input class=' input-s' value='{{ profissional.cep }}' type="text" name="cep" id="cepInput" required>
+                            <span class="span-s">CEP*</span>
+                        </div>
+                        <button type="button" id="btn-cep" onclick="buscarCep()">...</button>
+                        <div class="formField field_rua">
+                            <input class='input-s'  value='{{ profissional.rua }}' type="text" name='rua' id="ruaInput" required>
+                            <span class="span-s">Rua*</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s field_numero'  value='{{ profissional.numero }}' type="text" name='numero' id="numero" required>
+                            <span class="span-s">Numero*</span>
+                        </div>
+
+                        <div class="formField">
+                            <input class='input-s '  value='{{ profissional.complemento }}' type="text" name='complemento' id="complementoInput" required>
+                            <span class="span-s">Complemento</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s'  value='{{ profissional.bairro }}' type="text" name='bairro' id="bairro" required>
+                            <span class="span-s">Bairro*</span>
+                        </div>
+
+                        <div class="formField">
+                            <input class='input-s'  value='{{ profissional.cidade }}' type="text" name='cidade' id="cidade" required>
+                            <span class="span-s">Cidade*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s'  value='{{ profissional.uf }}' type="text" name='estado' id="estado" required>
+                            <span class="span-s">UF*</span>
+                        </div>
+                    </div>
+                </div>
+                <!--FIM - ENDEREÇO-->
+
+                <!--CONTATO-->
+                <div class="div_forms">
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.telefone }}' type="text" name="telefone" id="telefoneInput" required>
+                            <span class="span-s">Telefone</span>
+                        </div>
+
+
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.celular }}' type="text" name="celular" id="celularInput" required>
+                            <span class="span-s">Celular*</span>
+                        </div>
+
+                    </div>
+                    <!--CONTATO DE EMERGENCIA-->
+                    <div class="form_cadastro-nomes">
+
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.email }}' type="text" name="email" id="emailInput" required>
+                            <span class="span-s">Email*</span>
+                        </div>
+
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s capitalize-input' value='{{ profissional.nomeEmergencia }}' type="text" name="nomeEmergencia" id="nomeEmergenciaInput" required>
+                            <span class="span-s">Contato de emergência*</span>
+                        </div>
+
+                        <div class="formField">
+                            <select name="vinculo" id="vinculoInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in vinculo_choices %} <!--MUDAR DEPOIS-->
+                                <option value="{{ value }}" {% if profissional.vinculo == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Vínculo*</span>
+                        </div>
+
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.telEmergencia }}' type="text" name="telEmergencia" id="telEmergenciaInput" required>
+                            <span class="span-s">Telefone de emergência*</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+    </div>
+</form>
+</div>
+        {% endblock %}
+
+        {% block scripts %}
+
+        <script src="https://unpkg.com/imask"></script>
+        <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
+        <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
+        <script src="{% static '/core/js/base/cep.js' %}"></script>
+        <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
+        {% endblock %}

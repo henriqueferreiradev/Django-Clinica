@@ -21,7 +21,7 @@ TIPOS_USUARIO = [
     ('secretaria', "Secretaria"),
     ('recepcionista','Recepcionista'),
     ('profissional', 'Profissional'),
-    ('paciente', 'Paciente'), # talvez nao use
+    ('paciente', 'Paciente'),  
     
 ]
 
@@ -160,15 +160,17 @@ class Paciente(models.Model):
     rg = models.CharField(max_length=12, blank=True, null=True)
     cpf = models.CharField(max_length=14, blank=True, null=True)
     data_nascimento = models.DateField(blank=True, null=True)
-    cor_raca = models.CharField(default='Não informado', max_length=20, choices=COR_RACA)
+    cor_raca = models.CharField(default='Não informado', max_length=20,blank=True, null=True, choices=COR_RACA)
     sexo = models.CharField(default='Não informado',max_length=20, choices=SEXO_ESCOLHA)
     estado_civil = models.CharField(default='Não informado',max_length=20, choices=ESTADO_CIVIL)
+    profissao = models.CharField(default='Não informado', max_length=35)  
     naturalidade = models.CharField(max_length=50 )
     uf = models.CharField(max_length=50, choices=UF_ESCOLHA)
     midia = models.CharField(max_length=30, choices=MIDIA_ESCOLHA)
+    redeSocial = models.CharField(default='Não informado', max_length=35)       
     foto = models.ImageField(upload_to=caminho_foto_paciente, blank=True, null=True)
     observacao = models.TextField(max_length=5000, blank=True, null=True)
-
+ 
     cep = models.CharField(max_length=10, blank=True, null=True)
     rua = models.TextField(max_length=255, blank=True, null=True)
     numero = models.TextField(max_length=10, blank=True, null=True)
@@ -234,20 +236,6 @@ class Profissional(models.Model):
      
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
     
     def __str__(self):
         return self.user.get_full_name or self.user.username
@@ -264,3 +252,12 @@ class Pagamento(models.Model):
     
     def __str__(self):
         return f'{self.paciente.nome} - R${self.valor} em {self.data_pagamento.date()}'
+    
+
+class Servico(models.Model):
+    nome = models.CharField(max_length=100)
+    valor = models.DecimalField(max_digits=8, decimal_places=2)
+    ativo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.nome} - R$ {self.valor}" 

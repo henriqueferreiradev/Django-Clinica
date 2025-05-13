@@ -13,3 +13,7 @@ body {
     font-family: Arial, sans-serif;
     overflow: hidden;
 }
+
+.lista_consulta li {
+    list-style-type: none;
+}

@@ -11,7 +11,7 @@
 <div class="topbar">
     <div class="topbar-div">
         <i class='bx bx-menu'></i>
-        <span class="text">Editar pacientes {{ paciente.nome }}</span>
+        <span class="text">Editar pacientes</span>
         <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
             <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
         </form>
@@ -124,7 +124,10 @@
                                 </select>
                                 <span class="span-s">Estado Civil</span>
                             </div>
-
+                            <div class="formField">
+                                <input class='input-s' value='{{ paciente.profissao }}' name="profissao" id="profissaoInput" type="text">
+                                <span class="span-s">Profissão</span>
+                            </div>
                         </div>
 
                         <div class="form_cadastro-nomes">
@@ -153,6 +156,10 @@
 
                                 </select>
                                 <span class="span-s">Como nos conheceu?*</span>
+                            </div>
+                            <div class="formField">
+                                <input class='input-s' value='{{ paciente.redeSocial }}' name="redeSocial" id="redeSocialInput" type="text">
+                                <span class="span-s">Rede Social</span>
                             </div>
                         </div>
 

@@ -317,7 +317,6 @@ select {
   height: 100%;
   object-fit: cover;
   border-radius: 10px;
-  display: none;
   z-index: 1;
 }
 
