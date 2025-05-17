@@ -10,6 +10,7 @@
     --cinzaBorda: #ccc;
     --cinzaEscuro: #6e6e6e;
     --fontePrincipal: 'Inter';
+    --vermelhoInativo: rgb(255, 194, 194);
 }
 
 * {
@@ -52,7 +53,7 @@ body {
 
     padding: 0.7em;
     outline: none;
-    border: 2px solid var(--verdePrincipal);
+    border: 1px solid var(--verdePrincipal);
     border-radius: 5px;
     color: var(--preto);
     font-size: 14px;
@@ -174,7 +175,7 @@ select {
 .grid-config>div {
     background: var(--branco);
     border-radius: 15px;
-  
+
     padding: 1em;
 
 }
@@ -206,4 +207,89 @@ select {
 .form form {
     display: flex;
 
+}
+
+.tabela-wrapper {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--verdePrincipal);
+    border-radius: 10px;
+    margin: 0.5em 0;
+}
+
+.tabela-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.inativo {
+    background-color: rgb(255, 194, 194);
+}
+
+.form .form_titulo {
+
+    font-size: 16px;
+    margin-bottom: 0.5em;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    font-size: 14px;
+
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    background-color: #f9f9f9;
+}
+
+th {
+    text-align: left;
+    color: var(--roxoPrincipal);
+    /* Roxo elegante */
+    font-weight: bold;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+}
+
+td {
+    padding: .5em;
+    border-bottom: 1px solid #eee;
+    vertical-align: center;
+}
+
+.btn_excluir,
+.btn_reativar {
+    font-size: 12px;
+    color: var(--branco);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: .5em;
+    margin: 0;
+    background-color: var(--roxoPrincipal);
+    font-weight: 500;
+
+}
+
+.btn_excluir:hover,
+.btn_reativar:hover {
+    color: var(--preto);
+}
+
+.formField .input_qtd_sessoes {
+    width: 70px;
+}
+.formField .input_valor {
+    width: 100px;
 }

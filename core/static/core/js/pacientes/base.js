@@ -183,3 +183,19 @@ function temporizadorAlerta() {
 }
 
 temporizadorAlerta()
+
+
+let tooltipDelay;
+
+function mostrarPopupComDelay(elemento) {
+  tooltipDelay = setTimeout(() => {
+    const popup = elemento.querySelector('.tooltip-popup');
+    popup.style.display = 'block';
+  }, 1000); // 1 segundo de delay
+}
+
+function ocultarPopup(elemento) {
+  clearTimeout(tooltipDelay);
+  const popup = elemento.querySelector('.tooltip-popup');
+  popup.style.display = 'none';
+}

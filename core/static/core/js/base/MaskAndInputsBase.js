@@ -68,17 +68,29 @@ function inputMasks() {
             mask: '00.000.000/0000-00'
         });
     }
+ 
 
 }
 function capitalizeWords(str) {
-    return str.replace(/\b\w/g, c => c.toUpperCase()).replace(/\B\w*/g, c => c.toLowerCase());
+    const lowercaseWords = ['da', 'de', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'com'];
+
+    return str
+        .toLowerCase()
+        .split(' ')
+        .map((word, index) => {
+            if (lowercaseWords.includes(word) && index !== 0) {
+                return word;
+            }
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(' ');
 }
 
 document.querySelectorAll('.capitalize-input').forEach(input => {
     input.addEventListener('input', function () {
-        const caret = this.selectionStart; // salva posição do cursor
+        const caret = this.selectionStart;
         this.value = capitalizeWords(this.value);
-        this.setSelectionRange(caret, caret); // mantém posição do cursor
+        this.setSelectionRange(caret, caret);
     });
 });
 inputMasks()

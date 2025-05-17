@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+from core.utils import filtrar_ativos_inativos, alterar_status_ativo
 
 
 def dados_paciente(request, paciente_id):
@@ -637,11 +638,13 @@ def agenda_view(request):
     
     especialidades = Especialidade.objects.all()
     profissionais = Profissional.objects.all()
+    servicos = Servico.objects.all()
 
     context = {
         'horarios': horarios,
         'especialidade_choices': especialidades,
         'profissionais': profissionais,
+        'servicos':servicos,
     }
     return render(request, 'core/agendamentos/agenda.html', context)
 
@@ -653,6 +656,14 @@ def novo_agendamento_view(request):
 
 @login_required(login_url='login')
 def configuracao_view(request):
+ 
+    MODELOS_ATIVAVEIS = {
+    'servico': Servico,
+    'especialidade': Especialidade,
+     
+    # adicione mais conforme necessário
+}
+
 
     if request.method == "POST":
         tipo = request.POST.get('tipo')
@@ -663,6 +674,7 @@ def configuracao_view(request):
             if nome and cor:
                 try:
                     Especialidade.objects.create(nome=nome, cor=cor, ativo=True)
+                    print('SALVO COM SUCESSO')
                 except Exception as e:
                     print("Erro ao salvar especialidade:", e)
 
@@ -673,16 +685,38 @@ def configuracao_view(request):
                 try:
                     valor = float(valor.replace(',', '.'))
                     Servico.objects.create(nome=nome, valor=valor, ativo=True)
+                    print('SALVO COM SUCESSO')
                 except Exception as e:
                     print("Erro ao salvar serviço:", e)
-        return redirect('config')
+
         
-    especialidades = Especialidade.objects.all()	
-    servicos = Servico.objects.filter(ativo=True)
+
+        if tipo:
+            # Exemplo: tipo == 'inativar_servico' → ação = 'inativar', modelo_str = 'servico'
+            if '_' in tipo:
+                acao, modelo_str = tipo.split('_', 1)
+                modelo = MODELOS_ATIVAVEIS.get(modelo_str)
+
+                if modelo:
+                    if acao == 'inativar':
+                        alterar_status_ativo(request, modelo, ativar=False, prefixo=modelo_str)
+                    elif acao == 'reativar':
+                        alterar_status_ativo(request, modelo, ativar=True, prefixo=modelo_str)
+                return redirect('config')
+   
+    servicos, total_servicos_ativos, mostrar_todos_servico, filtra_inativo_servico = filtrar_ativos_inativos(request, Servico, prefixo='servico')
+    especialidades, total_especialidades_ativas, mostrar_todos_especialidade, filtra_inativo_especialidade = filtrar_ativos_inativos(request, Especialidade, prefixo='especialidade')
+    
+    
+
     return render(request, 'core/configuracoes.html', {
-        'especialidades': especialidades,
         'servicos': servicos,
-        
+        'especialidades': especialidades,
+        'mostrar_todos_servico': mostrar_todos_servico,
+        'filtra_inativo_servico': filtra_inativo_servico,
+        'mostrar_todos_especialidade': mostrar_todos_especialidade,
+        'filtra_inativo_especialidade': filtra_inativo_especialidade,
+      
     })
 
 

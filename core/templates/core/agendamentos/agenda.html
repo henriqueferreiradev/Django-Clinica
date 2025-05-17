@@ -51,8 +51,13 @@
 
         <div class="formField">
             <label>SERVIÇO</label>
-            <select>
-                <option>Sessão Avulsa, Pacote de 10 Sessões etc</option>
+            <select name="pacotes" id="pacotesInput" class="input-s" required>
+                <option value="" disabled selected>Selecione um pacote</option>
+                {% for servico in servicos %}
+                <option value="{{ servico.id }}" data-valor="{{ servico.valor }}">
+                    {{ servico.nome }} - R$ {{ servico.valor }}
+                </option>
+                {% endfor %}
             </select>
         </div>
 
@@ -74,7 +79,7 @@
                 <select name="profissional" id="profissionalInput" class="input-s" required>
                     <option value="" disabled selected>Selecione um profissional</option>
                     {% for profissional in profissionais %}
-                    <option value="{{ profissional.id }}" {% if paciente.profissional.id == profissional.id %}selected{% endif %}>
+                    <option value="{{ profissional.id }}" {% if profissional.id == profissional.id %}selected{% endif %}>
                         {{ profissional.nome }} {{ profissional.sobrenome }} 
                     </option>
                     {% endfor %}
@@ -84,7 +89,7 @@
 
         <div class="formRow">
             <div class="formField">
-                <label>DATA</label>
+                <label>Data</label>
                 <input type="text" placeholder="DD/MM AAAA">
             </div>
             <div class="formField">
@@ -103,12 +108,25 @@
 
         <div class="formRow">
             <div class="formField">
-                <input type="text" placeholder="VALOR">
+                <label>Valor Pacote</label>
+                <input id="valor_pacote" type="number" oninput="calcularDesconto()" readonly>
+
             </div>
+        
             <div class="formField">
-                <input type="text" placeholder="Desconto">
+                <label id='desconto_label'>Desconto (%)</label>
+                <div class="input-wrapper">
+                    <input id="desconto" type="number"   oninput="calcularDesconto()">
+                    <button type="button" id='desconto_button' class="modo_desconto" onclick="alternarModoDesconto()">R$</button>
+                </div>
+            </div>
+        
+            <div class="formField">
+                <label>Valor final</label>
+                <input id="valor_final" type="number" oninput="alterarDesconto()">
             </div>
         </div>
+
 
         <div class="formField">
             <label>OBSERVAÇÕES / NOTAS INTERNAS</label>
@@ -253,6 +271,7 @@
 
 {% block scripts %}
 <script src="https://unpkg.com/imask"></script>
-<script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
-<script src="{% static '/core/js/agenda/baseAgenda.js' %}"></script>
+<script src="{% static 'core/js/agenda/baseAgenda.js' %}"></script>
+<script src="{% static 'core/js/profissionais/baseProfissionais.js' %}"></script>
+
 {% endblock %}

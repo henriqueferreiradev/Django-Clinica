@@ -1,3 +1,52 @@
+let modoPercentual = true;
+
+window.calcularDesconto = function () {
+    const valorPacote = parseFloat(document.getElementById('valor_pacote').value) || 0;
+    const desconto = parseFloat(document.getElementById('desconto').value) || 0;
+    let valorFinal = 0;
+
+    if (modoPercentual) {
+        valorFinal = valorPacote - (valorPacote * (desconto / 100));
+    } else {
+        valorFinal = valorPacote - desconto;
+    }
+
+    document.getElementById('valor_final').value = valorFinal.toFixed(2);
+};
+
+window.alternarModoDesconto = function () {
+    modoPercentual = !modoPercentual;
+    const descontoButton = document.getElementById('desconto_button');
+    const descontoLabel = document.getElementById('desconto_label');
+    descontoLabel.textContent = modoPercentual ? 'Desconto (%)' : 'Desconto (R$)';
+    descontoButton.textContent = modoPercentual ? 'R$' : '%';
+    calcularDesconto();
+};
+
+window.alterarDesconto = function () {
+    const valorPacote = parseFloat(document.getElementById('valor_pacote').value) || 0;
+    const valorFinal = parseFloat(document.getElementById('valor_final').value) || 0;
+
+    let descontoCalculado = 0;
+
+    if (modoPercentual && valorPacote !== 0) {
+        descontoCalculado = ((valorPacote - valorFinal) / valorPacote) * 100;
+    } else {
+        descontoCalculado = valorPacote - valorFinal;
+    }
+
+    document.getElementById('desconto').value = descontoCalculado.toFixed(2);
+};
+
+// Quando trocar o serviço no select:
+document.getElementById('pacotesInput').addEventListener('change', function () {
+    const selectedOption = this.options[this.selectedIndex];
+    const valor = parseFloat(selectedOption.getAttribute('data-valor')) || 0;
+
+    document.getElementById('valor_pacote').value = valor.toFixed(2);
+    calcularDesconto();  // <- necessário para atualizar o valor final automaticamente
+});
+
 const openBtn = document.getElementById('openBtn');
 const closeBtn = document.getElementById('closeBtn');
 const sidebar = document.getElementById('sidebar');
@@ -56,3 +105,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+
+document.getElementById('pacotesInput').addEventListener('change', function () {
+    const selectedOption = this.options[this.selectedIndex];
+    const valor = selectedOption.getAttribute('data-valor');
+
+    const valorInput = document.getElementById('valor_pacote');
+    valorInput.value = valor || '';
+});

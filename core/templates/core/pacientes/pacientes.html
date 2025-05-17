@@ -82,7 +82,26 @@
       <tbody>
         {% for paciente in pacientes %}
         <tr class="{% if not paciente.ativo %} inativo{% endif %}">
-          <td>{{ paciente.nome }} {{ paciente.sobrenome }}</td>
+          <td>
+            <div class="tooltip-wrapper"
+                 onmouseenter="mostrarPopupComDelay(this)"
+                 onmouseleave="ocultarPopup(this)">
+              <span>{{ paciente.nome }} {{ paciente.sobrenome }}</span>
+              <div class="tooltip-popup">
+                <div class="info">
+                  {% if paciente.foto %}
+                    <img src="{{ paciente.foto.url }}" alt="Foto">
+                  {% else %}
+                    <img src="https://via.placeholder.com/50" alt="Sem foto">
+                  {% endif %}
+                  <div>
+                    <strong>{{ paciente.nome }} {{ paciente.sobrenome }}</strong><br>
+                    {{ paciente.celular }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
           <td>{{ paciente.cpf }}</td>
           <td>{{ paciente.celular }}</td>
           <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
@@ -107,26 +126,27 @@
         </tr>
         {% endfor %}
       </tbody>
+      <div class="tabela_infos-dados">
+        <p>Mostrando: {{ total_filtrados }} de {{ total_ativos }}</p>
+        <form method="get" style="display: inline;">
+          <label class="label_inativos">
+            <input type="checkbox" name="mostrar_todos" onchange="this.form.submit()" 
+            {% if mostrar_todos %}checked{% endif %}>
+            Mostrar inativos
+          </label>
+        </form>
+        <form method="get" style="display: inline;">
+          <label class="label_inativos">
+            <input type="checkbox" name="filtra_inativo" onchange="this.form.submit()" 
+            {% if filtra_inativo %}checked{% endif %}>
+            Mostrar apenas inativos
+          </label>
+        </form>
+      </div>
+    </div>
     </table>
   </div>
-  <div class="tabela_infos-dados">
-    <p>Mostrando: {{ total_filtrados }} de {{ total_ativos }}</p>
-    <form method="get" style="display: inline;">
-      <label class="label_inativos">
-        <input type="checkbox" name="mostrar_todos" onchange="this.form.submit()" 
-        {% if mostrar_todos %}checked{% endif %}>
-        Mostrar inativos
-      </label>
-    </form>
-    <form method="get" style="display: inline;">
-      <label class="label_inativos">
-        <input type="checkbox" name="filtra_inativo" onchange="this.form.submit()" 
-        {% if filtra_inativo %}checked{% endif %}>
-        Mostrar apenas inativos
-      </label>
-    </form>
-  </div>
-</div>
+
 
 
 <div id="modalOverlay" class="overlay" style="display: none;">

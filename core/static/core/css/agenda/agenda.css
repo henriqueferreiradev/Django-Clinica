@@ -120,7 +120,7 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1em;
- 
+
 }
 
 #sidebar {
@@ -136,7 +136,7 @@ body {
     z-index: 1000;
     border-radius: 20px 0 0 20px;
     max-width: 100vh;
-    overflow-y:auto;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
@@ -164,7 +164,7 @@ body {
 
 
 /*=========================================================*/
- 
+
 
 h2 {
     margin-top: 0;
@@ -184,18 +184,18 @@ h2 {
 .formField input[type="text"],
 .formField input[type="date"],
 .formField input[type="time"],
-.formField input[type="number"]
+.formField input[type="number"],
 .formField input[type="radio"],
 .formField select,
 .formField textarea {
     width: 100%;
     padding: 10px;
-    border:  1px solid var(--verdePrincipal);
+    border: 1px solid var(--roxoPrincipal);
     border-radius: 6px;
     font-size: 14px;
     outline: none;
 }
- 
+
 
 .submenu input[type="text"],
 .submenu input[type="date"],
@@ -205,9 +205,47 @@ h2 {
 .submenu textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid var(--verdePrincipal);
+    border: 1px solid var(--roxoPrincipal);
     border-radius: 6px;
     font-size: 14px;
+}
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* espaço pro botão */
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid var(--roxoPrincipal);
+    padding: 8px;
+}
+
+.input-wrapper .modo_desconto {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    height: 24px;
+    width: 28px;
+    border: none;
+    border-radius: 6px;
+    background: var(--roxoPrincipal)  ;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .formRow {
@@ -268,17 +306,7 @@ h2 {
 .submenu.open .submenu-content {
     display: block;
 }
-
-button {
-    margin-top: 20px;
-     
-    background: black;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-}
+ 
 
 /* Sugestões de paciente */
 #sugestoes {
@@ -289,4 +317,8 @@ button {
     background: white;
     width: 100%;
     z-index: 10;
+}
+
+#sugestoes div:hover {
+    background-color:var(--roxoPrincipal-hover);
 }

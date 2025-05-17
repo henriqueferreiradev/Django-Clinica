@@ -247,7 +247,7 @@ button:hover {
   width: 260px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  color: var(--roxoPrincipal);
   background: var(--verdePrincipal);
   padding: 12px 0;
   transition: all 0.5s ease;
@@ -282,7 +282,7 @@ button:hover {
 
 .sidebar .profile-details .profile_name,
 .sidebar .profile-details .job {
-  color: #fff;
+  color: var(--roxoPrincipal);
   font-size: 18px;
   font-weight: 500;
   white-space: nowrap;

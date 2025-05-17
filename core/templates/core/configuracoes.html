@@ -31,42 +31,127 @@
 
     <div class="grid-config">
         <div class="form form-1">
+            <h2 class="form_titulo">Especialidades</h2>
             <form class="formField" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="tipo" value="especialidade">
-                <input class='input-s' placeholder='Nova especialidade' type="text">
-                
+                <input class='input-s capitalize-input' name="nome" placeholder='Nova especialidade' type="text">
                 <input class="" type="color" id="cor" name="cor" value="#4a90e2"><br><br>
                 <button type="submit">Salvar</button>
             </form>
+            <div class="tabela-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>Cor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for especialidade in especialidades %}
+                        <tr class="{% if not especialidade.ativo %} inativo {% endif %}">
+                            <td>{{ especialidade.nome }}</td>
+                            <td onclick="copiarTexto('{{ especialidade.cor }}')"
+                            style="background-color: {{ especialidade.cor }}; color: #fff; padding: 5px; border-radius: 4px; cursor: pointer;"
+                            title="Clique para copiar">
+                            
+                        </td>
+                        <span id="feedback" style="display: none; position: fixed; top: 10px; right: 10px; background: #4CAF50; color: white; padding: 5px 10px; border-radius: 5px; z-index: 1000;">
+                            Copiado!
+                        </span>
+                            <td>
+                                <form method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="especialidade_id" value="{{ especialidade.id }}">
+
+                                    {% if filtra_inativo_especialidade %}
+                                    <input type="hidden" name="tipo" value="reativar_especialidade">
+                                    <button class='btn_reativar' type="submit"> Reativar ↺</button>
+                                    {% else %}
+                                    <input type="hidden" name="tipo" value="inativar_especialidade">
+                                    <button class='btn_excluir' type="submit">Excluir ✕</button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="tabela_infos-dados">
+                    
+ 
+                <form method="get" style="display: inline;">
+                    <label class="label_inativos">
+                        <input type="checkbox" name="filtra_inativo_especialidade" onchange="this.form.submit()" 
+                        {% if filtra_inativo_especialidade %}checked{% endif %}>
+                        Mostrar apenas inativos
+                    </label>
+                </form>
+            </div>
         </div>
         <div class="form form-2">
 
         </div>
         <div class="form form-3">
+            <h2 class="form_titulo">Serviços</h2>
             <form class="formField" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="tipo" value="servico">
-                <input class="input-s" name="nome" placeholder="Novo serviço" type="text" required>
-                <input class="input-s" name="valor" placeholder="Valor (R$)" type="number" step="10.00" required>
+                <input class="input-s capitalize-input" name="nome" placeholder="Novo serviço" type="text" required>
+                <input class="input_qtd_sessoes input-s capitalize-input " name="qtd_sessoes" placeholder="Qtd sessões" type="number" required>
+                <input class="input_valor input-s" name="valor" placeholder="Valor (R$)" type="number" step="0.01" required>
                 <button type="submit">Salvar</button>
-                <ul>
-                    {% for servico in servicos %}
-                        <li>
-                            {{ servico.nome }} - R$ {{ servico.valor }}
-                            <form method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="tipo" value="inativar_servico">
-                                <input type="hidden" name="servico_id" value="{{ servico.id }}">
-                                <button type="submit" style="border: none; background: none; color: red; cursor: pointer;">✕</button>
-                            </form>
-                        </li>
-                    {% endfor %}
-                </ul>
             </form>
+            <div class="tabela-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for servico in servicos %}
+                        <tr class="{% if not servico.ativo %} inativo {% endif %}">
+                            <td>{{ servico.nome }}</td>
+                            <td>R$ {{ servico.valor }}</td>
+                            <td>
+                                <form method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servico_id" value="{{ servico.id }}">
+
+                                    {% if filtra_inativo_servico %}
+                                    <input type="hidden" name="tipo" value="reativar_servico">
+                                    <button class='btn_reativar' type="submit"> Reativar ↺</button>
+                                    {% else %}
+                                    <input type="hidden" name="tipo" value="inativar_servico">
+                                    <button class='btn_excluir' type="submit">Excluir ✕</button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="tabela_infos-dados">
+ 
+                <form method="get" style="display: inline;">
+                    <label class="label_inativos">
+                        <input type="checkbox" name="filtra_inativo_servico" onchange="this.form.submit()" 
+                        {% if filtra_inativo_servico  %}checked{% endif %}>
+                        Mostrar apenas inativos
+                    </label>
+                </form>
+            </div>
         </div>
         <div class="form form-4">
-            
+
         </div>
         <div class="form form-5"></div>
         <div class="form form-6"></div>
@@ -80,4 +165,6 @@
 {% block scripts %}
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
+<script src="{% static '/core/js/configuracoes/configBase.js' %}"></script>
+<script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
 {% endblock %}
