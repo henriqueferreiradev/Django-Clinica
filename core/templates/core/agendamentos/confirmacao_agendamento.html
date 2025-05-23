@@ -241,30 +241,61 @@
     <body>
         <div class="confirmation-container">
             <div class="confirmation-icon">✓</div>
-            <h1>Sessão Agendada com Sucesso!</h1>
+            <h1>Agendadamento realizado com Sucesso!</h1>
             <p class="confirmation-text">
                 Sessão agendada com sucesso.
             </p>
-
             <div class="appointment-details">
                 <div class="detail-item">
                     <span class="detail-label">Nome do paciente:</span>
                     <span class="detail-value">{{ paciente.nome }} {{ paciente.sobrenome }}</span>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">Data da sessão:</span>
-                    <span class="detail-value"><strong> {{ agendamento.data|date:"d/m/Y" }} -
-                            {{ agendamento.data|date:"l" }}</strong>
-                    </span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Horário da sessão:</span>
-                    <span class="detail-value"><strong>{{ agendamento.hora_inicio|time:'H:i' }} às
-                            {{ agendamento.hora_fim|time:'H:i' }} </strong></span>
-                </div>
+            
+                {% if agendamentos_recorrentes and agendamentos_recorrentes|length > 1 %}
+                {% for sessao in agendamentos_recorrentes %}
+                    <div class="detail-item">
+                        <span class="detail-label">Sessão {{ forloop.counter }}:</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Data da sessão:</span>
+                        <span class="detail-value">
+                            {{ sessao.data|date:"d/m/Y" }} - {{ sessao.data|date:"l" }}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Horário da sessão:</span>
+                        <span class="detail-value">
+                            {{ sessao.hora_inicio|time:"H:i" }} às {{ sessao.hora_fim|time:"H:i" }}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value">{{ sessao.get_status_display }}</span>
+                    </div>
+                    <hr style="margin: 10px 0;">  {# separador visual entre sessões #}
+                {% endfor %}
+            {% else %}
+                    <div class="detail-item">
+                        <span class="detail-label">Data da sessão:</span>
+                        <span class="detail-value">
+                            <strong>{{ agendamento.data|date:"d/m/Y" }} - {{ agendamento.data|date:"l" }}</strong>
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Horário da sessão:</span>
+                        <span class="detail-value">
+                            <strong>{{ agendamento.hora_inicio|time:"H:i" }} às {{ agendamento.hora_fim|time:"H:i" }}</strong>
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value">{{ agendamento.get_status_display }}</span>
+                    </div>
+                {% endif %}
+            
                 <div class="detail-item">
                     <span class="detail-label">Profissional:</span>
-                    <span class="detail-value">{{ profissional.nome }} {{ profissional.sobrenome}} </span>
+                    <span class="detail-value">{{ profissional.nome }} {{ profissional.sobrenome }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Serviço:</span>
@@ -273,10 +304,6 @@
                 <div class="detail-item">
                     <span class="detail-label">Ambiente:</span>
                     <span class="detail-value">{{ agendamento.ambiente }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Status:</span>
-                    <span class="detail-value">{{ agendamento.get_status_display }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Código do pacote:</span>
@@ -289,7 +316,7 @@
                     </span>
                 </div>
             </div>
-
+            
             <div class="financial-details">
                 <div class="financial-item">
                     <span class="financial-label">Valor do Pacote:</span>

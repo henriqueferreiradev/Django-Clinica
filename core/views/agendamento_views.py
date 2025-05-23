@@ -26,7 +26,7 @@ def agenda_view(request):
         'agendamentos_agrupados': dados_agrupados,
         'query': query,
     }
-    print(dados_agrupados)
+ 
     return render(request, 'core/agendamentos/agenda.html', context)
 
 def proxima_data_semana(data_inicial, dia_semana_index):
@@ -37,6 +37,25 @@ def proxima_data_semana(data_inicial, dia_semana_index):
     
     delta_dias = (dia_semana_index - data_inicial.weekday() + 7) % 7
     return data_inicial + timedelta(days=delta_dias)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @login_required(login_url='login')
 def criar_agendamento(request):
@@ -152,14 +171,14 @@ def criar_agendamento(request):
             )
             agendamentos_criados.append(agendamento)
 
-            if valor_pago and float(valor_pago) > 0:
-                Pagamento.objects.create(
-                    paciente=paciente,
-                    pacote=pacote,
-                    valor=float(valor_pago),
-                    forma_pagamento=forma_pagamento,
-                    agendamento=agendamento,
-                )
+        if valor_pago and float(valor_pago) > 0:
+            Pagamento.objects.create(
+                paciente=paciente,
+                pacote=pacote,
+                valor=float(valor_pago),
+                forma_pagamento=forma_pagamento,
+                agendamento=agendamentos_criados[0],
+            )
 
         
         if pacote:
@@ -210,6 +229,8 @@ def verificar_pacotes_ativos(request, paciente_id):
 def listar_agendamentos(query=None):
     agendamentos = Agendamento.objects.select_related(
         'paciente', 'profissional_1', 'profissional_1__especialidade'
+    ).filter(
+        data__gte=date.today()
     ).order_by('data', 'hora_inicio')
 
     if query:
@@ -264,6 +285,9 @@ def confirmacao_agendamento(request, agendamento_id):
     servico = agendamento.servico
     pacote = agendamento.pacote
 
+    agendamentos_recorrentes = Agendamento.objects.filter(pacote=agendamento.pacote).order_by('data', 'hora_inicio')
+    codigo_pacote = agendamento.pacote.codigo if agendamento.pacote else None
+    print(codigo_pacote, agendamentos_recorrentes)
 
     total_pago = pacote.total_pago if pacote else 0
     valor_restante = pacote.valor_restante if pacote else 0
@@ -271,7 +295,7 @@ def confirmacao_agendamento(request, agendamento_id):
     sessoes_restantes = pacote.sessoes_restantes if pacote else None
 
     mensagem = gerar_mensagem_confirmacao(agendamento)
-
+    
     context = {
         'agendamento': agendamento,
         'paciente': paciente,
@@ -284,6 +308,7 @@ def confirmacao_agendamento(request, agendamento_id):
         'sessao_atual': sessao_atual,
         'sessoes_restantes': sessoes_restantes,
         'mensagem_confirmacao': mensagem,
+        'agendamentos_recorrentes':agendamentos_recorrentes,
     }
 
     response = render(request, 'core/agendamentos/confirmacao_agendamento.html', context)
@@ -311,3 +336,16 @@ def enviar_email_agendamento(request, agendamento_id):
         return JsonResponse({'status': 'ok', 'mensagem': 'E-mail enviado com sucesso'})
 
     return JsonResponse({'status': 'erro', 'mensagem': 'Requisição inválida'}, status=400)
+
+
+def alterar_status(request,pk):
+    if request.method == "POST":
+        agendamento = get_object_or_404(Agendamento, pk=pk)
+        novo_status = request.POST.get('status')
+
+        if novo_status:
+            agendamento.status = novo_status
+            print(novo_status)
+            agendamento.save()
+        
+    return redirect('agenda')

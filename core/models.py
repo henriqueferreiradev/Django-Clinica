@@ -144,11 +144,12 @@ STATUS_CHOICES = [
     ('pre', '✅ Pré-Agendado'),
     ('agendado', '✅ Agendado'),
     ('finalizado', '✅ Consulta finalizada!'),
-    ('desmarcacao', '❌ D - Desmarcação'),
-    ('dcr', '⚠ DCR: Desmarcação com Reposição'),
-    ('fcr', '⚠ FCR: Falta com Reposição'),
-    ('falta_cobrada', '❌ FC: Falta Cobrada'),
+    ('desistencia', '❌ D - Desmarcação'),
+    ('desistencia_remarcacao', '⚠️ DCR - Desmarcação com reposição'),
+    ('falta_remarcacao', '⚠️ FCR - Falta com reposição'),
+    ('falta_cobrada', '❌ FC - Falta cobrada'),
 ]
+
 class User(AbstractUser):
     tipo = models.CharField(max_length=20, choices=TIPOS_USUARIO)
     telefone = models.CharField(max_length=20, blank=True, null=True)
@@ -335,7 +336,7 @@ class Agendamento(models.Model):
     hora_fim = models.TimeField()
     ambiente = models.CharField(max_length=100, blank=True)
     observacoes = models.TextField(blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pre')
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pre')
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
     tags = models.CharField(max_length=200, blank=True)
 

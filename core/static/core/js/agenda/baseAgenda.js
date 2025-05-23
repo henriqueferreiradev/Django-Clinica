@@ -13,6 +13,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeBtn = document.getElementById('closeBtn');
     const sidebar = document.getElementById('sidebar');
 
+    const openBtnEdit = document.getElementById('openBtnEdit')
+    const closeBtnEdit = document.getElementById('closeBtnEdit')
+    const modalEditAgenda = document.getElementById('modalEditAgenda')
+
     const input = document.getElementById('busca');
     const sugestoes = document.getElementById('sugestoes');
     const pacienteIdInput = document.getElementById('paciente_id');
@@ -214,6 +218,16 @@ document.addEventListener("DOMContentLoaded", function () {
         closeBtn.addEventListener('click', () => sidebar.classList.remove('active'));
     }
 
+
+    if (openBtnEdit && closeBtnEdit && modalEditAgenda) {
+        openBtnEdit.addEventListener("click", () =>
+            modalEditAgenda.classList.add("active")
+        );
+
+        closeBtnEdit.addEventListener("click", () =>
+            modalEditAgenda.classList.remove("active")
+        );
+    }
     document.querySelectorAll('.submenu-header').forEach(header => {
         header.addEventListener('click', function () {
             const submenu = this.parentElement;
@@ -269,4 +283,97 @@ function verDetalhes(id) {
     alert('Ver detalhes do agendamento: ' + id);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            if (cookie.trim().startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.trim().substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.querySelectorAll('.editar-horario-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const container = this.closest('.agenda-hora');
+        const spanHora = container.querySelector('.hora-text');
+        const inputInicio = container.querySelector('.hora-inicio-input');
+        const inputFim = container.querySelector('.hora-fim-input');
+
+        // Alterna entre visualização e edição
+        spanHora.classList.add('hidden');
+        inputInicio.classList.remove('hidden');
+        inputFim.classList.remove('hidden');
+
+        // Muda o ícone do botão para "salvar"
+        this.innerHTML = "<i class='bx bx-check'></i>";
+        this.classList.add('salvar-mode');
+    });
+});
+
+document.querySelectorAll('.editar-horario-btn').forEach(button => {
+    button.addEventListener('click', async function () {
+        if (!this.classList.contains('salvar-mode')) return;
+
+        const container = this.closest('.agenda-hora');
+        const spanHora = container.querySelector('.hora-text');
+        const inputInicio = container.querySelector('.hora-inicio-input');
+        const inputFim = container.querySelector('.hora-fim-input');
+
+        const horaInicio = inputInicio.value;
+        const horaFim = inputFim.value;
+        const agendamentoId = container.dataset.agendamentoId; // certifique-se de setar isso no HTML
+
+        try {
+            const response = await fetch('/agendamento/editar-horario/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    agendamento_id: agendamentoId,
+                    hora_inicio: horaInicio,
+                    hora_fim: horaFim
+                })
+            });
+
+            if (response.ok) {
+                // Atualiza visualmente
+                spanHora.textContent = `${horaInicio} – ${horaFim}`;
+                spanHora.classList.remove('hidden');
+                inputInicio.classList.add('hidden');
+                inputFim.classList.add('hidden');
+                this.innerHTML = "<i class='bx bx-edit'></i>";
+                this.classList.remove('salvar-mode');
+            } else {
+                alert('Erro ao salvar horário.');
+            }
+        } catch (e) {
+            alert('Erro ao salvar horário.');
+        }
+    });
+});
 

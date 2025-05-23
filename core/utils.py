@@ -84,25 +84,7 @@ def gerar_mensagem_confirmacao(agendamento):
     )
     return mensagem
 
-from django.core.mail import send_mail
-
-def enviar_lembrete_agendamento(paciente_nome, paciente_email, numero_whatsapp):
-    assunto = 'Lembrete de Sessão Agendada'
-    mensagem = (
-        f"Olá, {paciente_nome}!\n\n"
-        "Sua sessão foi agendada. Esse é apenas um lembrete.\n\n"
-        f"Em caso de dúvida, não hesite em nos mandar uma mensagem: {numero_whatsapp}\n\n"
-        "Até breve!"
-    )
-     
-    send_mail(
-        subject=assunto,
-        message=mensagem,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[paciente_email],
-        fail_silently=False,
-    )
-
+ 
 
 
 def enviar_lembrete_email(destinatario, contexto):

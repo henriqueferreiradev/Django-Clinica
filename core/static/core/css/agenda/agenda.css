@@ -551,7 +551,7 @@ thead tr th:last-child {
 /* Estrutura em Grid */
 .agenda-item {
     display: grid;
-    grid-template-columns: 150px 1fr 180px 200px;
+    grid-template-columns: 150px 1fr 180px auto;
     gap: 15px;
     padding: 12px 0;
     border-bottom: 1px solid var(--cinzaBorda);
@@ -621,8 +621,9 @@ thead tr th:last-child {
 
 /* Coluna de Status */
 .status-col {
-    display: flex;
+    display: grid;
     align-items: center;
+
 }
 
 .status-select {
@@ -655,3 +656,36 @@ thead tr th:last-child {
 }
 
 /* Responsivo */
+
+
+
+
+.modal-att-agenda {
+    display: none;
+    /* Oculto por padrão */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fundo escuro semi-transparente */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-att-agenda.active {
+    display: flex;
+    /* Ativo: exibe com alinhamento central */
+}
+
+.modal-att-agenda .modal-conteudo {
+    background-color: white;
+    width: 60%;
+    height: 40%;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
