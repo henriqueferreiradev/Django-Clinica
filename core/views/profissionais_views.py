@@ -1,0 +1,266 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from datetime import date, datetime, timedelta
+from django.http import JsonResponse, HttpResponse 
+from django.contrib.auth.decorators import login_required
+from dateutil.relativedelta import relativedelta
+
+def cadastrar_profissionais_view(request):
+    if request.method == 'POST':
+        if 'delete_id' in request.POST:
+            delete_id = request.POST.get('delete_id')
+            profissional = Profissional.objects.get(id=delete_id)
+            profissional.ativo = False
+            profissional.save()
+            return redirect('profissionals')
+
+        # Criação de novo profissional
+        nome = request.POST.get('nome')
+        sobrenome = request.POST.get('sobrenome')
+        nomeSocial = request.POST.get('nomeSocial')
+        rg = request.POST.get('rg')
+        cpf = request.POST.get('cpf')
+        cnpj = request.POST.get('cnpj')
+        nascimento = request.POST.get('nascimento')
+        try:
+            nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
+        except ValueError:
+            nascimento_formatada = None  # ou algum tratamento específico
+        cor_raca = request.POST.get('cor')
+        sexo = request.POST.get('sexo')
+        estado_civil = request.POST.get('estado_civil')
+        naturalidade = request.POST.get('naturalidade')
+        uf = request.POST.get('uf')
+        especialidade_id = request.POST.get('especialidade')
+        especialidade_obj = Especialidade.objects.get(id=especialidade_id) if especialidade_id else None
+        conselho1 = request.POST.get('conselho1')
+        conselho2 = request.POST.get('conselho2')
+        conselho3 = request.POST.get('conselho3')
+        conselho4 = request.POST.get('conselho4')
+
+        num1_conselho = request.POST.get("num1_conselho")
+        num2_conselho = request.POST.get("num2_conselho")
+        num3_conselho = request.POST.get("num3_conselho")
+        num4_conselho = request.POST.get("num4_conselho")
+
+        midia = request.POST.get('midia')
+        foto = request.FILES.get('foto')
+        observacao = request.POST.get('observacao')
+
+        cep = request.POST.get('cep')
+        rua = request.POST.get('rua')
+        numero = request.POST.get('numero')
+        complemento = request.POST.get('complemento')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+
+        telefone = request.POST.get('telefone')
+        celular = request.POST.get('celular')
+        email = request.POST.get('email')
+        nomeEmergencia = request.POST.get('nomeEmergencia')
+        vinculo = request.POST.get('vinculo')
+        telEmergencia = request.POST.get('telEmergencia')
+
+     
+        if nome:
+    # 1º: Cria o profissional sem a foto
+            profissional = Profissional.objects.create(
+                nome=nome,
+                sobrenome=sobrenome,
+                nomeSocial=nomeSocial,
+                rg=rg,
+                cpf=cpf,
+                cnpj=cnpj,
+                data_nascimento=nascimento_formatada,
+                cor_raca=cor_raca,
+                sexo=sexo,
+                naturalidade=naturalidade,
+                uf=uf,
+                especialidade=especialidade_obj,
+                conselho1=conselho1,
+                conselho2=conselho2,
+                conselho3=conselho3,
+                conselho4=conselho4,
+                num1_conselho=num1_conselho,
+                num2_conselho=num2_conselho,
+                num3_conselho=num3_conselho,
+                num4_conselho=num4_conselho,
+                estado_civil=estado_civil,
+                complemento=complemento,
+                observacao=observacao,
+                cep=cep,
+                rua=rua,
+                numero=numero,
+                bairro=bairro,
+                cidade=cidade,
+                estado=estado,
+                telefone=telefone,
+                celular=celular,
+                nomeEmergencia=nomeEmergencia,
+                vinculo=vinculo,
+                telEmergencia=telEmergencia,
+                email=email,
+                ativo=True
+            )
+
+            # 2º: Agora que o ID existe, atribua a foto
+            if foto:
+                profissional.foto = foto
+                profissional.save()
+    
+    profissionais = Profissional.objects.all().order_by('-id')
+    especialidades = Especialidade.objects.all()
+
+
+    return render(request, 'core/profissionais/cadastrar_profissional.html', {
+                        'estado_civil_choices': ESTADO_CIVIL,
+                        'midia_choices': MIDIA_ESCOLHA,
+                        'sexo_choices': SEXO_ESCOLHA,
+                        'uf_choices': UF_ESCOLHA,
+                        'cor_choices': COR_RACA,
+                        'vinculo_choices': VINCULO,
+                        'conselho_choices': CONSELHO_ESCOLHA,
+                        'especialidade_choices': especialidades,
+                        'profissionais': profissionais,
+                        }) 
+
+def editar_profissional_view(request, id):
+
+
+    profissional = get_object_or_404(Profissional, id=id)
+
+    if request.method == 'POST':
+        if 'delete_id' in request.POST:
+            delete_id = request.POST.get('delete_id')
+            profissional = Profissional.objects.get(id=delete_id)
+            profissional.ativo = False
+            profissional.save()
+            return redirect('profissionais')
+
+        # Criação de novo profissional
+        profissional.sobrenome = request.POST.get('sobrenome')
+        profissional.nome = request.POST.get('nome')
+        profissional.nomeSocial = request.POST.get('nomeSocial')
+        profissional.rg = request.POST.get('rg')
+        profissional.cpf = request.POST.get('cpf')
+        profissional.cnpj = request.POST.get('cnpj')
+        nascimento = request.POST.get('nascimento')
+        try:
+            profissional.nascimento_formatada = datetime.strptime( nascimento, "%d/%m/%Y").date()
+        except ValueError:
+            profissional.nascimento_formatada = None 
+        profissional.cor_raca = request.POST.get('cor')
+    
+        profissional.sexo = request.POST.get('sexo')
+        profissional.estado_civil = request.POST.get('estado_civil')
+        profissional.naturalidade = request.POST.get('naturalidade')
+        profissional.uf = request.POST.get('uf')
+        profissional.especialidade_id = request.POST.get('especialidade')
+        profissional.especialidade_obj = Especialidade.objects.get(id= profissional.especialidade_id) if  profissional.especialidade_id else None
+        profissional.conselho1 = request.POST.get('conselho1')
+        profissional.conselho2 = request.POST.get('conselho2')
+        profissional.conselho3 = request.POST.get('conselho3')
+        profissional.conselho4 = request.POST.get('conselho4')
+
+        profissional.num1_conselho = request.POST.get("num1_conselho")
+        profissional.num2_conselho = request.POST.get("num2_conselho")
+        profissional.num3_conselho = request.POST.get("num3_conselho")
+        profissional.num4_conselho = request.POST.get("num4_conselho")
+
+        profissional.observacao = request.POST.get('observacao')
+
+        profissional.cep = request.POST.get('cep')
+        profissional.rua = request.POST.get('rua')
+        profissional.numero = request.POST.get('numero')
+        profissional.complemento = request.POST.get('complemento')
+        profissional.bairro = request.POST.get('bairro')
+        profissional.cidade = request.POST.get('cidade')
+        profissional.estado = request.POST.get('estado')
+
+        profissional.telefone = request.POST.get('telefone')
+        profissional.celular = request.POST.get('celular')
+        profissional.email = request.POST.get('email')
+        profissional.nomeEmergencia = request.POST.get('nomeEmergencia')
+        profissional.vinculo = request.POST.get('vinculo')
+        profissional.telEmergencia = request.POST.get('telEmergencia')
+
+
+        if 'foto' in request.FILES:
+            profissional.foto = request.FILES['foto']
+
+        profissional.save()
+        
+        return redirect('profissionais')  
+    
+
+    especialidades = Especialidade.objects.all()
+    context = {
+        'profissional': profissional,
+        'estado_civil_choices': ESTADO_CIVIL,
+        'midia_choices': MIDIA_ESCOLHA,
+        'sexo_choices': SEXO_ESCOLHA,
+        'uf_choices': UF_ESCOLHA,
+        'cor_choices': COR_RACA,
+        'vinculo_choices': VINCULO,
+        'conselho_choices': CONSELHO_ESCOLHA,
+        'especialidade_choices': especialidades, 
+                        
+    }
+    return render(request, 'core/profissionais/editar_profissional.html', context)
+
+def ficha_profissional(request,id ):
+    profissional = get_object_or_404(Profissional, id=id)
+    return render(request, 'core/profissionais/ficha_profissional.html', {'profissional': profissional})
+
+
+@login_required(login_url='login')
+def profissionais_view(request):
+    profissionais = Profissional.objects.all().order_by('-id')
+    return render(request, 'core/profissionais/profissionais.html', {
+        "profissionais": profissionais,
+    })
+
+
+
+def dados_profissional(request, profissional_id):
+    profissional = get_object_or_404(Profissional, id=profissional_id)
+    
+    if profissional.data_nascimento:
+        nascimento = profissional.data_nascimento
+        hoje = date.today()
+        idade = relativedelta(hoje, nascimento)
+        idade_formatada = f'{idade.years} anos, {idade.months} meses e {idade.days} dias'
+
+    data = {
+        "nome": profissional.nome,
+        "sobrenome": profissional.sobrenome,
+        "nomeSocial": profissional.nomeSocial,
+        "rg": profissional.rg,
+        "cpf": profissional.cpf,
+        "nascimento": profissional.data_nascimento.strftime('%d/%m/%Y') if profissional.data_nascimento else "",
+        "idade":idade_formatada,
+        "cor_raca": profissional.get_cor_raca_display(),  
+        "sexo": profissional.get_sexo_display(),
+        "estado_civil": profissional.get_estado_civil_display(),
+        "naturalidade": profissional.naturalidade,
+        "uf": profissional.uf,
+        "foto": profissional.foto.url if profissional.foto else "",
+        "observacao": profissional.observacao,
+        "cep": profissional.cep,
+        "rua": profissional.rua,
+        "numero": profissional.numero,
+        "complemento": profissional.complemento,
+        "bairro": profissional.bairro,
+        "cidade": profissional.cidade,
+        "estado": profissional.estado,
+        "telefone": profissional.telefone,
+        "celular": profissional.celular,
+        "email": profissional.email,
+        "nomeEmergencia": profissional.nomeEmergencia,
+        "vinculo": profissional.get_vinculo_display(),
+        "telEmergencia": profissional.telEmergencia,
+        "ativo": profissional.ativo,
+        "cnpj":profissional.cnpj,
+    }
+    return JsonResponse(data)

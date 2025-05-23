@@ -44,44 +44,33 @@
 
     <!-- Próximos atendimentos -->
     <div class="section">
-      <h2>Próximos atendimentos</h2>
+      <h2>Atendimentos do dia</h2>
       <table>
         <thead>
           <tr>
-            <th>Hora</th>
+            <th></th>
+
             <th>Paciente</th>
             <th>Profissional</th>
-            <th>Procedimento</th>
-            <th>Ações</th>
+            <th>Especialidade</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
+          {% for agendamento in agendamentos %}
           <tr>
-            <td>08:30</td>
-            <td>João da Silva</td>
-            <td>Dra. Carla</td>
-            <td>Massagem</td>
+            <td style="width: 10px; background-color: {{ agendamento.especialidade.cor }};"></td>
+            <td>{{ agendamento.paciente.nome }}</td>
+            <td>{{ agendamento.profissional_1.nome }}</td>
+            <td>{{ agendamento.especialidade.nome }}</td>
+            <td>{{ agendamento.status }}</td>
           </tr>
-          <tr>
-            <td>09:15</td>
-            <td>Maria Souza</td>
-            <td>Dr. Pedro</td>
-            <td>Quiropraxia</td>
-          </tr>
-          <tr>
-            <td>10:00</td>
-            <td>Lucas Andrade</td>
-            <td>Dra. Ana</td>
-            <td>Auriculoterapia</td>
-            <td><button>AAAA</button>
-              <button>AAAA</button>
-              <button>AAAA</button></td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
 
-    <!-- Avisos -->
+
     <div class="section">
       <h2>Avisos</h2>
       <div class="avisos">

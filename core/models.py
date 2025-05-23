@@ -1,8 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 from datetime import date
 from django.utils.text import slugify
 import os
+
+import uuid
 
 def caminho_foto_paciente(instance, filename):
     nome = slugify(instance.nome)
@@ -136,6 +139,16 @@ CONSELHO_ESCOLHA = [
     ("coren", 'COREN'),
     ("cra", 'CRA'),
 ]
+
+STATUS_CHOICES = [
+    ('pre', '✅ Pré-Agendado'),
+    ('agendado', '✅ Agendado'),
+    ('finalizado', '✅ Consulta finalizada!'),
+    ('desmarcacao', '❌ D - Desmarcação'),
+    ('dcr', '⚠ DCR: Desmarcação com Reposição'),
+    ('fcr', '⚠ FCR: Falta com Reposição'),
+    ('falta_cobrada', '❌ FC: Falta Cobrada'),
+]
 class User(AbstractUser):
     tipo = models.CharField(max_length=20, choices=TIPOS_USUARIO)
     telefone = models.CharField(max_length=20, blank=True, null=True)
@@ -238,20 +251,11 @@ class Profissional(models.Model):
     ativo = models.BooleanField(default=True)
     
     def __str__(self):
-        return self.user.get_full_name or self.user.username
+        if self.user:
+            return self.user.get_full_name() or self.user.username
+        return "Profissional sem usuário"
     
-class Pagamento(models.Model):
-    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    profissional = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True, blank=True)
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
-    forma_pagamento = models.CharField(max_length=20, choices=FORMAS_PAGAMENTO)
-    servico = models.CharField(max_length=100)
-    data_pagamento = models.DateTimeField(auto_now_add=True)
-    comissao_gerada = models.BooleanField(default=True)
-    obs = models.TextField(blank=True, null=True)
-    
-    def __str__(self):
-        return f'{self.paciente.nome} - R${self.valor} em {self.data_pagamento.date()}'
+ 
     
 
 class Servico(models.Model):
@@ -262,3 +266,96 @@ class Servico(models.Model):
 
     def __str__(self):
         return f"{self.nome} - R$ {self.valor}" 
+    
+
+
+class PacotePaciente(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    servico = models.ForeignKey(Servico, on_delete=models.SET_NULL, null=True)
+    profissional = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True)
+    codigo = models.CharField(max_length=12, unique=True, editable=False)
+    qtd_sessoes = models.PositiveIntegerField()
+    valor_original = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    desconto_reais = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    desconto_percentual = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    valor_final = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    valor_total = models.DecimalField(max_digits=8, decimal_places=2)
+    data_inicio = models.DateField(default=timezone.now)
+    ativo = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.codigo:
+            self.codigo = uuid.uuid4().hex[:8].upper()
+        if not self.qtd_sessoes:
+            self.qtd_sessoes = self.servico.qtd_sessoes
+        if not self.valor_total:
+            self.valor_total = self.servico.valor
+        super().save(*args, **kwargs)
+
+    def get_sessao_atual(self, agendamento=None):
+        if agendamento:
+            anteriores = self.agendamento_set.filter(
+                data__lt=agendamento.data
+            ).count()
+            return anteriores + 1
+        return self.sessoes_realizadas + 1
+        
+    @property
+    def sessoes_realizadas(self):
+         return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
+
+    def sessoes_agendadas(self):
+         return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
+
+    @property
+    def sessoes_restantes(self):
+        return self.qtd_sessoes - self.sessoes_realizadas
+
+    @property
+    def total_pago(self):
+        return sum(p.valor for p in self.pagamento_set.all())
+
+    @property
+    def valor_restante(self):
+        return self.valor_final - self.total_pago
+
+    def __str__(self):
+        return f"Pacote {self.codigo} - {self.paciente}"
+
+ 
+
+class Agendamento(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    servico = models.ForeignKey(Servico, on_delete=models.SET_NULL, null=True)
+    especialidade = models.ForeignKey(Especialidade, on_delete=models.SET_NULL, null=True)
+    profissional_1 = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True, related_name='principal')
+    profissional_2 = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True, blank=True, related_name='auxiliar')
+    data = models.DateField()
+    hora_inicio = models.TimeField()
+    hora_fim = models.TimeField()
+    ambiente = models.CharField(max_length=100, blank=True)
+    observacoes = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pre')
+    pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
+    tags = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return f"{self.paciente} - {self.data} {self.hora_inicio}"
+
+class Pagamento(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    valor = models.DecimalField(max_digits=8, decimal_places=2)
+    data = models.DateField(default=timezone.now)
+    forma_pagamento = models.CharField(max_length=30, choices=[
+        ('pix', 'Pix'),
+        ('credito', 'Cartão de Crédito'),
+        ('debito', 'Cartão de Débito'),
+        ('dinheiro', 'Dinheiro'),
+    ])
+  
+
+    def __str__(self):
+        ref = self.pacote.codigo if self.pacote else f"Sessão {self.agendamento.id}" if self.agendamento else "Avulso"
+        return f"{self.paciente} - R$ {self.valor} - {ref}"

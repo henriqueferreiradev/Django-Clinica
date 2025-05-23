@@ -1,18 +1,8 @@
+from core.forms import LoginForm, RegisterForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
-from django.http import JsonResponse
-from forms import LoginForm, RegisterForm
 from django.contrib import messages
-from django.contrib.auth.forms import AuthenticationForm
-from models import Paciente, Especialidade,Profissional, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
-from django.db.models import Q
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.views.decorators.csrf import csrf_exempt 
-from django.views.decorators.http import require_GET
-from django.contrib.auth.decorators import login_required
-from datetime import date, datetime, timedelta
-from django.utils import timezone
-from dateutil.relativedelta import relativedelta
 
 
 def login_view(request):
@@ -38,8 +28,3 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
-
-@login_required(login_url='login')
-def dashboard_view(request):
-    return render(request, 'core/dashboard.html')

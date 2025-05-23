@@ -68,6 +68,7 @@
   </div>
   <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
     <table>
+
       <thead >
         <tr>
           <th>Nome</th>
@@ -111,20 +112,24 @@
             <div class="dropdown">
               <button onclick="abrirModal({{ paciente.id }})">Ver detalhes</button>
               <button onclick="window.location.href='{% url 'editar_paciente' paciente.id %}'">Editar</button>
-              
-    <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
-      {% csrf_token %}
-      <input type="hidden" name="delete_id" value="{{ paciente.id }}">
-      <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
-        Excluir
-      </button>
-    </form>
               <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Gerar Ficha</button>
               <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Novo Agendamento</button>
+              <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_id" value="{{ paciente.id }}">
+                <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
+                  Excluir
+                </button>
+          
+              </form>
+            
+
+
             </div>
           </td>
         </tr>
         {% endfor %}
+      </table>
       </tbody>
       <div class="tabela_infos-dados">
         <p>Mostrando: {{ total_filtrados }} de {{ total_ativos }}</p>

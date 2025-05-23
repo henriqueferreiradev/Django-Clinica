@@ -110,6 +110,7 @@
                     <thead>
                         <tr>
                             <th>Serviço</th>
+                            <th>Sessões</th>
                             <th>Valor</th>
                             <th>Ações</th>
                         </tr>
@@ -118,6 +119,7 @@
                         {% for servico in servicos %}
                         <tr class="{% if not servico.ativo %} inativo {% endif %}">
                             <td>{{ servico.nome }}</td>
+                            <td>{{ servico.qtd_sessoes }}</td>
                             <td>R$ {{ servico.valor }}</td>
                             <td>
                                 <form method="post" style="display: inline;">

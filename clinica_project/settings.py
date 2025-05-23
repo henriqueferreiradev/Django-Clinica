@@ -107,13 +107,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'pt-br'
+TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
+DEFAULT_CHARSET = 'utf-8'
 
 AUTH_USER_MODEL = 'core.User'
 # Static files (CSS, JavaScript, Images)
@@ -128,3 +127,11 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # ex: smtp.gmail.com
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'notificacao.pontodeequilibrio@gmail.com'
+EMAIL_HOST_PASSWORD = 'eolv jlri eyvu imhz'
+DEFAULT_FROM_EMAIL = 'Ponto de Equilibrio <notificacao.pontodeequilibrio@gmail.com>'
