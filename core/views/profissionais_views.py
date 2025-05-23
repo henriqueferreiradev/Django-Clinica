@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
 from dateutil.relativedelta import relativedelta
-
+from django.contrib import messages
 def cadastrar_profissionais_view(request):
     if request.method == 'POST':
         if 'delete_id' in request.POST:
@@ -108,7 +108,8 @@ def cadastrar_profissionais_view(request):
             if foto:
                 profissional.foto = foto
                 profissional.save()
-    
+            
+            messages.success(request, f'Profissional {profissional.nome} cadastrado com sucesso!')
     profissionais = Profissional.objects.all().order_by('-id')
     especialidades = Especialidade.objects.all()
 
@@ -190,7 +191,7 @@ def editar_profissional_view(request, id):
             profissional.foto = request.FILES['foto']
 
         profissional.save()
-        
+        messages.success(request, f'Profissional {profissional.nome} editado com sucesso!')
         return redirect('profissionais')  
     
 

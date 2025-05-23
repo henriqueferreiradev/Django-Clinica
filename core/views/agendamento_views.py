@@ -8,6 +8,8 @@ from datetime import date, datetime, timedelta
 from django.http import JsonResponse
 from django.db.models import Sum, Q
 from collections import defaultdict
+from django.contrib import messages
+
 
 @login_required(login_url='login')
 @csrf_exempt
@@ -347,5 +349,5 @@ def alterar_status(request,pk):
             agendamento.status = novo_status
             print(novo_status)
             agendamento.save()
-        
+        messages.success(request, f'Status alterado para {agendamento.get_status_display()}')
     return redirect('agenda')

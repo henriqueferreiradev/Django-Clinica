@@ -7,6 +7,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/agenda/agenda.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
 {% endblock %}
 
 {% block topbar %}
@@ -298,7 +299,7 @@
         </form>
     </div>
     <div class="content-header">
-        <h2>Consultas do dia</h2>
+        <h2>Todas as consultas</h2>
         <div class="buttons_header">
             <button id="openBtn" class="btn-add">+ Novo Agendamento</button>
         </div>
@@ -348,7 +349,7 @@
             <div class="actions-col">
               <button type="submit" class="action-btn">Alterar Status</button>
               <a href="/agendamento/confirmacao/{{ ag.id }}/">
-                <button class="action-btn">Ver Detalhes</button>
+                <button type="button"  class="action-btn">Ver Detalhes</button>
               </a>
               <button type="button" id='openBtnEdit' class="action-btn">Editar</button>
             </div>
@@ -386,6 +387,27 @@
 
 </div>
 
+{% if messages %}
+<div class="messages-container" id="alert-container">
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        <span class="icon">
+            {% if message.tags == 'success' %}
+            ✅
+            {% elif message.tags == 'warning' %}
+            ⚠️
+            {% elif message.tags == 'error' %}
+            ❌
+            {% elif message.tags == 'info' %}
+            ℹ️
+            {% endif %}
+        </span>
+        {{ message }}
+
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -423,6 +445,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static 'core/js/agenda/baseAgenda.js' %}"></script>
+<script src="{% static 'core/js/base/scriptBase.js' %}"></script>
+
 <script src="{% static 'core/js/profissionais/baseProfissionais.js' %}"></script>
 
 {% endblock %}
