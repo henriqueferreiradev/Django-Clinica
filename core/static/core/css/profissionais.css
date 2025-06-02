@@ -123,40 +123,40 @@
     width: 100%;
     margin-top: 20px;
     font-family: Arial, sans-serif;
-  }
-  
-  .patient-info-table table {
+}
+
+.patient-info-table table {
     width: 100%;
     border-collapse: collapse;
-  }
-  
-  .patient-info-table th {
+}
+
+.patient-info-table th {
     text-align: left;
     padding: 8px;
     color: #6a1b9a;
     width: 20%;
     white-space: nowrap;
-  }
-  
-  .patient-info-table td {
+}
+
+.patient-info-table td {
     padding: 8px;
     color: #333;
     width: 30%;
-  }
-  
-  .patient-info-table tr:nth-child(even) {
+}
+
+.patient-info-table tr:nth-child(even) {
     background-color: #f9f9f9;
-  }
-  
-  .observacao {
+}
+
+.observacao {
     margin-top: 20px;
-  }
-  
-  .observacao h3 {
+}
+
+.observacao h3 {
     margin-bottom: 5px;
     color: #6a1b9a;
-  }
-  
+}
+
 
 
 
@@ -171,7 +171,7 @@
     padding: 1em;
     margin-top: 1em;
 
-    height: calc(100vh - 80px - 2em);
+    height: calc(100vh - 90px);
     max-height: calc(100vh - 60px - 2em);
     box-sizing: border-box;
     overflow-y: auto;
@@ -193,7 +193,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
-    
+
 }
 
 .content-header h2 {

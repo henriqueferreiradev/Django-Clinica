@@ -1,87 +1,294 @@
 {% extends 'core/base.html' %}
 
 {% load static %}
-
+{% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 {% endblock %}
 
-{% block content %}
 
 
-<div class="main">
 
-  <div class="topbar">
-    <h1>Dashboard</h1>
-    <div class="user-info">Olá, {{ user.username }}</div>
+{% block topbar %}
+<div class="topbar">
+  <div class="topbar-div">
+    <i class='bx bx-menu'></i>
+    <span class="text">Dashboard</span>
+ 
   </div>
-
-  <div class="content">
-
-    <!-- Cards -->
-    <div class="cards">
-      <div class="card">
-        <h3>Consultas do dia</h3>
-        <p>5</p>
-      </div>
-      <div class="card">
-        <h3>Consultas da semana</h3>
-        <p>12</p>
-      </div>
-      <div class="card">
-        <h3>Recebido hoje</h3>
-        <p>R$ 350,00</p>
-      </div>
-      <div class="card">
-        <h3>Pacientes cadastrados</h3>
-        <p>312</p>
-      </div>
-      <div class="card">
-        <h3>Profissionais ativos</h3>
-        <p>4</p>
-      </div>
+  <div class="topbar-div">
+    <div class="name-job">
+      <div class="profile_name">Olá, {{ user.username }}</div>
     </div>
-
-    <!-- Próximos atendimentos -->
-    <div class="section">
-      <h2>Atendimentos do dia</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-
-            <th>Paciente</th>
-            <th>Profissional</th>
-            <th>Especialidade</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for agendamento in agendamentos %}
-          <tr>
-            <td style="width: 10px; background-color: {{ agendamento.especialidade.cor }};"></td>
-            <td>{{ agendamento.paciente.nome }}</td>
-            <td>{{ agendamento.profissional_1.nome }}</td>
-            <td>{{ agendamento.especialidade.nome }}</td>
-            <td>{{ agendamento.status }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
-
-    <div class="section">
-      <h2>Avisos</h2>
-      <div class="avisos">
-        <ul>
-          <li>📢 Feriado na próxima quarta-feira (não haverá atendimento)</li>
-          <li>✅ Novo paciente agendado para amanhã - 14h</li>
-          <li>💡 Lembre-se de atualizar os dados financeiros semanalmente</li>
-        </ul>
-      </div>
-    </div>
-
+    <a href="{% url 'logout' %}">
+      <i class='bx btn-sair bx-log-out'></i>
+    </a>
   </div>
 </div>
 {% endblock %}
+{% block content %}
+{% if messages %}
+<div class="messages-container" id="alert-container">
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        <span class="icon">
+            {% if message.tags == 'success' %}
+            ✅
+            {% elif message.tags == 'warning' %}
+            ⚠️
+            {% elif message.tags == 'error' %}
+            ❌
+            {% elif message.tags == 'info' %}
+            ℹ️
+            {% endif %}
+        </span>
+        {{ message }}
+
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="content">
+
+  <div class="cards-grid">
+    <!-- Card 1 -->
+    <div class="card card-blue">
+        <div class="card-content">
+            <div class="card-text">
+                <p>Pacientes ativos</p>
+                <h3>142</h3>
+                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> 12% desde a semana passada</p>
+            </div>
+            <div class="card-icon">
+                <i class="fas fa-user-injured"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card 2 -->
+    <div class="card card-green">
+        <div class="card-content">
+            <div class="card-text">
+                <p>Profissionais ativos</p>
+                <h3>8</h3>
+                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> 2 novos este mês</p>
+            </div>
+            <div class="card-icon">
+                <i class="fas fa-user-md"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card 3 -->
+    <div class="card card-purple">
+        <div class="card-content">
+            <div class="card-text">
+                <p>Atendimentos semana</p>
+                <h3>64</h3>
+                <p class="trend trend-down"><i class="fas fa-arrow-down"></i> 5% menos que semana passada</p>
+            </div>
+            <div class="card-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card 4 -->
+    <div class="card card-yellow">
+        <div class="card-content">
+            <div class="card-text">
+                <p>Sessões hoje</p>
+                <h3>12</h3>
+                <p>3 finalizadas, 9 pendentes</p>
+            </div>
+            <div class="card-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row of Quick Stats -->
+<div class="cards-grid-2">
+    <!-- Card 5 -->
+    <div class="card card-red">
+        <div class="card-content">
+            <div class="card-text">
+                <p>Sessões finalizadas</p>
+                <h3>3</h3>
+                <p>25% do total de hoje</p>
+            </div>
+            <div class="card-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card 6 -->
+    <div class="card card-orange">
+        <div class="card-content">
+            <div class="card-text">
+                <p>Faltas hoje</p>
+                <h3>1</h3>
+                <p>8% do total de hoje</p>
+            </div>
+            <div class="card-icon">
+                <i class="fas fa-user-slash"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card 7 -->
+    <div class="card card-teal">
+        <div class="card-content">
+            <div class="card-text">
+                <p>Pagamentos semana</p>
+                <h3>R$ 8,240</h3>
+                <p>R$ 1,560 pendentes</p>
+            </div>
+            <div class="card-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="charts-row charts-row-1">
+    <!-- Chart 1 -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Atendimentos por dia (últimos 7 dias)</h3>
+            <a class="chart-more">Ver mais</a>
+        </div>
+        <div class="chart-canvas-container">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Chart 2 -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Evolução mensal de atendimentos</h3>
+            <a class="chart-more">Ver mais</a>
+        </div>
+        <div class="chart-canvas-container">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="charts-row charts-row-2">
+    <!-- Chart 3 -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Distribuição por profissional</h3>
+            <a class="chart-more">Ver mais</a>
+        </div>
+        <div class="chart-canvas-container">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Chart 4 -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Serviços mais contratados</h3>
+            <a class="chart-more">Ver mais</a>
+        </div>
+        <div class="chart-canvas-container">
+            <canvas id="doughnutChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Chart 5 -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Status dos agendamentos</h3>
+            <a class="chart-more">Ver mais</a>
+        </div>
+        <div class="chart-canvas-container">
+            <canvas id="barChart2"></canvas>
+        </div>
+    </div>
+</div>
+  <!-- Próximos atendimentos -->
+  <div class="section">
+    <h2>Atendimentos do dia</h2>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Horário</th>
+          <th>Paciente</th>
+
+          <th>Profissional</th>
+          <th>Especialidade</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for agendamento in agendamentos %}
+        <tr>
+          <td style="width: 10px; background-color: {{ agendamento.especialidade.cor }};"></td>
+          <td>{{ agendamento.hora_inicio }} - {{agendamento.hora_fim}} </td>
+          <td>{{ agendamento.paciente.nome }}</td>
+          <td>{{ agendamento.profissional_1.nome }}</td>
+          <td>{{ agendamento.especialidade.nome }}</td>
+          <td>{{ agendamento.status }}</td>
+          <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
+            <div class="dropdown">
+              <button>Ver detalhes</button>
+              <button>Editar</button>
+              <button>Gerar Ficha</button>
+              <button>Novo Agendamento</button>
+              <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_id" value="{{ paciente.id }}">
+                <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
+                  Excluir
+                </button>
+          
+              </form>
+            
+
+
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="section">
+    <h2>Avisos</h2>
+    <div class="avisos">
+      <ul>
+        <li>📢 Feriado na próxima quarta-feira (não haverá atendimento)</li>
+        <li>✅ Novo paciente agendado para amanhã - 14h</li>
+        <li>💡 Lembre-se de atualizar os dados financeiros semanalmente</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+
+ 
+
+{% endblock %}
+
+{% block scripts %}
+ 
+  
+<script src="https://unpkg.com/imask"></script>
+
+<script src="{% static '/core/js/pacientes/base.js' %}"></script>
+<script src="{% static '/core/js/pacientes/cep.js' %}"></script>
+{% endblock %}
+ 

@@ -15,6 +15,12 @@ sidebarBtn.addEventListener("click", () => {
 
 
 
+window.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("input").forEach(input => {
+    input.setAttribute("autocomplete", "off");
+  });
+});
+
 function temporizadorAlerta() {
   setTimeout(() => {
     const alert = document.getElementById("alert-container");

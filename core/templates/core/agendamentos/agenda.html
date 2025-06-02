@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
+ 
 
 
 {% block title %}Agenda - Ponto de Equilíbrio{% endblock %}
@@ -33,16 +33,11 @@
 {% block content %}
 <div class="content">
 
-
-
-
-
     <div class="" class="sidebar" id="sidebar">
         <div class="header-sidebar">
             <h2>Agendamento</h2>
             <button id="closeBtn">&times;</button>
         </div>
-
 
 
 
@@ -61,20 +56,23 @@
                         Usar este pacote
                     </button>
                 </div>
-                <div style=" display: none;" id="pacote_atual"></div>
-                <!--
-                <div id="aviso-pacote"
-                    style="display: none; margin: 1em 0; padding: 10px; background-color: #e6ffe6; border: 1px solid #af4c4c; border-radius: 5px;">
-                    <strong style="color: #7d2e2e;">Pacote ativo detectado!</strong><br>
-                    <span id="mensagem-pacote" style="color: #7d2e2e; font-size: 13px;"></span>
-                    <button type="button" id="usar-pacote-btn"
-                        style="margin-left: 10px; background-color: #af4c4c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                        Usar este pacote
-                    </button>
-                </div>
--->
+                <div  id="pacote_atual"></div>
+                <div  id="info_reposicao"></div>
+                <div id="aviso-desmarcacoes"
+                style="display: none; margin: 1em 0; padding: 10px; background-color:rgb(255, 230, 230); border: 1px solidrgb(175, 76, 76); border-radius: 5px;">
+                <strong style="color:rgb(125, 46, 46);">Saldos de sessões desmarcadas detectados!</strong><br>
+                <span id="mensagem-desmarcacoes" style="color:rgb(125, 46, 46); font-size: 13px;"></span>
+                <button type="button" id="usar-reposicao-btn"
+                    style="margin-left: 10px; background-color:rgb(175, 76, 76); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                    Remarcar sessão
+                </button>
+                
+            </div>
+ 
+ 
                 <div class="formField input-wrapper">
-                    <input class='capitalize-input' type="text" id="busca" placeholder="Buscar paciente por nome..." autocomplete="on">
+                    <input class='capitalize-input' type="text" id="busca" placeholder="Buscar paciente por nome..."
+                        autocomplete="off">
                     <input type="hidden" id="paciente_id" name="paciente_id">
                     <div id="sugestoes"></div>
                 </div>
@@ -87,7 +85,7 @@
                         <input type="text" id="pacote_codigo" name="pacote_codigo"
                             placeholder="Digite o código do pacote">
                     </div>
-                    <div hidden>
+                    <div>
                         <label><input type="radio" name="tipo_agendamento" value="reposicao"> Reposição de
                             Sessão</label>
                     </div>
@@ -96,15 +94,19 @@
 
 
                 <div class="formField">
-                    <label>Tipo de sessão</label>
+                    <label id='tipo_sessao'>Tipo de sessão</label>
                     <input type="hidden" id="servico_id_hidden" name="servico_id">
                     <select name="servico_id" id="pacotesInput" class="input-s" required>
                         <option value="" disabled selected>Selecione um serviço</option>
                         {% for servico in servicos %}
-                        <option value="{{ servico.id }}" data-valor="{{ servico.valor }}">
+                        <option  value="{{ servico.id }}" data-valor="{{ servico.valor }}" class="servico-banco">
                             {{ servico.nome }} - R$ {{ servico.valor }}
                         </option>
+
                         {% endfor %}
+                        <option value="d" class="servico-reposicao" data-valor="0.00">Reposição - D </option>
+                        <option value="dcr" class="servico-reposicao" data-valor="0.00">Reposição - DCR </option>
+                        <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR </option>
                     </select>
                 </div>
 
@@ -127,7 +129,7 @@
                             <option value="" disabled selected>Selecione um profissional</option>
                             {% for profissional in profissionais %}
                             <option value="{{ profissional.id }}">
-                                {{ profissional.nome }} {{ profissional.sobrenome }}
+                                {{ profissional.nome }} {{ profissional.sobrenome }} - {{ profissional.especialidade }}
                             </option>
                             {% endfor %}
                         </select>
@@ -231,10 +233,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <button type="button" id="btn_gerar_cupom"
-                        class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 w-full">
-                        Gerar Comprovante
-                    </button>
+
                 </div>
 
                 <div class="formField">
@@ -258,38 +257,13 @@
                     <select name="status">
                         <option value="agendado">✅ Agendado</option>
                         <option value="pre">✅ Pré-Agendado</option>
-                        
+
                     </select>
                 </div>
 
                 <div class="formField">
                     <label>OBSERVAÇÕES / NOTAS INTERNAS</label>
                     <textarea class="textarea-large" name="observacoes"></textarea>
-                </div>
-
-                <div class="submenu">
-                    <div class="submenu-header">Registrar Pagamento</div>
-                    <div class="submenu-content">
-
-                    </div>
-                </div>
-
-                <div class="submenu">
-                    <div class="submenu-header">Tipo de Participação do Profissional 2</div>
-                    <div class="submenu-content">
-                        <div class="formRow">
-                            <div class="formField">
-                                <select name="profissional2_id" id="profissional2Input" class="input-s">
-                                    <option value="" selected>Nenhum</option>
-                                    {% for profissional in profissionais %}
-                                    <option value="{{ profissional.id }}">
-                                        {{ profissional.nome }} {{ profissional.sobrenome }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                 </div>
         </div>
         <div class="footer">
@@ -300,119 +274,96 @@
     </div>
     <div class="content-header">
         <h2>Todas as consultas</h2>
-        <div class="buttons_header">
-            <button id="openBtn" class="btn-add">+ Novo Agendamento</button>
-        </div>
-    </div>
+        <form method="get">
+            <div class="buttons_header">
 
-    <div id="lista-agendamentos">
-        {% for data, agendamentos in agendamentos_agrupados.items %}
-          <div class="agenda-data-group">{{ data }}</div>
-      
-          {% for ag in agendamentos %}
-          <div class="agenda-item">
-            <div class="time-col">
-              <div class="agenda-hora">
-                <div style="background-color: {{ ag.cor_especialidade }};" class="bolinha"></div>
-                <span>{{ ag.hora_inicio }} – {{ ag.hora_fim }}  </span>
- 
-              </div>
-            </div>
- 
-            
-            <div class="info-col">
-                <span class="profissional">{{ ag.profissional }}</span>
-                <span  class="profissional">{{ ag.especialidade }}</span>
-                
-    
-                <span class="paciente">{{ ag.paciente }}</span>
-                {% if ag.sessao_atual %}
-                  <span class="sessao">Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} – {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}</span>
-                {% endif %}
-              </div>
-
-              <div class="status-col">
-            <form method="post" action="{% url 'alterar_status' ag.id %}">
-                {% csrf_token %}
-          
-              <select name="status" class="status-select">
-                <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
-                <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
-                <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
-                <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
-                <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
-                <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
-                <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
-              </select>
-            </div>
-      
-            <div class="actions-col">
-              <button type="submit" class="action-btn">Alterar Status</button>
-              <a href="/agendamento/confirmacao/{{ ag.id }}/">
-                <button type="button"  class="action-btn">Ver Detalhes</button>
-              </a>
-              <button type="button" id='openBtnEdit' class="action-btn">Editar</button>
-            </div>
+                <div class="formRow">
+                    <div class="formField">
+                        <label>Data início</label>
+                        <input type="date" name="data_inicio" value="{{ data_inicio }}">
+                    </div>
+                    <div class="formField">
+                        <label>Data fim</label>
+                        <input type="date" name="data_fim" value="{{ data_fim }}">
+                    </div>
+                </div>
+                <button class="btn-add" name="filtrar" value="1">Filtrar</button>
         </form>
-  
-          </div>
-          {% endfor %}
-        {% endfor %}
-      </div>
-
-      
-
-      <div id="modalEditAgenda" class="modal-att-agenda">
-        <div class="modal-conteudo">
-        <div class="header-sidebar">
-        <h3>Editar agendamento 
-          <button id="closeBtnEdit">&times;</button>
-        </div>
-          <div class="formRow">
-            <div class="formField">
-                <label>Data</label>
-                <input type="date" name="data" id="dataInput">
-            </div>
-            <div class="formField">
-                <label>Início</label>
-                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required>
-            </div>
-            <div class="formField">
-                <label>Fim</label>
-                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required>
-            </div>
-        </div>
-        </div>
-      </div>
+        <button type='button' id="openBtn" class="btn-add">+ Novo Agendamento</button>
+    </div>
 
 </div>
 
-{% if messages %}
-<div class="messages-container" id="alert-container">
-    {% for message in messages %}
-    <div class="alert {{ message.tags }}">
-        <span class="icon">
-            {% if message.tags == 'success' %}
-            ✅
-            {% elif message.tags == 'warning' %}
-            ⚠️
-            {% elif message.tags == 'error' %}
-            ❌
-            {% elif message.tags == 'info' %}
-            ℹ️
+<div id="lista-agendamentos">
+    
+    {% for data, agendamentos in agendamentos_agrupados.items %}
+    <div class="agenda-data-group">{{ data }}</div>
+
+    {% for ag in agendamentos %}
+    <div class="agenda-item">
+        <div class="time-col">
+            <div class="agenda-hora">
+                <div style="background-color: {{ ag.cor_especialidade }};" class="bolinha"></div>
+                <span>{{ ag.hora_inicio }} – {{ ag.hora_fim }} </span>
+
+            </div>
+        </div>
+
+
+        <div class="info-col">
+            <span class="paciente">{{ ag.paciente }}</span>
+            <span class="profissional">{{ ag.especialidade }} com {{ ag.profissional }} </span>
+            {% if ag.sessao_atual %}
+            {% if ag.codigo|slice:":3" == "REP" %}
+                <span class="sessao vermelho">Sessão de Reposição | {{ ag.codigo }}</span>
+                {% else %}
+            <span class="sessao verde  ">
+                Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} – {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
+            </span>
             {% endif %}
-        </span>
-        {{ message }}
+        {% endif %}
+        </div>
+
+        <div class="status-col">
+            <form method="post" action="{% url 'alterar_status' ag.id %}">
+                {% csrf_token %}
+                <select name="status" class="status-select">
+                    <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
+                    <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
+                    <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
+                    <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
+                    <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
+                    <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
+                    <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
+            </select>
+        </div>
+        <div class="actions-col">
+            <button type="submit" class="action-btn"><i class='bx  bx-edit'  ></i></button>
+            <a href="{% url 'confirmacao_agendamento' ag.id %}">
+                <button type="button" class="action-btn">Ver Detalhes</button>
+            </a>
+            <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
+                class="btn-editar-agendamento action-btn">Editar</button>
+              
+        </div>
+        </form>
 
     </div>
     {% endfor %}
+    {% endfor %}
 </div>
-{% endif %}
+
+
+
+{% include "core/partials/modal_edit_agenda.html" %}
+{% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
-
+  
+    
 <script>
+    
     document.getElementById("btn_gerar_cupom").addEventListener("click", function () {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();

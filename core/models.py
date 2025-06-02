@@ -119,7 +119,11 @@ UF_ESCOLHA = [
     ('SE', 'Sergipe'),
     ('TO', 'Tocantins'),
 ]
-
+TIPO_REPOSICAO_CHOICES = [
+    ('d', 'Reposição D'),
+    ('dcr', 'Reposição DCR'),
+    ('fcr', 'Reposição FCR'),
+]
 MIDIA_ESCOLHA = [
     ('indicacao', 'Indicação'),
     ('redes_sociais', 'Redes Sociais (Instagram, Facebook etc.)'),
@@ -280,17 +284,20 @@ class PacotePaciente(models.Model):
     desconto_reais = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     desconto_percentual = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     valor_final = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
-    valor_total = models.DecimalField(max_digits=8, decimal_places=2)
+    valor_total = models.DecimalField(max_digits=8, decimal_places=2,default=0)
+    tipo_reposicao = models.CharField(max_length=3, choices=TIPO_REPOSICAO_CHOICES, blank=True, null=True, help_text='Tipo de reposição, se for um pacote de reposição')
     data_inicio = models.DateField(default=timezone.now)
     ativo = models.BooleanField(default=True)
+    eh_reposicao = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.codigo:
-            self.codigo = uuid.uuid4().hex[:8].upper()
+            self.codigo = f'PAC{uuid.uuid4().hex[:8].upper()}'
         if not self.qtd_sessoes:
             self.qtd_sessoes = self.servico.qtd_sessoes
-        if not self.valor_total:
-            self.valor_total = self.servico.valor
+ 
+        if self.valor_final is None:
+            self.valor_final = self.servico.valor 
         super().save(*args, **kwargs)
 
     def get_sessao_atual(self, agendamento=None):
@@ -327,19 +334,21 @@ class PacotePaciente(models.Model):
 
 class Agendamento(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    servico = models.ForeignKey(Servico, on_delete=models.SET_NULL, null=True)
+    servico = models.ForeignKey(Servico, null=True, blank=True, on_delete=models.SET_NULL)
     especialidade = models.ForeignKey(Especialidade, on_delete=models.SET_NULL, null=True)
     profissional_1 = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True, related_name='principal')
     profissional_2 = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True, blank=True, related_name='auxiliar')
     data = models.DateField()
     hora_inicio = models.TimeField()
     hora_fim = models.TimeField()
+    hora_inicio_aux = models.TimeField(null=True, blank=True)
+    hora_fim_aux = models.TimeField(null=True, blank=True)
     ambiente = models.CharField(max_length=100, blank=True)
     observacoes = models.TextField(blank=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pre')
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
     tags = models.CharField(max_length=200, blank=True)
-
+    foi_reposto = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.paciente} - {self.data} {self.hora_inicio}"
 

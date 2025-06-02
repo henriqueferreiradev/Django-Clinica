@@ -55,13 +55,13 @@ def alterar_status_ativo(request, modelo, ativar=True, prefixo=''):
 
 def gerar_mensagem_confirmacao(agendamento):
     paciente_nome = agendamento.paciente.nome
-    servico = agendamento.servico.nome
+    servico = agendamento.servico.nome if agendamento.servico else "Reposição"
     especialidade = agendamento.especialidade
     profissional = f"{agendamento.profissional_1.nome} ({agendamento.profissional_1.especialidade.nome})"
     pacote = agendamento.pacote
 
     sessao_atual = pacote.get_sessao_atual(agendamento)
-    qtd_sessoes = pacote.qtd_sessoes
+    qtd_sessoes = pacote.qtd_sessoes 
     data = agendamento.data
     hora_inicio = agendamento.hora_inicio.strftime('%H:%M')
     hora_fim = agendamento.hora_fim.strftime('%H:%M')
@@ -84,7 +84,25 @@ def gerar_mensagem_confirmacao(agendamento):
     )
     return mensagem
 
- 
+from django.core.mail import send_mail
+
+def enviar_lembrete_agendamento(paciente_nome, paciente_email, numero_whatsapp):
+    assunto = 'Lembrete de Sessão Agendada'
+    mensagem = (
+        f"Olá, {paciente_nome}!\n\n"
+        "Sua sessão foi agendada. Esse é apenas um lembrete.\n\n"
+        f"Em caso de dúvida, não hesite em nos mandar uma mensagem: {numero_whatsapp}\n\n"
+        "Até breve!"
+    )
+     
+    send_mail(
+        subject=assunto,
+        message=mensagem,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[paciente_email],
+        fail_silently=False,
+    )
+
 
 
 def enviar_lembrete_email(destinatario, contexto):

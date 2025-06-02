@@ -1,20 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import url('alerts.css');
 
 :root {
-    --roxoPrincipal: #7f4396;
+    --roxoPrincipal: #7F4396;
     --roxoPrincipal-hover: #76378f11;
     --roxoPrincipal-hover2: #76378f;
+    --roxo-primary-hover: #9b58b4;
     --verdePrincipal: #92cbad;
     --branco: #FFF;
     --preto: #000;
     --cinzaBorda: #ccc;
     --cinzaEscuro: #6e6e6e;
     --fontePrincipal: 'Inter';
-    --shadowRoxo: rgb(127, 67, 150, 0.5) 0px 3px 8px;
-    --verdeAvisosFundo: #E6FFE6;
-    --verdeAvisosLetra: #2e7d32;
 }
+
 
 
 * {
@@ -42,7 +40,7 @@ body {
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     padding: 1em;
     margin-top: 1em;
-    height: calc(100vh - 80px - 2em);
+    height: calc(100vh - 90px);
     max-height: calc(100vh - 60px - 2em);
     box-sizing: border-box;
     overflow-y: auto;
@@ -129,7 +127,7 @@ body {
     background-color: var(--branco);
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
     transition: right 0.3s ease;
-
+    z-index: 1000;
     border-radius: 20px 0 0 20px;
     max-width: 100vh;
     overflow-y: hidden;
@@ -147,7 +145,8 @@ body {
     z-index: 900;
 }
 
-#closeBtn {
+#closeBtn,
+#closeBtnEdit {
     background: none;
     border: none;
     font-size: 28px;
@@ -194,6 +193,9 @@ h2 {
     outline: none;
 }
 
+.formField input[type="time"] {
+    text-align: center;
+}
 
 .submenu input[type="text"],
 .submenu input[type="date"],
@@ -264,15 +266,7 @@ input::-webkit-inner-spin-button {
     flex: 1;
 }
 
-.radio-group {
-    margin-bottom: 16px;
-}
 
-.radio-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: normal;
-}
 
 .textarea-large {
     height: 100px;
@@ -365,10 +359,10 @@ thead {
 
 th,
 td {
-    padding: .15em;
-    text-align: left;
+    padding: .5em;
+    text-align: center;
     font-size: 14px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cinzaBorda);
 }
 
 th {
@@ -405,18 +399,6 @@ thead tr th:last-child {
     background: #7f56d9;
 }
 
-.action-btn {
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    color: black;
-
-}
-
-.action-btn:hover {
-    background: transparent;
-}
 
 .dropdown {
     position: absolute;
@@ -453,7 +435,7 @@ thead tr th:last-child {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 20px;
+    padding-bottom: 1.3em;
 
 
 }
@@ -489,6 +471,7 @@ thead tr th:last-child {
 
 }
 
+
 .agendamento_div {
     position: relative;
     overflow-y: auto;
@@ -520,8 +503,9 @@ thead tr th:last-child {
 
 }
 
-#pacote_atual {
-
+#pacote_atual,
+#info_reposicao {
+    display: none;
     margin: 1em 0;
     padding: 10px;
     background-color: var(--verdeAvisosFundo);
@@ -530,15 +514,8 @@ thead tr th:last-child {
     border-radius: 5px;
 }
 
-
-
-
-
-
-
-
-
 /* Layout Base */
+
 
 .agenda-data-group {
     margin: 30px 0 15px;
@@ -546,7 +523,7 @@ thead tr th:last-child {
     font-weight: 600;
     color: var(--roxoPrincipal);
     padding-bottom: 5px;
-    border-bottom: 1px solid var(--cinzaBorda);
+
 }
 
 /* Estrutura em Grid */
@@ -554,9 +531,9 @@ thead tr th:last-child {
     display: grid;
     grid-template-columns: 150px 1fr 180px auto;
     gap: 15px;
-    padding: 12px 0;
+    padding: .5em 0;
     border-bottom: 1px solid var(--cinzaBorda);
-    align-items: start;
+    align-items: end;
 }
 
 /* Coluna de Horário */
@@ -569,7 +546,7 @@ thead tr th:last-child {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .bolinha {
@@ -584,7 +561,12 @@ thead tr th:last-child {
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+
+}
+
+.info-col>* {
+    margin: 0;
+    padding: 0;
 }
 
 .profissional,
@@ -593,6 +575,7 @@ thead tr th:last-child {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 16px;
 
 }
 
@@ -601,7 +584,7 @@ thead tr th:last-child {
 }
 
 .sessao {
-    color: var(--verdeAvisosLetra);
+    color: var(--preto);
 }
 
 .info-line {
@@ -610,13 +593,6 @@ thead tr th:last-child {
     min-height: 24px;
 }
 
-.profissional {
-    font-weight: 600;
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
 
 
@@ -645,21 +621,17 @@ thead tr th:last-child {
     background: var(--roxoPrincipal);
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 25px;
     font-size: 12px;
     cursor: pointer;
     white-space: nowrap;
+    height: auto;
 }
 
 .action-btn:hover {
     background: var(--verdePrincipal);
 }
-
-/* Responsivo */
-
-
-
 
 .modal-att-agenda {
     display: none;
@@ -678,15 +650,110 @@ thead tr th:last-child {
 
 .modal-att-agenda.active {
     display: flex;
-    /* Ativo: exibe com alinhamento central */
+
 }
 
 .modal-att-agenda .modal-conteudo {
     background-color: white;
-    width: 60%;
-    height: 40%;
+    width: 30%;
+    height: auto;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     position: relative;
+}
+
+.buttons_header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 0;
+}
+
+.modal_subtitulo {
+    margin-bottom: 10px;
+    color: var(--roxoPrincipal);
+    font-size: 16px;
+    font-weight: 550;
+    text-decoration: underline;
+}
+
+.buttons_div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    z-index: 0;
+    margin-top: 1em;
+}
+
+.radio-container {
+    margin: 0 auto;
+    max-width: 300px;
+    color: var(--preto);
+}
+
+.radio-wrapper {
+    margin-bottom: 20px;
+}
+
+.radio-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.radio-button:hover {
+    transform: translateY(-2px);
+}
+
+.radio-button input[type="radio"] {
+    display: none;
+}
+
+.radio-checkmark {
+    display: inline-block;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    border: 2px solid #7f4396;
+    border-radius: 50%;
+}
+
+.radio-checkmark:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--roxo-primary-hover);
+    transition: all 0.2s ease-in-out;
+}
+
+.radio-button input[type="radio"]:checked~.radio-checkmark:before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.radio-label {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.sessao.verde {
+    color: green;
+    font-weight: 500;
+}
+
+.sessao.vermelho {
+    color: red;
+    font-weight: 500;
+}
+
+.bx-edit {
+    font-size: 24px;
 }

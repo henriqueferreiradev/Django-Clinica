@@ -13,10 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeBtn = document.getElementById('closeBtn');
     const sidebar = document.getElementById('sidebar');
 
-    const openBtnEdit = document.getElementById('openBtnEdit')
-    const closeBtnEdit = document.getElementById('closeBtnEdit')
-    const modalEditAgenda = document.getElementById('modalEditAgenda')
-
     const input = document.getElementById('busca');
     const sugestoes = document.getElementById('sugestoes');
     const pacienteIdInput = document.getElementById('paciente_id');
@@ -67,9 +63,31 @@ document.addEventListener("DOMContentLoaded", function () {
         const servicoSelect = document.getElementById('pacotesInput');
         const formValor = document.getElementById('formValor');
         const infoPacote = document.getElementById('info_pacote');
-        const pacoteAtual = document.getElementById('pacote_atual')
-        // Reset inicial
+        const pacoteAtual = document.getElementById('pacote_atual');
+        const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
+        const mensagemDesmarcacoes = document.getElementById('mensagem-desmarcacoes');
+        const radioButtons = document.querySelectorAll('input[name="tipo_agendamento"]');
+        const servicosBanco = document.querySelectorAll('.servico-banco');
+        const servicosReposicao = document.querySelectorAll('.servico-reposicao');
+        const usarRemarcacaoBtn = document.getElementById('usar-reposicao-btn')
+        const avisoRepo = document.getElementById('aviso-desmarcacoes')
+        const tipoSessaoLabel = document.getElementById('tipo_sessao')
+        const infoReposicao = document.getElementById('info_reposicao')
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (this.value === 'reposicao') {
+                    servicosBanco.forEach(opt => opt.hidden = true);
+                    servicosReposicao.forEach(opt => opt.hidden = false);
+                    select.value = "";
+                } else {
+                    servicosBanco.forEach(opt => opt.hidden = false);
+                    servicosReposicao.forEach(opt => opt.hidden = true);
+                    select.value = "";
+                }
+            });
+        });
         avisoDiv.style.display = 'none';
+        avisoDesmarcacoes.style.display = 'none';
         servicoSelect.disabled = false;
         formValor.classList.remove('hidden');
         infoPacote.classList.add('hidden');
@@ -81,6 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const response = await fetch(`/api/verificar_pacotes_ativos/${pacienteId}`);
             const data = await response.json();
 
+            // Mostra pacote se existir
             if (data.tem_pacote_ativo) {
                 const pacote = data.pacotes[0];
                 const sessaoAtual = pacote.quantidade_usadas + 1;
@@ -102,18 +121,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     servicoSelect.disabled = true;
                     servicoSelect.readOnly = true;
 
-                    // Preencher informações do pacote
                     document.getElementById('codigo_pacote_display').textContent = pacote.codigo;
                     document.getElementById('valor_pago_display').textContent = pacote.valor_pago.toFixed(2);
                     document.getElementById('valor_restante_display').textContent = (pacote.valor_total - pacote.valor_pago).toFixed(2);
                     document.getElementById('sessao_atual_display').textContent = sessaoAtual;
                     document.getElementById('total_sessoes_display').textContent = pacote.quantidade_total;
 
-                    // Alternar exibição
                     formValor.classList.add('hidden');
                     infoPacote.classList.remove('hidden');
-
-                    // Configurar valores
                     valorFinalInput.value = (pacote.valor_total - pacote.valor_pago).toFixed(2);
 
                     campoPacote.value = pacote.codigo;
@@ -122,22 +137,52 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     document.querySelector('input[value="existente"]').checked = true;
                     avisoDiv.style.display = 'none';
+                    avisoRepo.style.display = 'none';
                 };
-            } else {
-
-
-                formValor.classList.remove('hidden');
-                infoPacote.classList.add('hidden');
-                avisoDiv.style.display = 'none';
             }
+
+            // Mostra saldos de desmarcações
+            const sd = data.saldos_desmarcacoes;
+            const mensagens = [];
+
+            if (sd.desistencia > 0) mensagens.push(`❌ D: ${sd.desistencia}`);
+            if (sd.desistencia_remarcacao > 0) mensagens.push(`⚠ DCR: ${sd.desistencia_remarcacao}`);
+            if (sd.falta_remarcacao > 0) mensagens.push(`⚠ FCR: ${sd.falta_remarcacao}`);
+            if (sd.falta_cobrada > 0) mensagens.push(`❌ FC: ${sd.falta_cobrada}`);
+
+            if (mensagens.length > 0) {
+                mensagemDesmarcacoes.textContent = `Este paciente possui sessões desmarcadas registradas: ${mensagens.join(' | ')}`;
+                avisoDesmarcacoes.style.display = 'block';
+            } else {
+                avisoDesmarcacoes.style.display = 'none';
+            }
+
+
+            servicosReposicao.forEach(opt => opt.hidden = true);
+
+            usarRemarcacaoBtn.onclick = () => {
+                document.querySelector('input[value="reposicao"]').checked = true;
+                const event = new Event('change');
+                document.querySelector('input[value="reposicao"]').dispatchEvent(event);
+
+                infoReposicao.innerHTML = `<strong>Reposição de sessão</strong>`;
+                infoReposicao.style.display = 'block';
+
+                avisoDiv.style.display = 'none';
+                avisoRepo.style.display = 'none';
+                tipoSessaoLabel.textContent = 'Tipo de reposição'
+            }
+
+
+
         } catch (error) {
             console.error('Erro ao verificar pacote:', error);
-            // Em caso de erro, mostrar formRow normal
             formValor.classList.remove('hidden');
             infoPacote.classList.add('hidden');
+            avisoDesmarcacoes.style.display = 'none';
         }
-    }
 
+    }
 
     function limparOpcaoPacoteServico() {
         const servicoSelect = document.getElementById('pacotesInput');
@@ -150,6 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Resetar exibição para o formulário normal
         document.getElementById('formValor').classList.remove('hidden');
         document.getElementById('info_pacote').classList.add('hidden');
+
     }
 
     document.querySelector('input[name="tipo_agendamento"][value="novo"]').addEventListener('click', () => {
@@ -180,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
         pacoteAtual.textContent = ""
         pacoteAtual.style.display = 'none'
 
-        const campoPacote = document - this.getElementById('pacote_codigo')
+        const campoPacote = document.getElementById('pacote_codigo')
         if (campoPacote) campoPacote.value = ''
 
         avisoDiv.style.display = 'none'
@@ -219,15 +265,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    if (openBtnEdit && closeBtnEdit && modalEditAgenda) {
-        openBtnEdit.addEventListener("click", () =>
-            modalEditAgenda.classList.add("active")
-        );
 
-        closeBtnEdit.addEventListener("click", () =>
-            modalEditAgenda.classList.remove("active")
-        );
-    }
     document.querySelectorAll('.submenu-header').forEach(header => {
         header.addEventListener('click', function () {
             const submenu = this.parentElement;
@@ -271,6 +309,67 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+    document.querySelectorAll(".btn-editar-agendamento").forEach(botao => {
+        botao.addEventListener("click", function () {
+            const agendamentoId = this.dataset.id;
+            window.currentAgendamentoId = agendamentoId;
+            const dados = fetch(`/agendamento/json/${agendamentoId}/`)
+
+                .then(response => response.json())
+                .then(data => {
+
+
+                    document.querySelector("#profissional1InputEdicao").value = data.profissional1_id;
+                    document.querySelector("#dataInputEdicao").value = data.data;
+                    document.querySelector("#horaInicioPrincipal").value = data.hora_inicio;
+                    document.querySelector("#horaFimPrincipal").value = data.hora_fim;
+                    document.querySelector("#profissional2InputEdicao").value = data.profissional2_id || '';
+                    document.querySelector("#horaInicioAjuda").value = data.hora_inicio_aux;
+                    document.querySelector("#horaFimAjuda").value = data.hora_fim_aux;
+
+
+                    const lista = document.querySelector("#lista-pagamentos");
+                    lista.innerHTML = ""; // Limpa o conteúdo anterior
+
+                    // Monta a estrutura da tabela dentro de uma div.formField
+                    const htmlTabela = `
+                        <div class="formField">
+                            <table class="tabela-pagamentos">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Valor</th>
+                                        <th>Forma de Pagamento</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.pagamentos && data.pagamentos.length > 0
+                            ? data.pagamentos.map(pag => `
+                                            <tr>
+                                                <td>${pag.data}</td>
+                                                <td>R$ ${parseFloat(pag.valor).toFixed(2)}</td>
+                                                <td>${pag.forma_pagamento_display}</td>
+                                            </tr>
+                                        `).join('')
+                            : `
+                                            <tr>
+                                                <td colspan="3" style="text-align: center;">Nenhum pagamento registrado.</td>
+                                            </tr>
+                                        `
+                        }
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+
+                    lista.innerHTML = htmlTabela;
+
+
+                    // abrir o modal
+                    document.querySelector("#modalEditAgenda").classList.add("active");
+                });
+        });
+    });
 
 
 });
@@ -377,3 +476,45 @@ document.querySelectorAll('.editar-horario-btn').forEach(button => {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+
+    const openBtnEdit = document.getElementById('openBtnEdit')
+    const closeBtnEdit = document.getElementById('closeBtnEdit')
+    const modalEditAgenda = document.getElementById('modalEditAgenda')
+
+
+
+    // Fecha o modal
+    if (closeBtnEdit) {
+        closeBtnEdit.addEventListener("click", function () {
+            modalEditAgenda.classList.remove("active");
+        });
+    }
+});
+
+document.getElementById('form-edicao').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const agendamentoId = window.currentAgendamentoId;
+    try {
+        const response = await fetch(`/agendamento/editar/${agendamentoId}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+
+            location.reload();
+        } else {
+
+        }
+    } catch (error) {
+
+    }
+});

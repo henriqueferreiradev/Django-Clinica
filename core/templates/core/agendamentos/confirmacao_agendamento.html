@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmação</title>
+    <title>Confirmação - {{ paciente.nome }} {{ paciente.sobrenome }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -241,21 +241,24 @@
     <body>
         <div class="confirmation-container">
             <div class="confirmation-icon">✓</div>
-            <h1>Agendadamento realizado com Sucesso!</h1>
+            <h1>Agendamento realizado com Sucesso!</h1>
             <p class="confirmation-text">
-                Sessão agendada com sucesso.
+                
             </p>
             <div class="appointment-details">
-                <div class="detail-item">
-                    <span class="detail-label">Nome do paciente:</span>
-                    <span class="detail-value">{{ paciente.nome }} {{ paciente.sobrenome }}</span>
-                </div>
+
             
                 {% if agendamentos_recorrentes and agendamentos_recorrentes|length > 1 %}
                 {% for sessao in agendamentos_recorrentes %}
                     <div class="detail-item">
                         <span class="detail-label">Sessão {{ forloop.counter }}:</span>
                     </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Nome do paciente:</span>
+                        <span class="detail-value">{{ paciente.nome }} {{ paciente.sobrenome }}</span>
+                    </div>
+
                     <div class="detail-item">
                         <span class="detail-label">Data da sessão:</span>
                         <span class="detail-value">
@@ -298,7 +301,7 @@
                     <span class="detail-value">{{ profissional.nome }} {{ profissional.sobrenome }}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">Serviço:</span>
+                    <span class="detail-label">Especialidade:</span>
                     <span class="detail-value">{{ agendamento.especialidade.nome }}</span>
                 </div>
                 <div class="detail-item">

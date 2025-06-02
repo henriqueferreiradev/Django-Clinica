@@ -39,9 +39,12 @@ urlpatterns = [
     path('agendamento/confirmacao/<int:agendamento_id>/', agendamento_views.confirmacao_agendamento, name='confirmacao_agendamento'),
     path('enviar-email/<int:agendamento_id>/',agendamento_views.enviar_email_agendamento, name='enviar_email_agendamento'),
     path('agendamento/alterar_status/<int:pk>',agendamento_views.alterar_status, name='alterar_status'),
+    path('agendamento/json/<int:agendamento_id>/', agendamento_views.pegar_agendamento, name='get_agendamento'),
+    path('agendamento/editar/<int:agendamento_id>/', agendamento_views.editar_agendamento, name='editar_agendamento'),
+    path('agendamento/<int:pk>/remarcar/', agendamento_views.remarcar_agendamento, name='remarcar_agendamento'),
+
 
     path('config/', config_views.configuracao_view, name='config'),
-    
  
  
 ]
