@@ -85,7 +85,7 @@
         <div class="card-content">
             <div class="card-text">
                 <p>Atendimentos semana</p>
-                <h3>64</h3>
+                <h3>{{ agendamentos_semana }}</h3>
                 <p class="trend trend-down"><i class="fas fa-arrow-down"></i> 5% menos que semana passada</p>
             </div>
             <div class="card-icon">
@@ -93,25 +93,21 @@
             </div>
         </div>
     </div>
-    
-    <!-- Card 4 -->
-    <div class="card card-yellow">
+        <div class="card card-yellow">
         <div class="card-content">
             <div class="card-text">
                 <p>Sessões hoje</p>
-                <h3>12</h3>
-                <p>3 finalizadas, 9 pendentes</p>
+                <h3>{{ agendamentos_dia }}</h3>
+                <p> {% if agendamentos_dia_finalizados > 1 %}
+                {{ agendamentos_dia_finalizados }} finalizados {% else %}  {{ agendamentos_dia_finalizados }} finalizado, {% endif %}
+                {% if agendamentos_dia_pendentes > 0 %}
+                {{ agendamentos_dia_pendentes }} pendentes {% else %} {{ agendamentos_dia_pendentes }} pendente  {% endif %}</p>
             </div>
             <div class="card-icon">
                 <i class="fas fa-clock"></i>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Second Row of Quick Stats -->
-<div class="cards-grid-2">
-    <!-- Card 5 -->
     <div class="card card-red">
         <div class="card-content">
             <div class="card-text">
@@ -138,21 +134,63 @@
             </div>
         </div>
     </div>
-    
-    <!-- Card 7 -->
-    <div class="card card-teal">
-        <div class="card-content">
-            <div class="card-text">
-                <p>Pagamentos semana</p>
-                <h3>R$ 8,240</h3>
-                <p>R$ 1,560 pendentes</p>
-            </div>
-            <div class="card-icon">
-                <i class="fas fa-money-bill-wave"></i>
-            </div>
-        </div>
-    </div>
+
 </div>
+  <div class="section">
+    <h2>Atendimentos do dia</h2>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Horário</th>
+          <th>Paciente</th>
+
+          <th>Profissional</th>
+          <th>Especialidade</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for agendamento in agendamentos %}
+        <tr>
+          <td style="width: 10px; background-color: {{ agendamento.especialidade.cor }};"></td>
+          <td>{{ agendamento.hora_inicio }} - {{agendamento.hora_fim}} </td>
+          <td>{{ agendamento.paciente.nome }}</td>
+          <td>{{ agendamento.profissional_1.nome }}</td>
+          <td>{{ agendamento.especialidade.nome }}</td>
+          <td>{{ agendamento.status }}</td>
+          <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
+            <div class="dropdown">
+              <button  >Ver detalhes</button>
+              <button  >Editar</button>
+              <button  >Gerar Ficha</button>
+              <button  >Novo Agendamento</button>
+              <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_id" value="{{ paciente.id }}">
+                <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
+                  Excluir
+                </button>
+          
+              </form>
+            
+
+
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+<!-- Second Row of Quick Stats
+<div class="cards-grid-2">
+     
+
+    
+</div> -->
 
 <!-- Charts Row 1 -->
 <div class="charts-row charts-row-1">
@@ -214,55 +252,6 @@
         </div>
     </div>
 </div>
-  <!-- Próximos atendimentos -->
-  <div class="section">
-    <h2>Atendimentos do dia</h2>
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th>Horário</th>
-          <th>Paciente</th>
-
-          <th>Profissional</th>
-          <th>Especialidade</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for agendamento in agendamentos %}
-        <tr>
-          <td style="width: 10px; background-color: {{ agendamento.especialidade.cor }};"></td>
-          <td>{{ agendamento.hora_inicio }} - {{agendamento.hora_fim}} </td>
-          <td>{{ agendamento.paciente.nome }}</td>
-          <td>{{ agendamento.profissional_1.nome }}</td>
-          <td>{{ agendamento.especialidade.nome }}</td>
-          <td>{{ agendamento.status }}</td>
-          <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
-            <div class="dropdown">
-              <button>Ver detalhes</button>
-              <button>Editar</button>
-              <button>Gerar Ficha</button>
-              <button>Novo Agendamento</button>
-              <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
-                {% csrf_token %}
-                <input type="hidden" name="delete_id" value="{{ paciente.id }}">
-                <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
-                  Excluir
-                </button>
-          
-              </form>
-            
-
-
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
 
 
   <div class="section">
@@ -284,10 +273,9 @@
 {% endblock %}
 
 {% block scripts %}
- 
-  
-<script src="https://unpkg.com/imask"></script>
 
+<script src="https://unpkg.com/imask"></script>
+<script src="{% static '/core/js/base/scriptBase.js' %}"></script>
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>
 <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
 {% endblock %}
