@@ -80,10 +80,10 @@ WSGI_APPLICATION = 'clinica_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'meu_banco_mpwy',
-        'USER': 'meu_banco_mpwy_user',
-        'PASSWORD': 'TqWfVy2GCmREx6J7fdGt2F0FL4KJi3tJ',
-        'HOST': 'dpg-d10qt595pdvs73ae9tqg-a',
+        'NAME': '/var/lib/postgresql/data/pgdata',
+        'USER': 'postgres',
+        'PASSWORD': 'iyRwTlygotrvOvtwZkETfUibrCzqbPVX',
+        'HOST': 'postgres.railway.internal',
         'PORT': '5432',
     }
 }
