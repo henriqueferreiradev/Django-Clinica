@@ -25,8 +25,8 @@ SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.up.railway.app', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS  = ['https://django-clinica-production.up.railway.app/']
 
 
 # Application definition
