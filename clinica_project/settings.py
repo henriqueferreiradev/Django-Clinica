@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['https://django-clinica-emb0.onrender.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
