@@ -79,11 +79,14 @@ WSGI_APPLICATION = 'clinica_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('meu_banco_mpwy'),
+        'USER': os.getenv('meu_banco_mpwy_user'),
+        'PASSWORD': os.getenv('TqWfVy2GCmREx6J7fdGt2F0FL4KJi3tJ'),
+        'HOST': os.getenv('dpg-d10qt595pdvs73ae9tqg-a'),
+        'PORT': os.getenv('5432'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
