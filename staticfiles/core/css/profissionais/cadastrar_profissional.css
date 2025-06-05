@@ -1,0 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+  --roxoPrincipal: #7F4396;
+  --roxoPrincipal-hover: #76378f11;
+  --roxoPrincipal-hover2: #76378f;
+  --verdePrincipal: #92cbad;
+  --branco: #FFF;
+  --preto: #000;
+  --cinzaBorda: #ccc;
+  --cinzaEscuro: #6e6e6e;
+  --fontePrincipal: 'Inter';
+}
+
+
+.content {
+  background: var(--branco);
+  border-radius: 15px;
+  overflow: auto;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  padding: 1em;
+  margin-top: 1em;
+  color: var(--preto);
+  height: calc(95vh - 4em);
+
+}
+
+.content-header {
+  display: flex;
+
+
+  margin-bottom: 25px;
+}
+
+.form_cadastro-nomes {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+  /* espaço entre os campos */
+}
+
+
+
+#btn-cep {
+
+  height: 40px;
+  font-size: 16px;
+  border-radius: 5px;
+  display: flex;
+  align-self: center;
+  justify-content: center;
+  background-color: var(--roxoPrincipal);
+}
+
+.form_cadastro-nomes .field_cep {
+  flex-basis: 20%;
+
+}
+
+#btn-cep {
+  flex-basis: 1%;
+}
+
+.form_cadastro-nomes .field_70 {
+  flex-basis: 70%;
+}
+
+.formField {
+  margin: .7em;
+  position: relative;
+  width: 100%;
+}
+
+
+.date-s::-webkit-datetime-edit {
+  color: transparent;
+}
+
+.date-s:focus::-webkit-datetime-edit,
+.date-s:valid::-webkit-datetime-edit {
+  color: var(--preto);
+
+}
+
+.formField .input-s {
+
+  padding: 0.7em;
+  outline: none;
+  border: 2px solid var(--verdePrincipal);
+  border-radius: 5px;
+  color: var(--preto);
+  font-size: 14px;
+  font-weight: 400;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 0 0 5px transparent;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 1em center;
+  background-size: 1em;
+  cursor: pointer;
+  box-sizing: border-box;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg fill='%237F4396' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M207.029 381.476L12.686 187.314C4.902 179.529 0 168.764 0 157.254s4.902-22.275 12.686-30.059l22.627-22.627C43.097 96.686 53.862 91.784 65.373 91.784s22.275 4.902 30.059 12.686L224 247.598l128.568-143.128c7.784-7.784 18.549-12.686 30.059-12.686s22.275 4.902 30.059 12.686l22.627 22.627c7.784 7.784 12.686 18.549 12.686 30.059s-4.902 22.275-12.686 30.059L240.971 381.476c-7.804 7.804-18.768 12.524-30.058 12.524s-22.255-4.72-30.058-12.524z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+}
+
+.formField .select-s {
+  padding: 0.7em;
+  padding-right: 2.5em;
+
+  padding-right: 35px;
+  outline: none;
+  border: 1px solid var(--cinzaBorda);
+  border-radius: 5px;
+  background-color: var(--roxoPrincipal-hover);
+  color: var(--preto);
+  font-size: 25px;
+  font-weight: 400;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 0 0 5px transparent;
+
+
+
+}
+
+.input-s:focus,
+.input-s.input-preenchido {
+  box-shadow: 1px 0px 3px var(--roxoPrincipal);
+  border: 1px solid var(--roxoPrincipal);
+}
+
+.formField .input-s:hover,
+.formField .input-s:focus {
+  box-shadow: 1px 0px 3px var(--roxoPrincipal);
+  border: 1px solid var(--roxoPrincipal);
+  color: var(--preto);
+}
+
+.formField .input-s:focus .form_cadastro-adicionais {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.formField .span-s {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: .6em;
+  color: var(--preto);
+  font-size: 16px;
+  font-weight: 400;
+  transition: 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.formField .textarea-s {
+  flex-grow: 1;
+  resize: none;
+  height: 100%;
+
+}
+
+.formField .input-s:focus+.span-s,
+.formField .input-s.input-preenchido+.span-s {
+  transform: translateY(-30px) translateX(-5px) scale(0.95);
+  transition: 0.3s ease-in-out;
+  color: var(--roxoPrincipal);
+  font-weight: 550;
+}
+
+.form_div {
+  border: 1px solid var(--roxoPrincipal);
+  border-radius: 0 0 15px 15px;
+  display: flex;
+  padding: 1em;
+  margin: 0 0 1em 0;
+
+}
+
+.div_forms {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+
+.div_forms .form_cadastro-nomes {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+
+}
+
+.form_cadastro-nomes button {
+  align-items: center;
+}
+
+.form_titulo {
+  background-color: var(--roxoPrincipal);
+  padding: 1em;
+  border-radius: 15px 15px 0 0;
+  color: var(--branco);
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-save {
+  padding: .5em 2em;
+  align-items: center;
+  background-color: var(--branco);
+  color: var(--roxoPrincipal);
+  border-radius: 15px;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#previewImage {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 15px;
+  position: relative;
+  z-index: 2;
+}
+
+.custum-file-upload {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: space-between;
+  gap: 20px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--verdePrincipal);
+  background-color: var(--branco);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0px 48px 35px -48px #e8e8e8;
+  margin: .6em;
+}
+
+.custum-file-upload .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custum-file-upload .icon svg {
+  height: 50px;
+  fill: var(--roxoPrincipal);
+}
+
+.custum-file-upload .text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custum-file-upload .text span {
+  font-weight: 400;
+  color: var(--roxoPrincipal);
+  font-size: 14px;
+}
+
+.custum-file-upload input {
+  display: none;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background-color: var(--roxoPrincipal);
+}
+
+.custum-file-upload {
+  position: relative;
+  overflow: hidden;
+}
+
+.custum-file-upload img#preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.custum-file-upload>*:not(#preview) {
+  position: relative;
+  z-index: 1;
+}

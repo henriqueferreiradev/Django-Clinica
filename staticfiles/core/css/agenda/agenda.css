@@ -1,0 +1,759 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+    --roxoPrincipal: #7F4396;
+    --roxoPrincipal-hover: #76378f11;
+    --roxoPrincipal-hover2: #76378f;
+    --roxo-primary-hover: #9b58b4;
+    --verdePrincipal: #92cbad;
+    --branco: #FFF;
+    --preto: #000;
+    --cinzaBorda: #ccc;
+    --cinzaEscuro: #6e6e6e;
+    --fontePrincipal: 'Inter';
+}
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--fontePrincipal);
+}
+
+body {
+    background-color: #f4f6f8;
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+
+    overflow: hidden;
+}
+
+
+
+.content {
+    background: var(--branco);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 1em;
+    margin-top: 1em;
+    height: calc(100vh - 90px);
+    max-height: calc(100vh - 60px - 2em);
+    box-sizing: border-box;
+    overflow-y: auto;
+
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: var(--roxoPrincipal);
+    border-radius: 50px;
+}
+
+.content::-webkit-scrollbar {
+    background-color: var(--branco);
+    width: 5px;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+
+}
+
+.content-header h2 {
+    margin: 0;
+}
+
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.card {
+    position: relative;
+
+    background: white;
+    border-radius: 16px;
+    padding: 0 1em 1em 1em;
+    text-align: center;
+    box-shadow: var(--shadowRoxo);
+    scale: 1;
+    transition: scale .5s ease-in-out;
+}
+
+.card:hover {
+    scale: 1.05;
+    transition: scale .5s ease-in-out;
+}
+
+.nome_profissional {
+    margin: 1em 0;
+    background-color: #76378f;
+    text-align: center;
+    color: var(--branco);
+    font-size: 18px;
+    font-weight: 600;
+    padding: .5em 0;
+    border-radius: 15px
+}
+
+.lista_consulta li {
+    list-style-type: none;
+    background-color: #76378f;
+    margin: .2em 0;
+    border-radius: 10px;
+    color: var(--branco);
+    padding: .5em;
+    font-size: 14px;
+    font-weight: 600;
+
+}
+
+
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 450px;
+    height: 100vh;
+    background-color: var(--branco);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    border-radius: 20px 0 0 20px;
+    max-width: 100vh;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+#sidebar.active {
+    right: 0;
+}
+
+#openBtn {
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 900;
+}
+
+#closeBtn,
+#closeBtnEdit {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    float: right;
+    color: var(--roxoPrincipal);
+    margin: 0;
+    padding: 0;
+
+}
+
+
+/*=========================================================*/
+
+
+h2 {
+    margin-top: 0;
+}
+
+.formField {
+    margin-bottom: 16px;
+
+}
+
+.formField label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.formField input[type="text"],
+.formField input[type="date"],
+.formField input[type="time"],
+.formField input[type="number"],
+.formField input[type="radio"],
+.formField select,
+.formField textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+.formField input[type="time"] {
+    text-align: center;
+}
+
+.submenu input[type="text"],
+.submenu input[type="date"],
+.submenu input[type="time"],
+.submenu input[type="number"],
+.submenu select,
+.submenu textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding-right: 40px;
+    /* espaço pro botão */
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid var(--roxoPrincipal);
+    padding: 8px;
+}
+
+.input-wrapper .modo_desconto {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    height: 24px;
+    width: 28px;
+    border: none;
+    border-radius: 6px;
+    background: var(--roxoPrincipal);
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.formRow {
+    display: flex;
+    gap: 12px;
+
+}
+
+.formField input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.formRow .formField {
+    flex: 1;
+}
+
+
+
+.textarea-large {
+    height: 100px;
+}
+
+.submenu {
+    border-top: 1px solid #ccc;
+}
+
+.submenu-header {
+    cursor: pointer;
+    position: relative;
+    padding: 12px 0;
+    font-weight: 500;
+}
+
+.submenu-header::after {
+    content: '▾';
+    position: absolute;
+    right: 10px;
+    transition: transform 0.2s ease;
+}
+
+.submenu.open .submenu-header::after {
+    transform: rotate(180deg);
+}
+
+.submenu-content {
+    display: none;
+    padding: 10px 0;
+}
+
+.submenu.open .submenu-content {
+    display: block;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#busca {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#sugestoes {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+#sugestoes div:hover {
+    background-color: var(--roxoPrincipal-hover);
+}
+
+
+
+
+
+
+
+
+
+
+.tabela-container {
+    background: var(--branco);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 1em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: var(--roxoPrincipal);
+    color: white;
+}
+
+th,
+td {
+    padding: .5em;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid var(--cinzaBorda);
+}
+
+th {
+    padding: 1em;
+}
+
+.badge {
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: var(--branco);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+thead tr th:first-child {
+    border-top-left-radius: 12px;
+}
+
+thead tr th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.grade-simples {
+    background-color: #f26666;
+    ;
+}
+
+.grade-plus {
+    background: #f2c94c;
+    color: black;
+}
+
+.grade-premium {
+    background: #7f56d9;
+}
+
+
+.dropdown {
+    position: absolute;
+    background: var(--branco);
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    display: none;
+    flex-direction: column;
+    min-width: 120px;
+    z-index: 10;
+    color: black;
+}
+
+.dropdown button {
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: black;
+
+}
+
+.dropdown button:hover {
+    background: #eee;
+}
+
+
+.hidden {
+    display: none;
+}
+
+.header-sidebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.3em;
+
+
+}
+
+.sidebar .header-sidebar {
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+
+
+    z-index: 1000;
+    box-sizing: border-box;
+
+}
+
+.sidebar .footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+
+
+
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+
+}
+
+
+.agendamento_div {
+    position: relative;
+    overflow-y: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: calc(100vh - 140px);
+    padding: 20px;
+    z-index: 1000;
+    border-bottom: 1px solid var(--roxoPrincipal);
+    border-top: 1px solid var(--roxoPrincipal);
+}
+
+.agendamento_div::-webkit-scrollbar {
+    display: none;
+
+}
+
+.footer {
+    display: flex;
+    padding: 0 20px;
+    gap: 1em;
+
+}
+
+.btn-footer {
+    width: 100%;
+    ;
+    transition: background 0.3s;
+
+}
+
+#pacote_atual,
+#info_reposicao {
+    display: none;
+    margin: 1em 0;
+    padding: 10px;
+    background-color: var(--verdeAvisosFundo);
+    border: 1px solid var(--verdeAvisosLetra);
+    color: var(--verdeAvisosLetra);
+    border-radius: 5px;
+}
+
+/* Layout Base */
+
+
+.agenda-data-group {
+    margin: 30px 0 15px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--roxoPrincipal);
+    padding-bottom: 5px;
+
+}
+
+/* Estrutura em Grid */
+.agenda-item {
+    display: grid;
+    grid-template-columns: 150px 1fr 180px auto;
+    gap: 15px;
+    padding: .5em 0;
+    border-bottom: 1px solid var(--cinzaBorda);
+    align-items: end;
+}
+
+/* Coluna de Horário */
+.time-col {
+    display: flex;
+    align-items: center;
+}
+
+.agenda-hora {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.bolinha {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+/* Coluna de Informações */
+.info-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    align-items: center;
+    gap: 8px;
+
+}
+
+.info-col>* {
+    margin: 0;
+    padding: 0;
+}
+
+.profissional,
+.paciente,
+.sessao {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+
+}
+
+.profissional {
+    font-weight: 600;
+}
+
+.sessao {
+    color: var(--preto);
+}
+
+.info-line {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+}
+
+
+
+
+/* Coluna de Status */
+.status-col {
+    display: grid;
+    align-items: center;
+
+}
+
+.status-select {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid var(--cinzaBorda);
+    font-size: 13px;
+}
+
+/* Coluna de Ações */
+.actions-col {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    background: var(--roxoPrincipal);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    height: auto;
+}
+
+.action-btn:hover {
+    background: var(--verdePrincipal);
+}
+
+.modal-att-agenda {
+    display: none;
+    /* Oculto por padrão */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fundo escuro semi-transparente */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-att-agenda.active {
+    display: flex;
+
+}
+
+.modal-att-agenda .modal-conteudo {
+    background-color: white;
+    width: 30%;
+    height: auto;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.buttons_header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 0;
+}
+
+.modal_subtitulo {
+    margin-bottom: 10px;
+    color: var(--roxoPrincipal);
+    font-size: 16px;
+    font-weight: 550;
+    text-decoration: underline;
+}
+
+.buttons_div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    z-index: 0;
+    margin-top: 1em;
+}
+
+.radio-container {
+    margin: 0 auto;
+    max-width: 300px;
+    color: var(--preto);
+}
+
+.radio-wrapper {
+    margin-bottom: 20px;
+}
+
+.radio-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.radio-button:hover {
+    transform: translateY(-2px);
+}
+
+.radio-button input[type="radio"] {
+    display: none;
+}
+
+.radio-checkmark {
+    display: inline-block;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    border: 2px solid #7f4396;
+    border-radius: 50%;
+}
+
+.radio-checkmark:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--roxo-primary-hover);
+    transition: all 0.2s ease-in-out;
+}
+
+.radio-button input[type="radio"]:checked~.radio-checkmark:before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.radio-label {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.sessao.verde {
+    color: green;
+    font-weight: 500;
+}
+
+.sessao.vermelho {
+    color: red;
+    font-weight: 500;
+}
+
+.bx-edit {
+    font-size: 24px;
+}

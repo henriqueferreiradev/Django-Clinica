@@ -9,7 +9,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
  
 
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+try:
+    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+except locale.Error:
+    locale.setlocale(locale.LC_TIME, 'C')  # fallback universal
 def criar_pasta_foto_paciente(id_paciente, nome_paciente):
     nome = slugify(nome_paciente)
     caminho = os.path.join(settings.MEDIA_ROOT, f'imagens/pacientes/{id_paciente}_{nome}')

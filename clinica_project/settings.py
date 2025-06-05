@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','https://django-clinica-emb0.onrender.com']
 
 
 # Application definition
@@ -135,3 +135,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'notificacao.pontodeequilibrio@gmail.com'
 EMAIL_HOST_PASSWORD = 'eolv jlri eyvu imhz'
 DEFAULT_FROM_EMAIL = 'Ponto de Equilibrio <notificacao.pontodeequilibrio@gmail.com>'
+
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
