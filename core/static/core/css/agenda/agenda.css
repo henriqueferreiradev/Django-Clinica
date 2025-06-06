@@ -178,6 +178,7 @@ h2 {
     font-size: 14px;
 }
 
+/* Estilo base dos inputs */
 .formField input[type="text"],
 .formField input[type="date"],
 .formField input[type="time"],
@@ -186,15 +187,50 @@ h2 {
 .formField select,
 .formField textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid var(--roxoPrincipal);
-    border-radius: 6px;
+    padding: 0.7em;
+    border: 1px solid var(--verdePrincipal);
+    border-radius: 15px;
     font-size: 14px;
     outline: none;
+    color: var(--cinzaEscuro);
 }
 
+/* Estilo específico para input time */
 .formField input[type="time"] {
     text-align: center;
+}
+
+/* Estilo quando preenchido ou em foco */
+.formField input.input-preenchido,
+.formField textarea.input-preenchido,
+.formField select.input-preenchido,
+.formField input:focus,
+.formField textarea:focus,
+.formField select:focus {
+    box-shadow: 1px 0px 3px var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+}
+
+/* Hover apenas para inputs (opcional) */
+.formField input:hover,
+.formField .input-s:hover {
+    box-shadow: 1px 0px 3px var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+    color: var(--preto);
+}
+
+.input-s:focus,
+.input-s.input-preenchido {
+    box-shadow: 1px 0px 3px var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+}
+
+.formField .input-s:hover,
+.formField .input-s:focus,
+.formField .input-s::placeholder:hover {
+    box-shadow: 1px 0px 3px var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+    color: var(--preto);
 }
 
 .submenu input[type="text"],
@@ -312,6 +348,8 @@ input::-webkit-inner-spin-button {
     width: 100%;
     box-sizing: border-box;
 }
+
+
 
 #sugestoes {
     position: absolute;

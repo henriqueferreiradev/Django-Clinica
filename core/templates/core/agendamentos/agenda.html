@@ -157,7 +157,7 @@
                     <div class="formField">
                         <label>Recorrência</label>
                         <select name="recorrencia_dia" id="recorrencia_dia">
-                            <option disabled value="">Selecione...</option>
+                            <option value="" disabled selected>Selecione...</option>
                             <option value="0">Todas segundas</option>
                             <option value="1">Todas terças</option>
                             <option value="2">Todas quartas</option>
@@ -201,6 +201,7 @@
                     <div class="formField">
                         <label>Forma de pagamento</label>
                         <select name="forma_pagamento">
+                            <option value="" disabled selected>Selecione...</option>
                             <option value="pix">Pix</option>
                             <option value="credito">Cartão de Crédito</option>
                             <option value="debito">Cartão de Débito</option>
@@ -255,6 +256,7 @@
                 <div class="formField">
                     <label>Status de agendamento</label>
                     <select name="status">
+                        <option value="" disabled selected>Selecione...</option>
                         <option value="agendado">✅ Agendado</option>
                         <option value="pre">✅ Pré-Agendado</option>
 
@@ -395,8 +397,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/imask"></script>
+<script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
 <script src="{% static 'core/js/agenda/baseAgenda.js' %}"></script>
 <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
+
 
 <script src="{% static 'core/js/profissionais/baseProfissionais.js' %}"></script>
 
