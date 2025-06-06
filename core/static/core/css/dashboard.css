@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
-    --roxoPrincipal: #7F4396;
+    --roxoPrincipal: rgb(127, 67, 150);
     --roxoPrincipal-hover: #76378f11;
     --roxoPrincipal-hover2: #76378f;
     --roxo-primary-hover: #9b58b4;
@@ -33,7 +33,7 @@ body {
 .content {
     background: var(--branco);
     border-radius: 15px;
-    overflow: hidden;
+    overflow: auto;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     padding: 1em;
     margin-top: 1em;

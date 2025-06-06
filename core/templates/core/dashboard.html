@@ -5,6 +5,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 {% endblock %}
 
 
@@ -200,9 +201,12 @@
             <h3 class="chart-title">Atendimentos por dia (últimos 7 dias)</h3>
             <a class="chart-more">Ver mais</a>
         </div>
-        <div class="chart-canvas-container">
-            <canvas id="barChart"></canvas>
-        </div>
+    <div class="chart-canvas-container">
+        <canvas id="barChart"></canvas>
+    </div>
+
+    {{ chart_data|json_script:"chart-data" }}
+
     </div>
     
     <!-- Chart 2 -->
@@ -273,10 +277,11 @@
 {% endblock %}
 
 {% block scripts %}
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static '/core/js/base/scriptBase.js' %}"></script>
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>
 <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
+<script src="{% static '/core/js/dashboard/chartDash.js' %}"></script>
 {% endblock %}
  
