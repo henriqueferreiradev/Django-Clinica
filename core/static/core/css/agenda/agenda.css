@@ -536,8 +536,9 @@ thead tr th:last-child {
 
 .btn-footer {
     width: 100%;
-    ;
+    padding: 1.5em 1em;
     transition: background 0.3s;
+    border-radius: 25px;
 
 }
 
