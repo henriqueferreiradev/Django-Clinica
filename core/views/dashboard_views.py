@@ -4,7 +4,8 @@ from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaci
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 import json
-
+import locale
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 
 
@@ -26,14 +27,17 @@ def dashboard_view(request):
     agendamentos_dia_pendentes = Agendamento.objects.filter(data=date.today(), status__in=PENDENTES).count()
     print(total_pacientes_ativos, agendamentos_semana)
     
-    sete_dias_atras = hoje - timedelta(days=6)
-    agendamentos_ultimos_7_dias = Agendamento.objects.filter(data__range=(sete_dias_atras, hoje))
+    seis_dias_atras = hoje - timedelta(days=5)
+    agendamentos_ultimos_7_dias = Agendamento.objects.filter(data__range=(seis_dias_atras, hoje))
 
     dias_labels = []
     dias_dados = []
-    for i in range(7):
-        dia = sete_dias_atras + timedelta(days=i)
-        dias_labels.append(dia.strftime('%d/%m (%A)'))
+    dias_semana = ['segunda-feira', 'terça-feira', 'quarta-feira',
+               'quinta-feira', 'sexta-feira', 'sábado',]
+    for i in range(6):
+        dia = seis_dias_atras + timedelta(days=i)
+        nome_dia = dias_semana[dia.weekday()]   
+        dias_labels.append(dia.strftime(f'%d/%m ({nome_dia})'))
         count = agendamentos_ultimos_7_dias.filter(data=dia).count()
         dias_dados.append(count)
         print(dias_labels)
