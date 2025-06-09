@@ -98,7 +98,7 @@ thead {
 
 th,
 td {
-    padding: .5em;
+    padding: .2em;
     text-align: center;
     font-size: 14px;
     border-bottom: 1px solid var(--cinzaBorda);
@@ -134,7 +134,20 @@ thead tr th:last-child {
 }
 
 
+.action-btn {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: black;
+    box-shadow: none;
+    padding: .3em;
 
+}
+
+.action-btn:hover {
+    background: transparent;
+}
 
 
 
@@ -299,11 +312,12 @@ thead tr th:last-child {
     grid-template-columns: 1fr;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
+    
 }
 
 @media (min-width: 1024px) {
     .charts-row-1 {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 
     .charts-row-2 {
@@ -314,8 +328,9 @@ thead tr th:last-child {
 .chart-container {
     background-color: white;
     border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 4px 10px rgb(127, 67, 150, 0.5);
     padding: 1rem;
+    border: 1px solid  var(--cinzaBorda);
 }
 
 .chart-header {
@@ -345,4 +360,8 @@ thead tr th:last-child {
     position: relative;
     height: 250px;
     width: 100%;
+}
+
+.bx {
+    color: red;
 }

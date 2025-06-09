@@ -5,7 +5,12 @@ from datetime import date, datetime, timedelta
 from django.utils import timezone
 import json
 import locale
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
+
+
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+
 
 
 
@@ -53,9 +58,50 @@ def dashboard_view(request):
             'borderRadius':10,
         }]
     }
- 
- 
-    print(grafico_dados_7_dias)
+    inicio_periodo = hoje.replace(day=1) - timedelta(days=365)
+
+    agendamentos_por_mes = (
+        Agendamento.objects
+        .filter(data__gte=inicio_periodo)
+        .annotate(mes=TruncMonth('data')) 
+        .values('mes')
+        .annotate(total=Count('id'))
+        .order_by('mes')
+    )
+    nomes_meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+               'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+    meses_labels = [
+        f"{nomes_meses[item['mes'].month - 1].capitalize()}/{item['mes'].year}"
+        for item in agendamentos_por_mes
+]
+    meses_dados = [item['total'] for item in agendamentos_por_mes]
+    
+    
+    grafico_dados_7_dias = {
+        'labels': dias_labels,
+        'datasets': [{
+            'label': 'Agendamentos por dia',
+            'data': dias_dados,
+            'backgroundColor': 'rgba(127, 67, 150, 0.6)',
+            'borderColor': 'rgb(127, 67, 150)',
+            'borderWidth': 1,
+            'borderRadius':10,
+        }]
+    }
+    grafico_evolucao_mensal = {
+        'labels':meses_labels,
+        'datasets': [{
+            'label':'Agendamentos por mês',
+            'data':meses_dados,
+            'backgroundColor': 'rgba(127, 67, 150, 0.6)',
+            'borderColor': 'rgb(127, 67, 150)',
+            'borderWidth': 1,
+            'borderRadius':10,
+        }] 
+        
+
+    }
+    print(grafico_evolucao_mensal)
     context = {
         'agendamentos':agendamentos,
         'total_pacientes_ativos':total_pacientes_ativos,
@@ -65,6 +111,8 @@ def dashboard_view(request):
         'agendamentos_dia_finalizados':agendamentos_dia_finalizados,
         'agendamentos_dia_pendentes':agendamentos_dia_pendentes,
         "chart_data": grafico_dados_7_dias,
+        'evolucao_mensal_data':grafico_evolucao_mensal,
     }
     return render(request, 'core/dashboard.html', context)
+
 
