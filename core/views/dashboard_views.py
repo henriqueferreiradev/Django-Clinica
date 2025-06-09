@@ -27,18 +27,18 @@ def dashboard_view(request):
     agendamentos_dia_pendentes = Agendamento.objects.filter(data=date.today(), status__in=PENDENTES).count()
     print(total_pacientes_ativos, agendamentos_semana)
     
-    seis_dias_atras = hoje - timedelta(days=5)
-    agendamentos_ultimos_7_dias = Agendamento.objects.filter(data__range=(seis_dias_atras, hoje))
+    sete_dias_atras = hoje - timedelta(days=5)
+    agendamentos_ultimos_6_dias = Agendamento.objects.filter(data__range=(sete_dias_atras, hoje))
 
     dias_labels = []
     dias_dados = []
     dias_semana = ['segunda-feira', 'terça-feira', 'quarta-feira',
-               'quinta-feira', 'sexta-feira', 'sábado',]
-    for i in range(6):
-        dia = seis_dias_atras + timedelta(days=i)
-        nome_dia = dias_semana[dia.weekday()]   
-        dias_labels.append(dia.strftime(f'%d/%m ({nome_dia})'))
-        count = agendamentos_ultimos_7_dias.filter(data=dia).count()
+               'quinta-feira', 'sexta-feira', 'sábado','Domingo']
+    for i in range(7):
+        dia = sete_dias_atras + timedelta(days=i)
+        nome_dia = dias_semana[dia.weekday()].capitalize()
+        dias_labels.append(dia.strftime(f'%d/%m ({nome_dia.replace('-feira','')})'))
+        count = agendamentos_ultimos_6_dias.filter(data=dia).count()
         dias_dados.append(count)
         print(dias_labels)
  
