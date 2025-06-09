@@ -160,26 +160,33 @@
           <td>{{ agendamento.paciente.nome }}</td>
           <td>{{ agendamento.profissional_1.nome }}</td>
           <td>{{ agendamento.especialidade.nome }}</td>
-          <td>{{ agendamento.status }}</td>
-          <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
-            <div class="dropdown">
-              <button  >Ver detalhes</button>
-              <button  >Editar</button>
-              <button  >Gerar Ficha</button>
-              <button  >Novo Agendamento</button>
-              <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
+          <td class='status-col'> 
+          <form method="post" action="{% url 'alterar_status' agendamento.id %}">
                 {% csrf_token %}
-                <input type="hidden" name="delete_id" value="{{ paciente.id }}">
-                <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
-                  Excluir
-                </button>
-          
-              </form>
-            
-
+                <select name="status" class="status-select">
+                    <option value="pre" {% if agendamento.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
+                    <option value="agendado" {% if agendamento.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
+                    <option value="finalizado" {% if agendamento.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
+                    <option value="desistencia" {% if agendamento.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
+                    <option value="desistencia_remarcacao" {% if agendamento.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
+                    <option value="falta_remarcacao" {% if agendamento.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
+                    <option value="falta_cobrada" {% if agendamento.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
+            </select>
+        </div>
+     
+        </form></td>
+        <td>
+           <div class="actions-col">
+                <button type="submit" class="action-btn"><i class='bx  bx-check'></i></button>
+                <a href="{% url 'confirmacao_agendamento' agendamento.id %}">
+                    <button type="button" class="action-btn">
+                        <i class='bx bx-eye-alt'></i>
+                    </button>
+                </a>
 
             </div>
-          </td>
+        <td>
+    
         </tr>
         {% endfor %}
       </tbody>
@@ -199,9 +206,9 @@
     <div class="chart-container">
         <div class="chart-header">
             <h3 class="chart-title">Atendimentos por dia (últimos 7 dias)</h3>
-            <a class="chart-more">Ver mais</a>
+ 
         </div>
-    <div class="chart-canvas-container">
+    <div  style="position: relative; width: 100%; max-width: 900px; margin: auto;" class="chart-canvas-container">
         <canvas id="barChart"></canvas>
     </div>
 
@@ -213,32 +220,34 @@
     <div class="chart-container">
         <div class="chart-header">
             <h3 class="chart-title">Evolução mensal de atendimentos</h3>
-            <a class="chart-more">Ver mais</a>
+
         </div>
         <div class="chart-canvas-container">
-            <canvas id="lineChart"></canvas>
+            <canvas id="evolucaoMensalChart"></canvas>
+        </div>
+        {{ evolucao_mensal_data|json_script:'evolucao-chart' }}
+    </div>
+        <!-- Chart 3 -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Distribuição por profissional</h3>
+           
+        </div>
+        <div class="chart-canvas-container">
+            <canvas id="pieChart"></canvas>
         </div>
     </div>
 </div>
 
 <!-- Charts Row 2 -->
 <div class="charts-row charts-row-2">
-    <!-- Chart 3 -->
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3 class="chart-title">Distribuição por profissional</h3>
-            <a class="chart-more">Ver mais</a>
-        </div>
-        <div class="chart-canvas-container">
-            <canvas id="pieChart"></canvas>
-        </div>
-    </div>
+
     
     <!-- Chart 4 -->
     <div class="chart-container">
         <div class="chart-header">
             <h3 class="chart-title">Serviços mais contratados</h3>
-            <a class="chart-more">Ver mais</a>
+       
         </div>
         <div class="chart-canvas-container">
             <canvas id="doughnutChart"></canvas>
@@ -249,7 +258,7 @@
     <div class="chart-container">
         <div class="chart-header">
             <h3 class="chart-title">Status dos agendamentos</h3>
-            <a class="chart-more">Ver mais</a>
+ 
         </div>
         <div class="chart-canvas-container">
             <canvas id="barChart2"></canvas>
