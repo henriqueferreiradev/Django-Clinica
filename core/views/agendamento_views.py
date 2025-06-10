@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt 
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
-from core.utils import filtrar_ativos_inativos, alterar_status_ativo,gerar_mensagem_confirmacao, enviar_lembrete_email
+from core.utils import filtrar_ativos_inativos, alterar_status_ativo,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento
 from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse
@@ -420,21 +420,8 @@ def enviar_email_agendamento(request, agendamento_id):
     return JsonResponse({'status': 'erro', 'mensagem': 'Requisição inválida'}, status=400)
 
 
-def alterar_status(request, pk):
-    if request.method == "POST":
-        agendamento = get_object_or_404(Agendamento, pk=pk)
-        novo_status = request.POST.get('status')
-
-        if novo_status:
-            agendamento.status = novo_status
-            agendamento.save()
-
-            # Aqui você pode adicionar lógica extra se quiser,
-            # tipo enviar notificação, log, etc.
-            # Mas para remarcar, deixamos para outra view
-
-        messages.success(request, f'Status alterado para {novo_status}.')
-    return redirect('agenda')
+def alterar_status_agenda(request, pk):
+    return alterar_status_agendamento(request,pk,redirect_para='agenda')
 
 def remarcar_agendamento(request, pk):
     if request.method == "POST":

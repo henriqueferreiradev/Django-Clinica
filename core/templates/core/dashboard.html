@@ -161,7 +161,7 @@
           <td>{{ agendamento.profissional_1.nome }}</td>
           <td>{{ agendamento.especialidade.nome }}</td>
           <td class='status-col'> 
-          <form method="post" action="{% url 'alterar_status' agendamento.id %}">
+          <form method="post" action="{% url 'alterar_status_dashboard' agendamento.id %}">
                 {% csrf_token %}
                 <select name="status" class="status-select">
                     <option value="pre" {% if agendamento.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
@@ -174,19 +174,17 @@
             </select>
         </div>
      
-        </form></td>
+       </td>
         <td>
            <div class="actions-col">
-                <button type="submit" class="action-btn"><i class='bx  bx-check'></i></button>
+                <button type="submit" class="action-btn">Alterar Status</button>
                 <a href="{% url 'confirmacao_agendamento' agendamento.id %}">
-                    <button type="button" class="action-btn">
-                        <i class='bx bx-eye-alt'></i>
-                    </button>
+                    <button type="button" class="action-btn">Ver</button>
                 </a>
 
             </div>
         <td>
-    
+     </form>
         </tr>
         {% endfor %}
       </tbody>

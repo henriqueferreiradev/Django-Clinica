@@ -13,8 +13,12 @@ from core.views import (
 urlpatterns = [
     path('login/', auth_views.login_view, name='login'),
     path('logout/', auth_views.logout_view, name='logout'), 
-    path('', dashboard_views.dashboard_view, name='dashboard'),
     
+    
+    path('', dashboard_views.dashboard_view, name='dashboard'),
+    path('dashboard/alterar_status/<int:pk>',dashboard_views.alterar_status_dashboard, name='alterar_status_dashboard'),
+
+
     path('pacientes/', pacientes_views.pacientes_view, name='pacientes'),
     path('pacientes/cadastrar', pacientes_views.cadastrar_pacientes_view, name='cadastrar_paciente'),
     path('pacientes/editar/<int:id>/', pacientes_views.editar_paciente_view, name='editar_paciente'),
@@ -28,17 +32,17 @@ urlpatterns = [
     path('profissionais/editar/<int:id>/', profissionais_views.editar_profissional_view, name='editar_profissional'),
     path('profissional/<int:id>/ficha/', profissionais_views.ficha_profissional, name='ficha_profissional'),
     path('api/profissional/<int:profissional_id>/', profissionais_views.dados_profissional, name='dados_profissional'),
- 
+    
     path('financeiro/', financeiro_views.financeiro_view, name='financeiro'),
 
 
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
     path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
     path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
- 
+    
     path('agendamento/confirmacao/<int:agendamento_id>/', agendamento_views.confirmacao_agendamento, name='confirmacao_agendamento'),
     path('enviar-email/<int:agendamento_id>/',agendamento_views.enviar_email_agendamento, name='enviar_email_agendamento'),
-    path('agendamento/alterar_status/<int:pk>',agendamento_views.alterar_status, name='alterar_status'),
+    path('agendamento/alterar_status/<int:pk>',agendamento_views.alterar_status_agenda, name='alterar_status_agendamento'),
     path('agendamento/json/<int:agendamento_id>/', agendamento_views.pegar_agendamento, name='get_agendamento'),
     path('agendamento/editar/<int:agendamento_id>/', agendamento_views.editar_agendamento, name='editar_agendamento'),
     path('agendamento/<int:pk>/remarcar/', agendamento_views.remarcar_agendamento, name='remarcar_agendamento'),

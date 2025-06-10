@@ -327,7 +327,7 @@
         </div>
 
         <div class="status-col">
-            <form method="post" action="{% url 'alterar_status' ag.id %}">
+            <form method="post" action="{% url 'alterar_status_agendamento' ag.id %}">
                 {% csrf_token %}
                 <select name="status" class="status-select">
                     <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
@@ -340,7 +340,7 @@
             </select>
         </div>
         <div class="actions-col">
-            <button type="submit" class="action-btn"><i class='bx  bx-edit'  ></i></button>
+            <button type="submit" class="action-btn">Alterar Status</i></button>
             <a href="{% url 'confirmacao_agendamento' ag.id %}">
                 <button type="button" class="action-btn">Ver Detalhes</button>
             </a>

@@ -7,7 +7,9 @@ import locale
 import calendar
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
- 
+from django.shortcuts import get_object_or_404, redirect
+from .models import Agendamento
+from django.contrib import messages
 
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 def criar_pasta_foto_paciente(id_paciente, nome_paciente):
@@ -116,3 +118,15 @@ def enviar_lembrete_email(destinatario, contexto):
     email = EmailMultiAlternatives(assunto,'', remetente, destinatarios)
     email.attach_alternative(conteudo, 'text/html')
     email.send()
+    
+def alterar_status_agendamento(request, pk, redirect_para):
+    if request.method == "POST":
+        agendamento = get_object_or_404(Agendamento, pk=pk)
+        novo_status = request.POST.get('status')
+
+        if novo_status:
+            agendamento.status = novo_status
+            agendamento.save()
+            messages.success(request, f'Status alterado para {novo_status}.')
+
+    return redirect(redirect_para)

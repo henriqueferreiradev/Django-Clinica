@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.utils import timezone
+from core.utils import alterar_status_agendamento
 import json
 import locale
 from django.db.models.functions import TruncMonth
@@ -12,9 +13,11 @@ from django.db.models import Count
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 
+DIAS_SEMANA = ['segunda-feira', 'terça-feira', 'quarta-feira',
+               'quinta-feira', 'sexta-feira', 'sábado','Domingo']
 
-
-
+NOMES_MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+               'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 FINALIZADOS = ['finalizado','desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
 PENDENTES = ['pre','agendado']
 @login_required(login_url='login')
@@ -37,11 +40,10 @@ def dashboard_view(request):
 
     dias_labels = []
     dias_dados = []
-    dias_semana = ['segunda-feira', 'terça-feira', 'quarta-feira',
-               'quinta-feira', 'sexta-feira', 'sábado','Domingo']
+
     for i in range(7):
         dia = sete_dias_atras + timedelta(days=i)
-        nome_dia = dias_semana[dia.weekday()].capitalize()
+        nome_dia = DIAS_SEMANA[dia.weekday()].capitalize()
         dias_labels.append(dia.strftime(f'%d/%m '))
         count = agendamentos_ultimos_6_dias.filter(data=dia).count()
         dias_dados.append(count)
@@ -81,10 +83,9 @@ def dashboard_view(request):
         .annotate(total=Count('id'))
         .order_by('mes')
     )
-    nomes_meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-               'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+
     meses_labels = [
-        f"{nomes_meses[item['mes'].month - 1].capitalize()}/{item['mes'].year}"
+        f"{NOMES_MESES[item['mes'].month - 1].capitalize()}/{item['mes'].year}"
         for item in agendamentos_por_mes
 ]
     meses_dados = [item['total'] for item in agendamentos_por_mes]
@@ -124,7 +125,7 @@ def dashboard_view(request):
     grafico_distribuicao_por_profissional = {
         'labels': profissionais_labels,
         'datasets': [{
-            'label':'Agendamentos por mês',
+            'label':'Agendamentos no mês',
             'data':dados_profissionais,
             'backgroundColor': cores_usadas,
             'borderColor': ['white'] * total,
@@ -148,3 +149,5 @@ def dashboard_view(request):
     return render(request, 'core/dashboard.html', context)
 
 
+def alterar_status_dashboard(request, pk):
+    return alterar_status_agendamento(request,pk, redirect_para='dashboard')
