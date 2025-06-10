@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     try {
         const chartDataEvo = JSON.parse(document.getElementById('evolucao-chart').textContent);
- 
+
         const ctx2 = document.getElementById('evolucaoMensalChart').getContext('2d');
-    
+
         new Chart(ctx2, {
             type: 'line',
             data: chartDataEvo,
@@ -43,5 +43,27 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (error) {
         console.error("Erro ao montar gráfico de evolução mensal:", error);
     }
-    
+    try {
+        const distribuicaoProfissionalChart = JSON.parse(document.getElementById('distribuicao_por_profissional-chart').textContent);
+
+        const ctx3 = document.getElementById('distribuicaoProfissionalChart').getContext('2d')
+
+        new Chart(ctx3, {
+            type: 'pie',
+            data: distribuicaoProfissionalChart,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        })
+    } catch (error) {
+        console.error("Erro ao montar gráfico de evolução mensal:", error);
+    }
 });

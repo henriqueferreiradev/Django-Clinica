@@ -234,7 +234,8 @@
            
         </div>
         <div class="chart-canvas-container">
-            <canvas id="pieChart"></canvas>
+            <canvas id="distribuicaoProfissionalChart"></canvas>
+            {{ distribuicao_por_profissional|json_script:'distribuicao_por_profissional-chart' }}
         </div>
     </div>
 </div>
