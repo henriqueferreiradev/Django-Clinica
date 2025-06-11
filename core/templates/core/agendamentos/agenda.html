@@ -319,8 +319,8 @@
             {% if ag.codigo|slice:":3" == "REP" %}
                 <span class="sessao vermelho">Sessão de Reposição | {{ ag.codigo }}</span>
                 {% else %}
-            <span class="sessao verde  ">
-                Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} – {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
+            <span class="sessao verde">
+                Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
             </span>
             {% endif %}
         {% endif %}
@@ -340,12 +340,12 @@
             </select>
         </div>
         <div class="actions-col">
-            <button type="submit" class="action-btn">Alterar Status</i></button>
+            <button type="submit"  class="action-btn tooltip" ><i class='bx  bx-save'  ></i><span class="tooltiptext">Salvar Status</span> </button>
             <a href="{% url 'confirmacao_agendamento' ag.id %}">
-                <button type="button" class="action-btn">Ver Detalhes</button>
+                <button type="button" class="action-btn tooltip"><i class='bx  bx-send'  ></i><span class="tooltiptext">Ver detalhes</span>  </button>
             </a>
             <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
-                class="btn-editar-agendamento action-btn">Editar</button>
+                class="btn-editar-agendamento action-btn tooltip" ><i class='bx  bxs-edit'  ></i><span class="tooltiptext">Editar agendamento</span>  </button>
               
         </div>
         </form>

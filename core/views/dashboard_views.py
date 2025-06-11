@@ -40,6 +40,13 @@ def dashboard_view(request):
 
     dias_labels = []
     dias_dados = []
+     
+    for agendamento in agendamentos:
+        pacote = agendamento.pacote
+        agendamento.codigo = pacote.codigo if pacote else 'Reposição'
+        agendamento.sessao_atual = pacote.get_sessao_atual(agendamento) if pacote else None
+        agendamento.sessoes_total = pacote.qtd_sessoes if pacote else None
+        agendamento.sessoes_restantes = max(agendamento.sessoes_total - agendamento.sessao_atual, 0) if pacote else None
 
     for i in range(7):
         dia = sete_dias_atras + timedelta(days=i)
@@ -136,6 +143,13 @@ def dashboard_view(request):
     print(profissionais_labels, dados_profissionais)
     context = {
         'agendamentos':agendamentos,
+     
+        'codigo':agendamento.codigo,
+        'pacote':pacote,
+        'sessao_atual':agendamento.sessao_atual,
+        'sessoes_total':agendamento.sessoes_total,
+        'sessoes_restantes':agendamento.sessoes_restantes,
+   
         'total_pacientes_ativos':total_pacientes_ativos,
         'total_profissionais_ativos': total_profissionais_ativos,
         'agendamentos_semana':agendamentos_semana,

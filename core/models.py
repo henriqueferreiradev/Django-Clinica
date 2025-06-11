@@ -299,21 +299,34 @@ class PacotePaciente(models.Model):
         if self.valor_final is None:
             self.valor_final = self.servico.valor 
         super().save(*args, **kwargs)
-
+        
     def get_sessao_atual(self, agendamento=None):
         if agendamento:
-            anteriores = self.agendamento_set.filter(
-                data__lt=agendamento.data
-            ).count()
-            return anteriores + 1
-        return self.sessoes_realizadas + 1
+            agendamentos = self.agendamento_set.filter(
+                status__in=[
+                    'agendado',
+                    'finalizado',
+                    'desistencia_remarcacao',
+                    'falta_remarcacao',
+                    'falta_cobrada',
+                ]
+            ).order_by('data', 'hora_inicio', 'id')
+
+            sessao = 1
+            for ag in agendamentos:
+                if ag.id == agendamento.id:
+                    break
+                sessao += 1
+            return min(sessao, self.qtd_sessoes)  # nunca passa do limite
+        return min(self.sessoes_realizadas + 1, self.qtd_sessoes)
+
         
     @property
     def sessoes_realizadas(self):
-         return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
+        return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
 
     def sessoes_agendadas(self):
-         return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
+        return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
 
     @property
     def sessoes_restantes(self):

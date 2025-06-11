@@ -127,6 +127,6 @@ def alterar_status_agendamento(request, pk, redirect_para):
         if novo_status:
             agendamento.status = novo_status
             agendamento.save()
-            messages.success(request, f'Status alterado para {novo_status}.')
+            messages.success(request, f'Status alterado com sucesso.')
 
     return redirect(redirect_para)

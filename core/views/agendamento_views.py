@@ -335,7 +335,7 @@ def listar_agendamentos(filtros=None, query=None):
         codigo = ag.pacote.codigo if ag.pacote else 'Reposição'
         sessao_atual = pacote.get_sessao_atual(ag) if pacote else None
         sessoes_total = pacote.qtd_sessoes if pacote else None
-        sessoes_restantes = sessoes_total - sessao_atual
+        sessoes_restantes = max(sessoes_total - sessao_atual, 0)
 
         dados_agrupados[chave_data].append({
             'id': ag.id,

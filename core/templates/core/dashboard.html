@@ -161,8 +161,10 @@
           <td>{{ agendamento.paciente.nome }} {{ agendamento.paciente.sobrenome }}</td>
           <td>{{ agendamento.profissional_1.nome }}</td>
           <td>{{ agendamento.especialidade.nome }}</td>
-          <td>{{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} – {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}</td>
-          <td class='status-col'> 
+        <td>
+        {{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} – {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}
+        </td>          
+        <td class='status-col'> 
           <form method="post" action="{% url 'alterar_status_dashboard' agendamento.id %}">
                 {% csrf_token %}
                 <select name="status" class="status-select">
@@ -178,12 +180,12 @@
      
        </td>
         <td>
-           <div class="actions-col">
-                <button type="submit" class="action-btn">Alterar Status</button>
+            <div class="actions-col">
+                <button type="submit"  class="action-btn tooltip" ><i class='bx  bx-save'  ></i><span class="tooltiptext">Salvar Status</span></button>
                 <a href="{% url 'confirmacao_agendamento' agendamento.id %}">
-                    <button type="button" class="action-btn">Ver</button>
+                    <button type="button" class="action-btn tooltip"><i class='bx  bx-send'  ></i><span class="tooltiptext">Ver detalhes</span></button>
                 </a>
-
+ 
             </div>
         <td>
      </form>
