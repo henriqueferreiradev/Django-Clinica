@@ -148,6 +148,7 @@
 
           <th>Profissional</th>
           <th>Especialidade</th>
+          <th>Infos pacote</th>
           <th>Status</th>
           <th>Ações</th>
         </tr>
@@ -155,11 +156,12 @@
       <tbody>
         {% for agendamento in agendamentos %}
         <tr>
-          <td style="width: 10px; background-color: {{ agendamento.especialidade.cor }};"></td>
+          <td style="width: 5px; background-color: {{ agendamento.especialidade.cor }};"></td>
           <td>{{ agendamento.hora_inicio }} - {{agendamento.hora_fim}} </td>
-          <td>{{ agendamento.paciente.nome }}</td>
+          <td>{{ agendamento.paciente.nome }} {{ agendamento.paciente.sobrenome }}</td>
           <td>{{ agendamento.profissional_1.nome }}</td>
           <td>{{ agendamento.especialidade.nome }}</td>
+          <td>{{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} – {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}</td>
           <td class='status-col'> 
           <form method="post" action="{% url 'alterar_status_dashboard' agendamento.id %}">
                 {% csrf_token %}

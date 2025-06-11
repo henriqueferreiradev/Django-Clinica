@@ -634,6 +634,14 @@ thead tr th:last-child {
 
 
 
+.status-select {
+    width: 100%;
+    padding: 6px;
+    border-radius: 15px;
+    border: 1px solid var(--roxoPrincipal);
+    font-size: 13px;
+}
+
 
 /* Coluna de Status */
 .status-col {
