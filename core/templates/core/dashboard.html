@@ -143,14 +143,13 @@
       <thead>
         <tr>
           <th></th>
-          <th>Horário</th>
-          <th>Paciente</th>
-
-          <th>Profissional</th>
-          <th>Especialidade</th>
-          <th>Infos pacote</th>
-          <th>Status</th>
-          <th>Ações</th>
+          <th class='col-hora'>Horário</th>
+          <th class='col-paciente'>Paciente</th>
+          <th class='col-profissional'>Profissional</th>
+          <th class='col-especialidade'>Especialidade</th>
+          <th class='col-infos'>Informações do pacote</th>
+          <th class='col-status'>Status</th>
+          <th class='col-acoes'>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -159,11 +158,18 @@
           <td style="width: 5px; background-color: {{ agendamento.especialidade.cor }};"></td>
           <td>{{ agendamento.hora_inicio }} - {{agendamento.hora_fim}} </td>
           <td>{{ agendamento.paciente.nome }} {{ agendamento.paciente.sobrenome }}</td>
-          <td>{{ agendamento.profissional_1.nome }}</td>
+          <td>{{ agendamento.profissional_1.nome }} {{ agendamento.profissional_1.sobrenome }}</td>
           <td>{{ agendamento.especialidade.nome }}</td>
         <td>
-        {{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} – {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}
-        </td>          
+            {% if agendamento.sessao_atual %}
+            {% if agendamento.codigo|slice:":3" == "REP" %}
+                <span class="sessao vermelho">Sessão de Reposição | {{ agendamento.codigo }}</span>
+                {% else %}
+            <span class="sessao verde">
+                Sessão {{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} | {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}
+            </span>
+            {% endif %}
+        {% endif %}        </td>          
         <td class='status-col'> 
           <form method="post" action="{% url 'alterar_status_dashboard' agendamento.id %}">
                 {% csrf_token %}

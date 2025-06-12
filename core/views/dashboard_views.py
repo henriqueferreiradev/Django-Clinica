@@ -28,15 +28,16 @@ def dashboard_view(request):
 
     hoje = timezone.now().date()
     inicio_semana = hoje - timedelta(days=hoje.weekday())
+    inicio_semana_passada = inicio_semana - timedelta(days=7)
     fim_semana = inicio_semana + timedelta(days=6)
     agendamentos_semana = Agendamento.objects.filter(data__gte=inicio_semana, data__lte=fim_semana).count()
     agendamentos_dia = Agendamento.objects.filter(data=date.today()).count()
     agendamentos_dia_finalizados = Agendamento.objects.filter(data=date.today(), status__in=FINALIZADOS).count()
-    agendamentos_dia_pendentes = Agendamento.objects.filter(data=date.today(), status__in=PENDENTES).count()
-    print(total_pacientes_ativos, agendamentos_semana)
-    
+    agendamentos_dia_pendentes = Agendamento.objects.filter(data=date.today(), status__in=PENDENTES).count() 
     sete_dias_atras = hoje - timedelta(days=5)
     agendamentos_ultimos_6_dias = Agendamento.objects.filter(data__range=(sete_dias_atras, hoje))
+    
+
 
     dias_labels = []
     dias_dados = []
