@@ -113,18 +113,7 @@ tr th:first-child {
     padding: .5em;
 }
 
-.col-hora {
-    width: 120px;
-}
 
-.col-especialidade {
-    width: 160px;
-}
-
-.col-paciente,
-.col-profissional {
-    width: 280px;
-}
 
 .bx {
     color: var(--roxoPrincipal);
