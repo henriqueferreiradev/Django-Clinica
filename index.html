@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Colaborador - Sistema de Ponto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        .sidebar.collapsed .sidebar-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-icon {
+            margin-right: 0;
+        }
+        .main-content {
+            transition: all 0.3s ease;
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+        .dark-mode {
+            background-color: #1a202c;
+            color: #f7fafc;
+        }
+        .dark-mode .sidebar {
+            background-color: #2d3748;
+        }
+        .dark-mode .card {
+            background-color: #2d3748;
+            border-color: #4a5568;
+        }
+        .dark-mode .table {
+            background-color: #2d3748;
+        }
+        .dark-mode .table th, .dark-mode .table td {
+            border-color: #4a5568;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="sidebar bg-blue-800 text-white w-64 flex-shrink-0">
+            <div class="p-4 flex items-center justify-between border-b border-blue-700">
+                <div class="flex items-center">
+                    <i class="fas fa-clock text-2xl sidebar-icon mr-3"></i>
+                    <span class="sidebar-text font-bold text-xl">TimeTrack</span>
+                </div>
+                <button id="toggleSidebar" class="text-white focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="ml-3 sidebar-text">
+                        <div class="font-medium">João Silva</div>
+                        <div class="text-xs text-blue-200">Funcionário</div>
+                    </div>
+                </div>
+                <nav>
+                    <a href="#" class="flex items-center py-2 px-3 bg-blue-700 rounded-lg mb-2">
+                        <i class="fas fa-home sidebar-icon mr-3"></i>
+                        <span class="sidebar-text">Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-3 hover:bg-blue-700 rounded-lg mb-2">
+                        <i class="fas fa-fingerprint sidebar-icon mr-3"></i>
+                        <span class="sidebar-text">Registrar Ponto</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-3 hover:bg-blue-700 rounded-lg mb-2">
+                        <i class="fas fa-history sidebar-icon mr-3"></i>
+                        <span class="sidebar-text">Histórico</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-3 hover:bg-blue-700 rounded-lg mb-2">
+                        <i class="fas fa-adjust sidebar-icon mr-3"></i>
+                        <span class="sidebar-text">Banco de Horas</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-3 hover:bg-blue-700 rounded-lg mb-2">
+                        <i class="fas fa-file-alt sidebar-icon mr-3"></i>
+                        <span class="sidebar-text">Solicitações</span>
+                    </a>
+                    <div class="border-t border-blue-700 my-4"></div>
+                    <a href="#" class="flex items-center py-2 px-3 hover:bg-blue-700 rounded-lg mb-2">
+                        <i class="fas fa-cog sidebar-icon mr-3"></i>
+                        <span class="sidebar-text">Configurações</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-3 hover:bg-blue-700 rounded-lg">
+                        <i class="fas fa-sign-out-alt sidebar-icon mr-3"></i>
+                        <span class="sidebar-text">Sair</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content flex-1 overflow-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-gray-800">Painel do Colaborador</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-200">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="relative">
+                        <button id="notificationBtn" class="p-2 rounded-full hover:bg-gray-200 relative">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10">
+                            <div class="p-4 border-b">
+                                <h3 class="font-medium">Notificações</h3>
+                            </div>
+                            <div class="max-h-60 overflow-y-auto">
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 border-b">
+                                    <div class="text-sm">Ponto registrado com sucesso</div>
+                                    <div class="text-xs text-gray-500">Hoje, 08:05</div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 border-b">
+                                    <div class="text-sm">Solicitação de ajuste aprovada</div>
+                                    <div class="text-xs text-gray-500">Ontem, 14:30</div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                    <div class="text-sm">Lembrete: Bater ponto</div>
+                                    <div class="text-xs text-gray-500">Ontem, 17:45</div>
+                                </a>
+                            </div>
+                            <div class="p-2 text-center bg-gray-50">
+                                <a href="#" class="text-sm text-blue-600 hover:underline">Ver todas</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                            JS
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="p-6">
+                <!-- Welcome Card -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-xl p-6 mb-6 shadow-lg">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-2">Bom dia, João!</h2>
+                            <p class="mb-4">Hoje é <span id="currentDate" class="font-semibold">20 de Junho de 2023</span></p>
+                            <div class="flex items-center">
+                                <div class="bg-blue-500 rounded-full p-2 mr-3">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm">Horário atual</div>
+                                    <div id="currentTime" class="text-xl font-bold">08:15:42</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                            <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                                <div class="text-sm mb-2">Status atual</div>
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 rounded-full bg-green-400 mr-2"></div>
+                                    <span class="font-medium">Presente</span>
+                                </div>
+                                <div class="text-xs mt-2">Último registro: Entrada às 08:05</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="card bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-gray-500 font-medium">Horas trabalhadas</h3>
+                            <div class="bg-blue-100 text-blue-800 p-2 rounded-lg">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold mb-2">8:30</div>
+                        <div class="text-sm text-gray-500">Hoje</div>
+                    </div>
+                    <div class="card bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-gray-500 font-medium">Banco de horas</h3>
+                            <div class="bg-green-100 text-green-800 p-2 rounded-lg">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold mb-2">+4:15</div>
+                        <div class="text-sm text-gray-500">Saldo positivo</div>
+                    </div>
+                    <div class="card bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-gray-500 font-medium">Próximo intervalo</h3>
+                            <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold mb-2">12:00</div>
+                        <div class="text-sm text-gray-500">Almoço</div>
+                    </div>
+                    <div class="card bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-gray-500 font-medium">Dias trabalhados</h3>
+                            <div class="bg-purple-100 text-purple-800 p-2 rounded-lg">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold mb-2">18/22</div>
+                        <div class="text-sm text-gray-500">Este mês</div>
+                    </div>
+                </div>
+
+                <!-- Register Point Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow p-6">
+                        <h2 class="text-xl font-semibold mb-6">Registrar Ponto</h2>
+                        <div class="flex flex-col items-center justify-center py-8">
+                            <button id="registerPointBtn" class="pulse-animation bg-blue-600 hover:bg-blue-700 text-white rounded-full w-32 h-32 flex flex-col items-center justify-center mb-4 transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-fingerprint text-3xl mb-2"></i>
+                                <span class="font-medium">Bater Ponto</span>
+                            </button>
+                            <div class="text-center mb-6">
+                                <div class="text-gray-500 mb-1">Próximo registro:</div>
+                                <div class="text-lg font-semibold">Intervalo (12:00 - 13:00)</div>
+                            </div>
+                            <div class="w-full max-w-md bg-gray-50 rounded-lg p-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <div class="text-gray-500">Localização:</div>
+                                        <div class="font-medium">São Paulo, SP</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-500">IP:</div>
+                                        <div class="font-medium">192.168.1.1</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-500">Dispositivo:</div>
+                                        <div class="font-medium">Desktop</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-500">Navegador:</div>
+                                        <div class="font-medium">Chrome</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <h2 class="text-xl font-semibold mb-6">Registros de Hoje</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 mr-3">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Entrada</div>
+                                    <div class="text-sm text-gray-500">08:05 - Registrado</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 border rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 mr-3">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Intervalo</div>
+                                    <div class="text-sm text-gray-500">12:00 - Pendente</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 border rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 mr-3">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Retorno</div>
+                                    <div class="text-sm text-gray-500">13:00 - Pendente</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 border rounded-lg">
+                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 mr-3">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Saída</div>
+                                    <div class="text-sm text-gray-500">17:30 - Pendente</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t">
+                            <h3 class="font-medium mb-3">Total do dia</h3>
+                            <div class="flex justify-between items-center">
+                                <div class="text-gray-500">Horas trabalhadas:</div>
+                                <div class="font-medium">8:30</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="text-gray-500">Horas extras:</div>
+                                <div class="font-medium text-green-600">+0:30</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts and History -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-semibold">Horas Semanais</h2>
+                            <select class="bg-gray-100 border-0 rounded-lg px-3 py-1 text-sm">
+                                <option>Esta semana</option>
+                                <option>Semana passada</option>
+                                <option>Este mês</option>
+                            </select>
+                        </div>
+                        <canvas id="weeklyHoursChart" height="250"></canvas>
+                    </div>
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-semibold">Histórico Recente</h2>
+                            <a href="#" class="text-blue-600 text-sm hover:underline">Ver todos</a>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="table w-full">
+                                <thead>
+                                    <tr class="text-left text-gray-500 text-sm border-b">
+                                        <th class="pb-2">Data</th>
+                                        <th class="pb-2">Tipo</th>
+                                        <th class="pb-2">Horário</th>
+                                        <th class="pb-2">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <tr>
+                                        <td class="py-3">19/06/2023</td>
+                                        <td>Saída</td>
+                                        <td>17:35</td>
+                                        <td><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Registrado</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3">19/06/2023</td>
+                                        <td>Retorno</td>
+                                        <td>13:02</td>
+                                        <td><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Registrado</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3">19/06/2023</td>
+                                        <td>Intervalo</td>
+                                        <td>12:00</td>
+                                        <td><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Registrado</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3">19/06/2023</td>
+                                        <td>Entrada</td>
+                                        <td>08:10</td>
+                                        <td><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Registrado</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3">16/06/2023</td>
+                                        <td>Saída</td>
+                                        <td>17:45</td>
+                                        <td><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Ajustado</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-6">Ações Rápidas</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button class="flex items-center justify-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 mr-3">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <span>Solicitar Ajuste</span>
+                        </button>
+                        <button class="flex items-center justify-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-800 mr-3">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <span>Solicitar Férias</span>
+                        </button>
+                        <button class="flex items-center justify-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-800 mr-3">
+                                <i class="fas fa-file-export"></i>
+                            </div>
+                            <span>Exportar Relatório</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Point Modal -->
+    <div id="registerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Confirmar Registro</h3>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="mb-6">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 text-2xl">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                    </div>
+                    <div class="text-center mb-2">
+                        <div class="text-gray-500">Você está registrando:</div>
+                        <div class="text-xl font-bold">Intervalo</div>
+                    </div>
+                    <div class="text-center text-gray-500 mb-4">
+                        <div>Horário atual: <span id="modalTime" class="font-medium">12:00:15</span></div>
+                        <div>Data: <span class="font-medium">20/06/2023</span></div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-map-marker-alt text-gray-500 mr-2"></i>
+                            <span class="text-sm">Localização: São Paulo, SP</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-network-wired text-gray-500 mr-2"></i>
+                            <span class="text-sm">IP: 192.168.1.1</span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="form-checkbox rounded text-blue-600">
+                            <span class="ml-2 text-sm">Adicionar foto/selfie (opcional)</span>
+                        </label>
+                    </div>
+                    <div id="photoUpload" class="hidden mb-4">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                            <i class="fas fa-camera text-gray-400 text-3xl mb-2"></i>
+                            <div class="text-sm text-gray-500">Clique para adicionar foto</div>
+                            <input type="file" accept="image/*" class="hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="cancelRegister" class="flex-1 py-2 px-4 border rounded-lg hover:bg-gray-50">
+                        Cancelar
+                    </button>
+                    <button id="confirmRegister" class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="hidden fixed bottom-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg z-50">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>Ponto registrado com sucesso!</span>
+        </div>
+    </div>
+
+    <script>
+        // Update current time
+        function updateCurrentTime() {
+            const now = new Date();
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR', dateOptions);
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('pt-BR', timeOptions);
+            document.getElementById('modalTime').textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+        }
+        
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
+
+        // Toggle sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('lg:ml-64');
+            document.querySelector('.main-content').classList.toggle('lg:ml-20');
+        });
+
+        // Toggle dark mode
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Toggle notifications dropdown
+        document.getElementById('notificationBtn').addEventListener('click', function() {
+            document.getElementById('notificationDropdown').classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#notificationBtn') && !event.target.closest('#notificationDropdown')) {
+                document.getElementById('notificationDropdown').classList.add('hidden');
+            }
+        });
+
+        // Register point flow
+        document.getElementById('registerPointBtn').addEventListener('click', function() {
+            document.getElementById('registerModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('registerModal').classList.add('hidden');
+            document.getElementById('photoUpload').classList.add('hidden');
+        });
+
+        document.getElementById('cancelRegister').addEventListener('click', function() {
+            document.getElementById('registerModal').classList.add('hidden');
+            document.getElementById('photoUpload').classList.add('hidden');
+        });
+
+        document.querySelector('input[type="checkbox"]').addEventListener('change', function() {
+            document.getElementById('photoUpload').classList.toggle('hidden');
+        });
+
+        document.getElementById('confirmRegister').addEventListener('click', function() {
+            document.getElementById('registerModal').classList.add('hidden');
+            document.getElementById('photoUpload').classList.add('hidden');
+            
+            // Show success toast
+            const toast = document.getElementById('successToast');
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        });
+
+        // Weekly hours chart
+        const weeklyHoursCtx = document.getElementById('weeklyHoursChart').getContext('2d');
+        const weeklyHoursChart = new Chart(weeklyHoursCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                datasets: [{
+                    label: 'Horas trabalhadas',
+                    data: [8.5, 7.75, 8.25, 9, 8, 4.5, 0],
+                    backgroundColor: '#3B82F6',
+                    borderRadius: 4
+                }, {
+                    label: 'Horas extras',
+                    data: [0.5, 0, 0.25, 1, 0, 0, 0],
+                    backgroundColor: '#10B981',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + 'h';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.raw + ' horas';
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

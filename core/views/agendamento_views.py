@@ -165,9 +165,17 @@ def criar_agendamento(request):
             ).order_by('-data').first()  # Pega o último agendamento que gerou crédito
 
             # Passo 2: Criar a reposição
+            servico_reposicao, _ = Servico.objects.get_or_create(
+                nome='Sessão de Reposição',
+                defaults={
+                    'valor': 0.00,
+                    'qtd_sessoes': 1,
+                    'ativo': True,
+    })
+            
             pacote = PacotePaciente.objects.create(
                 paciente=paciente,
-                servico=None,
+                servico=servico_reposicao,
                 qtd_sessoes=1,
                 valor_original=valor_pacote or 0,
                 valor_final=valor_final or 0,

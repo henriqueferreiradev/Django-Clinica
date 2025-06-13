@@ -141,16 +141,34 @@ def dashboard_view(request):
           
         }] 
     }
-    print(profissionais_labels, dados_profissionais)
+    
+    servicos_mais_contratados = (
+        Agendamento.objects.values('servico__nome').annotate(total=Count('id')).order_by('-total')
+    )
+    especialidades_mais_contratadas = (
+        Agendamento.objects.values('especialidade__nome').annotate(total=Count('id')).order_by('-total')
+    )
+    
+    servicos_labels = [item['servico__nome'] for item in servicos_mais_contratados]
+    especialidades_labels = [item['especialidade__nome'] for item in especialidades_mais_contratadas]
+    pacotes_contratados = PacotePaciente.objects.values('servico__nome').annotate(total=Count('id'))
+    
+    print(servicos_mais_contratados, especialidades_mais_contratadas)
+    print(pacotes_contratados)
+    
+    
+    
+    
+    
+    
+    
     context = {
         'agendamentos':agendamentos,
-     
         'codigo':agendamento.codigo,
         'pacote':pacote,
         'sessao_atual':agendamento.sessao_atual,
         'sessoes_total':agendamento.sessoes_total,
         'sessoes_restantes':agendamento.sessoes_restantes,
-   
         'total_pacientes_ativos':total_pacientes_ativos,
         'total_profissionais_ativos': total_profissionais_ativos,
         'agendamentos_semana':agendamentos_semana,
