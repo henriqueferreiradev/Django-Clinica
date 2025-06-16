@@ -66,4 +66,27 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (error) {
         console.error("Erro ao montar gráfico de evolução mensal:", error);
     }
+    try {
+        const servicosMaisContratadosChart = JSON.parse(document.getElementById('servicos-chart').textContent);
+
+        const ctx4 = document.getElementById('servicosChart').getContext('2d')
+
+        new Chart(ctx4, {
+            type: 'pie',
+            data: servicosMaisContratadosChart,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        })
+    } catch (error) {
+        console.error("Erro ao montar gráfico de serviços contratados:", error);
+    }
 });

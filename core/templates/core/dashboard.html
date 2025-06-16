@@ -259,7 +259,8 @@
        
         </div>
         <div class="chart-canvas-container">
-            <canvas id="doughnutChart"></canvas>
+            <canvas id="servicosChart"></canvas>
+            {{ servicos_mais_contratados|json_script:'servicos-chart' }}
         </div>
     </div>
     

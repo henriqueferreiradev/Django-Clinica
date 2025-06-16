@@ -142,20 +142,29 @@ def dashboard_view(request):
         }] 
     }
     
-    servicos_mais_contratados = (
-        Agendamento.objects.values('servico__nome').annotate(total=Count('id')).order_by('-total')
-    )
+    servicos_mais_contratados = PacotePaciente.objects.values('servico__nome').annotate(total=Count('id'))
     especialidades_mais_contratadas = (
         Agendamento.objects.values('especialidade__nome').annotate(total=Count('id')).order_by('-total')
     )
     
     servicos_labels = [item['servico__nome'] for item in servicos_mais_contratados]
     especialidades_labels = [item['especialidade__nome'] for item in especialidades_mais_contratadas]
-    pacotes_contratados = PacotePaciente.objects.values('servico__nome').annotate(total=Count('id'))
     
-    print(servicos_mais_contratados, especialidades_mais_contratadas)
-    print(pacotes_contratados)
-    
+    servicos_dados = [item['total'] for item in servicos_mais_contratados]
+    print(servicos_labels, servicos_dados)
+ 
+    grafico_servicos_mais_contratados = {
+        'labels': servicos_labels,
+        'datasets': [{
+            'label':'Agendamentos no mês',
+            'data':servicos_dados,
+            'backgroundColor': cores_usadas,
+            'borderColor': ['white'] * total,
+            'borderWidth': 1,
+          
+        }] 
+    }
+
     
     
     
@@ -164,11 +173,6 @@ def dashboard_view(request):
     
     context = {
         'agendamentos':agendamentos,
-        'codigo':agendamento.codigo,
-        'pacote':pacote,
-        'sessao_atual':agendamento.sessao_atual,
-        'sessoes_total':agendamento.sessoes_total,
-        'sessoes_restantes':agendamento.sessoes_restantes,
         'total_pacientes_ativos':total_pacientes_ativos,
         'total_profissionais_ativos': total_profissionais_ativos,
         'agendamentos_semana':agendamentos_semana,
@@ -178,6 +182,7 @@ def dashboard_view(request):
         "chart_data": grafico_dados_7_dias,
         'evolucao_mensal_data':grafico_evolucao_mensal,
         'distribuicao_por_profissional':grafico_distribuicao_por_profissional,
+        'servicos_mais_contratados':grafico_servicos_mais_contratados,
     }
     return render(request, 'core/dashboard.html', context)
 
