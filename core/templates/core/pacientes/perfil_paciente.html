@@ -1,0 +1,434 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Paciente | Gestão Clínica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/pacientes/perfil_paciente.css' %}">
+ 
+{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <div class="header-content">
+                <div class="patient-info">
+                    <div class="patient-avatar">
+                        <img src="{{ paciente.foto.url }}" alt="Foto de {{ paciente.nome }}" width="150">
+                    </div>
+                    <div>
+                        <h1 class="patient-name">{{ paciente.nome }}</h1>
+                        <p class="patient-id">ID: {{ paciente.id }}</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editar Dados
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-plus"></i> Adicionar Observação
+                    </button>
+                    <button class="btn btn-gray">
+                        <i class="fas fa-calendar"></i> Voltar para Agenda
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid-container">
+            <!-- Left Column -->
+            <div class="space-y-6">
+                <!-- Section 1: Dados Cadastrais -->
+                <section class="section">
+                    <h2 class="section-title">Dados Cadastrais</h2>
+                    <div class="data-grid">
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Nome Completo</label>
+                            <p class="font-medium" contenteditable="true">Maria da Silva Santos</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">CPF</label>
+                            <p class="font-medium" contenteditable="true">123.456.789-00</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Data de Nascimento</label>
+                            <p class="font-medium" contenteditable="true">15/03/1985</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Idade</label>
+                            <p class="font-medium">38 anos</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Telefone</label>
+                            <p class="font-medium" contenteditable="true">(11) 98765-4321</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">WhatsApp</label>
+                            <div class="flex items-center gap-2">
+                                <p class="font-medium" contenteditable="true">(11) 98765-4321</p>
+                                <button class="text-green-500 hover:text-green-600">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">E-mail</label>
+                            <p class="font-medium" contenteditable="true">maria.silva@email.com</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Endereço</label>
+                            <p class="font-medium" contenteditable="true">Rua das Flores, 123 - Centro, São Paulo/SP - 01234-567</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Sexo/Gênero</label>
+                            <p class="font-medium" contenteditable="true">Feminino</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Estado Civil</label>
+                            <p class="font-medium" contenteditable="true">Casada</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Profissão</label>
+                            <p class="font-medium" contenteditable="true">Psicóloga</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Dados de Atendimento -->
+                <section class="section">
+                    <h2 class="section-title">Dados de Atendimento</h2>
+                    <div class="data-grid data-grid-3">
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Primeiro Atendimento</label>
+                            <p class="font-medium">10/01/2022</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Último Atendimento</label>
+                            <p class="font-medium">15/06/2023</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Status</label>
+                            <span class="badge badge-success">Ativo</span>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Frequência Semanal</label>
+                            <p class="font-medium">1x/semana</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Total de Sessões</label>
+                            <p class="font-medium">24</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Sessões Faltadas</label>
+                            <p class="font-medium">2</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Sessões Remarcadas</label>
+                            <p class="font-medium">3</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Pacotes e Sessões -->
+                <section class="section">
+                    <h2 class="section-title">Pacotes e Sessões</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-medium text-gray-700 mb-2">Pacote Ativo</h3>
+                        <div class="package-card">
+                            <div class="package-header">
+                                <h4 class="package-title">Pacote de Psicoterapia (10 sessões)</h4>
+                                <span class="badge badge-info">Ativo</span>
+                            </div>
+                            <p class="package-description">Inclui: Sessões de 50min com psicólogo</p>
+                            
+                            <div class="progress-container">
+                                <div class="progress-info">
+                                    <span>Progresso: 6/10 sessões</span>
+                                    <span>60%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="data-grid">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Início</p>
+                                    <p class="font-medium">10/03/2023</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Vencimento</p>
+                                    <p class="font-medium">10/09/2023</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="font-medium text-gray-700 mb-2">Histórico de Pacotes</h3>
+                    <div class="space-y-3">
+                        <div class="note-card">
+                            <div class="package-header">
+                                <h4 class="package-title text-sm">Pacote Básico (5 sessões)</h4>
+                                <span class="badge badge-gray">Finalizado</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-1">05/10/2022 - 05/12/2022</p>
+                            <p class="text-gray-600 text-sm">5/5 sessões realizadas</p>
+                        </div>
+                        
+                        <div class="note-card">
+                            <div class="package-header">
+                                <h4 class="package-title text-sm">Pacote Inicial (3 sessões)</h4>
+                                <span class="badge badge-gray">Finalizado</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-1">10/01/2022 - 10/03/2022</p>
+                            <p class="text-gray-600 text-sm">3/3 sessões realizadas</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: Serviços Mais Contratados -->
+                <section class="section">
+                    <h2 class="section-title">Serviços Mais Contratados</h2>
+                    <div class="data-grid">
+                        <div class="note-card">
+                            <div class="package-header">
+                                <h3 class="package-title text-sm">Psicoterapia Individual</h3>
+                                <span class="badge badge-info">15 sessões</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Sessões de 50 minutos com psicólogo</p>
+                        </div>
+                        <div class="note-card">
+                            <div class="package-header">
+                                <h3 class="package-title text-sm">Acupuntura</h3>
+                                <span class="badge badge-success">6 sessões</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Sessões de acupuntura terapêutica</p>
+                        </div>
+                        <div class="note-card">
+                            <div class="package-header">
+                                <h3 class="package-title text-sm">Massagem Terapêutica</h3>
+                                <span class="badge" style="background-color: #f3e8ff; color: #7e22ce;">4 sessões</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Massagem para alívio de tensão</p>
+                        </div>
+                        <div class="note-card">
+                            <div class="package-header">
+                                <h3 class="package-title text-sm">Avaliação Psicológica</h3>
+                                <span class="badge" style="background-color: #fef9c3; color: #854d0e;">2 sessões</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Avaliação completa com relatório</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <!-- Section 5: Profissionais que mais atenderam -->
+                <section class="section">
+                    <h2 class="section-title">Profissionais que mais atenderam</h2>
+                    <div class="space-y-4">
+                        <div class="professional-card">
+                            <div class="professional-avatar">
+                                <img src="https://ui-avatars.com/api/?name=Dr+Joao&background=3b82f6&color=fff&size=128" alt="Dr. João">
+                            </div>
+                            <div>
+                                <h3 class="professional-name">Dr. João Carlos</h3>
+                                <p class="professional-sessions">10 atendimentos</p>
+                            </div>
+                        </div>
+                        <div class="professional-card">
+                            <div class="professional-avatar">
+                                <img src="https://ui-avatars.com/api/?name=Dra+Maria&background=3b82f6&color=fff&size=128" alt="Dra. Maria">
+                            </div>
+                            <div>
+                                <h3 class="professional-name">Dra. Maria Fernanda</h3>
+                                <p class="professional-sessions">5 atendimentos</p>
+                            </div>
+                        </div>
+                        <div class="professional-card">
+                            <div class="professional-avatar">
+                                <img src="https://ui-avatars.com/api/?name=Dr+Pedro&background=3b82f6&color=fff&size=128" alt="Dr. Pedro">
+                            </div>
+                            <div>
+                                <h3 class="professional-name">Dr. Pedro Henrique</h3>
+                                <p class="professional-sessions">3 atendimentos</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 6: Histórico de Agendamentos -->
+                <section class="section">
+                    <h2 class="section-title">Histórico de Agendamentos</h2>
+                    <ul class="timeline space-y-4">
+                        <li class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <div>
+                                        <h3 class="timeline-title">Psicoterapia Individual</h3>
+                                        <p class="timeline-date text-sm">15/06/2023 - 14:00</p>
+                                    </div>
+                                    <span class="badge badge-success">Realizado</span>
+                                </div>
+                                <p class="timeline-meta text-sm">Dr. João Carlos</p>
+                                <p class="timeline-note">Observação: Paciente relatou melhora no sono</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <div>
+                                        <h3 class="timeline-title">Acupuntura</h3>
+                                        <p class="timeline-date text-sm">08/06/2023 - 10:30</p>
+                                    </div>
+                                    <span class="badge badge-warning">Remarcado</span>
+                                </div>
+                                <p class="timeline-meta text-sm">Dra. Maria Fernanda</p>
+                                <p class="timeline-note">Remarcado para 15/06</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <div>
+                                        <h3 class="timeline-title">Psicoterapia Individual</h3>
+                                        <p class="timeline-date text-sm">01/06/2023 - 14:00</p>
+                                    </div>
+                                    <span class="badge badge-success">Realizado</span>
+                                </div>
+                                <p class="timeline-meta text-sm">Dr. João Carlos</p>
+                            </div>
+                        </li>
+                        <button class="w-full py-2 text-sm text-primary hover:text-blue-600 font-medium">
+                            Ver histórico completo
+                        </button>
+                    </ul>
+                </section>
+
+                <!-- Section 7: Observações Gerais -->
+                <section class="section">
+                    <h2 class="section-title">Observações Gerais</h2>
+                    <div class="space-y-3">
+                        <div class="note-card">
+                            <div class="note-header">
+                                <p class="note-author">Dr. João Carlos</p>
+                                <p class="note-date">10/05/2023</p>
+                            </div>
+                            <p class="note-content">Paciente apresentou melhora significativa nos sintomas de ansiedade após 3 meses de tratamento.</p>
+                        </div>
+                        <div class="note-card">
+                            <div class="note-header">
+                                <p class="note-author">Dra. Maria Fernanda</p>
+                                <p class="note-date">22/03/2023</p>
+                            </div>
+                            <p class="note-content">Relatou dores musculares na região cervical. Recomendado sessões de acupuntura 1x/semana.</p>
+                        </div>
+                        <button class="w-full py-2 text-sm text-primary hover:text-blue-600 font-medium">
+                            Adicionar nova observação
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Section 8: Dados Financeiros -->
+                <section class="section">
+                    <h2 class="section-title">Dados Financeiros</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="financial-label">Total gasto</p>
+                            <p class="financial-total">R$ 4.850,00</p>
+                        </div>
+                        <div>
+                            <p class="financial-label">Forma de pagamento mais utilizada</p>
+                            <div class="payment-method">
+                                <div class="payment-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <span class="payment-name">Pix (60%)</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="financial-label">Débitos pendentes</p>
+                            <p class="font-medium text-green-600">Nenhum débito pendente</p>
+                        </div>
+                        <div class="payment-list">
+                            <h3 class="text-sm font-medium mb-2">Últimos pagamentos</h3>
+                            <div class="space-y-2">
+                                <div class="payment-item">
+                                    <p>15/06/2023</p>
+                                    <p class="font-medium">R$ 250,00</p>
+                                </div>
+                                <div class="payment-item">
+                                    <p>01/06/2023</p>
+                                    <p class="font-medium">R$ 250,00</p>
+                                </div>
+                                <div class="payment-item">
+                                    <p>15/05/2023</p>
+                                    <p class="font-medium">R$ 1.200,00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Quick Actions Footer -->
+        <div class="quick-actions">
+            <button class="action-btn action-btn-primary">
+                <i class="fas fa-calendar-plus"></i>
+            </button>
+            <button class="action-btn action-btn-success">
+                <i class="fab fa-whatsapp"></i>
+            </button>
+            <button class="action-btn action-btn-dark">
+                <i class="fas fa-file-pdf"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Simple age calculation based on birth date
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birthDateObj = new Date(birthDate);
+            let age = today.getFullYear() - birthDateObj.getFullYear();
+            const monthDiff = today.getMonth() - birthDateObj.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        // Example of inline editing functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const editableElements = document.querySelectorAll('[contenteditable="true"]');
+            
+            editableElements.forEach(element => {
+                element.addEventListener('blur', function() {
+                    // Here you would typically save the edited value to your database
+                    console.log(`Updated value: ${this.textContent}`);
+                });
+            });
+
+            // Calculate age based on birth date (example)
+            const birthDateElement = document.querySelector('[contenteditable="true"]:nth-child(3)');
+            if (birthDateElement) {
+                const birthDate = birthDateElement.textContent;
+                const age = calculateAge(birthDate.split('/').reverse().join('-'));
+                document.querySelector('.data-card:nth-child(4) p').textContent = `${age} anos`;
+            }
+        });
+    </script>
+</body>
+</html>
