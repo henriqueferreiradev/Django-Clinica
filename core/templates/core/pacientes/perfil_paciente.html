@@ -120,31 +120,31 @@
                     <div class="data-grid data-grid-3">
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Primeiro Atendimento</label>
-                            <p class="font-medium">10/01/2022</p>
+                            <p class="font-medium">{% if primeiro_agendamento %} {{primeiro_agendamento|date:"d/m/Y"}} {% else %} Sem registros {% endif %}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Último Atendimento</label>
-                            <p class="font-medium">15/06/2023</p>
+                            <p class="font-medium">{% if ultimo_agendamento %} {{ultimo_agendamento|date:"d/m/Y"}} {% else %} Sem registros {% endif %}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Status</label>
-                            <span class="badge badge-success">Ativo</span>
+                            <span class="badge badge-success">{% if paciente.ativo %} Ativo {% else %} Inativo {% endif %}</span>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Frequência Semanal</label>
-                            <p class="font-medium">1x/semana</p>
+                            <p class="font-medium">{% if frequencia_semanal %} {{ frequencia_semanal }}x/Semana {% else %} 0x/Semana {% endif %}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Total de Sessões</label>
-                            <p class="font-medium">24</p>
+                            <p class="font-medium">{{quantidade_agendamentos}}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Sessões Faltadas</label>
-                            <p class="font-medium">2</p>
+                            <p class="font-medium">{{quantidade_faltas}}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Sessões Remarcadas</label>
-                            <p class="font-medium">3</p>
+                            <p class="font-medium">{{quantidade_repostas}}</p>
                         </div>
                     </div>
                 </section>
@@ -157,36 +157,38 @@
                         <h3 class="font-medium text-gray-700 mb-2">Pacote Ativo</h3>
                         <div class="package-card">
                             <div class="package-header">
-                                <h4 class="package-title">Pacote de Psicoterapia (10 sessões)</h4>
-                                <span class="badge badge-info">Ativo</span>
+                                <h4 class="package-title">{{pacote_ativo}} ({{qtd_total}} sessões)</h4>
+                                <span class="badge badge-info">{% if pacote_ativo.ativo %} Ativo {% else %} Inativo {% endif %}</span>
                             </div>
                             <p class="package-description">Inclui: Sessões de 50min com psicólogo</p>
                             
                             <div class="progress-container">
                                 <div class="progress-info">
-                                    <span>Progresso: 6/10 sessões</span>
-                                    <span>60%</span>
+                                    <span>Progresso: {{sessao_atual}}/{{qtd_total}} sessões</span>
+                                    <span>{{progresso}}%</span>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 60%"></div>
+                                    <div class="progress-fill" style="width: {{progresso}}%"></div>
                                 </div>
                             </div>
                             
                             <div class="data-grid">
                                 <div>
                                     <p class="text-gray-500 text-sm">Início</p>
-                                    <p class="font-medium">10/03/2023</p>
+                                    <p class="font-medium">{{data_inicio_pacote_ativo}}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500 text-sm">Vencimento</p>
-                                    <p class="font-medium">10/09/2023</p>
+                                    <p class="font-medium">Sem vencimento</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <h3 class="font-medium text-gray-700 mb-2">Histórico de Pacotes</h3>
+                    
                     <div class="space-y-3">
+                    {% for pacote in pacote_dados %}
                         <div class="note-card">
                             <div class="package-header">
                                 <h4 class="package-title text-sm">Pacote Básico (5 sessões)</h4>
@@ -204,6 +206,7 @@
                             <p class="text-gray-600 text-sm mb-1">10/01/2022 - 10/03/2022</p>
                             <p class="text-gray-600 text-sm">3/3 sessões realizadas</p>
                         </div>
+                    {% endfor %}
                     </div>
                 </section>
 

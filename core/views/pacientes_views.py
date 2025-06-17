@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import Paciente, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Paciente,Agendamento,PacotePaciente,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
-from django.db.models import Q 
+from django.db.models import Q, Min, Max
 from django.http import JsonResponse 
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
-
+from core.utils import get_semana_atual
 def pacientes_view(request):
     # Opções de filtro
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'
@@ -349,12 +349,51 @@ def dados_paciente(request, paciente_id):
 def pre_cadastro(request):
     return render(request, 'core/pacientes/pre_cadastro.html')
 
+
+
+FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
+PENDENTES = ['pre','agendado']
+
 def perfil_paciente(request,paciente_id):
+    inicio_semana, fim_semana = get_semana_atual()
+
     paciente = get_object_or_404(Paciente, id=paciente_id)
-
+    pacotes = PacotePaciente.objects.filter(paciente__id=paciente_id,).order_by('-data_inicio')
+    print(pacotes)
  
-
+    frequencia_semanal = Agendamento.objects.filter(paciente=paciente, data__range=[inicio_semana, fim_semana]).count()
+    quantidade_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).count()
+    quantidade_faltas = Agendamento.objects.filter(paciente__id=paciente_id, status__in=FINALIZADOS).count()
+    quantidade_repostas = PacotePaciente.objects.filter(paciente__id=paciente_id, eh_reposicao=True).count()
+    primeiro_agendamento = Agendamento.objects.filter(paciente__id=paciente_id).aggregate(Min('data'))['data__min']
+    ultimo_agendamento = Agendamento.objects.filter(paciente__id=paciente_id).aggregate(Max('data'))['data__max']
+    pacote_ativo = PacotePaciente.objects.filter(paciente__id=paciente_id, ativo=True).first()
+    data_inicio_pacote_ativo = pacote_ativo.data_inicio if pacote_ativo else 'Sem pacote ativo'
+    sessao_atual = pacote_ativo.get_sessao_atual() if pacote_ativo else None
+    qtd_total = pacote_ativo.qtd_sessoes if pacote_ativo else None
+    progresso = round((sessao_atual / qtd_total) * 100) if qtd_total else 0
+    
+    
+    #
+    print(pacote_ativo, data_inicio_pacote_ativo, sessao_atual, qtd_total)
+    # DADOS DOS PACOTES 
+    
+    pacote_dados = []
+    
+  
     context = {'paciente':paciente,
-                 
+                'frequencia_semanal':frequencia_semanal,
+                'quantidade_agendamentos':quantidade_agendamentos,
+                'quantidade_faltas':quantidade_faltas,
+                'quantidade_repostas':quantidade_repostas,
+                'primeiro_agendamento':primeiro_agendamento,
+                'ultimo_agendamento':ultimo_agendamento,
+                'pacote_ativo':pacote_ativo,
+                'data_inicio_pacote_ativo':data_inicio_pacote_ativo,
+                'sessao_atual':sessao_atual,
+                'qtd_total':qtd_total,
+                'progresso':progresso,
+                
+                
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)

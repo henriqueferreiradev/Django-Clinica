@@ -5,6 +5,7 @@ from django.utils.text import slugify
 from django.conf import settings
 import locale
 import calendar
+from datetime import date, timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect
@@ -130,3 +131,9 @@ def alterar_status_agendamento(request, pk, redirect_para):
             messages.success(request, f'Status alterado com sucesso.')
 
     return redirect(redirect_para)
+
+def get_semana_atual():
+    hoje = date.today()
+    inicio_semana = hoje - timedelta(days=hoje.weekday())  # Segunda-feira
+    fim_semana = inicio_semana + timedelta(days=6)
+    return inicio_semana, fim_semana
