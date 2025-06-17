@@ -4,7 +4,7 @@ from django.utils import timezone
 from datetime import date
 from django.utils.text import slugify
 import os
-
+from dateutil.relativedelta import relativedelta
 import uuid
 
 def caminho_foto_paciente(instance, filename):
@@ -208,6 +208,18 @@ class Paciente(models.Model):
     ativo = models.BooleanField(default=True)
     def __str__(self):
         return self.nome
+
+    @property
+    def idade_formatada(self):
+        if self.data_nascimento:
+            hoje = date.today()
+            idade = relativedelta(hoje, self.data_nascimento)
+            return f'{idade.years} anos, {idade.months} meses e {idade.days} dias'
+        return 'Data de nascimento não informada'
+    @property
+    def endereco_formatado(self):
+        return f'{self.rua}, {self.numero}, {self.complemento} - {self.bairro}, {self.cidade}/{self.uf} - {self.cep}'
+
      
     
 class Profissional(models.Model):

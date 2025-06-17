@@ -352,6 +352,9 @@ def pre_cadastro(request):
 def perfil_paciente(request,paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
 
-    
-    context = {'paciente':paciente}
+ 
+
+    context = {'paciente':paciente,
+                 
+                }
     return render(request, 'core/pacientes/perfil_paciente.html', context)

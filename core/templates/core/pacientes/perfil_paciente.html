@@ -21,12 +21,12 @@
                         <img src="{{ paciente.foto.url }}" alt="Foto de {{ paciente.nome }}" width="150">
                     </div>
                     <div>
-                        <h1 class="patient-name">{{ paciente.nome }}</h1>
+                        <h1 class="patient-name">{{ paciente.nome }} {{ paciente.sobrenome }}</h1>
                         <p class="patient-id">ID: {{ paciente.id }}</p>
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" onclick="window.location.href='{% url 'editar_paciente' paciente.id %}'">
                         <i class="fas fa-edit"></i> Editar Dados
                     </button>
                     <button class="btn btn-secondary">
@@ -48,28 +48,32 @@
                     <div class="data-grid">
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Nome Completo</label>
-                            <p class="font-medium" contenteditable="true">Maria da Silva Santos</p>
+                            <p class="font-medium" > {{ paciente.nome }} {{ paciente.sobrenome }}</p>
                         </div>
                         <div class="data-card">
-                            <label class="text-sm text-gray-500">CPF</label>
-                            <p class="font-medium" contenteditable="true">123.456.789-00</p>
+                            <label class="text-sm text-gray-500">Nome Social</label>
+                            <p class="font-medium" > {{ paciente.nomeSocial }}</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">CPF/RG</label>
+                            <p class="font-medium" >{{ paciente.cpf }} / {{paciente.rg }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Data de Nascimento</label>
-                            <p class="font-medium" contenteditable="true">15/03/1985</p>
+                            <p class="font-medium" >{{ paciente.data_nascimento }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Idade</label>
-                            <p class="font-medium">38 anos</p>
+                            <p class="font-medium">{{ paciente.idade_formatada}}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Telefone</label>
-                            <p class="font-medium" contenteditable="true">(11) 98765-4321</p>
+                            <p class="font-medium" > {{ paciente.telefone }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">WhatsApp</label>
                             <div class="flex items-center gap-2">
-                                <p class="font-medium" contenteditable="true">(11) 98765-4321</p>
+                                <p class="font-medium" >{{ paciente.celular }}</p>
                                 <button class="text-green-500 hover:text-green-600">
                                     <i class="fab fa-whatsapp"></i>
                                 </button>
@@ -77,23 +81,35 @@
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">E-mail</label>
-                            <p class="font-medium" contenteditable="true">maria.silva@email.com</p>
+                            <p class="font-medium" >{{paciente.email}}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Endereço</label>
-                            <p class="font-medium" contenteditable="true">Rua das Flores, 123 - Centro, São Paulo/SP - 01234-567</p>
+                            <p class="font-medium" >{{ paciente.endereco_formatado }} </p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Cor/Raça</label>
+                            <p class="font-medium" >{{ paciente.get_cor_raca_display }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Sexo/Gênero</label>
-                            <p class="font-medium" contenteditable="true">Feminino</p>
+                            <p class="font-medium" >{{ paciente.get_sexo_display }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Estado Civil</label>
-                            <p class="font-medium" contenteditable="true">Casada</p>
+                            <p class="font-medium" >{{ paciente.get_estado_civil_display }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Profissão</label>
-                            <p class="font-medium" contenteditable="true">Psicóloga</p>
+                            <p class="font-medium" >{{ paciente.profissao }}</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Como nos conheceu?</label>
+                            <p class="font-medium" >{{ paciente.get_midia_display }}</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Rede Social</label>
+                            <p class="font-medium" >{{ paciente.rede_social }}</p>
                         </div>
                     </div>
                 </section>
@@ -412,7 +428,7 @@
 
         // Example of inline editing functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const editableElements = document.querySelectorAll('[contenteditable="true"]');
+            const editableElements = document.querySelectorAll('[]');
             
             editableElements.forEach(element => {
                 element.addEventListener('blur', function() {
@@ -422,7 +438,7 @@
             });
 
             // Calculate age based on birth date (example)
-            const birthDateElement = document.querySelector('[contenteditable="true"]:nth-child(3)');
+            const birthDateElement = document.querySelector('[]:nth-child(3)');
             if (birthDateElement) {
                 const birthDate = birthDateElement.textContent;
                 const age = calculateAge(birthDate.split('/').reverse().join('-'));

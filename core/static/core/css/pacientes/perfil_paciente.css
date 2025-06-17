@@ -16,7 +16,7 @@
 
 body {
     font-family: var(--fontePrincipal);
-    background-color: #f8fafc;
+    background-color: var(--corFundo);
     color: #1e293b;
     margin: 0;
     padding: 0;
@@ -109,7 +109,7 @@ header {
 }
 
 .btn-primary {
-    background-color: #3b82f6;
+    background-color: var(--roxoPrincipal);
     color: white;
 }
 
@@ -118,12 +118,12 @@ header {
 }
 
 .btn-secondary {
-    background-color: #60a5fa;
+    background-color: var(--roxo-primary-hover);
     color: white;
 }
 
 .btn-secondary:hover {
-    background-color: #3b82f6;
+    background-color: var(--roxoPrincipal);
 }
 
 .btn-gray {
@@ -171,7 +171,7 @@ header {
     top: 0;
     height: 100%;
     width: 4px;
-    background-color: #3b82f6;
+    background-color: var(--roxoPrincipal);
     border-radius: 4px;
 }
 
@@ -228,7 +228,7 @@ header {
 
 [contenteditable="true"]:focus {
     outline: none;
-    border-bottom: 1px solid #3b82f6;
+    border-bottom: 1px solid var(--roxoPrincipal);
     background-color: #f8fafc;
 }
 
@@ -309,7 +309,7 @@ header {
 
 .progress-fill {
     height: 100%;
-    background-color: #3b82f6;
+    background-color: var(--roxoPrincipal);
     border-radius: 4px;
 }
 
@@ -343,7 +343,7 @@ header {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background-color: #3b82f6;
+    background-color: var(--roxoPrincipal);
     z-index: 1;
 }
 
@@ -521,7 +521,7 @@ header {
 }
 
 .action-btn-primary {
-    background-color: #3b82f6;
+    background-color: var(--roxoPrincipal);
 }
 
 .action-btn-primary:hover {
@@ -545,15 +545,15 @@ header {
 }
 
 /* Utility Classes */
-.space-y-4 > * + * {
+.space-y-4>*+* {
     margin-top: 16px;
 }
 
-.space-y-3 > * + * {
+.space-y-3>*+* {
     margin-top: 12px;
 }
 
-.space-y-2 > * + * {
+.space-y-2>*+* {
     margin-top: 8px;
 }
 
@@ -662,7 +662,7 @@ header {
 }
 
 .text-primary {
-    color: #3b82f6;
+    color: var(--roxoPrincipal);
 }
 
 .hover\:text-blue-600:hover {
@@ -672,4 +672,3 @@ header {
 .hover\:text-green-600:hover {
     color: #16a34a;
 }
- 
