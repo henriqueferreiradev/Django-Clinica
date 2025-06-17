@@ -40,7 +40,7 @@
   /* espaço entre os campos */
 }
 
- 
+
 
 #btn-cep {
 
@@ -186,15 +186,17 @@ select {
   overflow-wrap: break-word;
   white-space: pre-wrap;
   word-break: break-word;
-  resize: none;  
+  resize: none;
 
 }
+
 .contador {
   font-size: 12px;
   color: var(--cinzaBorda);
 }
-.formField .input-s:focus + .span-s,
-.formField .input-s.input-preenchido + .span-s {
+
+.formField .input-s:focus+.span-s,
+.formField .input-s.input-preenchido+.span-s {
   transform: translateY(-30px) translateX(-5px) scale(0.95);
   transition: 0.3s ease-in-out;
   color: var(--roxoPrincipal);
@@ -203,10 +205,10 @@ select {
 
 .form_div {
   border: 1px solid var(--roxoPrincipal);
-  border-radius:  0 0 15px 15px;
+  border-radius: 0 0 15px 15px;
   display: flex;
   padding: 1em;
-  margin: 0  0 1em 0;
+  margin: 0 0 1em 0;
 
 }
 
@@ -224,8 +226,9 @@ select {
   align-items: stretch;
 
 }
+
 .btn-save {
-  padding:.5em 2em;
+  padding: .5em 2em;
   align-items: center;
   background-color: var(--branco);
   color: var(--roxoPrincipal);
@@ -236,6 +239,7 @@ select {
   cursor: pointer;
   font-weight: 600;
 }
+
 .form_cadastro-nomes button {
   align-items: center;
 }
@@ -255,11 +259,11 @@ select {
 
 .custum-file-upload {
   height: 200px;
-   display: flex;
+  display: flex;
   flex-direction: column;
   align-items: space-between;
   gap: 20px;
-  cursor: pointer; 
+  cursor: pointer;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--verdePrincipal);
@@ -270,11 +274,13 @@ select {
   margin: .6em;
   transition: 0.3s ease-in-out;
 }
+
 .custum-file-upload:hover {
   border: 1px solid var(--roxoPrincipal);
   box-shadow: 1px 0px 3px var(--roxoPrincipal);
   border: 1px solid var(--roxoPrincipal);
 }
+
 .custum-file-upload .icon {
   display: flex;
   align-items: center;
@@ -310,7 +316,7 @@ select {
   position: relative;
   overflow: hidden;
 }
- 
+
 .custum-file-upload img#preview {
   position: absolute;
   top: 0;
@@ -322,7 +328,7 @@ select {
   z-index: 1;
 }
 
-.custum-file-upload > *:not(#preview) {
+.custum-file-upload>*:not(#preview) {
   position: relative;
   z-index: 1;
 }

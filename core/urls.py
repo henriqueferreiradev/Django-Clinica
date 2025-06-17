@@ -24,7 +24,9 @@ urlpatterns = [
     path('pacientes/editar/<int:id>/', pacientes_views.editar_paciente_view, name='editar_paciente'),
     path('paciente/<int:id>/ficha/', pacientes_views.ficha_paciente, name='ficha_paciente'),
     path('api/paciente/<int:paciente_id>/', pacientes_views.dados_paciente, name='dados_paciente'),
+    path('paciente/perfil/<int:paciente_id>/', pacientes_views.perfil_paciente, name='perfil_paciente'),
     path("api/buscar-pacientes/", pacientes_views.buscar_pacientes, name="buscar_pacientes"),
+    path('pacientes/pre_cadastro/', pacientes_views.pre_cadastro, name='pre_cadastro'),
 
 
     path('profissionais/', profissionais_views.profissionais_view, name='profissionais'),
