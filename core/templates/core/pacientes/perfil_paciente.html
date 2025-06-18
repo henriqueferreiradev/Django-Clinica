@@ -253,25 +253,30 @@
                     <h2 class="section-title">Profissionais que mais atenderam</h2>
                     <h2 class="section-subtitle">Como Condutor da Sessão</h2>
                     <div class="space-y-4">
-                    {% for profissional in profissional_principal %}
-                        <div class="professional-card">
-                            <div class="professional-avatar">
-                                {% if profissional.profissional_1__foto %}
-                                    <img src="{{ profissional.foto_url }}" alt="Foto de {{ profissional.nome }}" width="150">
-                                {% else %}
-                                    <div class="profile-placeholder">
-                                        {{ profissional.nome|slice:":1" }}
-                                    </div>
-                                {% endif %}
+                    {% if profissional_principal %}
+                        {% for profissional in profissional_principal %}
+                            <div class="professional-card">
+                                <div class="professional-avatar">
+                                    {% if profissional.profissional_1__foto %}
+                                        <img src="{{ profissional.foto_url }}" alt="Foto de {{ profissional.nome }}" width="150">
+                                    {% else %}
+                                        <div class="profile-placeholder">
+                                            {{ profissional.nome|slice:":1" }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="professional-name">{{profissional.profissional_1__nome}}</h3>
+                                    <p class="professional-sessions">{{profissional.total}} atendimentos | {{profissional.tempo_sessao}}h totais</p>
+                            
+                                </div>
                             </div>
-                            <div>
-                                <h3 class="professional-name">{{profissional.profissional_1__nome}}</h3>
-                                <p class="professional-sessions">{{profissional.total}} atendimentos | {{profissional.tempo_sessao}}h totais</p>
-                           
-                            </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <h3 class="professional-name">Não há informações no momento.</h3>
+                    {% endif %}
                         <h2 class="section-subtitle">Como Apoio na Sessão</h2>
+                    {% if profissional_auxiliar %}
                     {% for profissional in profissional_auxiliar %}
                         <div class="professional-card">
                             <div class="professional-avatar">
@@ -283,6 +288,9 @@
                             </div>
                         </div>
                      {% endfor %}
+                    {% else %}
+                        <h3 class="professional-name">Não há informações no momento.</h3>
+                    {% endif %}
                     </div>
                 </section>
 
