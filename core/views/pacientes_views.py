@@ -5,12 +5,14 @@ from core.models import Paciente,Agendamento,PacotePaciente,Especialidade,ESTADO
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
-from django.db.models import Q, Min, Max,Count
+from django.db.models import Q, Min, Max,Count,Sum, F, ExpressionWrapper, DurationField
 from django.http import JsonResponse 
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from core.utils import get_semana_atual
+from django.conf import settings
 def pacientes_view(request):
+    
     # Opções de filtro
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'
     filtra_inativo = request.GET.get('filtra_inativo') == 'on'
@@ -377,12 +379,64 @@ def perfil_paciente(request,paciente_id):
     mais_contratados = Especialidade.objects.annotate(total=Count('agendamento', 
                     filter=Q(agendamento__paciente_id=paciente_id))
                     ).filter(total__gt=0).order_by('-total')
-    for especialidade in mais_contratados:
-        print(especialidade.nome, especialidade.total,)
+ 
     
-    print(mais_contratados)
-    # DADOS DOS PACOTES 
-    
+    #prof1 = Agendamento.objects.filter(paciente__id=paciente_id).values('profissional_1__nome').annotate(total=Count('id')) 
+    #prof2 = Agendamento.objects.filter(paciente__id=paciente_id, profissional_2__isnull=False).values('profissional_2__nome').annotate(total=Count('id')) 
+ 
+ 
+
+    agendamentos = (Agendamento.objects
+        .filter(paciente__id=paciente_id)
+        .annotate(
+            duracao_principal=ExpressionWrapper(F('hora_fim') - F('hora_inicio'), output_field=DurationField()),
+            duracao_auxiliar=ExpressionWrapper(F('hora_fim_aux') - F('hora_inicio_aux'), output_field=DurationField())
+        )
+    )
+
+    # Profissionais principais
+    prof1 = (agendamentos
+        .filter(paciente__id=paciente_id, profissional_1__isnull=False)
+        .values('profissional_1__id', 'profissional_1__nome', 'profissional_1__foto')
+        .annotate(
+            total=Count('id'),
+            total_horas=Sum('duracao_principal')
+        )
+    )
+    for p in prof1:
+        foto = p['profissional_1__foto']
+        if foto:
+            foto_url = settings.MEDIA_URL + foto
+        else:
+            foto_url = None
+        p['foto_url'] = foto_url
+        print(foto_url)
+    # Profissionais auxiliares
+    prof2 = (agendamentos
+        .filter(paciente__id=paciente_id, profissional_2__isnull=False)
+        .values('profissional_2__id', 'profissional_2__nome', 'profissional_2__foto')
+        .annotate(
+            total=Count('id'),
+            total_horas=Sum('duracao_auxiliar')
+        )
+    )
+        
+    #print(prof1,prof2)
+    def formatar_duracao(duracao):
+        if duracao:
+            total_segundos = int(duracao.total_seconds())
+            horas = total_segundos // 3600
+            minutos = (total_segundos % 3600) // 60
+            return f"{horas}h {minutos}min"
+        return "0h 0min"
+
+    for item in prof1:
+        item['tempo_sessao'] = formatar_duracao(item['total_horas'])
+
+    for item in prof2:
+        item['tempo_sessao'] = formatar_duracao(item['total_horas'])
+        
+        
     pacotes_dados = []
 
     for pacote in pacotes:
@@ -410,7 +464,7 @@ def perfil_paciente(request,paciente_id):
             'status': status,
         })
         
-    print(pacotes_dados[0])
+    
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
@@ -425,6 +479,9 @@ def perfil_paciente(request,paciente_id):
                 'progresso':progresso,
                 'pacotes_dados': pacotes_dados,
                 'mais_contratados':mais_contratados,
+                'profissional_principal':prof1,
+                'profissional_auxiliar':prof2,
+                
                 
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)

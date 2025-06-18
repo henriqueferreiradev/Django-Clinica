@@ -109,7 +109,7 @@
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Rede Social</label>
-                            <p class="font-medium" >{{ paciente.rede_social }}</p>
+                            <p class="font-medium" >{{ paciente.redeSocial }}</p>
                         </div>
                     </div>
                 </section>
@@ -155,6 +155,7 @@
                     
                     <div class="mb-6">
                         <h3 class="font-medium text-gray-700 mb-2">Pacote Ativo</h3>
+                        {% if pacote_ativo %}
                         <div class="package-card">
                             <div class="package-header">
                                 <h4 class="package-title">{{pacote_ativo}} ({{qtd_total}} sessões)</h4>
@@ -183,11 +184,15 @@
                                 </div>
                             </div>
                         </div>
+                        {% else %}
+                            <h4 class="package-title text-sm">Não há informações no momento.</h4>    
+                        {% endif %}
                     </div>
                     
                     <h3 class="font-medium text-gray-700 mb-2">Histórico de Pacotes</h3>
                     
                     <div class="space-y-3">
+                    {% if pacotes_dados %}
                         {% for pacote in pacotes_dados %}
                             <div class="note-card">
                                 <div class="package-header">
@@ -211,24 +216,31 @@
                                 </p>
                             </div>
                         {% endfor %}
+                    {% else %}
+                     <h4 class="package-title text-sm">Não há informações no momento.</h4>
+                     {% endif %}
                     </div>
                     
                 </section>
 
                 <!-- Section 4: Serviços Mais Contratados -->
                 <section class="section">
+                
                     <h2 class="section-title">Serviços Mais Contratados</h2>
                     <div class="data-grid">
+                    {% if mais_contratados %}
                         {% for especialidade in mais_contratados %}
                         <div class="note-card">
                             
                             <div class="package-header">
                                 <h3 class="package-title text-sm"> {{especialidade.nome}}</h3>
-                                <span class="badge badge-info" style= ' color:white; background:{{especialidade.cor}}'>{{especialidade.total}} sessões</span>
+                                <span class="badge badge-info" style= ' color:white; background:{{especialidade.cor}}'>{% if especialidade.total == 1 %}{{especialidade.total}} sessão {% else %} {{especialidade.total}} sessões {% endif %}</span>
                             </div>
-                            
                         </div>
                         {% endfor %}
+                    {% else %}
+                        <h4 class="package-title text-sm">Não há informações no momento.</h4>    
+                    {% endif %}
 
                     </div>
                 </section>
@@ -239,34 +251,38 @@
                 <!-- Section 5: Profissionais que mais atenderam -->
                 <section class="section">
                     <h2 class="section-title">Profissionais que mais atenderam</h2>
+                    <h2 class="section-subtitle">Como Condutor da Sessão</h2>
                     <div class="space-y-4">
+                    {% for profissional in profissional_principal %}
                         <div class="professional-card">
                             <div class="professional-avatar">
-                                <img src="https://ui-avatars.com/api/?name=Dr+Joao&background=3b82f6&color=fff&size=128" alt="Dr. João">
+                                {% if profissional.profissional_1__foto %}
+                                    <img src="{{ profissional.foto_url }}" alt="Foto de {{ profissional.nome }}" width="150">
+                                {% else %}
+                                    <div class="profile-placeholder">
+                                        {{ profissional.nome|slice:":1" }}
+                                    </div>
+                                {% endif %}
                             </div>
                             <div>
-                                <h3 class="professional-name">Dr. João Carlos</h3>
-                                <p class="professional-sessions">10 atendimentos</p>
+                                <h3 class="professional-name">{{profissional.profissional_1__nome}}</h3>
+                                <p class="professional-sessions">{{profissional.total}} atendimentos | {{profissional.tempo_sessao}}h totais</p>
+                           
                             </div>
                         </div>
+                    {% endfor %}
+                        <h2 class="section-subtitle">Como Apoio na Sessão</h2>
+                    {% for profissional in profissional_auxiliar %}
                         <div class="professional-card">
                             <div class="professional-avatar">
                                 <img src="https://ui-avatars.com/api/?name=Dra+Maria&background=3b82f6&color=fff&size=128" alt="Dra. Maria">
                             </div>
                             <div>
-                                <h3 class="professional-name">Dra. Maria Fernanda</h3>
-                                <p class="professional-sessions">5 atendimentos</p>
+                                <h3 class="professional-name">{{profissional.profissional_2__nome}}</h3>
+                                <p class="professional-sessions">{{profissional.total}} atendimentos | {{profissional.tempo_sessao}}h totais</p>
                             </div>
                         </div>
-                        <div class="professional-card">
-                            <div class="professional-avatar">
-                                <img src="https://ui-avatars.com/api/?name=Dr+Pedro&background=3b82f6&color=fff&size=128" alt="Dr. Pedro">
-                            </div>
-                            <div>
-                                <h3 class="professional-name">Dr. Pedro Henrique</h3>
-                                <p class="professional-sessions">3 atendimentos</p>
-                            </div>
-                        </div>
+                     {% endfor %}
                     </div>
                 </section>
 
