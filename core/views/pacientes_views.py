@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import Paciente,Agendamento,PacotePaciente,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Paciente,Agendamento,PacotePaciente,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
-from django.db.models import Q, Min, Max
+from django.db.models import Q, Min, Max,Count
 from django.http import JsonResponse 
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
@@ -374,13 +374,43 @@ def perfil_paciente(request,paciente_id):
     progresso = round((sessao_atual / qtd_total) * 100) if qtd_total else 0
     
     
-    #
-    print(pacote_ativo, data_inicio_pacote_ativo, sessao_atual, qtd_total)
+    mais_contratados = Especialidade.objects.annotate(total=Count('agendamento', 
+                    filter=Q(agendamento__paciente_id=paciente_id))
+                    ).filter(total__gt=0).order_by('-total')
+    for especialidade in mais_contratados:
+        print(especialidade.nome, especialidade.total,)
+    
+    print(mais_contratados)
     # DADOS DOS PACOTES 
     
-    pacote_dados = []
-    
-  
+    pacotes_dados = []
+
+    for pacote in pacotes:
+        agendamentos = pacote.agendamento_set.all()
+
+        if agendamentos.exists():
+            datas = [ag.data for ag in agendamentos]
+            data_inicio = min(datas)
+            data_fim = max(datas)
+        else:
+            data_inicio = pacote.data_inicio
+            data_fim = None
+
+        sessoes_realizadas = pacote.sessoes_realizadas
+        qtd_total = pacote.qtd_sessoes
+
+        status = "Ativo" if pacote.ativo else "Finalizado"
+
+        pacotes_dados.append({
+            'pacote': pacote,
+            'data_inicio': data_inicio,
+            'data_fim': data_fim,
+            'sessoes_realizadas': sessoes_realizadas,
+            'qtd_total': qtd_total,
+            'status': status,
+        })
+        
+    print(pacotes_dados[0])
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
@@ -393,7 +423,8 @@ def perfil_paciente(request,paciente_id):
                 'sessao_atual':sessao_atual,
                 'qtd_total':qtd_total,
                 'progresso':progresso,
-                
+                'pacotes_dados': pacotes_dados,
+                'mais_contratados':mais_contratados,
                 
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
