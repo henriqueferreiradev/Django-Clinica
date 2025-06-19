@@ -382,7 +382,7 @@ class Pagamento(models.Model):
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     valor = models.DecimalField(max_digits=8, decimal_places=2)
-    data = models.DateField(default=timezone.now)
+    data = models.DateTimeField(default=timezone.now)
     forma_pagamento = models.CharField(max_length=30, choices=[
         ('pix', 'Pix'),
         ('credito', 'Cartão de Crédito'),
@@ -393,4 +393,4 @@ class Pagamento(models.Model):
 
     def __str__(self):
         ref = self.pacote.codigo if self.pacote else f"Sessão {self.agendamento.id}" if self.agendamento else "Avulso"
-        return f"{self.paciente} - R$ {self.valor} - {ref}"
+        return f"{self.paciente} - R$ {self.valor} - {ref} - {self.data.strftime('%d/%m/%Y')}"

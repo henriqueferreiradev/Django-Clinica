@@ -280,7 +280,13 @@
                     {% for profissional in profissional_auxiliar %}
                         <div class="professional-card">
                             <div class="professional-avatar">
-                                <img src="https://ui-avatars.com/api/?name=Dra+Maria&background=3b82f6&color=fff&size=128" alt="Dra. Maria">
+                                {% if profissional.profissional_1__foto %}
+                                    <img src="{{ profissional.foto_url }}" alt="Foto de {{ profissional.nome }}" width="150">
+                                {% else %}
+                                    <div class="profile-placeholder">
+                                        {{ profissional.nome|slice:":1" }}
+                                    </div>
+                                {% endif %}
                             </div>
                             <div>
                                 <h3 class="professional-name">{{profissional.profissional_2__nome}}</h3>
@@ -375,15 +381,20 @@
                     <div class="space-y-4">
                         <div>
                             <p class="financial-label">Total gasto</p>
-                            <p class="financial-total">R$ 4.850,00</p>
+                            <p class="financial-total">{{soma_pagamentos}}</p>
                         </div>
                         <div>
                             <p class="financial-label">Forma de pagamento mais utilizada</p>
                             <div class="payment-method">
+                                {% for pagamento in top_forma_pagamento %}
+                                <div class="payment-data">
                                 <div class="payment-icon">
                                     <i class="fas fa-money-bill-wave"></i>
                                 </div>
-                                <span class="payment-name">Pix (60%)</span>
+                                
+                                <span class="payment-name">{{pagamento.forma_pagamento}} - {{pagamento.quantidade}}x - ({{pagamento.porcentagem}})</span>
+                            </div>
+                                {% endfor %}
                             </div>
                         </div>
                         <div>

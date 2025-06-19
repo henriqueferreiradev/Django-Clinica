@@ -137,3 +137,17 @@ def get_semana_atual():
     inicio_semana = hoje - timedelta(days=hoje.weekday())  # Segunda-feira
     fim_semana = inicio_semana + timedelta(days=6)
     return inicio_semana, fim_semana
+
+
+def calcular_porcentagem_formas(queryset):
+    total = sum(item['quantidade'] for item in queryset)
+    
+    resultado = []
+    for item in queryset:
+        porcentagem = (item['quantidade'] / total) * 100 if total > 0 else 0
+        resultado.append({
+            'forma_pagamento': item['forma_pagamento'],
+            'quantidade': item['quantidade'],
+            'porcentagem': round(porcentagem, 2)  # arredonda para 2 casas decimais
+        })
+    return resultado

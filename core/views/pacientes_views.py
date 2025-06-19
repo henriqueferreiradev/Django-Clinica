@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import Paciente,Agendamento,PacotePaciente,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Paciente,Agendamento,Pagamento,PacotePaciente,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -9,7 +9,7 @@ from django.db.models import Q, Min, Max,Count,Sum, F, ExpressionWrapper, Durati
 from django.http import JsonResponse 
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
-from core.utils import get_semana_atual
+from core.utils import get_semana_atual,calcular_porcentagem_formas
 from django.conf import settings
 def pacientes_view(request):
     
@@ -361,7 +361,7 @@ def perfil_paciente(request,paciente_id):
 
     paciente = get_object_or_404(Paciente, id=paciente_id)
     pacotes = PacotePaciente.objects.filter(paciente__id=paciente_id,).order_by('-data_inicio')
-    print(pacotes)
+ 
  
     frequencia_semanal = Agendamento.objects.filter(paciente=paciente, data__range=[inicio_semana, fim_semana]).count()
     quantidade_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).count()
@@ -379,12 +379,7 @@ def perfil_paciente(request,paciente_id):
     mais_contratados = Especialidade.objects.annotate(total=Count('agendamento', 
                     filter=Q(agendamento__paciente_id=paciente_id))
                     ).filter(total__gt=0).order_by('-total')
- 
-    
-    #prof1 = Agendamento.objects.filter(paciente__id=paciente_id).values('profissional_1__nome').annotate(total=Count('id')) 
-    #prof2 = Agendamento.objects.filter(paciente__id=paciente_id, profissional_2__isnull=False).values('profissional_2__nome').annotate(total=Count('id')) 
- 
- 
+
 
     agendamentos = (Agendamento.objects
         .filter(paciente__id=paciente_id)
@@ -394,7 +389,6 @@ def perfil_paciente(request,paciente_id):
         )
     )
 
-    # Profissionais principais
     prof1 = (agendamentos
         .filter(paciente__id=paciente_id, profissional_1__isnull=False)
         .values('profissional_1__id', 'profissional_1__nome', 'profissional_1__foto')
@@ -402,7 +396,7 @@ def perfil_paciente(request,paciente_id):
             total=Count('id'),
             total_horas=Sum('duracao_principal')
         )
-    )
+    ).order_by('-total')[:3]
     for p in prof1:
         foto = p['profissional_1__foto']
         if foto:
@@ -411,7 +405,7 @@ def perfil_paciente(request,paciente_id):
             foto_url = None
         p['foto_url'] = foto_url
         print(foto_url)
-    # Profissionais auxiliares
+
     prof2 = (agendamentos
         .filter(paciente__id=paciente_id, profissional_2__isnull=False)
         .values('profissional_2__id', 'profissional_2__nome', 'profissional_2__foto')
@@ -419,9 +413,16 @@ def perfil_paciente(request,paciente_id):
             total=Count('id'),
             total_horas=Sum('duracao_auxiliar')
         )
-    )
-        
-    #print(prof1,prof2)
+    ).order_by('-total')[:3]
+    
+    for p in prof2:
+        foto = p['profissional_2__foto']
+        if foto:
+            foto_url = settings.MEDIA_URL + foto
+        else:
+            foto_url = None
+        p['foto_url'] = foto_url
+
     def formatar_duracao(duracao):
         if duracao:
             total_segundos = int(duracao.total_seconds())
@@ -463,8 +464,27 @@ def perfil_paciente(request,paciente_id):
             'qtd_total': qtd_total,
             'status': status,
         })
-        
     
+    #PAGAMENTOS
+    
+    soma_pagamentos = Pagamento.objects.filter(paciente__id=paciente_id,).aggregate(total_pago=(Sum('valor')))
+    total = soma_pagamentos['total_pago'] or 0
+    total_formatado = f"R$ {total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    formas_top3 = (Pagamento.objects.filter(paciente__id=paciente_id,).values('forma_pagamento').annotate(quantidade=Count('id'))
+    .order_by('-quantidade')[:5])   
+    
+    ultimos_pagamentos = Pagamento.objects.filter(paciente__id=paciente_id).order_by('-data')
+    
+    top_forma_pagamento=calcular_porcentagem_formas(formas_top3)
+    print('')
+    print(ultimos_pagamentos)
+    print('')
+    print(soma_pagamentos)
+    print('')
+    print(top_forma_pagamento)
+    print('')
+    print(total_formatado)
+   
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
@@ -481,6 +501,11 @@ def perfil_paciente(request,paciente_id):
                 'mais_contratados':mais_contratados,
                 'profissional_principal':prof1,
                 'profissional_auxiliar':prof2,
+                'soma_pagamentos':total_formatado,
+                'top_forma_pagamento':top_forma_pagamento,
+                'ultimos_pagamentos':ultimos_pagamentos
+                
+                
                 
                 
                 }
