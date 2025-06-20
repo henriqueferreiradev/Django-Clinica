@@ -473,18 +473,14 @@ def perfil_paciente(request,paciente_id):
     formas_top3 = (Pagamento.objects.filter(paciente__id=paciente_id,).values('forma_pagamento').annotate(quantidade=Count('id'))
     .order_by('-quantidade')[:5])   
     
-    ultimos_pagamentos = Pagamento.objects.filter(paciente__id=paciente_id).order_by('-data')
+    ultimos_pagamentos = Pagamento.objects.filter(paciente__id=paciente_id).order_by('-data')[:10]
+    debitos_pendentes = PacotePaciente.objects.filter(paciente__id=paciente_id)
     
     top_forma_pagamento=calcular_porcentagem_formas(formas_top3)
     print('')
-    print(ultimos_pagamentos)
+    print(debitos_pendentes)
     print('')
-    print(soma_pagamentos)
-    print('')
-    print(top_forma_pagamento)
-    print('')
-    print(total_formatado)
-   
+ 
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
@@ -503,7 +499,8 @@ def perfil_paciente(request,paciente_id):
                 'profissional_auxiliar':prof2,
                 'soma_pagamentos':total_formatado,
                 'top_forma_pagamento':top_forma_pagamento,
-                'ultimos_pagamentos':ultimos_pagamentos
+                'ultimos_pagamentos':ultimos_pagamentos,
+                
                 
                 
                 

@@ -353,7 +353,7 @@ class PacotePaciente(models.Model):
         return self.valor_final - self.total_pago
 
     def __str__(self):
-        return f"Pacote {self.codigo} - {self.paciente}"
+        return f"Pacote {self.codigo} Valor restante {self.valor_restante} - {self.paciente} "
 
  
 

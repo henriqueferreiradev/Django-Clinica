@@ -384,12 +384,20 @@
                             <p class="financial-total">{{soma_pagamentos}}</p>
                         </div>
                         <div>
-                            <p class="financial-label">Forma de pagamento mais utilizada</p>
+                            <p class="financial-label">Ranking de Pagamentos</p>
                             <div class="payment-method">
                                 {% for pagamento in top_forma_pagamento %}
                                 <div class="payment-data">
-                                <div class="payment-icon">
-                                    <i class="fas fa-money-bill-wave"></i>
+                                <div class="{% if pagamento.forma_pagamento == 'pix' %}payment-icon blue
+                                {% elif pagamento.forma_pagamento == 'dinheiro' %}payment-icon green
+                                {% elif pagamento.forma_pagamento == 'credito' %}payment-icon yellow
+                                {% elif pagamento.forma_pagamento == 'debito' %}payment-icon purple
+                                {% else %}payment-icon red{% endif %}">
+                                    <i class="{% if pagamento.forma_pagamento == 'pix' %}fas fa-qrcode blue
+                                    {% elif pagamento.forma_pagamento == 'dinheiro' %}fas fa-money-bill-wave green
+                                    {% elif pagamento.forma_pagamento == 'credito' %}fas fa-credit-card yellow
+                                    {% elif pagamento.forma_pagamento == 'debito' %}fas fa-money-check purple
+                                    {% else %}fas fa-question-circle red{% endif %}"></i> 
                                 </div>
                                 
                                 <span class="payment-name">{{pagamento.forma_pagamento}} - {{pagamento.quantidade}}x - ({{pagamento.porcentagem}}%)</span>
@@ -404,18 +412,15 @@
                         <div class="payment-list">
                             <h3 class="text-sm font-medium mb-2">Últimos pagamentos</h3>
                             <div class="space-y-2">
+                                {% for pagamento in ultimos_pagamentos %}
                                 <div class="payment-item">
-                                    <p>15/06/2023</p>
-                                    <p class="font-medium">R$ 250,00</p>
+                                    <div style="display: flex;">
+                                    <p>{{pagamento.data|date:'d/m/Y'}} - </p>
+                                    <p class="font-medium">{{pagamento.get_forma_pagamento_display}}</p>
                                 </div>
-                                <div class="payment-item">
-                                    <p>01/06/2023</p>
-                                    <p class="font-medium">R$ 250,00</p>
+                                    <p class="font-medium">R$ {{pagamento.valor}}</p>
                                 </div>
-                                <div class="payment-item">
-                                    <p>15/05/2023</p>
-                                    <p class="font-medium">R$ 1.200,00</p>
-                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -437,40 +442,5 @@
         </div>
     </div>
 
-    <script>
-        // Simple age calculation based on birth date
-        function calculateAge(birthDate) {
-            const today = new Date();
-            const birthDateObj = new Date(birthDate);
-            let age = today.getFullYear() - birthDateObj.getFullYear();
-            const monthDiff = today.getMonth() - birthDateObj.getMonth();
-            
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
-                age--;
-            }
-            
-            return age;
-        }
-
-        // Example of inline editing functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const editableElements = document.querySelectorAll('[]');
-            
-            editableElements.forEach(element => {
-                element.addEventListener('blur', function() {
-                    // Here you would typically save the edited value to your database
-                    console.log(`Updated value: ${this.textContent}`);
-                });
-            });
-
-            // Calculate age based on birth date (example)
-            const birthDateElement = document.querySelector('[]:nth-child(3)');
-            if (birthDateElement) {
-                const birthDate = birthDateElement.textContent;
-                const age = calculateAge(birthDate.split('/').reverse().join('-'));
-                document.querySelector('.data-card:nth-child(4) p').textContent = `${age} anos`;
-            }
-        });
-    </script>
 </body>
 </html>
