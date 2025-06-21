@@ -64,7 +64,7 @@ header {
     width: 80px;
     height: 80px;
     border-radius: 50%;
- 
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -134,7 +134,7 @@ header {
 .btn-gray:hover {
     background-color: #cbd5e1;
 }
- 
+
 
 /* Layout */
 .grid-container {
@@ -165,6 +165,7 @@ header {
     position: relative;
     padding-left: 16px;
 }
+
 .section-subtitle {
     font-size: 16px;
     font-weight: 600;
@@ -183,6 +184,7 @@ header {
     background-color: var(--roxoPrincipal);
     border-radius: 4px;
 }
+
 .section-subtitle:before {
     content: '';
     position: absolute;
@@ -193,6 +195,7 @@ header {
     background-color: var(--roxoPrincipal);
     border-radius: 4px;
 }
+
 /* Data Card Styles */
 .data-grid {
     display: grid;
@@ -487,12 +490,14 @@ header {
     align-items: start;
     gap: 8px;
 }
+
 .payment-data {
     display: flex;
     flex-direction: row;
     align-items: start;
     gap: 8px;
 }
+
 .payment-icon {
     width: 32px;
     height: 32px;
@@ -502,37 +507,47 @@ header {
     align-items: center;
     justify-content: center;
 }
+
 .payment-icon.blue {
     background-color: #dceefc;
 }
+
 .payment-icon i.blue {
     color: #1676a3;
 }
+
 .payment-icon.yellow {
     background-color: #f9fcdc;
 }
+
 .payment-icon i.yellow {
     color: #a39c16;
 }
+
 .payment-icon.green {
     background-color: #dcfcdc;
 }
+
 .payment-icon i.green {
     color: #16a34a;
 }
+
 .payment-icon.purple {
     background-color: #efdcfc;
 }
+
 .payment-icon i.purple {
     color: #7d16a3;
 }
+
 .payment-icon.red {
     background-color: #fcdcdc;
 }
+
 .payment-icon i.red {
     color: #a31616;
 }
- 
+
 
 .payment-name {
     font-weight: 500;
@@ -547,7 +562,7 @@ header {
     display: flex;
     justify-content: space-between;
     font-size: 14px;
- 
+
 }
 
 /* Quick Actions */
@@ -734,5 +749,3 @@ header {
 .hover\:text-green-600:hover {
     color: #16a34a;
 }
-
- 

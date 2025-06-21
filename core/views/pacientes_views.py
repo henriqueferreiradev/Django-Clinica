@@ -472,13 +472,14 @@ def perfil_paciente(request,paciente_id):
     total_formatado = f"R$ {total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
     formas_top3 = (Pagamento.objects.filter(paciente__id=paciente_id,).values('forma_pagamento').annotate(quantidade=Count('id'))
     .order_by('-quantidade')[:5])   
-    
+    top_forma_pagamento=calcular_porcentagem_formas(formas_top3)
     ultimos_pagamentos = Pagamento.objects.filter(paciente__id=paciente_id).order_by('-data')[:10]
     debitos_pendentes = PacotePaciente.objects.filter(paciente__id=paciente_id)
-    
-    top_forma_pagamento=calcular_porcentagem_formas(formas_top3)
+    total_debito = sum([p.valor_restante for p in debitos_pendentes])
+ 
+   
     print('')
-    print(debitos_pendentes)
+    print(total_debito)
     print('')
  
     context = {'paciente':paciente,
@@ -500,6 +501,7 @@ def perfil_paciente(request,paciente_id):
                 'soma_pagamentos':total_formatado,
                 'top_forma_pagamento':top_forma_pagamento,
                 'ultimos_pagamentos':ultimos_pagamentos,
+                'total_debito':total_debito,
                 
                 
                 

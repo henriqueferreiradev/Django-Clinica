@@ -407,7 +407,11 @@
                         </div>
                         <div>
                             <p class="financial-label">Débitos pendentes</p>
+                            {% if total_debito %}
+                            <p class=" financial-total font-medium text-green-600">R$ {{total_debito}}</p>
+                            {% else %}
                             <p class="font-medium text-green-600">Nenhum débito pendente</p>
+                            {% endif %}
                         </div>
                         <div class="payment-list">
                             <h3 class="text-sm font-medium mb-2">Últimos pagamentos</h3>
@@ -418,7 +422,7 @@
                                     <p>{{pagamento.data|date:'d/m/Y'}} - </p>
                                     <p class="font-medium">{{pagamento.get_forma_pagamento_display}}</p>
                                 </div>
-                                    <p class="font-medium">R$ {{pagamento.valor}}</p>
+                                    <p class="font-medium text-green-600">R$ {{pagamento.valor}}</p>
                                 </div>
                                 {% endfor %}
                             </div>
