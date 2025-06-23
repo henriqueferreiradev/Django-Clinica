@@ -481,7 +481,15 @@ def perfil_paciente(request,paciente_id):
     print('')
     print(total_debito)
     print('')
+    agendamentos_select = Agendamento.objects.filter(
+        paciente=paciente
+    ).order_by('-data', '-hora_inicio')[:10]
+    if request.method == "POST":
+        agendamento_id = reques
  
+    
+    observacoes = Agendamento.objects.filter(paciente__id=paciente_id).values('observacoes').order_by('-data') 
+    print(observacoes)
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
@@ -502,10 +510,6 @@ def perfil_paciente(request,paciente_id):
                 'top_forma_pagamento':top_forma_pagamento,
                 'ultimos_pagamentos':ultimos_pagamentos,
                 'total_debito':total_debito,
-                
-                
-                
-                
-                
+                'ultimos_agendamentos':agendamentos_select,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)

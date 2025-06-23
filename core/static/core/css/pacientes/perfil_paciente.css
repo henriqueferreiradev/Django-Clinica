@@ -631,7 +631,7 @@ header {
 }
 
 .action-btn-primary::after {
-    content: "Novo Agendamento";
+    content: "Novo\A Agendamento";
     background-color: var(--roxo-primary-hover);
 }
 
@@ -644,8 +644,9 @@ header {
 }
 
 .action-btn-success::after {
-    content: 'Enviar mensagem';
+    content: 'Enviar\A mensagem';
     background-color: #16a34a;
+    white-space: pre;
 }
 
 .action-btn-dark {
@@ -657,8 +658,9 @@ header {
 }
 
 .action-btn-dark::after {
-    content: 'Imprimir ficha';
+    content: 'Imprimir\A ficha';
     background-color: #1e293b;
+    white-space: pre;
 }
 
 .action-btn-instagram {
@@ -680,7 +682,37 @@ header {
     margin-top: 16px;
 }
 
+.observacao-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.observacao-div button {
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--roxoPrincipal);
+    margin-top: .5em;
+    padding: .6em;
+    color: var(--branco);
 
+}
+.observacao-div button:hover {
+ 
+    background-color: var(--roxo-primary-hover);
+    
+}
+#observacao {
+    width: 96%;
+    height: 250px;
+    resize: none;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-family: var(--fontePrincipal);
+    font-size: 14px;
+    padding: .7em 0.5em;
+    outline: 1px solid var(--roxoPrincipal);
+}
 
 .space-y-2>*+* {
     margin-top: 8px;

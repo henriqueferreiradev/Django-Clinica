@@ -369,9 +369,28 @@
                             </div>
                             <p class="note-content">Relatou dores musculares na região cervical. Recomendado sessões de acupuntura 1x/semana.</p>
                         </div>
-                        <button class="w-full py-2 text-sm text-primary hover:text-blue-600 font-medium">
+                        <button id="btnObs" onclick="addObservacao()" class="w-full py-2 text-sm text-primary hover:text-blue-600 font-medium">
                             Adicionar nova observação
                         </button>
+                        <form method="POST" action="">
+    {% csrf_token %}
+    <div id="obs-container" class="observacao-div space-y-2">
+        <label for="agendamento_id">Selecione a sessão:</label>
+        <select name="agendamento_id" id="agendamento_id" required>
+            {% for ag in ultimos_agendamentos %}
+                <option value="{{ ag.id }}">
+                    {{ ag.data|date:"d/m/Y" }} - {{ ag.hora_inicio|time:"H:i" }} com {{ ag.profissional_1.nome }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="observacao">Observação:</label>
+        <textarea name="observacao" id="observacao" rows="4" required></textarea>
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+</form>
+
                     </div>
                 </section>
 
@@ -451,7 +470,13 @@
 
 </body>
 {% block scripts %}
- 
+<script>
+    const btnObs = document.getElementById('btnObs')
+    const obsContainer = document.getElementById('obs-container')
+    function addObservacao() {
+        obsContainer.style.display='block'
+    }
+</script>
   
 <script src="https://unpkg.com/imask"></script>
 
