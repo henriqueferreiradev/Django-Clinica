@@ -440,11 +440,22 @@
             <button class="action-btn action-btn-success">
                 <i class="fab fa-whatsapp"></i>
             </button>
-            <button class="action-btn action-btn-dark">
+            <button class="action-btn action-btn-instagram" onclick="window.open('https://instagram.com/{{ paciente.redeSocial }}', '_blank')">
+                <i class="fab fa-instagram"></i>
+            </button>
+            <button  class="action-btn action-btn-dark" onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">
                 <i class="fas fa-file-pdf"></i>
             </button>
         </div>
     </div>
 
 </body>
+{% block scripts %}
+ 
+  
+<script src="https://unpkg.com/imask"></script>
+
+<script src="{% static '/core/js/pacientes/base.js' %}"></script>
+<script src="{% static '/core/js/pacientes/cep.js' %}"></script>
+{% endblock %}
 </html>

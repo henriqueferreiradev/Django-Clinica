@@ -12,6 +12,8 @@
     --cinzaEscuro: #6e6e6e;
     --fontePrincipal: 'Inter';
     --corFundo: #e4e9f7;
+    --corFundoDark: #121212;
+    --corFundoDarkCont: #1E1E1E;
 }
 
 body {
@@ -584,9 +586,40 @@ header {
     color: white;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, all 0.3s ease;
     border: none;
     font-size: 18px;
+
+}
+
+.action-btn:hover {
+    transform: scale(1.2);
+}
+
+.action-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.action-btn:hover::after {
+    opacity: 1;
+}
+
+
+.action-btn i {
+    font-size: 20px;
 }
 
 .action-btn-primary {
@@ -594,7 +627,12 @@ header {
 }
 
 .action-btn-primary:hover {
-    background-color: #2563eb;
+    background-color: var(--roxo-primary-hover);
+}
+
+.action-btn-primary::after {
+    content: "Novo Agendamento";
+    background-color: var(--roxo-primary-hover);
 }
 
 .action-btn-success {
@@ -605,12 +643,36 @@ header {
     background-color: #16a34a;
 }
 
+.action-btn-success::after {
+    content: 'Enviar mensagem';
+    background-color: #16a34a;
+}
+
 .action-btn-dark {
     background-color: #334155;
 }
 
 .action-btn-dark:hover {
     background-color: #1e293b;
+}
+
+.action-btn-dark::after {
+    content: 'Imprimir ficha';
+    background-color: #1e293b;
+}
+
+.action-btn-instagram {
+    background: radial-gradient(circle farthest-corner at 35% 90%, #fec564, transparent 50%), radial-gradient(circle farthest-corner at 0 140%, #fec564, transparent 50%), radial-gradient(ellipse farthest-corner at 0 -25%, #5258cf, transparent 50%), radial-gradient(ellipse farthest-corner at 20% -50%, #5258cf, transparent 50%), radial-gradient(ellipse farthest-corner at 100% 0, #893dc2, transparent 50%), radial-gradient(ellipse farthest-corner at 60% -20%, #893dc2, transparent 50%), radial-gradient(ellipse farthest-corner at 100% 100%, #d9317a, transparent), linear-gradient(#6559ca, #bc318f 30%, #e33f5f 50%, #f77638 70%, #fec66d 100%);
+}
+
+.action-btn-instagram:hover {
+    background-color: #ffffff;
+}
+
+.action-btn-instagram::after {
+    content: 'Instagram';
+    background: radial-gradient(circle farthest-corner at 35% 90%, #fec564, transparent 50%), radial-gradient(circle farthest-corner at 0 140%, #fec564, transparent 50%), radial-gradient(ellipse farthest-corner at 0 -25%, #5258cf, transparent 50%), radial-gradient(ellipse farthest-corner at 20% -50%, #5258cf, transparent 50%), radial-gradient(ellipse farthest-corner at 100% 0, #893dc2, transparent 50%), radial-gradient(ellipse farthest-corner at 60% -20%, #893dc2, transparent 50%), radial-gradient(ellipse farthest-corner at 100% 100%, #d9317a, transparent), linear-gradient(#6559ca, #bc318f 30%, #e33f5f 50%, #f77638 70%, #fec66d 100%);
+
 }
 
 /* Utility Classes */
