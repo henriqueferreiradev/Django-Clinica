@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import Paciente,Agendamento,Pagamento,PacotePaciente,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -498,15 +498,18 @@ def perfil_paciente(request,paciente_id):
         return redirect(request.path)
     print('')
 
-    for ag in agendamentos_select:
-        print(f'Agendamento {ag.id} - Observação: {ag.observacoes} - Autor: {ag.observacao_autor}')
-
-
-
-
-
-
-    print(agendamentos_select)
+ 
+    usuarios = User.objects.all()
+    for u in usuarios:
+        
+        print("------------")
+        print(f"ID: {u.id}")
+        print(f"Nome completo: {u.get_full_name()}")
+        print(f"Username (login/email): {u.username}")
+        print(f"Tipo (cargo): {u.tipo}")
+        print(f"Ativo: {u.ativo}")
+        print(f"Senha (hash): {u.password}")
+    
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from datetime import date
 from django.utils.text import slugify
@@ -263,10 +265,44 @@ class Profissional(models.Model):
     nomeEmergencia = models.CharField(max_length=100)
     vinculo = models.CharField(max_length=100, choices=VINCULO)
     telEmergencia = models.CharField(max_length=20, blank=True, null=True)
-     
+    
+    valor_hora = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
     
+    
+    def save(self, *args, **kwargs):
+        criando = self.pk is None
+        
+        super().save(*args, **kwargs)
+        
+        if criando and not self.user and self.email:
+            
+            username = self.email
+            senha_padrao = 'resiliencia'
+            nome = self.nome or ''
+            sobrenome = self.sobrenome or ''
+            
+            if not User.objects.filter(username=username).exists():
+                user = User.objects.create(
+                username=username,
+                email=self.email,
+                first_name=nome,
+                last_name=sobrenome,
+                password=make_password(senha_padrao),
+                tipo='profissional',
+                ativo = True
+                )
+                self.user = user
+                super().save(update_fields=['user'])
+        
+        
+        
+        
+        
+        
+        
+            
     def __str__(self):
         if self.user:
             return self.user.get_full_name() or self.user.username

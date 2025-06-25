@@ -29,6 +29,19 @@ body {
     overflow: hidden;
 }
 
+.content {
+    background: var(--branco);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 1em;
+    margin-top: 1em;
+    height: calc(100vh - 90px);
+    max-height: calc(100vh - 60px - 2em);
+    box-sizing: border-box;
+    overflow-y: auto;
+
+}
 
 .formField {
     display: flex;
@@ -36,6 +49,7 @@ body {
     gap: 1em;
     position: relative;
     width: 100%;
+    margin: 1em 0;
 }
 
 
@@ -161,53 +175,22 @@ select {
 
 .grid-config {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: auto auto auto;
+    grid-template-columns: repeat(auto-fill, minmax(600px, 2fr));
     gap: 1em;
-    grid-template-areas:
-        "a b"
-        "c b"
-        "d d"
-        "e f";
-    padding: 1em;
+    align-items: start; 
 }
 
-.grid-config>div {
+.grid-config > div {
     background: var(--branco);
     border-radius: 15px;
-
     padding: 1em;
-
+    border: 1px solid var(--roxoPrincipal);
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    min-height: 0; /* Permite que os itens encolham */
 }
 
-.form-1 {
-    grid-area: a;
-}
-
-.form-2 {
-    grid-area: b;
-}
-
-.form-3 {
-    grid-area: c;
-}
-
-.form-4 {
-    grid-area: d;
-}
-
-.form-5 {
-    grid-area: e;
-}
-
-.form-6 {
-    grid-area: f;
-}
-
-.form form {
-    display: flex;
-
-}
+/* Opcional: para formulários dentro das divs */
+ 
 
 .tabela-wrapper {
     height: 200px;
