@@ -355,41 +355,46 @@
                 <section class="section">
                     <h2 class="section-title">Observações Gerais</h2>
                     <div class="space-y-3">
-                        <div class="note-card">
-                            <div class="note-header">
-                                <p class="note-author">Dr. João Carlos</p>
-                                <p class="note-date">10/05/2023</p>
+ 
+
+                    {% for agendamento in ultimos_agendamentos %}
+                    {% if agendamento.observacoes %}
+                    <div class="note-card">
+                        <div class="note-header">
+                            {% if agendamento.observacao_autor %}
+                            <p class="note-author"> {{ agendamento.observacao_autor.get_full_name|default:agendamento.observacao_autor.username }}</p>
+                            {% else %}
+                            <p class="note-author">Sem usuário</p>
+                            {% endif %}
+                            <p class="note-date">{{ agendamento.observacao_data|date:"d/m/Y" }}</p>
                             </div>
-                            <p class="note-content">Paciente apresentou melhora significativa nos sintomas de ansiedade após 3 meses de tratamento.</p>
+                            <p class="note-content">{{agendamento.observacoes}}</p>
                         </div>
-                        <div class="note-card">
-                            <div class="note-header">
-                                <p class="note-author">Dra. Maria Fernanda</p>
-                                <p class="note-date">22/03/2023</p>
-                            </div>
-                            <p class="note-content">Relatou dores musculares na região cervical. Recomendado sessões de acupuntura 1x/semana.</p>
-                        </div>
+                        {% endif %}
+                        {% endfor %}
+
                         <button id="btnObs" onclick="addObservacao()" class="w-full py-2 text-sm text-primary hover:text-blue-600 font-medium">
                             Adicionar nova observação
                         </button>
-                        <form method="POST" action="">
-    {% csrf_token %}
-    <div id="obs-container" class="observacao-div space-y-2">
-        <label for="agendamento_id">Selecione a sessão:</label>
-        <select name="agendamento_id" id="agendamento_id" required>
-            {% for ag in ultimos_agendamentos %}
-                <option value="{{ ag.id }}">
-                    {{ ag.data|date:"d/m/Y" }} - {{ ag.hora_inicio|time:"H:i" }} com {{ ag.profissional_1.nome }}
-                </option>
-            {% endfor %}
-        </select>
+                        
+                        
+                        <form style='display:none' id="obs-container" method="POST" action="">
+                        {% csrf_token %}
+                        
+                        <div  class="observacao-div space-y-2">
+                            <select name="agendamento_id" id="agendamento_id" required>
+                                {% for agendamento in ultimos_agendamentos %}
+                                    <option value="{{ agendamento.id }}">
+                                        {{ agendamento.data|date:"d/m/Y" }} - {{ agendamento.hora_inicio|time:"H:i" }} com {{ agendamento.profissional_1.nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    
+                            <textarea name="observacao" id="observacao" rows="4" required></textarea>
 
-        <label for="observacao">Observação:</label>
-        <textarea name="observacao" id="observacao" rows="4" required></textarea>
-
-        <button type="submit" class="btn btn-primary">Salvar</button>
-    </div>
-</form>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </div>
+                    </form>
 
                     </div>
                 </section>
@@ -467,9 +472,9 @@
             </button>
         </div>
     </div>
+    {% include "core/partials/alertas.html" %}
 
-</body>
-{% block scripts %}
+    {% block scripts %}
 <script>
     const btnObs = document.getElementById('btnObs')
     const obsContainer = document.getElementById('obs-container')
@@ -483,4 +488,6 @@
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>
 <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
 {% endblock %}
+</body>
+
 </html>

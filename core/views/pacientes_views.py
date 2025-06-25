@@ -477,19 +477,36 @@ def perfil_paciente(request,paciente_id):
     debitos_pendentes = PacotePaciente.objects.filter(paciente__id=paciente_id)
     total_debito = sum([p.valor_restante for p in debitos_pendentes])
  
-   
-    print('')
-    print(total_debito)
-    print('')
-    agendamentos_select = Agendamento.objects.filter(
-        paciente=paciente
-    ).order_by('-data', '-hora_inicio')[:10]
-    if request.method == "POST":
-        agendamento_id = reques
- 
     
-    observacoes = Agendamento.objects.filter(paciente__id=paciente_id).values('observacoes').order_by('-data') 
-    print(observacoes)
+    agendamentos_select =Agendamento.objects.filter(paciente=paciente).select_related('observacao_autor').order_by('-data', '-hora_inicio')[:10]
+
+
+    if request.method == "POST":
+        agendamento_id = request.POST.get('agendamento_id')
+        observacao = request.POST.get('observacao')
+
+
+
+        agendamento = get_object_or_404(Agendamento, id=agendamento_id, paciente=paciente)
+        agendamento.observacoes = observacao
+        agendamento.observacao_autor = request.user
+        agendamento.observacao_data = timezone.now()
+        agendamento.save()
+        print('SALVO → Autor:', agendamento.observacao_autor)
+        print('SALVO → Observação:', agendamento.observacoes)
+        messages.success(request, 'Observação salva com sucesso.')
+        return redirect(request.path)
+    print('')
+
+    for ag in agendamentos_select:
+        print(f'Agendamento {ag.id} - Observação: {ag.observacoes} - Autor: {ag.observacao_autor}')
+
+
+
+
+
+
+    print(agendamentos_select)
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,

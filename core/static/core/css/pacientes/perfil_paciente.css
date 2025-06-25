@@ -592,6 +592,14 @@ header {
 
 }
 
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
 .action-btn:hover {
     transform: scale(1.2);
 }
@@ -687,6 +695,7 @@ header {
     flex-direction: column;
     align-items: center;
 }
+
 .observacao-div button {
     width: 100%;
     border: none;
@@ -697,11 +706,13 @@ header {
     color: var(--branco);
 
 }
+
 .observacao-div button:hover {
- 
+
     background-color: var(--roxo-primary-hover);
-    
+
 }
+
 #observacao {
     width: 96%;
     height: 250px;

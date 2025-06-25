@@ -370,6 +370,8 @@ class Agendamento(models.Model):
     hora_fim_aux = models.TimeField(null=True, blank=True)
     ambiente = models.CharField(max_length=100, blank=True)
     observacoes = models.TextField(blank=True)
+    observacao_autor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,related_name='observacoes')
+    observacao_data = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='agendado')
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
     tags = models.CharField(max_length=200, blank=True)
