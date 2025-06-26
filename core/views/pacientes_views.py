@@ -26,6 +26,7 @@ def pacientes_view(request):
             paciente = Paciente.objects.get(id=request.POST['delete_id'])
             paciente.ativo = False
             paciente.save()
+            messages.warning(request, f'Paciente {paciente.nome} inativado') 
             return redirect('pacientes')
 
         paciente_id = request.POST.get('paciente_id')
@@ -57,9 +58,10 @@ def pacientes_view(request):
 
         if paciente_id:
             Paciente.objects.filter(id=paciente_id).update(**dados)
+            messages.success(request, 'Paciente atualizado com sucesso!')
         elif dados['nome']:
             Paciente.objects.create(**dados)
-
+            messages.success(request, 'Paciente cadastrado com sucesso!')
         return redirect('pacientes')
 
     # Inicia o queryset
@@ -132,7 +134,9 @@ def cadastrar_pacientes_view(request):
         try:
             nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
         except ValueError:
-            ...
+            messages.error(request, 'Formato de data inválido (use DD/MM/AAAA)')  # Adicionar
+            return redirect('cadastrar_paciente')
+        
         foto = request.FILES.get('foto')
 
         
@@ -176,7 +180,7 @@ def cadastrar_pacientes_view(request):
             if foto:
                 paciente.foto = foto
                 paciente.save()
-
+                messages.info(request, 'Foto do paciente atualizada')
             messages.success(request, f'✅ Paciente {paciente.nome} cadastrado com sucesso!')
             return redirect('cadastrar_paciente')
  
@@ -267,6 +271,7 @@ def editar_paciente_view(request,id):
             paciente.foto = request.FILES['foto']
 
         paciente.save()
+        messages.success(request, f'Dados de {paciente.nome} atualizados!') 
         return redirect('pacientes')  
 
     context = {
@@ -492,8 +497,7 @@ def perfil_paciente(request,paciente_id):
         agendamento.observacao_autor = request.user
         agendamento.observacao_data = timezone.now()
         agendamento.save()
-        print('SALVO → Autor:', agendamento.observacao_autor)
-        print('SALVO → Observação:', agendamento.observacoes)
+
         messages.success(request, 'Observação salva com sucesso.')
         return redirect(request.path)
     print('')

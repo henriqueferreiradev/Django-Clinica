@@ -18,8 +18,11 @@
             <div class="header-content">
                 <div class="patient-info">
                     <div class="patient-avatar">
-                        <img src="{{ paciente.foto.url }}" alt="Foto de {{ paciente.nome }}" width="150">
-                    </div>
+                    {% if paciente.foto %}
+                    <img src="{{ paciente.foto.url }}" alt="Foto de {{ paciente.nome }}">
+                    {% else %}
+                    <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
+                    {% endif %}                    </div>
                     <div>
                         <h1 class="patient-name">{{ paciente.nome }} {{ paciente.sobrenome }}</h1>
                         <p class="patient-id">ID: {{ paciente.id }}</p>
@@ -360,6 +363,7 @@
                     {% for agendamento in ultimos_agendamentos %}
                     {% if agendamento.observacoes %}
                     <div class="note-card">
+                    {% if agendamento.observacoes %}
                         <div class="note-header">
                             {% if agendamento.observacao_autor %}
                             <p class="note-author"> {{ agendamento.observacao_autor.get_full_name|default:agendamento.observacao_autor.username }}</p>
@@ -369,10 +373,13 @@
                             <p class="note-date">{{ agendamento.observacao_data|date:"d/m/Y" }}</p>
                             </div>
                             <p class="note-content">{{agendamento.observacoes}}</p>
-                        </div>
+                        
+                        {% else %}
+                             <h3 class="professional-name">Não há informações no momento.</h3>
+                        {% endif %}
                         {% endif %}
                         {% endfor %}
-
+                
                         <button id="btnObs" onclick="addObservacao()" class="w-full py-2 text-sm text-primary hover:text-blue-600 font-medium">
                             Adicionar nova observação
                         </button>

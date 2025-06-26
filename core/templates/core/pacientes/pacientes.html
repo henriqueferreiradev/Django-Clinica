@@ -110,7 +110,9 @@
           <td><span class="badge grade-simples">Premium</span></td>
           <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
             <div class="dropdown">
-              <button onclick="abrirModal({{ paciente.id }})">Ver detalhes</button>
+            <a href="{% url 'perfil_paciente' paciente.id %}">
+                <button type="button">Ver detalhes</button></a>
+             
               <button onclick="window.location.href='{% url 'editar_paciente' paciente.id %}'">Editar</button>
               <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Gerar Ficha</button>
               <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Novo Agendamento</button>
