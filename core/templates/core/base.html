@@ -76,7 +76,7 @@
          
         </ul>
       </li>
-
+      {% if request.user.tipo != 'profissional' %}
       <li>
         <a href="{% url 'financeiro' %}">
           <i class='bx bx-pie-chart-alt-2'></i>
@@ -86,7 +86,7 @@
           <li><a class="link_name" href="{% url 'financeiro' %}">Financeiro</a></li>
         </ul>
       </li>
-
+      {% endif %}
       <li>
         <a href="#">
           <i class='bx bx-bell'></i>
@@ -96,7 +96,7 @@
           <li><a class="link_name" href="#">Lembretes</a></li>
         </ul>
       </li>
-
+      {% if request.user.tipo != 'profissional' %}
       <li>
         <a href="#">
           <i class='bx bx-line-chart'></i>
@@ -106,7 +106,8 @@
           <li><a class="link_name" href="#">Relatórios</a></li>
         </ul>
       </li>
-
+      {% endif %}
+      {% if request.user.tipo != 'profissional' %}
       <li>
         <a href="{% url 'config' %}">
           <i class='bx bx-cog'></i>
@@ -116,15 +117,19 @@
           <li><a class="link_name" href="{% url 'config' %}">Configurações</a></li>
         </ul>
       </li>
-
+      {% endif %}
       <li>
         <div class="profile-details">
           <div class="profile-content">
-            <img src="{% static 'core/img/perfil.png' %}" alt="profileImg">
+            {% if user.profissional.foto %}
+            <img src="{{ user.profissional.foto.url }}" alt="Foto de {{ user.get_full_name }}">
+            {% else %}
+            <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
+            {% endif %}
           </div>
           <div class="name-job">
-            <div class="profile_name">Henrique Ferreira</div>
-            <div class="job">Administrador</div>
+            <div class="profile_name">{{ user.get_full_name }}</div>
+            <div class="job"> {{user.get_tipo_display}}</div>
           </div>
         </div>
       </li>

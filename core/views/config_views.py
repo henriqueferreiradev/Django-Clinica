@@ -13,7 +13,7 @@ def configuracao_view(request):
     'servico': Servico,
     'especialidade': Especialidade,
      
-    # adicione mais conforme necessário
+  
 }
 
 
@@ -53,12 +53,12 @@ def configuracao_view(request):
             valor_hora = float(valor_hora_str) if valor_hora_str else None
             nova_senha = request.POST.get('nova_senha')
             confirma_senha = request.POST.get('confirma_senha')
-            ativo = 'ativo' in request.POST
+          
 
             try:
                 user = User.objects.get(id=user_id)
                 user.tipo = tipo_usuario
-                user.ativo = ativo
+                user.ativo = True
 
                 if nova_senha or confirma_senha:
                     if not nova_senha:
@@ -71,6 +71,7 @@ def configuracao_view(request):
                         messages.success(request, 'Senha alterada com sucesso.')
                         user.set_password(nova_senha)
 
+                messages.success(request, 'Alterações realizadas com sucesso.')
                 user.save()
 
                 if hasattr(user, 'profissional') and valor_hora is not None:

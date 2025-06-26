@@ -23,13 +23,16 @@ def caminho_foto_profissional(instance, filename):
 
 TIPOS_USUARIO = [
     ('admin', 'Administrador'),
-    ('secretaria', "Secretaria"),
-    ('recepcionista','Recepcionista'),
+    ('secretaria', 'Secretaria'),
+    ('recepcionista', 'Recepcionista'),
     ('profissional', 'Profissional'),
-    ('paciente', 'Paciente'),  
-    
+    ('gerente', 'Gerente'),
+    ('financeiro', 'Financeiro'),
+    ('coordenador', 'Coordenador Clínico'),
+    ('supervisor', 'Supervisor'),
+    ('estagiario', 'Estagiário'),
+    ('suporte', 'Suporte Técnico'),
 ]
-
 FORMAS_PAGAMENTO = [
     ('pix', 'Pix'),
     ('debito', 'Cartão de Débito'),
