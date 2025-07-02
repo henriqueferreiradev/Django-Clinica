@@ -101,8 +101,8 @@ header {
     padding: 8px 16px;
     border-radius: 8px;
     font-weight: 500;
-    display: inline-flex;
-    align-items: center;
+text-align: center;
+
     gap: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -113,10 +113,11 @@ header {
 .btn-primary {
     background-color: var(--roxoPrincipal);
     color: white;
+    text-align: center;
 }
 
 .btn-primary:hover {
-    background-color: #2563eb;
+    background-color: var(--roxo-primary-hover);
 }
 
 .btn-secondary {
@@ -370,7 +371,20 @@ header {
     background-color: var(--roxoPrincipal);
     z-index: 1;
 }
+#obsContainer {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
 
+ 
+#obsContainer.show {
+    max-height: 500px; 
+    opacity: 1;
+    visibility: visible;
+}
 .timeline-content {
     background-color: #f8fafc;
     padding: 12px;
@@ -499,7 +513,54 @@ header {
     align-items: start;
     gap: 8px;
 }
-
+.payment-ranking {
+    background: #fff;
+    border-radius: 8px;
+    font-family: sans-serif;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+  
+  .financial-label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+    padding-left: .5em;
+  }
+  
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  
+  .ranking-table th,
+  .ranking-table td {
+    padding: 10px 12px;
+    text-align: left;
+  }
+  
+  .ranking-table thead {
+    background-color: #f3f4f6;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .ranking-table tbody tr {
+    border-bottom: 1px solid #eee;
+  }
+  
+  .ranking-table tbody tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .ranking-table i {
+    font-size: 1.1rem;
+  }
+  
 .payment-icon {
     width: 32px;
     height: 32px;
@@ -560,11 +621,50 @@ header {
     padding-top: 12px;
 }
 
-.payment-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
+.payment-list {
+    max-width: 100%;
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 8px;
+     font-family: sans-serif;
+}
 
+.payment-list h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.payment-list table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.payment-list th,
+.payment-list td {
+    padding: 10px 12px;
+    text-align: left;
+}
+
+.payment-list thead {
+    background-color: #f3f4f6;
+    border-bottom: 2px solid #ddd;
+}
+
+.payment-list tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+.payment-list tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.payment-list td:last-child {
+    color: #16a34a;
+    /* verde */
+    font-weight: 600;
 }
 
 /* Quick Actions */
@@ -583,6 +683,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
+    
     color: white;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     cursor: pointer;
