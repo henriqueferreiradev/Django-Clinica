@@ -385,7 +385,7 @@ def perfil_paciente(request,paciente_id):
                     filter=Q(agendamento__paciente_id=paciente_id))
                     ).filter(total__gt=0).order_by('-total')
 
-
+    todos_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).all()
     agendamentos = (Agendamento.objects
         .filter(paciente__id=paciente_id)
         .annotate(
@@ -502,17 +502,10 @@ def perfil_paciente(request,paciente_id):
         return redirect(request.path)
     print('')
 
+    print(todos_agendamentos)
  
-    usuarios = User.objects.all()
-    for u in usuarios:
         
-        print("------------")
-        print(f"ID: {u.id}")
-        print(f"Nome completo: {u.get_full_name()}")
-        print(f"Username (login/email): {u.username}")
-        print(f"Tipo (cargo): {u.tipo}")
-        print(f"Ativo: {u.ativo}")
-        print(f"Senha (hash): {u.password}")
+        
     
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
@@ -535,5 +528,6 @@ def perfil_paciente(request,paciente_id):
                 'ultimos_pagamentos':ultimos_pagamentos,
                 'total_debito':total_debito,
                 'ultimos_agendamentos':agendamentos_select,
+                'todos_agendamentos':todos_agendamentos,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)

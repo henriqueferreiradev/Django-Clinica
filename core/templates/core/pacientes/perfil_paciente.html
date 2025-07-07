@@ -307,47 +307,28 @@
                 <section class="section">
                     <h2 class="section-title">Histórico de Agendamentos</h2>
                     <ul class="timeline space-y-4">
+                    {% for agendamento in todos_agendamentos %}
                         <li class="timeline-item">
                             <div class="timeline-dot"></div>
                             <div class="timeline-content">
+                            
                                 <div class="timeline-header">
                                     <div>
-                                        <h3 class="timeline-title">Psicoterapia Individual</h3>
-                                        <p class="timeline-date text-sm">15/06/2023 - 14:00</p>
+                                        <h3 class="timeline-title"> {{agendamento.paciente.nome}} </h3>
+                                        <p class="timeline-date text-sm">{{agendamento.data|date:"d/m/Y"}} - {{ agendamento.hora_inicio|time:"H:i" }} / {{ agendamento.hora_fim|time:"H:i" }}</p>
                                     </div>
-                                    <span class="badge badge-success">Realizado</span>
+                                    <span class="badge badge-success">{{agendamento.get_status_display}}</span>
                                 </div>
-                                <p class="timeline-meta text-sm">Dr. João Carlos</p>
-                                <p class="timeline-note">Observação: Paciente relatou melhora no sono</p>
+                                <p class="timeline-meta text-sm">{{agendamento.profissional_1.nome}}</p>
+                                {% if not agendamento.observacoes %}
+                                <p class="timeline-note">Paciente ainda não possui observações nessa consulta.</p>
+                                {% else %}
+                                <p class="timeline-note">{{agendamento.observacoes}}</p>
+                                {%endif%}
                             </div>
                         </li>
-                        <li class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-header">
-                                    <div>
-                                        <h3 class="timeline-title">Acupuntura</h3>
-                                        <p class="timeline-date text-sm">08/06/2023 - 10:30</p>
-                                    </div>
-                                    <span class="badge badge-warning">Remarcado</span>
-                                </div>
-                                <p class="timeline-meta text-sm">Dra. Maria Fernanda</p>
-                                <p class="timeline-note">Remarcado para 15/06</p>
-                            </div>
-                        </li>
-                        <li class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-header">
-                                    <div>
-                                        <h3 class="timeline-title">Psicoterapia Individual</h3>
-                                        <p class="timeline-date text-sm">01/06/2023 - 14:00</p>
-                                    </div>
-                                    <span class="badge badge-success">Realizado</span>
-                                </div>
-                                <p class="timeline-meta text-sm">Dr. João Carlos</p>
-                            </div>
-                        </li>
+                    {% endfor %}
+                       
                         <button class="w-full py-2 text-sm text-primary hover:text-blue-600 font-medium">
                             Ver histórico completo
                         </button>
