@@ -1,0 +1,116 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+.tabela-container {
+    background: var(--branco);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 1em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: var(--roxoPrincipal);
+    color: white;
+}
+
+th,
+td {
+
+    padding: 1em 1em;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid var(--cinzaBorda);
+}
+
+th {
+    padding: 1em;
+}
+
+.badge {
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: var(--branco);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+thead tr th:first-child {
+    border-top-left-radius: 12px;
+}
+
+thead tr th:last-child {
+    border-top-right-radius: 12px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  tbody td {
+    text-align: right;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    font-weight: bold;
+    text-align: left;
+    color: #555;
+  }
+}
+</style>
+
+<h2>Auditoria de Ações</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Data/Hora</th>
+            <th>Usuário</th>
+            <th>Ação</th>
+            <th>Módulo</th>
+            <th>ID</th>
+            <th>Descrição</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.data_hora|date:"d/m/Y H:i" }}</td>
+            <td>{{ log.usuario }}</td>
+            <td>{{ log.acao }}</td>
+            <td>{{ log.modelo }}</td>
+            <td>{{ log.objeto_id }}</td>
+            <td>{{ log.descricao }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Nenhuma ação registrada.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -109,6 +109,18 @@
       {% endif %}
       {% if request.user.tipo != 'profissional' %}
       <li>
+        <a href="{% url 'auditoria_logs' %}">
+          <i class='bx bx-line-chart'></i>
+          <span class="link_name">Logs</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{% url 'auditoria_logs' %}">Logs</a></li>
+        </ul>
+      </li>
+      {% endif %}
+      {% if request.user.tipo != 'profissional' %}
+      
+      <li>
         <a href="{% url 'config' %}">
           <i class='bx bx-cog'></i>
           <span class="link_name">Configurações</span>

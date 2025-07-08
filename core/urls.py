@@ -6,7 +6,8 @@ from core.views import (
     dashboard_views,
     financeiro_views,
     pacientes_views,
-    profissionais_views
+    profissionais_views,
+    logs_views,
 )
  
 
@@ -51,6 +52,8 @@ urlpatterns = [
 
 
     path('config/', config_views.configuracao_view, name='config'),
+    
+    path('auditoria/', logs_views.logs_view, name='auditoria_logs'),
  
  
 ]

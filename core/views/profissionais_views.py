@@ -3,6 +3,7 @@ from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaci
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
+from core.utils import registrar_log
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 def cadastrar_profissionais_view(request):
@@ -13,6 +14,11 @@ def cadastrar_profissionais_view(request):
             profissional.ativo = False
             profissional.save()
             messages.warning(request, f'Profissional {profissional.nome} inativado com sucesso')
+            registrar_log(usuario=request.user,
+                acao='Inativação',
+                modelo='Profissional',
+                objeto_id=profissional.id,
+                descricao=f'Profissional {profissional.nome} inativado.')
             return redirect('profissionals')
 
         # Criação de novo profissional
@@ -120,6 +126,11 @@ def cadastrar_profissionais_view(request):
                 messages.info(request, 'Foto do profissional atualizada') 
             
             messages.success(request, f'Profissional {profissional.nome} cadastrado com sucesso!')
+            registrar_log(usuario=request.user,
+                acao='Criação',
+                modelo='Paciente',
+                objeto_id=profissional.id,
+                descricao=f'Profissional {profissional.nome} cadastrado.')
             return redirect('cadastrar_profissional')
     profissionais = Profissional.objects.all().order_by('-id')
     especialidades = Especialidade.objects.all()
@@ -143,13 +154,7 @@ def editar_profissional_view(request, id):
     profissional = get_object_or_404(Profissional, id=id)
 
     if request.method == 'POST':
-        if 'delete_id' in request.POST:
-            delete_id = request.POST.get('delete_id')
-            profissional = Profissional.objects.get(id=delete_id)
-            profissional.ativo = False
-            profissional.save()
-            messages.warning(request, f'Profissional {profissional.nome} inativado')
-            return redirect('profissionais')
+ 
 
         # Criação de novo profissional
         profissional.sobrenome = request.POST.get('sobrenome')
@@ -206,6 +211,11 @@ def editar_profissional_view(request, id):
             messages.info(request, 'Foto atualizada com sucesso') 
         profissional.save()
         messages.success(request, f'Dados do profissional {profissional.nome} atualizados!')
+        registrar_log(usuario=request.user,
+                acao='Edição',
+                modelo='Profissional',
+                objeto_id=profissional.id,
+                descricao=f'Profissional {profissional.nome} editado.')
         return redirect('profissionais')  
     
 

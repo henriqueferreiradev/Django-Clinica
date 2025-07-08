@@ -9,7 +9,7 @@ from datetime import date, timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect
-from .models import Agendamento
+from .models import Agendamento, LogAcao
 from django.contrib import messages
 
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
@@ -151,3 +151,7 @@ def calcular_porcentagem_formas(queryset):
             'porcentagem': round(porcentagem, 2)  # arredonda para 2 casas decimais
         })
     return resultado
+
+
+def registrar_log(usuario, acao, modelo, objeto_id, descricao=''):
+    LogAcao.objects.create(usuario=usuario, acao=acao, modelo=modelo, objeto_id=objeto_id, descricao=descricao)

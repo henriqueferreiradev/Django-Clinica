@@ -9,7 +9,7 @@ from django.db.models import Q, Min, Max,Count,Sum, F, ExpressionWrapper, Durati
 from django.http import JsonResponse 
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
-from core.utils import get_semana_atual,calcular_porcentagem_formas
+from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
 def pacientes_view(request):
     
@@ -27,6 +27,11 @@ def pacientes_view(request):
             paciente.ativo = False
             paciente.save()
             messages.warning(request, f'Paciente {paciente.nome} inativado') 
+            registrar_log(usuario=request.user,
+                acao='inativação',
+                modelo='Paciente',
+                objeto_id=paciente.id,
+                descricao=f'Paciente {paciente.nome} inativado.')
             return redirect('pacientes')
 
         paciente_id = request.POST.get('paciente_id')
@@ -123,7 +128,8 @@ def cadastrar_pacientes_view(request):
             paciente = Paciente.objects.get(id=delete_id)
             paciente.ativo = False
             paciente.save()
-            messages.success(request, f'O paciente {paciente.nome} foi inativado com sucesso.')
+            messages.warning(request, f'O paciente {paciente.nome} foi inativado com sucesso.')
+
             return redirect('pacientes')
 
         # Edição ou criação
@@ -182,8 +188,13 @@ def cadastrar_pacientes_view(request):
                 paciente.save()
                 messages.info(request, 'Foto do paciente atualizada')
             messages.success(request, f'✅ Paciente {paciente.nome} cadastrado com sucesso!')
+            registrar_log(usuario=request.user,
+                          acao='criação',
+                          modelo='Paciente',
+                          objeto_id=paciente.id,
+                          descricao=f'Paciente {paciente.nome} cadastrado.')
             return redirect('cadastrar_paciente')
- 
+
 
     query = request.GET.get('q', '').strip()
 
@@ -271,7 +282,12 @@ def editar_paciente_view(request,id):
             paciente.foto = request.FILES['foto']
 
         paciente.save()
-        messages.success(request, f'Dados de {paciente.nome} atualizados!') 
+        messages.success(request, f'Dados de {paciente.nome} atualizados!')
+        registrar_log(usuario=request.user,
+            acao='edição',
+            modelo='Paciente',
+            objeto_id=paciente.id,
+            descricao=f'Paciente {paciente.nome} editado.')
         return redirect('pacientes')  
 
     context = {

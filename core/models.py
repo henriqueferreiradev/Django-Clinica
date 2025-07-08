@@ -435,3 +435,16 @@ class Pagamento(models.Model):
     def __str__(self):
         ref = self.pacote.codigo if self.pacote else f"Sessão {self.agendamento.id}" if self.agendamento else "Avulso"
         return f"{self.paciente} - R$ {self.valor} - {ref} - {self.data.strftime('%d/%m/%Y')}"
+
+
+class LogAcao(models.Model):
+    usuario = models.ForeignKey('User',on_delete=models.SET_NULL, null=True)
+    acao = models.CharField(max_length=50)
+    modelo  = models.CharField(max_length=100)
+    objeto_id = models.CharField(max_length=50)
+    descricao = models.TextField(blank=True)
+    data_hora = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.acao} em {self.modelo} (ID {self.objeto_id}) por {self.usuario}"
+
