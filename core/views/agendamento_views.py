@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt 
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
-from core.utils import filtrar_ativos_inativos, alterar_status_ativo,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento
+from core.utils import filtrar_ativos_inativos, alterar_status_ativo,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
 from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse
@@ -153,6 +153,11 @@ def criar_agendamento(request):
                 valor_total=valor_pacote,
                 ativo=True,
             )
+            registrar_log(usuario=request.user,
+                        acao='Criação',
+                        modelo='Pacote Paciente',
+                        objeto_id=pacote.id,
+                        descricao=f'Novo pacote registrado para o {paciente.nome}.') 
         elif tipo_agendamento == 'existente':
             pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
 
@@ -183,9 +188,14 @@ def criar_agendamento(request):
                 tipo_reposicao=tipo_reposicao,
                 eh_reposicao=True
             )
+            registrar_log(usuario=request.user,
+                        acao='Criação',
+                        modelo='Pacote Paciente',
+                        objeto_id=pacote_codigo.id,
+                        descricao=f'Nova reposição registrada para o {paciente.nome}.')
             pacote.codigo = f'REP{uuid.uuid4().hex[:8].upper()}'
             pacote.save()
-
+            
             # Passo 3: Marcar o agendamento de origem como reposto (se existir)
             if agendamento_origem:
                 agendamento_origem.foi_reposto = True
@@ -225,7 +235,14 @@ def criar_agendamento(request):
                 observacoes=observacoes
             )
             agendamentos_criados.append(agendamento)
-
+            for agendamento in agendamentos_criados:
+                registrar_log(
+                    usuario=request.user,
+                    acao='Criação',
+                    modelo='Agendamento',
+                    objeto_id=agendamento.id,
+                    descricao=f'Novo agendamento criado para {paciente.nome} na data {agendamento.data.strftime("%d/%m/%Y")}.'
+                )
         if valor_pago and float(valor_pago) > 0:
             Pagamento.objects.create(
                 paciente=paciente,
@@ -234,7 +251,13 @@ def criar_agendamento(request):
                 forma_pagamento=forma_pagamento,
                 agendamento=agendamentos_criados[0],
             )
-
+            registrar_log(
+                usuario=request.user,
+                acao='Criação',
+                modelo='Pagamento',
+                objeto_id=pacote.id,
+                descricao=f'Pagamento de R${valor_pago} registrado para {paciente.nome}.'
+            )
         
         if pacote:
             pacote.refresh_from_db()
@@ -400,7 +423,13 @@ def confirmacao_agendamento(request, agendamento_id):
         'mensagem_confirmacao': mensagem,
         'agendamentos_recorrentes':agendamentos_recorrentes,
     }
-
+    registrar_log(
+            usuario=request.user,
+            acao='Visualização',
+            modelo='Agendamento',
+            objeto_id=agendamento.id,
+            descricao=f'Página de confirmação visualizada para o agendamento de {paciente.nome}.'
+        )
     response = render(request, 'core/agendamentos/confirmacao_agendamento.html', context)
     response['Content-Type'] = 'text/html; charset=utf-8'
     return response
@@ -422,15 +451,32 @@ def enviar_email_agendamento(request, agendamento_id):
         }
 
         enviar_lembrete_email(paciente.email, contexto)
+        registrar_log(
+            usuario=request.user,
+            acao='Envio de e-mail',
+            modelo='Agendamento',
+            objeto_id=agendamento.id,
+            descricao=f'E-mail de confirmação enviado para {paciente.nome} ({paciente.email}).'
+        )
 
         return JsonResponse({'status': 'ok', 'mensagem': 'E-mail enviado com sucesso'})
 
     return JsonResponse({'status': 'erro', 'mensagem': 'Requisição inválida'}, status=400)
 
 
-def alterar_status_agenda(request, pk):
-    return alterar_status_agendamento(request,pk,redirect_para='agenda')
 
+def alterar_status_agenda(request, pk):
+    response = alterar_status_agendamento(request, pk, redirect_para='agenda')
+
+    registrar_log(
+        usuario=request.user,
+        acao='Alteração de status',
+        modelo='Agendamento',
+        objeto_id=pk,
+        descricao='Status do agendamento alterado via tela da agenda.'
+    )
+    
+    return response
 def remarcar_agendamento(request, pk):
     if request.method == "POST":
         agendamento_original = get_object_or_404(Agendamento, pk=pk)
@@ -453,6 +499,13 @@ def remarcar_agendamento(request, pk):
             remarcado_de=agendamento_original,
             criado_por=request.user  # se tiver
         )
+        registrar_log(
+                usuario=request.user,
+                acao='Remarcação',
+                modelo='Agendamento',
+                objeto_id=novo.id,
+                descricao=f'Agendamento de {novo.paciente.nome} remarcado para {novo.data.strftime("%d/%m/%Y")} às {novo.hora.strftime("%H:%M")}.'
+            )
         messages.success(request, "Agendamento remarcado com sucesso.")
         return redirect('agenda')
 
@@ -550,8 +603,14 @@ def editar_agendamento(request, agendamento_id):
 
 
             agendamento.save()
-            
-            # Pagamento 
+            registrar_log(
+                usuario=request.user,
+                acao='Edição',
+                modelo='Agendamento',
+                objeto_id=agendamento.id,
+                descricao=f'Agendamento de {agendamento.paciente.nome} editado para a data {agendamento.data}.'
+            )
+                        # Pagamento 
             if agendamento.pacote and data.get('valor_pago'):
                 valor_pago = float(data.get('valor_pago'))
                 forma_pagamento = data.get('forma_pagamento')
@@ -562,6 +621,14 @@ def editar_agendamento(request, agendamento_id):
                     valor=valor_pago,
                     forma_pagamento=forma_pagamento
                 )
+                registrar_log(
+                    usuario=request.user,
+                    acao='Criação',
+                    modelo='Pagamento',
+                    objeto_id=agendamento.id,
+                    descricao=f'Pagamento de R${valor_pago:.2f} registrado para {agendamento.paciente.nome}.'
+                )
+
             print('POST recebido:', request.POST)
             messages.success(request, 'Agendamento editado com sucesso!')
             return JsonResponse({'status': 'ok'})

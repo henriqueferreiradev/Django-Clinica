@@ -1,0 +1,46 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --primary-color: #2d2d2d;
+    --input-bg: #f0f0f0;
+
+ 
+  }
+  
+  .dark {
+    --bg-color: #121212;
+    --text-color: #f1f1f1;
+    --primary-color: #1e1e1e;
+    --input-bg: #2c2c2c;
+
+    --branco: #1e1e1e;
+    --roxoPrincipal: #9b59b6;
+    --roxo-primary-hover: #8e44ad;
+  }
+  
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  
+  input, textarea, select {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid #444;
+  }
+  
+a {
+    color: var(--text-color);
+}
+  
+  /* Exemplo de classe personalizada */
+.content {
+    background-color: var(--primary-color);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+.home-section {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}

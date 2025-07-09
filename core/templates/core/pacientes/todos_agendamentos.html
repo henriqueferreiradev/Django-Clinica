@@ -307,9 +307,7 @@
                 <section class="section">
                     <h2 class="section-title">Histórico de Agendamentos</h2>
                     <ul class="timeline space-y-4">
-                    {% if tres_ultimos_agendamentos %}
                     {% for agendamento in tres_ultimos_agendamentos %}
-                    
                         <li class="timeline-item">
                             <div class="timeline-dot"></div>
                             <div class="timeline-content">
@@ -329,15 +327,12 @@
                                 {%endif%}
                             </div>
                         </li>
-
                     {% endfor %}
-
+                    
                         <button style='width: 100%;' class="btn btn-primary">
                             Ver histórico completo
                         </button>
-                    {% else %}
-                        <h3 class="professional-name">Não há informações no momento.</h3>
-                    {% endif %}
+                       
                     </ul>
                 </section>
 
@@ -345,7 +340,7 @@
                 <section class="section">
                     <h2 class="section-title">Observações Gerais</h2>
                     <div class="space-y-3">
-                    {% if ultimos_agendamentos %}
+
                     <form style='display:none' id="obs-container" method="POST" action="">
                         {% csrf_token %}
                         
@@ -394,9 +389,7 @@
                         {% endif %}
                         {% endfor %}
                 
-                    {% else %}
-                        <h3 class="professional-name">Não há informações no momento.</h3>
-                    {% endif %}
+
 
                     </div>
                 </section>
@@ -475,12 +468,8 @@
                         <td class="py-2 px-3">{{ pagamento.data|date:'d/m/Y' }}</td>
                         <td class="py-2 px-3">{{ pagamento.get_forma_pagamento_display }}</td>
                         <td class="py-2 px-3 text-green-600 font-medium">R$ {{ pagamento.valor }}</td>
-                        
                     </tr>
                     {% endfor %}
-                    {% else %}
-                        <h3 class="professional-name">Não há informações no momento.</h3>
-                    {% endif %}
                 </tbody>
             </table>
         </div>
@@ -508,36 +497,7 @@
     </div>
     {% include "core/partials/alertas.html" %}
 
-    {% block scripts %}
-<script>
-const btnToggleObs = document.getElementById('btnToggleObs');
-const btnCancelObs = document.getElementById('btnCancelObs');
-const obsContainer = document.getElementById('obs-container');
-const btnSave = document.getElementById('btnSave');
-
-function toggleObservacao() {
-    const isVisible = obsContainer.style.display === 'block';
-
-    if (isVisible) {
-        // Ocultar observação
-        obsContainer.style.display = 'none';
-        btnSave.style.display = 'none';
-        btnToggleObs.style.display = 'inline-block';
-    } else {
-        // Mostrar observação
-        obsContainer.style.display = 'block';
-        btnSave.style.display = 'block';
-        btnToggleObs.style.display = 'none';
-    }
-}
-
-</script>
-  
-<script src="https://unpkg.com/imask"></script>
-
-<script src="{% static '/core/js/pacientes/base.js' %}"></script>
-<script src="{% static '/core/js/pacientes/cep.js' %}"></script>
-{% endblock %}
+    {% block scripts %} 
 </body>
 
 </html>

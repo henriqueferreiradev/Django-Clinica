@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br" dir="ltr">
+<html lang="pt-br" class="light" dir="ltr">
 
 <head>
   <meta charset="UTF-8">
@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png">
   <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+   <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
@@ -130,6 +131,7 @@
         </ul>
       </li>
       {% endif %}
+      <button onclick="toggleDarkMode()">🌙/☀️</button>
       <li>
         <div class="profile-details">
           <div class="profile-content">
@@ -155,6 +157,24 @@
     </div>
   </section>
   {% block scripts %}{% endblock %}
+    <script>
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const isDark = html.classList.contains('dark');
+      html.classList.toggle('dark');
+      html.classList.toggle('light');
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+
+    // Carregar tema salvo
+    window.onload = () => {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark') {
+        document.documentElement.classList.remove('light');
+        document.documentElement.classList.add('dark');
+      }
+    }
+  </script>
   <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
   {% block extra_css %}{% endblock %}
 

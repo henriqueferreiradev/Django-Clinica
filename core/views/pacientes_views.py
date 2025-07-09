@@ -28,7 +28,7 @@ def pacientes_view(request):
             paciente.save()
             messages.warning(request, f'Paciente {paciente.nome} inativado') 
             registrar_log(usuario=request.user,
-                acao='inativação',
+                acao='Inativação',
                 modelo='Paciente',
                 objeto_id=paciente.id,
                 descricao=f'Paciente {paciente.nome} inativado.')
@@ -123,15 +123,7 @@ def cadastrar_pacientes_view(request):
 
 
     if request.method == 'POST':
-        if 'delete_id' in request.POST:
-            delete_id = request.POST.get('delete_id')
-            paciente = Paciente.objects.get(id=delete_id)
-            paciente.ativo = False
-            paciente.save()
-            messages.warning(request, f'O paciente {paciente.nome} foi inativado com sucesso.')
-
-            return redirect('pacientes')
-
+ 
         # Edição ou criação
         paciente_id = request.POST.get('paciente_id')
         nome = request.POST.get('nome')
@@ -189,10 +181,10 @@ def cadastrar_pacientes_view(request):
                 messages.info(request, 'Foto do paciente atualizada')
             messages.success(request, f'✅ Paciente {paciente.nome} cadastrado com sucesso!')
             registrar_log(usuario=request.user,
-                          acao='criação',
-                          modelo='Paciente',
-                          objeto_id=paciente.id,
-                          descricao=f'Paciente {paciente.nome} cadastrado.')
+                        acao='Criação',
+                        modelo='Paciente',
+                        objeto_id=paciente.id,
+                        descricao=f'Paciente {paciente.nome} cadastrado.')
             return redirect('cadastrar_paciente')
 
 
@@ -249,11 +241,11 @@ def editar_paciente_view(request,id):
         
         nascimento = request.POST.get('nascimento')
         try:
-            paciente.nascimento = datetime.strptime(nascimento, "%d/%m/%Y").date()
+            paciente.data_nascimento = datetime.strptime(nascimento, "%d/%m/%Y").date()
         except (ValueError, TypeError):
-            paciente.nascimento = None  
+            paciente.data_nascimento = None
 
-        paciente.cor_rac = request.POST.get('cor')
+        paciente.cor_raca = request.POST.get('cor')
         paciente.sexo = request.POST.get('sexo')
         paciente.estado_civil = request.POST.get('estado_civil')
         paciente.naturalidade = request.POST.get('naturalidade')
@@ -284,7 +276,7 @@ def editar_paciente_view(request,id):
         paciente.save()
         messages.success(request, f'Dados de {paciente.nome} atualizados!')
         registrar_log(usuario=request.user,
-            acao='edição',
+            acao='Edição',
             modelo='Paciente',
             objeto_id=paciente.id,
             descricao=f'Paciente {paciente.nome} editado.')
@@ -520,7 +512,7 @@ def perfil_paciente(request,paciente_id):
 
     print(todos_agendamentos)
  
-        
+    tres_ultimos_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).order_by('-data')[:3]
         
     
     context = {'paciente':paciente,
@@ -545,5 +537,6 @@ def perfil_paciente(request,paciente_id):
                 'total_debito':total_debito,
                 'ultimos_agendamentos':agendamentos_select,
                 'todos_agendamentos':todos_agendamentos,
+                'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)

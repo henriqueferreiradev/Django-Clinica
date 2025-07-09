@@ -90,8 +90,9 @@
 
 
                             <div class="formField">
-                                <input class='input-s date-s' value='{{ paciente.data_nascimento }}' type="text" name="nascimento" id="nascimentoInput"
-                                    required />
+                                <input class='input-s date-s'
+                                    value='{{ paciente.data_nascimento|date:"d/m/Y" }}'
+                                    type="text" name="nascimento" id="nascimentoInput" required />
                                 <span class="span-s">Nascimento*</span>
                             </div>
                         </div>

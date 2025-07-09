@@ -54,6 +54,16 @@ button:hover {
   background-color: var(--roxo-primary-hover);
 }
 
+.content {
+  background: var(--branco);
+  border-radius: 15px;
+  overflow: auto;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  padding: 1em;
+  margin-top: 1em;
+  height: calc(100vh - 90px);
+}
+
 .sidebar {
   position: fixed;
   top: 0;
