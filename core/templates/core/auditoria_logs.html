@@ -1,91 +1,56 @@
 {% extends 'core/base.html' %}
 
+{% load static %}
+{% block title %}Auditoria - Ponto de Equilíbrio{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/auditoria_logs.css' %}">
+ {% endblock %}
+
+{% block topbar %}
+<div class="topbar">
+    <div class="topbar-div">
+        <i class='bx bx-menu'></i>
+        <span class="text">Log de ações</span>
+ 
+    </div>
+    <div class="topbar-div">
+        <div class="name-job">
+            <div class="profile_name">Olá, {{ user.get_full_name }}</div>
+        </div>
+        <a href="{% url 'logout' %}">
+            <i class='bx btn-sair bx-log-out'></i>
+        </a>
+    </div>
+</div>
+{% endblock %}
 {% block content %}
-<style>
-.tabela-container {
-    background: var(--branco);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    padding: 1em;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-thead {
-    background-color: var(--roxoPrincipal);
-    color: white;
-}
-
-th,
-td {
-
-    padding: 1em 1em;
-    text-align: left;
-    font-size: 14px;
-    border-bottom: 1px solid var(--cinzaBorda);
-}
-
-th {
-    padding: 1em;
-}
-
-.badge {
-    padding: .4em .8em;
-    border-radius: 20px;
-    color: var(--branco);
-    font-size: 12px;
-    font-weight: 600;
-}
-
-thead tr th:first-child {
-    border-top-left-radius: 12px;
-}
-
-thead tr th:last-child {
-    border-top-right-radius: 12px;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
-
-  thead {
-    display: none;
-  }
-
-  tbody tr {
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  }
-
-  tbody td {
-    text-align: right;
-    position: relative;
-    padding-left: 50%;
-  }
-
-  tbody td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 15px;
-    width: 45%;
-    font-weight: bold;
-    text-align: left;
-    color: #555;
-  }
-}
-</style>
-
-<h2>Auditoria de Ações</h2>
+<div class="content">
+    <form method="get" class="filtros-form">
+             <select name="acao">
+                <option value="">Todas</option>
+                {% for opcao in acoes_disponiveis %}
+                    <option value="{{ opcao }}" {% if filtros.acao == opcao %}selected{% endif %}>
+                        {{ opcao|title }}
+                    </option>
+                {% endfor %}
+            </select> 
+            <select name="modelo">
+                <option value="">Todos</option>
+                {% for opcao in modelos_disponiveis %}
+                    <option value="{{ opcao }}" {% if filtros.modelo == opcao %}selected{% endif %}>
+                        {{ opcao }}
+                    </option>
+                {% endfor %}
+            </select>
+     
+             <input type="date" name="data_inicio" value="{{ filtros.data_inicio }}">
+ 
+            <input type="date" name="data_fim" value="{{ filtros.data_fim }}">
+     
+        <button type="submit">Filtrar</button>
+        <a href="{% url 'auditoria_logs' %}">Limpar</a>
+    </form>
+    
 
 <table>
     <thead>
@@ -113,4 +78,15 @@ thead tr th:last-child {
         {% endfor %}
     </tbody>
 </table>
-{% endblock %}
+        {% endblock %}
+
+        {% block scripts %}
+
+        <script src="https://unpkg.com/imask"></script>
+        <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
+        <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
+        <script src="{% static '/core/js/base/cep.js' %}"></script>
+        <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
+        {% endblock %}
+
+ 
