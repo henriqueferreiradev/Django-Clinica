@@ -27,7 +27,7 @@
     /* texto claro */
     --cinzaBorda: #444;
     --cinzaEscuro: #aaa;
-    --bg-color: #1E1E1E;
+    --bg-color: #242525;
 }
 
 * {
@@ -115,7 +115,7 @@ table {
 
 thead {
     background-color: var(--roxoPrincipal);
-    color: white;
+    color: var(--branco);
 }
 
 th,
