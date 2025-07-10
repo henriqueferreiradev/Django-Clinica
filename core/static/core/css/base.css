@@ -8,7 +8,7 @@
   --verdePrincipal: #92cbad;
   --branco: #FFF;
   --bg-color: #E4E9F7;
-  --preto: #000;
+  --preto: #11101d;
   --cinzaBorda: #ccc;
   --cinzaEscuro: #6e6e6e;
   --fontePrincipal: 'Inter';
@@ -365,7 +365,7 @@ button:hover {
 
 .home-section .home-content .bx-menu,
 .home-section .home-content .text {
-  color: #11101d;
+  color: var(--preto);
   font-size: 35px;
 
 }
