@@ -13,7 +13,11 @@
     --shadowRoxo: rgb(127, 67, 150, 0.5) 0px 3px 8px
 }
 
-
+body {
+    background-color: var(--bg-color);
+    color: var(--preto);
+    overflow: hidden;
+  }
 .overlay {
     position: fixed;
     top: 0;
@@ -29,7 +33,7 @@
 
 /* Caixa da modal */
 .modal {
-    background-color: white;
+    background-color: var(--branco);
     padding: 20px 30px;
     border-radius: 8px;
     width: 80%;
@@ -72,7 +76,7 @@
 
 .patient-card {
     display: flex;
-    background: white;
+    background: var(--branco);
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     padding: 30px;
@@ -213,7 +217,7 @@
 .card {
     position: relative;
 
-    background: white;
+    background: var(--branco);
     border-radius: 16px;
     padding: 20px;
     text-align: center;

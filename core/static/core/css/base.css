@@ -179,7 +179,7 @@ button:hover {
 .sidebar .nav-links li a .link_name {
   font-size: 16px;
   font-weight: 500;
-  color: var(--branco);
+  color: white;
   transition: all 0.4s ease;
 }
 
