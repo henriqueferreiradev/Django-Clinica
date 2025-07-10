@@ -7,6 +7,7 @@
   --roxo-primary-hover: #9b58b4;
   --verdePrincipal: #92cbad;
   --branco: #FFF;
+  --bg-color: #E4E9F7;
   --preto: #000;
   --cinzaBorda: #ccc;
   --cinzaEscuro: #6e6e6e;
@@ -18,25 +19,26 @@
   padding: 0;
   box-sizing: border-box;
   font-family: var(--fontePrincipal);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 body {
+  background-color: var(--bg-color);
+  color: var(--preto);
   overflow: hidden;
 }
 
-/*
-input
-{
-  height: 35px;
-  border: none;
-  border-bottom: 2px solid var(--roxoPrincipal);
-  background-color: transparent;
-  outline: none;
-  margin: 1em;
-}
-  */
+
 select {
   border: none;
+}
+
+select,
+input,
+textarea {
+  background-color: var(--branco);
+  color: var(--preto);
+  border: 1px solid var(--cinzaBorda);
 }
 
 button {
@@ -55,7 +57,7 @@ button:hover {
 }
 
 .content {
-  background: var(--branco);
+  background: transparent;
   border-radius: 15px;
   overflow: auto;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
@@ -314,7 +316,7 @@ button:hover {
 
 .home-section {
   position: relative;
-  background: #E4E9F7;
+  background: transparent;
   height: 100vh;
   left: 260px;
   width: calc(100% - 260px);

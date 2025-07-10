@@ -1,46 +1,97 @@
 :root {
-    --bg-color: #ffffff;
-    --text-color: #000000;
-    --primary-color: #2d2d2d;
-    --input-bg: #f0f0f0;
+  --roxoPrincipal: #7F4396;
+  --roxoPrincipal-hover: #76378f11;
+  --roxoPrincipal-hover2: #76378f;
+  --roxo-primary-hover: #9b58b4;
+  --verdePrincipal: #92cbad;
+  --bg-color: #E4E9F7;
+  --branco: #ffffff;
+  --preto: #000000;
+  --cinzaBorda: #ccc;
+  --cinzaEscuro: #6e6e6e;
+  --fontePrincipal: 'Arial', sans-serif;
+}
 
- 
-  }
-  
-  .dark {
-    --bg-color: #121212;
-    --text-color: #f1f1f1;
-    --primary-color: #1e1e1e;
-    --input-bg: #2c2c2c;
+.dark {
+  --roxoPrincipal: #b88cd9;
+  --roxoPrincipal-hover: #a774cf33;
+  --roxoPrincipal-hover2: #a774cf;
+  --roxo-primary-hover: #b47fcf;
+  --verdePrincipal: #7dbf9b;
 
-    --branco: #1e1e1e;
-    --roxoPrincipal: #9b59b6;
-    --roxo-primary-hover: #8e44ad;
-  }
-  
-  body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-  }
-  
-  input, textarea, select {
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    border: 1px solid #444;
-  }
-  
+  --branco: #1e1e1e;
+  --bg-color: #0f0f0f;
+  --preto: #f1f1f1;
+  /* texto claro */
+  --cinzaBorda: #444;
+  --cinzaEscuro: #aaa;
+}
+
+:root {
+  --roxoPrincipal: #7F4396;
+  --roxoPrincipal-hover: #76378f11;
+  --roxoPrincipal-hover2: #76378f;
+  --roxo-primary-hover: #9b58b4;
+  --verdePrincipal: #92cbad;
+  --bg-color: #E4E9F7;
+  --branco: #ffffff;
+  --preto: #000000;
+  --cinzaBorda: #ccc;
+  --cinzaEscuro: #6e6e6e;
+  --fontePrincipal: 'Arial', sans-serif;
+}
+
+.dark {
+  --roxoPrincipal: #b88cd9;
+  --roxoPrincipal-hover: #a774cf33;
+  --roxoPrincipal-hover2: #a774cf;
+  --roxo-primary-hover: #b47fcf;
+  --verdePrincipal: #7dbf9b;
+
+  --branco: #1e1e1e;
+  --bg-color: #0f0f0f;
+  --preto: #f1f1f1;
+  /* texto claro */
+  --cinzaBorda: #444;
+  --cinzaEscuro: #aaa;
+}
+
+* {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body {
+  background-color: var(--branco);
+  /* antes era --bg-color */
+  color: var(--preto);
+  /* antes era --text-color */
+  font-family: var(--fontePrincipal);
+}
+
+input,
+textarea,
+select {
+  background-color: var(--branco);
+  /* substitui --input-bg */
+  color: var(--preto);
+  /* substitui --text-color */
+  border: 1px solid var(--cinzaBorda);
+}
+
 a {
-    color: var(--text-color);
+  color: var(--preto);
+  /* substitui --text-color */
 }
-  
-  /* Exemplo de classe personalizada */
+
 .content {
-    background-color: var(--primary-color);
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  background-color: var(--branco);
+  /* substitui --primary-color */
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
+
 .home-section {
-    background-color: var(--bg-color);
-    color: var(--text-color);
+
+  color: var(--preto);
 }
