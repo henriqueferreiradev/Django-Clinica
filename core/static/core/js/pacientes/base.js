@@ -163,7 +163,7 @@ function toggleDropdown(button) {
     });
 
     // Alterna o dropdown atual
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
 
     // Adiciona o listener global só uma vez
     document.addEventListener("click", function handleClickOutside(event) {

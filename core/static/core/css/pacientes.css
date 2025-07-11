@@ -285,7 +285,7 @@ thead tr th:last-child {
     background: transparent;
     border: none;
     font-size: 20px;
-    color: black;
+    color:var(--preto);
     box-shadow: none;
 }
 
@@ -295,14 +295,14 @@ thead tr th:last-child {
 
 .dropdown {
     position: absolute;
-    background: var(--branco);
+    background: var(--cinzaBorda);
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     display: none;
     flex-direction: column;
     min-width: 120px;
     z-index: 10;
-    color: black;
+    color: var(--preto);
 }
 
 .dropdown button {
@@ -311,12 +311,12 @@ thead tr th:last-child {
     border: none;
     cursor: pointer;
     text-align: left;
-    color: black;
+    color: var(--preto);
     box-shadow: none
 }
 
 .dropdown button:hover {
-    background: #eee;
+    background: var(--bg-btn-1);
 }
 
 

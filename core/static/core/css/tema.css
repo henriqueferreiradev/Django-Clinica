@@ -5,6 +5,7 @@
   --roxo-primary-hover: #9b58b4;
   --verdePrincipal: #92cbad;
   --branco: #FFF;
+  --bg-btn-1: #eee;
   --preto: #000;
   --cinzaBorda: #ccc;
   --cinzaEscuro: #6e6e6e;
@@ -26,6 +27,7 @@
   --cinzaBorda: #444;
   --cinzaEscuro: #aaa;
   --bg-color: #242525;
+  --bg-btn-1: #363636;
 }
 
 * {
