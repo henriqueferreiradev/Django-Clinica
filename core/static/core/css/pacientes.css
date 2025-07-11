@@ -298,7 +298,7 @@ thead tr th:last-child {
     background: var(--cinzaBorda);
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    display: none;
+    
     flex-direction: column;
     min-width: 120px;
     z-index: 10;
