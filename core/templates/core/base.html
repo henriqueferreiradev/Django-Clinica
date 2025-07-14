@@ -3,16 +3,28 @@
 <html lang="pt-br" class="light" dir="ltr">
 
 <head>
+ 
   <meta charset="UTF-8">
+  <script>
+    // Aplica o tema imediatamente, antes de qualquer renderização
+    (function() {
+      const isDark = localStorage.getItem('theme') === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+    })();
+  </script>
   <title>{% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png">
   <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
   <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
 </head>
 
 <body>
+
+
   <div class="sidebar close">
     <div class="logo-details">
       <img class='logo_img ' src="{% static 'core/img/icons/logoRoxoFull.png' %}" alt="logo Ponto de Equilíbrio">
@@ -131,8 +143,10 @@
         </ul>
       </li>
       {% endif %}
-      <button onclick="toggleDarkMode()">🌙/☀️</button>
+      
+ 
       <li>
+
         <div class="profile-details">
           <div class="profile-content">
             {% if user.profissional.foto %}
@@ -157,25 +171,11 @@
     </div>
   </section>
   {% block scripts %}{% endblock %}
-    <script>
-    function toggleDarkMode() {
-      const html = document.documentElement;
-      const isDark = html.classList.contains('dark');
-      html.classList.toggle('dark');
-      html.classList.toggle('light');
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-    }
-
-    // Carregar tema salvo
-    window.onload = () => {
-      const saved = localStorage.getItem('theme');
-      if (saved === 'dark') {
-        document.documentElement.classList.remove('light');
-        document.documentElement.classList.add('dark');
-      }
-    }
-  </script>
+   
   <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
+  <script src="{% static 'core/js/base/toggleMode.js' %}"></script>
+ 
+  
   {% block extra_css %}{% endblock %}
 
   

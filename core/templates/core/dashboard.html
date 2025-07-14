@@ -18,15 +18,19 @@
   <div class="topbar-div">
     <i class='bx bx-menu'></i>
     <span class="text">Dashboard</span>
- 
   </div>
+
   <div class="topbar-div">
-    <div class="name-job">
-      <div class="profile_name">Olá, {{ user.get_full_name }}</div>
+    <div class="dropdown">
+      <div class="profile-button">
+          {{ user.get_full_name }} <i class='bx bx-chevron-down'></i>
+      </div>
+      <div class="dropdown-content">
+        <a href="{% url 'config' %}">Ver Perfil</a>
+        <button onclick="toggleDarkMode()">Alternar Tema</button>
+        <a href="{% url 'logout' %}">Sair</a>
+      </div>
     </div>
-    <a href="{% url 'logout' %}">
-      <i class='bx btn-sair bx-log-out'></i>
-    </a>
   </div>
 </div>
 {% endblock %}
