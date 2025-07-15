@@ -8,23 +8,12 @@
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 {% endblock %}
 
-{% block topbar %}
-<div class="topbar">
-    <div class="topbar-div">
-        <i class='bx bx-menu'></i>
-        <span class="text">Cadastrar pacientes</span>
  
-    </div>
-    <div class="topbar-div">
-        <div class="name-job">
-            <div class="profile_name">Olá, {{ user.get_full_name }}</div>
-        </div>
-        <a href="{% url 'logout' %}">
-            <i class='bx btn-sair bx-log-out'></i>
-        </a>
-    </div>
+<div class="topbar">
+        <span class="text">{% block topbar_title %} Cadastrar Pacientes {% endblock %}</span>
+
 </div>
-{% endblock %}
+ 
 {% block content %}
 <div class="content">
     <form method="post" enctype="multipart/form-data">

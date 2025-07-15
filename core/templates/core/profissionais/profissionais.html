@@ -1,62 +1,61 @@
 {% extends 'core/base.html' %} {% load static %} {% block title %}Profissionais
 - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/profissionais.css' %}" />
-{% endblock %} {% block topbar %}
-<div class="topbar">
-  <div class="topbar-div">
-    <i class="bx bx-menu"></i>
-    <span class="text">Profissionais</span>
-    <form method="GET" action="{% url 'profissionais' %}" class="search-form" type="search">
-      <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui" />
-    </form>
-  </div>
-  <div class="topbar-div">
-    <div class="name-job">
-      <div class="profile_name">Olá, {{ user.get_full_name }}</div>
-    </div>
-    <a href="{% url 'logout' %}">
-      <i class="bx btn-sair bx-log-out"></i>
-    </a>
-  </div>
-</div>
-{% endblock %} {% block content %}
-<div class="content">
-  <div class="content-header">
-    <h2>Lista de profissionais</h2>
-    <div>
-      <button class="btn" onclick="window.location.href='{% url 'cadastrar_profissional' %}'">+ Add
-        Profissional</button>
-    </div>
-  </div>
+<link rel="stylesheet" href="{% static 'core/css/profissionais.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+{% endblock %} 
+  <span class="text">{% block topbar_title %}Profissionais{% endblock %}</span>
 
-  <div class="card-grid">
+{% block content %}
+  <div class="content">
+    <div class="content-header">
+      <h2>Lista de profissionais</h2>
+      <form method="GET" action="{% url 'profissionais' %}" class="search-form" type="search">
+        <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui" />
+      </form>
+      <div>
+        <button class="btn" onclick="window.location.href='{% url 'cadastrar_profissional' %}'">+ Add
+          Profissional</button>
+      </div>
+    </div>
+
+<div class="card-grid">
     {% for profissional in profissionais %}
-    <div class="card">
-      <div><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
-        <div class="dropdown">
-          <button onclick="abrirModal({{ profissional.id }})">Ver detalhes</button>
-          <button onclick="window.location.href='{% url 'editar_profissional' profissional.id %}'">Editar</button>
-          <button onclick="abrirFicha('{% url 'ficha_profissional' profissional.id %}')">Gerar Ficha</button>
+      <div class="card">
+        <div>
+          <button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
+          <div class="dropdown_menu">
+            <button onclick="abrirModal({{ profissional.id }})">Ver detalhes</button>
+            <button onclick="window.location.href='{% url 'editar_profissional' profissional.id %}'">Editar</button>
+            <button onclick="abrirFicha('{% url 'ficha_profissional' profissional.id %}')">Gerar Ficha</button>
+          </div>
         </div>
+
+        <div class="card-top"></div>
+
+        <div class="avatar">
+          {% if profissional.foto %}
+            <img src="{{ profissional.foto.url }}" alt="Foto de {{ profissional.nome }}">
+          {% else %}
+            <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
+          {% endif %}
+        </div>
+
+        <div class="card-body">
+          <h2 class="name">{{ profissional.nome }} {{ profissional.sobrenome }}</h2>
+          <p class="role">{{ profissional.especialidade }}</p>
+          <div class="info">
+            <p><i class="bx bx-id-card"></i> {{ profissional.get_conselho1_display }} - {{ profissional.num1_conselho }}</p>
+            <p><i class="bx bx-phone"></i> {{ profissional.celular }}</p>
+            <p><i class="bx bx-envelope"></i> {{ profissional.email }}</p>
+          </div>
+        </div>
+
       </div>
-      <div class="avatar">
-        {% if profissional.foto %}
-        <img src="{{ profissional.foto.url }}" alt="Foto de {{ profissional.nome }}">
-        {% else %}
-        <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
-        {% endif %}
-      </div>
-      <div class="name">{{ profissional.nome }} {{ profissional.sobrenome}}</div>
-      <div class="subject"> {{ profissional.especialidade }}</div>
-      <div class="subject"> {{ profissional.get_conselho1_display }} - {{ profissional.num1_conselho }}</div>
-      <div class="subject"> {{ profissional.celular }}</div>
-      <div class="subject"> {{ profissional.email }}</div>
+    {% endfor %}
+  </div>
 
 
-
-    </div>
-
-  {% endfor %}
+ 
 
   <div id="modalOverlay" class="overlay" style="display: none;">
     <div class="modal">

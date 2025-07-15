@@ -1,262 +1,335 @@
-{% extends 'core/base.html' %}
-{% load static %}
-
-
-
-{% block title %}Configurações - Ponto de Equilíbrio{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/configuracoes.css' %}">
-<link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
+{% extends 'core/base.html' %} {% load static %} {% block title %}Configurações
+- Ponto de Equilíbrio{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/configuracoes.css' %}" />
+<link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
 {% endblock %}
-
-{% block topbar %}
-<div class="topbar">
-    <div class="topbar-div">
-        <i class='bx bx-menu'></i>
-        <span class="text">Configurações</span>
-
-    </div>
-    <div class="topbar-div">
-        <div class="name-job">
-            <div class="profile_name">Olá, {{ user.get_full_name }}</div>
-        </div>
-        <a href="{% url 'logout' %}">
-            <i class='bx btn-sair bx-log-out'></i>
-        </a>
-    </div>
-</div>
-{% endblock %}
+<span class="text">{% block topbar_title %}Configurações{% endblock %}</span>
 {% block content %}
 <div class="content">
+  <div class="grid-config">
+    <div class="form form-1">
+      <h2 class="form_titulo">Especialidades</h2>
+      <form class="formField" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="tipo" value="especialidade" />
+        <input
+          class="input-s capitalize-input"
+          name="nome"
+          placeholder="Nova especialidade"
+          type="text"
+        />
+        <input
+          class=""
+          type="color"
+          id="cor"
+          name="cor"
+          value="#4a90e2"
+        /><br /><br />
+        <button type="submit">Salvar</button>
+      </form>
+      <div class="tabela-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Serviço</th>
+              <th>Cor</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for especialidade in especialidades %}
+            <tr class="{% if not especialidade.ativo %} inativo {% endif %}">
+              <td>{{ especialidade.nome }}</td>
+              <td
+                onclick="copiarTexto('{{ especialidade.cor }}')"
+                style="background-color: {{ especialidade.cor }}; color: #fff; padding: 5px; border-radius: 4px; cursor: pointer;"
+                title="Clique para copiar"
+              ></td>
+              <span
+                id="feedback"
+                style="
+                  display: none;
+                  position: fixed;
+                  top: 10px;
+                  right: 10px;
+                  background: #4caf50;
+                  color: white;
+                  padding: 5px 10px;
+                  border-radius: 5px;
+                  z-index: 1000;
+                "
+              >
+                Copiado!
+              </span>
+              <td>
+                <form method="post" style="display: inline">
+                  {% csrf_token %}
+                  <input
+                    type="hidden"
+                    name="especialidade_id"
+                    value="{{ especialidade.id }}"
+                  />
 
-    <div class="grid-config">
-        <div class="form form-1">
-            <h2 class="form_titulo">Especialidades</h2>
-            <form class="formField" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="especialidade">
-                <input class='input-s capitalize-input' name="nome" placeholder='Nova especialidade' type="text">
-                <input class="" type="color" id="cor" name="cor" value="#4a90e2"><br><br>
-                <button type="submit">Salvar</button>
-            </form>
-            <div class="tabela-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Serviço</th>
-                            <th>Cor</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for especialidade in especialidades %}
-                        <tr class="{% if not especialidade.ativo %} inativo {% endif %}">
-                            <td>{{ especialidade.nome }}</td>
-                            <td onclick="copiarTexto('{{ especialidade.cor }}')"
-                                style="background-color: {{ especialidade.cor }}; color: #fff; padding: 5px; border-radius: 4px; cursor: pointer;"
-                                title="Clique para copiar">
-
-                            </td>
-                            <span id="feedback"
-                                style="display: none; position: fixed; top: 10px; right: 10px; background: #4CAF50; color: white; padding: 5px 10px; border-radius: 5px; z-index: 1000;">
-                                Copiado!
-                            </span>
-                            <td>
-                                <form method="post" style="display: inline;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="especialidade_id" value="{{ especialidade.id }}">
-
-                                    {% if filtra_inativo_especialidade %}
-                                    <input type="hidden" name="tipo" value="reativar_especialidade">
-                                    <button class='btn_reativar' type="submit"> Reativar ↺</button>
-                                    {% else %}
-                                    <input type="hidden" name="tipo" value="inativar_especialidade">
-                                    <button class='btn_excluir' type="submit">Excluir ✕</button>
-                                    {% endif %}
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-            </div>
-            <div class="tabela_infos-dados">
-
-
-                <form method="get" style="display: inline;">
-                    <label class="label_inativos">
-                        <input type="checkbox" name="filtra_inativo_especialidade" onchange="this.form.submit()"
-                            {% if filtra_inativo_especialidade %}checked{% endif %}>
-                        Mostrar apenas inativos
-                    </label>
+                  {% if filtra_inativo_especialidade %}
+                  <input
+                    type="hidden"
+                    name="tipo"
+                    value="reativar_especialidade"
+                  />
+                  <button class="btn btn_reativar" type="submit"><i class='bx  bx-rotate-ccw'  ></i> </button>
+                  {% else %}
+                  <input
+                    type="hidden"
+                    name="tipo"
+                    value="inativar_especialidade"
+                  />
+                  <button class="btn btn_excluir" type="submit"><i class='bx  bx-trash'  ></i> </button>
+                  {% endif %}
                 </form>
-            </div>
-        </div>
-        <div class="form form-2">
-            <h2 class="form_titulo">Serviços</h2>
-            <form class="formField" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="servico">
-                <input class="input-s capitalize-input" name="nome" placeholder="Novo serviço" type="text" required>
-                <input class="input_qtd_sessoes input-s capitalize-input " name="qtd_sessoes" placeholder="Qtd sessões"
-                    type="number" required>
-                <input class="input_valor input-s" name="valor" placeholder="Valor (R$)" type="number" step="0.01"
-                    required>
-                <button type="submit">Salvar</button>
-            </form>
-            <div class="tabela-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Serviço</th>
-                            <th>Sessões</th>
-                            <th>Valor</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for servico in servicos %}
-                        <tr class="{% if not servico.ativo %} inativo {% endif %}">
-                            <td>{{ servico.nome }}</td>
-                            <td>{{ servico.qtd_sessoes }}</td>
-                            <td>R$ {{ servico.valor }}</td>
-                            <td>
-                                <form method="post" style="display: inline;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="servico_id" value="{{ servico.id }}">
-
-                                    {% if filtra_inativo_servico %}
-                                    <input type="hidden" name="tipo" value="reativar_servico">
-                                    <button class='btn_reativar' type="submit"> Reativar ↺</button>
-                                    {% else %}
-                                    <input type="hidden" name="tipo" value="inativar_servico">
-                                    <button class='btn_excluir' type="submit">Excluir ✕</button>
-                                    {% endif %}
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-            </div>
-            <div class="tabela_infos-dados">
-
-                <form method="get" style="display: inline;">
-                    <label class="label_inativos">
-                        <input type="checkbox" name="filtra_inativo_servico" onchange="this.form.submit()"
-                            {% if filtra_inativo_servico  %}checked{% endif %}>
-                        Mostrar apenas inativos
-                    </label>
-                </form>
-            </div>
-        </div>
-        <div class="form form-3">
-            <h2 class="form_titulo">Configurações de Acesso e Valores</h2>
-            <form method="POST" action="">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="usuario_config">
-
-                <div class="formField">
-                
-                <select class="input-s" name="usuario_id" id="usuario-select" onchange="carregarDadosUsuario()">
-                    <option disabled selected value="">-- Selecione um profissional --</option>
-                    {% for u in usuarios %}
-                    <option value="{{ u.id }}" 
-                    data-tipo="{{ u.tipo }}" 
-                    data-ativo="{{ u.ativo|yesno:'on,off' }}"
-                    data-hora="{{ u.profissional.valor_hora|default_if_none:''}}">
-                {{ u.get_full_name }} ({{ u.username }})
-            </option>
-                    {% endfor %}
-                </select>
- 
-           
-                <select disabled class="input-s" name="tipo_usuario" id="tipo-select">
-                    <option disabled selected value="">-- Selecione um tipo de usuário --</option>
-                    {% for valor, label in user_tipo_choices %}
-                    <option value="{{ valor }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-                </div>
-
-                <div class="formField">
- 
-                <input disabled class="input-s" type="text" step="0.01" name="valor_hora" id="valor-hora-input" placeholder="Valor da hora" autocomplete='off' />
- 
-                <input disabled class="input-s" type="password" id="nova_senha" name="nova_senha" placeholder="Digite nova senha" autocomplete='off' />
-                <input disabled class="input-s" type="password" id="confirma_senha" name="confirma_senha" placeholder="Confirme nova senha" autocomplete='off' />
-            </div>
-            <p id="senha-msg" style="font-size: 14px; margin-top: 5px;"></p>
-
-                <button type="submit">Salvar alterações</button>
-            </form>
-        </div>
-        <div class="form form-4">
-
-        </div>
-        <div class="form form-5"></div>
-        <div class="form form-6"></div>
-
-
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="tabela_infos-dados">
+        <form method="get" style="display: inline">
+          <label class="label_inativos">
+            <input
+              type="checkbox"
+              name="filtra_inativo_especialidade"
+              onchange="this.form.submit()"
+              {%
+              if
+              filtra_inativo_especialidade
+              %}checked{%
+              endif
+              %}
+            />
+            Mostrar apenas inativos
+          </label>
+        </form>
+      </div>
     </div>
+    <div class="form form-2">
+      <h2 class="form_titulo">Serviços</h2>
+      <form class="formField" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="tipo" value="servico" />
+        <input
+          class="input-s capitalize-input"
+          name="nome"
+          placeholder="Novo serviço"
+          type="text"
+          required
+        />
+        <input
+          class="input_qtd_sessoes input-s capitalize-input"
+          name="qtd_sessoes"
+          placeholder="Qtd sessões"
+          type="number"
+          required
+        />
+        <input
+          class="input_valor input-s"
+          name="valor"
+          placeholder="Valor (R$)"
+          type="number"
+          step="0.01"
+          required
+        />
+        <button type="submit">Salvar</button>
+      </form>
+      <div class="tabela-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Serviço</th>
+              <th>Sessões</th>
+              <th>Valor</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for servico in servicos %}
+            <tr class="{% if not servico.ativo %} inativo {% endif %}">
+              <td>{{ servico.nome }}</td>
+              <td>{{ servico.qtd_sessoes }}</td>
+              <td>R$ {{ servico.valor }}</td>
+              <td>
+                <form method="post" style="display: inline">
+                  {% csrf_token %}
+                  <input
+                    type="hidden"
+                    name="servico_id"
+                    value="{{ servico.id }}"
+                  />
 
+                  {% if filtra_inativo_servico %}
+                  <input type="hidden" name="tipo" value="reativar_servico" />
+                  <button class="btn_reativar" type="submit"><i class='bx  bx-rotate-ccw'  ></i> </button>
+                  {% else %}
+                  <input type="hidden" name="tipo" value="inativar_servico" />
+                  <button class="btn_excluir" type="submit"><i class='bx  bx-trash'  ></i> </button>
+                  {% endif %}
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="tabela_infos-dados">
+        <form method="get" style="display: inline">
+          <label class="label_inativos">
+            <input
+              type="checkbox"
+              name="filtra_inativo_servico"
+              onchange="this.form.submit()"
+              {%
+              if
+              filtra_inativo_servico
+              %}checked{%
+              endif
+              %}
+            />
+            Mostrar apenas inativos
+          </label>
+        </form>
+      </div>
+    </div>
+    <div class="form form-3">
+      <h2 class="form_titulo">Configurações de Acesso e Valores</h2>
+      <form method="POST" action="">
+        {% csrf_token %}
+        <input type="hidden" name="tipo" value="usuario_config" />
+
+        <div class="formField">
+          <select
+            class="input-s"
+            name="usuario_id"
+            id="usuario-select"
+            onchange="carregarDadosUsuario()"
+          >
+            <option disabled selected value="">
+              -- Selecione um profissional --
+            </option>
+            {% for u in usuarios %}
+            <option
+              value="{{ u.id }}"
+              data-tipo="{{ u.tipo }}"
+              data-ativo="{{ u.ativo|yesno:'on,off' }}"
+              data-hora="{{ u.profissional.valor_hora|default_if_none:''}}"
+            >
+              {{ u.get_full_name }} ({{ u.username }})
+            </option>
+            {% endfor %}
+          </select>
+
+          <select disabled class="input-s" name="tipo_usuario" id="tipo-select">
+            <option disabled selected value="">
+              -- Selecione um tipo de usuário --
+            </option>
+            {% for valor, label in user_tipo_choices %}
+            <option value="{{ valor }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="formField">
+          <input
+            disabled
+            class="input-s"
+            type="text"
+            step="0.01"
+            name="valor_hora"
+            id="valor-hora-input"
+            placeholder="Valor da hora"
+            autocomplete="off"
+          />
+
+          <input
+            disabled
+            class="input-s"
+            type="password"
+            id="nova_senha"
+            name="nova_senha"
+            placeholder="Digite nova senha"
+            autocomplete="off"
+          />
+          <input
+            disabled
+            class="input-s"
+            type="password"
+            id="confirma_senha"
+            name="confirma_senha"
+            placeholder="Confirme nova senha"
+            autocomplete="off"
+          />
+        </div>
+        <p id="senha-msg" style="font-size: 14px; margin-top: 5px"></p>
+
+        <button type="submit">Salvar alterações</button>
+      </form>
+    </div>
+    <div class="form form-4"></div>
+    <div class="form form-5"></div>
+    <div class="form form-6"></div>
+  </div>
 </div>
-{% include "core/partials/alertas.html" %}
-{% endblock %}
-
-{% block scripts %}
+{% include "core/partials/alertas.html" %} {% endblock %} {% block scripts %}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const novaSenha = document.getElementById("nova_senha");
-        const confirmaSenha = document.getElementById("confirma_senha");
-        const msg = document.getElementById("senha-msg");
-    
-        function verificarSenhas() {
-            if (!novaSenha.value && !confirmaSenha.value) {
-                msg.textContent = '';
-                return;
-            }
-    
-            if (novaSenha.value === confirmaSenha.value) {
-                msg.textContent = "✔ Senhas coincidem";
-                msg.style.color = "green";
-            } else {
-                msg.textContent = "✖ Senhas não coincidem";
-                msg.style.color = "red";
-            }
-        }
-    
-        novaSenha.addEventListener("input", verificarSenhas);
-        confirmaSenha.addEventListener("input", verificarSenhas);
-    });
-    </script>
-    <script>
-        document.getElementById("valor-hora-input").addEventListener("input", function () {
-        this.value = this.value.replace(/[^0-9,]/g, '');  // Apenas números e vírgula
-    });
-    function carregarDadosUsuario() {
-        const select = document.getElementById("usuario-select");
-        const selectedOption = select.options[select.selectedIndex];
-    
-        // Coletar os dados
-        const tipo = selectedOption.getAttribute("data-tipo");
-        const valorHora = selectedOption.getAttribute("data-hora");
-    
-        // Preencher os campos
-        document.getElementById("tipo-select").value = tipo;
-        document.getElementById("valor-hora-input").value = valorHora || '';
-        
-        // Habilita o select do tipo, se estiver desativado
-        document.getElementById("tipo-select").disabled = false;
-        document.getElementById("valor-hora-input").disabled = false;
-        document.getElementById("nova_senha").disabled = false;
-        document.getElementById("confirma_senha").disabled = false;
-        console.log("Valor hora carregado:", valorHora);
+  document.addEventListener("DOMContentLoaded", function () {
+    const novaSenha = document.getElementById("nova_senha");
+    const confirmaSenha = document.getElementById("confirma_senha");
+    const msg = document.getElementById("senha-msg");
+
+    function verificarSenhas() {
+      if (!novaSenha.value && !confirmaSenha.value) {
+        msg.textContent = "";
+        return;
+      }
+
+      if (novaSenha.value === confirmaSenha.value) {
+        msg.textContent = "✔ Senhas coincidem";
+        msg.style.color = "green";
+      } else {
+        msg.textContent = "✖ Senhas não coincidem";
+        msg.style.color = "red";
+      }
     }
-    </script>
+
+    novaSenha.addEventListener("input", verificarSenhas);
+    confirmaSenha.addEventListener("input", verificarSenhas);
+  });
+</script>
+<script>
+  document
+    .getElementById("valor-hora-input")
+    .addEventListener("input", function () {
+      this.value = this.value.replace(/[^0-9,]/g, ""); // Apenas números e vírgula
+    });
+  function carregarDadosUsuario() {
+    const select = document.getElementById("usuario-select");
+    const selectedOption = select.options[select.selectedIndex];
+
+    // Coletar os dados
+    const tipo = selectedOption.getAttribute("data-tipo");
+    const valorHora = selectedOption.getAttribute("data-hora");
+
+    // Preencher os campos
+    document.getElementById("tipo-select").value = tipo;
+    document.getElementById("valor-hora-input").value = valorHora || "";
+
+    // Habilita o select do tipo, se estiver desativado
+    document.getElementById("tipo-select").disabled = false;
+    document.getElementById("valor-hora-input").disabled = false;
+    document.getElementById("nova_senha").disabled = false;
+    document.getElementById("confirma_senha").disabled = false;
+    console.log("Valor hora carregado:", valorHora);
+  }
+</script>
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
 <script src="{% static '/core/js/configuracoes/configBase.js' %}"></script>

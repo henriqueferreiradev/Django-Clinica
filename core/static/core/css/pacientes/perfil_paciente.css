@@ -1,24 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-:root {
-    --roxoPrincipal: #7f4396;
-    --roxoPrincipal-hover: #76378f11;
-    --roxoPrincipal-hover2: #76378f;
-    --roxo-primary-hover: #9b58b4;
-    --verdePrincipal: #92cbad;
-    --branco: #FFF;
-    --preto: #000;
-    --cinzaBorda: #ccc;
-    --cinzaEscuro: #6e6e6e;
-    --fontePrincipal: 'Inter';
-    --corFundo: #e4e9f7;
-    --corFundoDark: #121212;
-    --corFundoDarkCont: #1E1E1E;
-}
-
+ 
 body {
     font-family: var(--fontePrincipal);
-    background-color: var(--corFundo);
+    background-color: var(--bg-color);
     color: #1e293b;
     margin: 0;
     padding: 0;
