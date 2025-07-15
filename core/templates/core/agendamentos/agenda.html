@@ -9,29 +9,12 @@
 <link rel="stylesheet" href="{% static 'core/css/agenda/agenda.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+ 
 
 {% endblock %}
 
-{% block topbar %}
-<div class="topbar">
-    <div class="topbar-div">
-        <i class='bx bx-menu'></i>
-        <span class="text">Agenda</span>
-        <form method="GET" action="{% url 'agenda' %}" class="search-form">
-            <input type="text" name="q" value="{{ query }}" placeholder="Buscar por paciente ou profissional aqui">
-            <button type="submit">Buscar</button>
-        </form>
-    </div>
-    <div class="topbar-div">
-        <div class="name-job">
-            <div class="profile_name">Olá, {{ user.get_full_name }}</div>
-        </div>
-        <a href="{% url 'logout' %}">
-            <i class='bx btn-sair bx-log-out'></i>
-        </a>
-    </div>
-</div>
-{% endblock %}
+{% block topbar_title %}Agenda{% endblock %}
+
 {% block content %}
 <div class="content">
 
@@ -278,23 +261,24 @@
     </div>
     <div class="content-header">
         <h2>Todas as consultas</h2>
-        <form method="get">
-            <div class="buttons_header">
-
-                <div class="formRow">
-                    <div class="formField">
-                        <label>Data início</label>
+        <form method="get" class="search-form">
+            <div class="buttons_header" >
+                
+                
+              
+                        <input type="text" name="q" value="{{ query }}" placeholder="Buscar por paciente ou profissional aqui">
+              
                         <input type="date" name="data_inicio" value="{{ data_inicio }}">
-                    </div>
-                    <div class="formField">
-                        <label>Data fim</label>
+               
                         <input type="date" name="data_fim" value="{{ data_fim }}">
-                    </div>
-                </div>
+               
+               
                 <button class="btn-add" name="filtrar" value="1">Filtrar</button>
         </form>
-        <button type='button' id="openBtn" class="btn-add">+ Novo Agendamento</button>
+ 
+        
     </div>
+    <button type='button' id="openBtn" class="btn-add"> Novo Agendamento</button>
 
 </div>
 

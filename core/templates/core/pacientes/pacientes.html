@@ -10,25 +10,7 @@
 
 
 
-{% block topbar %}
-<div class="topbar">
-  <div class="topbar-div">
-    <i class='bx bx-menu'></i>
-    <span class="text">Pacientes</span>
-    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-      <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-    </form>
-  </div>
-  <div class="topbar-div">
-    <div class="name-job">
-      <div class="profile_name">Olá, {{ user.get_full_name }}</div>
-    </div>
-    <a href="{% url 'logout' %}">
-      <i class='bx btn-sair bx-log-out'></i>
-    </a>
-  </div>
-</div>
-{% endblock %}
+ 
 {% block content %}
 {% if messages %}
 <div class="messages-container" id="alert-container">
@@ -57,6 +39,9 @@
 </div>
   <div class="content-header">
     <h2>Lista de Pacientes</h2>
+    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
+      <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
+    </form>
     <div class='header_buttons'>
     <form method="get">
       <select class='select-s' name="periodo" id="periodo">
@@ -113,7 +98,7 @@
           <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
           <td><span class="badge grade-simples">Premium</span></td>
           <td><button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
-            <div class="dropdown">
+            <div class="dropdown_menu">
             <a href="{% url 'perfil_paciente' paciente.id %}">
                 <button type="button">Ver detalhes</button></a>
              

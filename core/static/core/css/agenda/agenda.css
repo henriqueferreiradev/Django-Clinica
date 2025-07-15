@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
- 
+
 
 
 * {
@@ -183,6 +183,17 @@ h2 {
     color: var(--cinzaEscuro);
 }
 
+.buttons_header input[type="text"],
+.buttons_header input[type="date"] {
+    width: 100%;
+    padding: 0.7em;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    color: var(--cinzaEscuro);
+}
+
 /* Estilo específico para input time */
 .formField input[type="time"] {
     text-align: center;
@@ -351,6 +362,7 @@ input::-webkit-inner-spin-button {
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 10;
+    display: none;
 }
 
 #sugestoes div:hover {
@@ -424,38 +436,6 @@ thead tr th:last-child {
 
 .grade-premium {
     background: #7f56d9;
-}
-
-
-.dropdown {
-    position: absolute;
-    background: var(--branco);
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    display: none;
-    flex-direction: column;
-    min-width: 120px;
-    z-index: 10;
-    color: black;
-}
-
-.dropdown button {
-    padding: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    color: black;
-
-}
-
-.dropdown button:hover {
-    background: #eee;
-}
-
-
-.hidden {
-    display: none;
 }
 
 .header-sidebar {

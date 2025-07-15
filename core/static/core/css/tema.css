@@ -21,9 +21,9 @@
   --verdePrincipal: #92cbad;
 
   --branco: #363636;
- 
+
   --preto: #f1f1f1;
- 
+
   --cinzaBorda: #444;
   --cinzaEscuro: #aaa;
   --bg-color: #242525;
@@ -46,19 +46,21 @@ input,
 textarea,
 select {
   background-color: var(--branco);
- 
+
   color: var(--preto);
-  
+
   border: 1px solid var(--cinzaBorda);
 }
- 
+
 a {
   color: var(--preto);
   /* substitui --text-color */
 }
+
 th {
   color: white;
 }
+
 .content {
   background-color: var(--branco);
 
@@ -71,10 +73,77 @@ th {
 
   color: var(--preto);
 }
+
 .input-s {
   border: 1px solid var(--verdePrincipal);
 }
 
 .form_titulo {
   color: var(--preto);
+}
+
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+}
+
+.profile-button {
+  background: none;
+  border: none;
+  box-shadow: none !important;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: var(--preto);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: var(--branco);
+  min-width: 160px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.topbar .dropdown .profile-button {
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+.dropdown-content a,
+.dropdown-content button {
+  color: var(--preto);
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  background: none;
+  border: none;
+  border-radius: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: none;
+
+}
+
+.dropdown-content a:hover,
+.dropdown-content button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Hover mostra o menu */
+.dropdown:hover .dropdown-content {
+  display: block;
 }

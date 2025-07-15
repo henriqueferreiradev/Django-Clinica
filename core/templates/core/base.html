@@ -6,7 +6,7 @@
  
   <meta charset="UTF-8">
   <script>
-    // Aplica o tema imediatamente, antes de qualquer renderização
+ 
     (function() {
       const isDark = localStorage.getItem('theme') === 'dark';
       document.documentElement.classList.toggle('dark', isDark);
@@ -166,7 +166,35 @@
 
   <section class="home-section">
     <div class="home-content">
-      {% block topbar %}{% endblock %}
+      {% block topbar %}
+<div class="topbar">
+  <div class="topbar-div">
+    <i class='bx bx-menu'></i>
+
+    {# Bloco opcional para o título #}
+    <span class="text">
+      {% block topbar_title %}Dashboard{% endblock %}
+    </span>
+
+    {# Bloco opcional para o campo de busca #}
+    {% block topbar_search %}{% endblock %}
+  </div>
+
+  <div class="topbar-div">
+    <div class="dropdown">
+      <div class="profile-button">
+        {{ user.get_full_name }} <i class='bx bx-chevron-down'></i>
+      </div>
+      <div class="dropdown-content">
+        <a href="{% url 'config' %}">Ver Perfil</a>
+        <button onclick="toggleDarkMode()">Alternar Tema</button>
+        <a href="{% url 'logout' %}">Sair</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
       {% block content %}{% endblock %}
     </div>
   </section>
