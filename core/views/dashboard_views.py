@@ -145,7 +145,13 @@ def dashboard_view(request):
         }] 
     }
     
-    servicos_mais_contratados = PacotePaciente.objects.values('servico__nome').annotate(total=Count('id'))
+    servicos_mais_contratados = (
+    PacotePaciente.objects
+    .filter(servico__isnull=False, servico__nome__isnull=False)
+    .values('servico__nome')
+    .annotate(total=Count('id'))
+    .order_by('-total')
+)
  
     especialidades_mais_contratadas = (
         Agendamento.objects.values('especialidade__nome').annotate(total=Count('id')).order_by('-total')

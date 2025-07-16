@@ -8,6 +8,22 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'bar',
             data: chartData,
             options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom', // ou 'top', 'left', 'right'
+                        labels: {
+                            color: 'white', // ajusta a cor no modo dark
+                            boxWidth: 15,
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
                 responsive: true,
                 scales: {
                     y: {
@@ -29,6 +45,22 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'line',
             data: chartDataEvo,
             options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom', // ou 'top', 'left', 'right'
+                        labels: {
+                            color: 'white', // ajusta a cor no modo dark
+                            boxWidth: 15,
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
                 responsive: true,
                 scales: {
                     y: {
@@ -52,6 +84,22 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'pie',
             data: distribuicaoProfissionalChart,
             options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom', // ou 'top', 'left', 'right'
+                        labels: {
+                            color: 'white', // ajusta a cor no modo dark
+                            boxWidth: 15,
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
                 responsive: true,
                 scales: {
                     y: {
@@ -68,25 +116,52 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     try {
         const servicosMaisContratadosChart = JSON.parse(document.getElementById('servicos-chart').textContent);
-
-        const ctx4 = document.getElementById('servicosChart').getContext('2d')
-
+    
+        const ctx4 = document.getElementById('servicosChart').getContext('2d');
+    
         new Chart(ctx4, {
-            type: 'pie',
+            type: 'doughnut',
             data: servicosMaisContratadosChart,
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: -60// espaçamento entre a legenda (à esquerda) e o gráfico
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 5, // espaço entre os itens da legenda
+                            boxWidth: 15,
+                            color: 'white'
                         }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            display: false
+                        },
+                        beginAtZero: false
                     }
                 }
             }
-        })
+        });
     } catch (error) {
         console.error("Erro ao montar gráfico de serviços contratados:", error);
     }
-});
+})
