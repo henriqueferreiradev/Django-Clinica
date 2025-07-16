@@ -100,13 +100,7 @@
               type="checkbox"
               name="filtra_inativo_especialidade"
               onchange="this.form.submit()"
-              {%
-              if
-              filtra_inativo_especialidade
-              %}checked{%
-              endif
-              %}
-            />
+              {% if filtra_inativo_especialidade %}checked{% endif %}/>
             Mostrar apenas inativos
           </label>
         </form>
@@ -168,7 +162,7 @@
 
                   {% if filtra_inativo_servico %}
                   <input type="hidden" name="tipo" value="reativar_servico" />
-                  <button class="btn_reativar" type="submit"><i class='bx  bx-rotate-ccw'  ></i> </button>
+                  <button class="btn_reativar" type="submit"><i class='bx  bx-undo'  ></i> </button>
                   {% else %}
                   <input type="hidden" name="tipo" value="inativar_servico" />
                   <button class="btn_excluir" type="submit"><i class='bx  bx-trash'  ></i> </button>
@@ -186,14 +180,7 @@
             <input
               type="checkbox"
               name="filtra_inativo_servico"
-              onchange="this.form.submit()"
-              {%
-              if
-              filtra_inativo_servico
-              %}checked{%
-              endif
-              %}
-            />
+              onchange="this.form.submit()" {% if filtra_inativo_servico %}checked{% endif %}/>
             Mostrar apenas inativos
           </label>
         </form>

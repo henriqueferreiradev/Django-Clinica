@@ -11,6 +11,7 @@
   --cinzaEscuro: #6e6e6e;
   --fontePrincipal: 'Inter';
   --bg-color: #E4E9F7;
+  --shadowRoxo: rgb(127, 67, 150, 0.5) 0px 3px 8px
 }
 
 .dark {
