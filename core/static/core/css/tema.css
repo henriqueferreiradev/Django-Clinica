@@ -11,7 +11,8 @@
   --cinzaEscuro: #6e6e6e;
   --fontePrincipal: 'Inter';
   --bg-color: #E4E9F7;
-   --hover-dropdown: #F0F0F0;
+  --shadowRoxo: rgb(127, 67, 150, 0.5) 0px 3px 8px
+  --hover-dropdown: #F0F0F0;
 
 }
 
@@ -143,7 +144,7 @@ th {
 
 .dropdown-content a:hover,
 .dropdown-content button:hover {
-  background-color: var(--hover-dropdown);
+  background-color: #f0f0f0;
 }
 
 /* Hover mostra o menu */
