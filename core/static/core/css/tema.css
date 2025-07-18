@@ -11,7 +11,8 @@
   --cinzaEscuro: #6e6e6e;
   --fontePrincipal: 'Inter';
   --bg-color: #E4E9F7;
-   --hover-dropdown: #F0F0F0;
+  --hover-dropdown: #F0F0F0;
+  --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
 
 }
 

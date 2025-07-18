@@ -116,9 +116,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     try {
         const servicosMaisContratadosChart = JSON.parse(document.getElementById('servicos-chart').textContent);
-    
+
         const ctx4 = document.getElementById('servicosChart').getContext('2d');
-    
+
         new Chart(ctx4, {
             type: 'doughnut',
             data: servicosMaisContratadosChart,
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 maintainAspectRatio: false,
                 layout: {
                     padding: {
-                        left: -60// espaçamento entre a legenda (à esquerda) e o gráfico
+                        left: -150// espaçamento entre a legenda (à esquerda) e o gráfico
                     }
                 },
                 plugins: {
