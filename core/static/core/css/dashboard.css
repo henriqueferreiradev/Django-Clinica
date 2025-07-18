@@ -207,7 +207,11 @@ thead tr th:last-child {
         grid-template-columns: repeat(6, 1fr);
     }
 }
-
+@media (max-width: 768px) {
+    .chart-canvas-container {
+        height: 220px;  
+    }
+}
 .card {
     background-color: var(--branco);
     border-radius: 0.5rem;
@@ -215,7 +219,10 @@ thead tr th:last-child {
     padding: 1rem;
     border-left: 4px solid;
 }
-
+.chart-canvas-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
 .card-blue {
     border-left-color: #3b82f6;
     box-shadow: 1px 4px 10px rgba(59, 130, 246, 0.4);
@@ -397,8 +404,8 @@ thead tr th:last-child {
 
 .chart-canvas-container {
     position: relative;
-    height: 250px;
     width: 100%;
+    height: 250px;
 }
 
 

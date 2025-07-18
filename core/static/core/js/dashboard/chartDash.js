@@ -87,30 +87,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'bottom', // ou 'top', 'left', 'right'
+                        position: 'right',
                         labels: {
-                            color: 'white', // ajusta a cor no modo dark
+                            padding: 5, // espaço entre os itens da legenda
                             boxWidth: 15,
-                            padding: 15,
-                            font: {
-                                size: 12,
-                                weight: 'bold'
-                            }
+                            color: 'white'
                         }
                     }
                 },
-                responsive: true,
                 scales: {
-                    y: {
-                        beginAtZero: true,
+                    x: {
                         ticks: {
-                            stepSize: 1
+                            display: false
+                        },
+                        grid: {
+                            display: false
                         }
+                    },
+                    y: {
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            display: false
+                        },
+                        beginAtZero: false
                     }
                 }
             }
-        })
+        });
     } catch (error) {
         console.error("Erro ao montar gráfico de evolução mensal:", error);
     }
