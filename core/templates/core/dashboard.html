@@ -159,51 +159,56 @@
         </tr>
       </thead>
       <tbody>
-        {% for agendamento in agendamentos %}
-        <tr>
-          <td style="width: 5px; background-color: {{ agendamento.especialidade.cor }};"></td>
-          <td>{{ agendamento.hora_inicio }} - {{agendamento.hora_fim}} </td>
-          <td>{{ agendamento.paciente.nome }} {{ agendamento.paciente.sobrenome }}</td>
-          <td>{{ agendamento.profissional_1.nome }} {{ agendamento.profissional_1.sobrenome }}</td>
-          <td>{{ agendamento.especialidade.nome }}</td>
-        <td>
-            {% if agendamento.sessao_atual %}
-            {% if agendamento.codigo|slice:":3" == "REP" %}
-                <span class="sessao vermelho">Sessão de Reposição | {{ agendamento.codigo }}</span>
+        {% if agendamentos %}
+          {% for agendamento in agendamentos %}
+            <tr>
+              <td style="width: 5px; background-color: {{ agendamento.especialidade.cor }};"></td>
+              <td>{{ agendamento.hora_inicio }} - {{ agendamento.hora_fim }}</td>
+              <td>{{ agendamento.paciente.nome }} {{ agendamento.paciente.sobrenome }}</td>
+              <td>{{ agendamento.profissional_1.nome }} {{ agendamento.profissional_1.sobrenome }}</td>
+              <td>{{ agendamento.especialidade.nome }}</td>
+              <td>
+                {% if agendamento.sessao_atual %}
+                  {% if agendamento.codigo|slice:":3" == "REP" %}
+                    <span class="sessao vermelho">Sessão de Reposição | {{ agendamento.codigo }}</span>
+                  {% else %}
+                    <span class="sessao verde">
+                      Sessão {{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} | {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}
+                    </span>
+                  {% endif %}
                 {% else %}
-            <span class="sessao verde">
-                Sessão {{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} | {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}
-            </span>
-            {% endif %}
-        {% endif %}        </td>          
-        <td class='status-col'> 
-          <form method="post" action="{% url 'alterar_status_dashboard' agendamento.id %}">
-                {% csrf_token %}
-                <select name="status" class="status-select">
+                  <span class="sessao">Sessões finalizadas</span>
+                {% endif %}
+              </td>
+              <td class='status-col'>
+                <form method="post" action="{% url 'alterar_status_dashboard' agendamento.id %}">
+                  {% csrf_token %}
+                  <select name="status" class="status-select">
                     <option value="pre" {% if agendamento.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
                     <option value="agendado" {% if agendamento.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
                     <option value="finalizado" {% if agendamento.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
                     <option value="desistencia" {% if agendamento.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
                     <option value="desistencia_remarcacao" {% if agendamento.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
                     <option value="falta_remarcacao" {% if agendamento.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
-                    <option value="falta_cobrada" {% if agendamento.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
-            </select>
-        </div>
-     
-       </td>
-        <td>
-            <div class="actions-col">
-                <button type="submit"  class="action-btn tooltip" ><i class='bx  bx-save'  ></i><span class="tooltiptext">Salvar Status</span></button>
-                <a href="{% url 'confirmacao_agendamento' agendamento.id %}">
-                    <button type="button" class="action-btn tooltip"><i class='bx  bx-send'  ></i><span class="tooltiptext">Ver detalhes</span></button>
-                </a>
- 
-            </div>
-        <td>
-     </form>
-        </tr>
-        {% endfor %}
+                    <option value="falta_cobrada" {% if agendamento.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
+                  </select>
+              </td>
+              <td>
+                <div class="actions-col">
+                  <button type="submit" class="action-btn tooltip"><i class='bx bx-save'></i><span class="tooltiptext">Salvar Status</span></button>
+                  <a href="{% url 'confirmacao_agendamento' agendamento.id %}">
+                    <button type="button" class="action-btn tooltip"><i class='bx bx-send'></i><span class="tooltiptext">Ver detalhes</span></button>
+                  </a>
+                </div>
+              </td>
+              </form>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr><td class='linha-vazia' colspan="8">Nenhum agendamento encontrado.</td></tr>
+        {% endif %}
       </tbody>
+      
     </table>
   </div>
 
