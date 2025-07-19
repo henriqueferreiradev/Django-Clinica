@@ -8,7 +8,7 @@ import json
 import locale
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
-
+import random
 
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
@@ -29,7 +29,12 @@ def dashboard_view(request):
     total_profissionais_ativos = Profissional.objects.filter(ativo=True).count()
 
     hoje = timezone.now().date()
+    primeiro_dia_mes = hoje.replace(day=1)
+    ultimo_dia_mes = (primeiro_dia_mes + timedelta(days=32)).replace(day=1)-timedelta(days=1)
+    
     inicio_semana = hoje - timedelta(days=hoje.weekday())
+    
+    
     inicio_semana_passada = inicio_semana - timedelta(days=7)
     fim_semana = inicio_semana + timedelta(days=6)
     agendamentos_semana = Agendamento.objects.filter(data__gte=inicio_semana, data__lte=fim_semana).count()
@@ -114,55 +119,34 @@ def dashboard_view(request):
     }
 
     distribuicao_por_profissional = (
-        Agendamento.objects.values('profissional_1__nome').annotate(total=Count('id')).order_by('-total')
+        Agendamento.objects.filter(data__range=(primeiro_dia_mes, ultimo_dia_mes)).values('profissional_1__nome').annotate(total=Count('id')).order_by('-total')
     )
 
     profissionais_labels = [item['profissional_1__nome'] for item in distribuicao_por_profissional]
     dados_profissionais = [item['total'] for item in distribuicao_por_profissional]
-    cores = [
-        'rgba(255, 99, 132, 0.6)',
-        'rgba(54, 162, 235, 0.6)',
-        'rgba(255, 206, 86, 0.6)',
-        'rgba(75, 192, 192, 0.6)',
-        'rgba(153, 102, 255, 0.6)',
-        'rgba(255, 159, 64, 0.6)',
-        'rgba(201, 203, 207, 0.6)',
-        'rgba(0, 200, 83, 0.6)',
-        'rgba(255, 87, 34, 0.6)',
-        'rgba(33, 150, 243, 0.6)',
-
-    
-        'rgba(124, 77, 255, 0.6)',
-        'rgba(0, 188, 212, 0.6)',
-        'rgba(255, 193, 7, 0.6)',
-        'rgba(255, 61, 0, 0.6)',
-        'rgba(121, 85, 72, 0.6)',
-        'rgba(158, 158, 158, 0.6)',
-        'rgba(96, 125, 139, 0.6)',
-        'rgba(0, 150, 136, 0.6)',
-        'rgba(244, 67, 54, 0.6)',
-        'rgba(233, 30, 99, 0.6)',
-        'rgba(156, 39, 176, 0.6)',
-        'rgba(103, 58, 183, 0.6)',
-        'rgba(63, 81, 181, 0.6)',
-        'rgba(3, 169, 244, 0.6)',
-        'rgba(0, 191, 165, 0.6)',
-        'rgba(205, 220, 57, 0.6)',
-        'rgba(255, 235, 59, 0.6)',
-        'rgba(255, 152, 0, 0.6)',
-        'rgba(121, 134, 203, 0.6)',
-        'rgba(186, 104, 200, 0.6)',
+    cores_base = [
+        'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)',
+        'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)', 'rgba(255, 159, 64, 0.6)',
+        'rgba(201, 203, 207, 0.6)', 'rgba(0, 200, 83, 0.6)', 'rgba(255, 87, 34, 0.6)',
+        'rgba(33, 150, 243, 0.6)', 'rgba(124, 77, 255, 0.6)', 'rgba(0, 188, 212, 0.6)',
+        'rgba(255, 193, 7, 0.6)', 'rgba(255, 61, 0, 0.6)', 'rgba(121, 85, 72, 0.6)',
+        'rgba(158, 158, 158, 0.6)', 'rgba(96, 125, 139, 0.6)', 'rgba(0, 150, 136, 0.6)',
+        'rgba(244, 67, 54, 0.6)', 'rgba(233, 30, 99, 0.6)', 'rgba(156, 39, 176, 0.6)',
+        'rgba(103, 58, 183, 0.6)', 'rgba(63, 81, 181, 0.6)', 'rgba(3, 169, 244, 0.6)',
+        'rgba(0, 191, 165, 0.6)', 'rgba(205, 220, 57, 0.6)', 'rgba(255, 235, 59, 0.6)',
+        'rgba(255, 152, 0, 0.6)', 'rgba(121, 134, 203, 0.6)', 'rgba(186, 104, 200, 0.6)',
     ]
 
-    total = len(profissionais_labels)
-    cores_usadas = (cores * ((total // len(cores)) + 1))[:total]
+    total_profissionais = len(profissionais_labels)
+    cores_profissionais = (cores_base * ((total_profissionais // len(cores_base)) + 1))[:total_profissionais]
+    
     grafico_distribuicao_por_profissional = {
         'labels': profissionais_labels,
         'datasets': [{
             'label':'Agendamentos no mês',
             'data':dados_profissionais,
-            'backgroundColor': cores_usadas,
-            'borderColor': ['white'] * total,
+            'backgroundColor': cores_profissionais,
+            'borderColor': ['white'] * total_profissionais,
             'borderWidth': 1,
           
         }] 
@@ -184,30 +168,28 @@ def dashboard_view(request):
     especialidades_labels = [item['especialidade__nome'] for item in especialidades_mais_contratadas]
     
     servicos_dados = [item['total'] for item in servicos_mais_contratados]
-    print(servicos_labels, servicos_dados)
- 
+    
+    
+    total_servicos = len(profissionais_labels)
+    cores_servicos = (cores_base * ((total_servicos // len(cores_base)) + 1))[:total_servicos]
+    
     grafico_servicos_mais_contratados = {
         'labels': servicos_labels,
         'datasets': [{
             'label':'Agendamentos no mês',
             'data':servicos_dados,
-            'backgroundColor': cores_usadas,
-            'borderColor': ['white'] * total,
+            'backgroundColor': cores_servicos,
+            'borderColor': ['white'] * total_servicos,
             'borderWidth': 1,
           
         }] 
     }
-
     
     
-    
-    
-    
- 
-    
-    print(servicos_labels, especialidades_labels)
- 
-
+    status_agendamentos = (
+        Agendamento.objects.values('status').annotate(total=Count('id')).order_by('-total')
+    )
+    print(status_agendamentos)
     context = {
         'agendamentos':agendamentos,
         
