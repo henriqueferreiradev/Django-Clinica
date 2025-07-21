@@ -12,6 +12,8 @@
     --cinzaEscuro: #6e6e6e;
     --fontePrincipal: 'Inter';
     --bg-color: #E4E9F7;
+    --cz-fonte-infocards: #6b7280;
+
 }
 
 .dark {
@@ -28,6 +30,7 @@
     --cinzaBorda: #444;
     --cinzaEscuro: #aaa;
     --bg-color: #242525;
+    --cz-fonte-infocards: #f1f1f1;
 }
 
 * {
@@ -270,7 +273,7 @@ thead tr th:last-child {
 }
 
 .card-text p {
-    color: #6b7280;
+    color: var(--cz-fonte-infocards);
     font-size: 0.875rem;
 }
 

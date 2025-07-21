@@ -219,9 +219,9 @@
     
 </div> -->
 
-<!-- Charts Row 1 -->
+  <h2>Visão Geral dos Atendimentos</h2>
 <div class="charts-row charts-row-1">
-    <!-- Chart 1 -->
+ 
     <div class="chart-container">
         <div class="chart-header">
             <h3 class="chart-title">Atendimentos por dia (últimos 7 dias)</h3>
@@ -282,7 +282,8 @@
  
         </div>
         <div class="chart-canvas-container">
-            <canvas id="barChart2"></canvas>
+            <canvas id="statusChart"></canvas>
+            {{ grafico_status_agendamentos|json_script:'status-chart' }}
         </div>
     </div>
         <div class="chart-container">
@@ -291,7 +292,8 @@
  
         </div>
         <div class="chart-canvas-container">
-            <canvas id="barChart2"></canvas>
+            <canvas id="pagamentoChart"></canvas>
+            {{ grafico_formas_pagamento|json_script:'formas_pagamento-chart' }}
         </div>
     </div>
 </div>
@@ -317,6 +319,7 @@
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static '/core/js/base/scriptBase.js' %}"></script>
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>

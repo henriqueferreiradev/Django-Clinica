@@ -31,7 +31,7 @@ def dashboard_view(request):
     hoje = timezone.now().date()
     primeiro_dia_mes = hoje.replace(day=1)
     ultimo_dia_mes = (primeiro_dia_mes + timedelta(days=32)).replace(day=1)-timedelta(days=1)
-    
+    nome_mes_atual = NOMES_MESES[hoje.month - 1].capitalize()
     inicio_semana = hoje - timedelta(days=hoje.weekday())
     
     
@@ -63,8 +63,7 @@ def dashboard_view(request):
         dias_labels.append(dia.strftime(f'%d/%m '))
         count = agendamentos_ultimos_6_dias.filter(data=dia).count()
         dias_dados.append(count)
-        print(dias_labels)
- 
+
     grafico_dados_7_dias = {
         'labels': dias_labels,
         'datasets': [{
@@ -109,7 +108,7 @@ def dashboard_view(request):
     grafico_evolucao_mensal = {
         'labels':meses_labels,
         'datasets': [{
-            'label':'Agendamentos por mês',
+            'label':f'Agendamentos por mês',
             'data':meses_dados,
             'backgroundColor': 'rgba(127, 67, 150, 0.6)',
             'borderColor': 'rgb(127, 67, 150)',
@@ -187,9 +186,58 @@ def dashboard_view(request):
     
     
     status_agendamentos = (
-        Agendamento.objects.values('status').annotate(total=Count('id')).order_by('-total')
+        Agendamento.objects.filter(data__range=(primeiro_dia_mes, ultimo_dia_mes)).values('status').annotate(total=Count('id')).order_by('-total')
     )
-    print(status_agendamentos)
+    status_labels = [item['status'].capitalize() for item in status_agendamentos]
+    status_dados = [item['total'] for item in status_agendamentos]
+    
+    
+    grafico_status_agendamentos = {
+        'labels': status_labels,
+        'datasets': [{
+            'label': '',
+            'data': status_dados,  
+            'backgroundColor': 'rgba(127, 67, 150, 0.6)',
+            'borderColor': 'rgb(127, 67, 150)',
+            'borderWidth': 1,
+            'borderRadius':10,
+        }]
+    }
+    
+    
+   
+    cores = {
+    'Credito': '#4CAF50',
+    'Debito': '#F44336',
+    'Dinheiro': '#FF9800',
+    'Pix': '#673AB7',
+}
+
+    border_cores = {
+    'Credito': '#388E3C',
+    'Debito': '#D32F2F',
+    'Dinheiro': '#F57C00',
+    'Pix': '#512DA8',
+}
+
+
+    formas_pagamento = ( Pagamento.objects.values('forma_pagamento')).annotate(total=Count('id'))
+    print(formas_pagamento)
+    formas_pagamento_labels = [item['forma_pagamento'].capitalize() for item in formas_pagamento]
+    formas_pagamento_dados = [item['total'] for item in formas_pagamento]
+    
+    grafico_formas_pagamento = {
+        'labels': formas_pagamento_labels,
+        'datasets': [{
+            'label': '',
+            'data': formas_pagamento_dados,  
+            'backgroundColor': [cores.get(label, '#888') for label in formas_pagamento_labels],
+            'borderColor': [border_cores.get(label, '#666') for label in formas_pagamento_labels],
+            'borderWidth': 1,
+            'borderRadius':10,
+        }]
+    }
+    
     context = {
         'agendamentos':agendamentos,
         
@@ -203,6 +251,9 @@ def dashboard_view(request):
         'evolucao_mensal_data':grafico_evolucao_mensal,
         'distribuicao_por_profissional':grafico_distribuicao_por_profissional,
         'servicos_mais_contratados':grafico_servicos_mais_contratados,
+        'grafico_status_agendamentos': grafico_status_agendamentos,
+        'grafico_formas_pagamento':grafico_formas_pagamento,
+
     }
     return render(request, 'core/dashboard.html', context)
 

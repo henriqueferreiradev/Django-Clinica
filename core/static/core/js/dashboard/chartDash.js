@@ -169,4 +169,104 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (error) {
         console.error("Erro ao montar gráfico de serviços contratados:", error);
     }
+    try {
+        const statusAgendametosChart = JSON.parse(document.getElementById('status-chart').textContent);
+        const ctx5 = document.getElementById('statusChart').getContext('2d');
+
+        new Chart(ctx5, {
+            type: 'bar',
+            data: statusAgendametosChart,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: -150
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 5,
+                            boxWidth: 15,
+                            color: 'white'
+                        }
+                    },
+                    datalabels: {
+                        color: 'white',
+                        anchor: 'center',
+                        align: 'center',
+                        font: {
+                            weight: 'normal'
+                        },
+                        formatter: function (value, context) {
+                            const label = context.chart.data.labels[context.dataIndex]
+                            return `${label} (${value})`;
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            display: true
+                        },
+                        grid: {
+                            display: true
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            display: true
+                        },
+                        grid: {
+                            display: true
+                        },
+                        beginAtZero: false
+                    }
+                }
+            },
+            plugins: [ChartDataLabels] // <- ativa o plugin
+        });
+    } catch (error) {
+        console.error("Erro ao montar gráfico de status:", error);
+    }
+    try {
+        // Pega o JSON já corretamente parseado pelo Django
+        const pagamentoChart = JSON.parse(document.getElementById('formas_pagamento-chart').textContent);
+
+        const ctx6 = document.getElementById('pagamentoChart').getContext('2d');
+        new Chart(ctx6, {
+            type: 'bar',
+            data: pagamentoChart,
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom', // ou 'top', 'left', 'right'
+                        labels: {
+                            color: 'white', // ajusta a cor no modo dark
+                            boxWidth: 15,
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Erro ao montar gráfico:", error);
+    }
 })
