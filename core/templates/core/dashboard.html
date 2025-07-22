@@ -13,27 +13,10 @@
 
 
 
-{% block topbar %}
-<div class="topbar">
-  <div class="topbar-div">
-    <i class='bx bx-menu'></i>
-    <span class="text">Dashboard</span>
-  </div>
+ 
+    {% block topbar_title %}<span class="text">Dashboard</span>{% endblock %}
 
-  <div class="topbar-div">
-    <div class="dropdown">
-      <div class="profile-button">
-          {{ user.get_full_name }} <i class='bx bx-chevron-down'></i>
-      </div>
-      <div class="dropdown-content">
-        <a href="{% url 'config' %}">Ver Perfil</a>
-        <button onclick="toggleDarkMode()">Alternar Tema</button>
-        <a href="{% url 'logout' %}">Sair</a>
-      </div>
-    </div>
-  </div>
-</div>
-{% endblock %}
+   
 {% block content %}
 {% if messages %}
 <div class="messages-container" id="alert-container">

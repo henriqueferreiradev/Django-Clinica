@@ -1,301 +1,170 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 :root {
     --roxoPrincipal: #7F4396;
-    --roxoPrincipal-hover: #76378f11;
-    --roxoPrincipal-hover2: #76378f;
+    --roxoHover: #9253aa;
     --verdePrincipal: #92cbad;
     --branco: #FFF;
     --preto: #000;
     --cinzaBorda: #ccc;
     --cinzaEscuro: #6e6e6e;
-    --fontePrincipal: 'Inter';
+    --fontePrincipal: 'Inter', sans-serif;
 }
 
+body {
+    margin: 0;
+    font-family: var(--fontePrincipal);
+    background-color: #f4f4f4;
+    color: var(--preto);
+}
 
 .content {
+    max-width: 1100px;
+    margin: 2rem auto;
     background: var(--branco);
     border-radius: 15px;
-    overflow: auto;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    padding: 1em;
-    margin-top: 1em;
-    color: var(--preto);
- 
-
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
 }
 
-.content-header {
+.header-precadastro {
+    text-align: center;
+    margin-bottom: 2rem;
+    background: var(--roxoPrincipal);
+    color: var(--branco);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.header-precadastro h2 {
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.header-precadastro p {
+    font-size: 0.9rem;
+}
+
+.form_titulo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--branco);
+    background: var(--roxoPrincipal);
+    padding: 1rem;
+    border-radius: 10px 10px 0 0;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.btn-save {
+    padding: 0.5rem 1.5rem;
+    background: var(--branco);
+    color: var(--roxoPrincipal);
+    border: 2px solid var(--roxoPrincipal);
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
 
-    margin-bottom: 25px;
+.btn-save:hover {
+    background: var(--roxoHover);
+    color: var(--branco);
+    border-color: var(--roxoHover);
+}
+
+.form_div {
+    display: grid;
+    gap: 1.5rem;
+    border: 1px solid var(--roxoPrincipal);
+    border-top: none;
+    border-radius: 0 0 15px 15px;
+    padding: 2rem;
+}
+
+.div_forms {
+    display: grid;
+    gap: 1.5rem;
 }
 
 .form_cadastro-nomes {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-    /* espaço entre os campos */
-}
-
-
-
-#btn-cep {
-
-    height: 40px;
-    font-size: 16px;
-    border-radius: 50px;
-    display: flex;
-    align-self: center;
-    justify-content: center;
-    background-color: var(--roxoPrincipal);
-}
-
-.form_cadastro-nomes .field_cep {
-    flex-basis: 20%;
-
-}
-
-#btn-cep {
-    flex-basis: 1%;
-}
-
-.form_cadastro-nomes .field_70 {
-    flex-basis: 70%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
 }
 
 .formField {
-    margin: .7em;
     position: relative;
-    width: 100%;
-}
-
-/* Esconde o valor da data até clicar */
-.date-s::-webkit-datetime-edit {
-    color: transparent;
-}
-
-.date-s:focus::-webkit-datetime-edit,
-.date-s:valid::-webkit-datetime-edit {
-    color: var(--preto);
-
-}
-.form_cadastro {
     display: flex;
-    gap: 1em;
-}
-  .form_cadastro-nomes {
-    width: 50vw;
- 
+    flex-direction: column;
 }
 
-  .form_cadastro-endereco {
-    width: 50vw;
- 
-}
-.formField .input-s {
-
-    padding: 0.7em;
-    outline: none;
+.input-s,
+.select-s,
+textarea {
+    padding: 0.7rem;
     border: 1px solid var(--verdePrincipal);
-    border-radius: 15px;
-    color: var(--preto);
-    font-size: 14px;
-    font-weight: 400;
-    transition: 0.3s ease-in-out;
-    box-shadow: 0 0 0 5px transparent;
+    border-radius: 10px;
+    font-size: 1rem;
     width: 100%;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-repeat: no-repeat;
-    background-position: right 1em center;
-    background-size: 1em;
-    cursor: pointer;
     box-sizing: border-box;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    resize: none;
+    background: var(--branco);
+    transition: border 0.3s, box-shadow 0.3s;
 }
 
-select {
+textarea {
+    min-height: 120px;
+}
+
+.select-s {
     appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    width: 100%;
-    padding: 10px 40px 10px 12px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: white;
+    background-color: var(--roxoPrincipal-hover);
     background-image: url("data:image/svg+xml,%3Csvg fill='%237F4396' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M207.029 381.476L12.686 187.314C4.902 179.529 0 168.764 0 157.254s4.902-22.275 12.686-30.059l22.627-22.627C43.097 96.686 53.862 91.784 65.373 91.784s22.275 4.902 30.059 12.686L224 247.598l128.568-143.128c7.784-7.784 18.549-12.686 30.059-12.686s22.275 4.902 30.059 12.686l22.627 22.627c7.784 7.784 12.686 18.549 12.686 30.059s-4.902 22.275-12.686 30.059L240.971 381.476c-7.804 7.804-18.768 12.524-30.058 12.524s-22.255-4.72-30.058-12.524z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 16px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-
+    padding-right: 2.5rem;
 }
 
-.formField .select-s {
-    padding: 0.7em;
-    padding-right: 2.5em;
-
-    padding-right: 35px;
-    outline: none;
-    border: 1px solid var(--cinzaBorda);
-    border-radius: 15px;
-    background-color: var(--roxoPrincipal-hover);
-    color: var(--preto);
-    font-size: 25px;
-    font-weight: 400;
-    transition: 0.3s ease-in-out;
-    box-shadow: 0 0 0 5px transparent;
-
-
-
-}
-
-.input-s:focus,
-.input-s.input-preenchido {
-    box-shadow: 1px 0px 3px var(--roxoPrincipal);
-    border: 1px solid var(--roxoPrincipal);
-}
-
-.formField .input-s:hover,
-.formField .input-s:focus {
-    box-shadow: 1px 0px 3px var(--roxoPrincipal);
-    border: 1px solid var(--roxoPrincipal);
-    color: var(--preto);
-}
-
-.formField .input-s:focus .form_cadastro-adicionais {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-}
-
-.formField .span-s {
+.span-s {
     position: absolute;
-    left: 0;
-    top: 0;
-    padding: .6em;
-    color: var(--preto);
-    font-size: 16px;
-    font-weight: 400;
-    transition: 0.3s ease-in-out;
+    top: 0.8rem;
+    left: 0.8rem;
+    font-size: 0.9rem;
+    color: var(--cinzaEscuro);
+    transition: all 0.2s ease;
     pointer-events: none;
+    background: var(--branco);
+    padding: 0 0.3rem;
 }
 
-.formField .textarea-s {
-    flex-grow: 1;
-    resize: none;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-wrap: break-word;
-    white-space: pre-wrap;
-    word-break: break-word;
-    resize: none;
-
-}
-
-.contador {
-    font-size: 12px;
-    color: var(--cinzaBorda);
-}
-
-.formField .input-s:focus+.span-s,
-.formField .input-s.input-preenchido+.span-s {
-    transform: translateY(-30px) translateX(-5px) scale(0.95);
-    transition: 0.3s ease-in-out;
+.input-s:focus+.span-s,
+.input-s.input-preenchido+.span-s,
+textarea:focus+.span-s,
+textarea.input-preenchido+.span-s,
+.select-s:focus+.span-s,
+.select-s.input-preenchido+.span-s {
+    transform: translateY(-1.6rem) scale(0.85);
     color: var(--roxoPrincipal);
-    font-weight: 550;
 }
-
-.form_div {
-    border: 1px solid var(--roxoPrincipal);
-    border-radius: 0 0 15px 15px;
-     padding: 1em;
-    margin: 0 0 1em 0;
-
-}
-
-.div_forms {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    width: 100%;
-}
-
-
-.div_forms .form_cadastro-nomes {
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-
-}
-
-.btn-save {
-    padding: .5em 2em;
-    align-items: center;
-    background-color: var(--branco);
-    color: var(--roxoPrincipal);
-    border-radius: 15px;
-    border: none;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.form_cadastro-nomes button {
-    align-items: center;
-}
-
-.form_titulo {
-    background-color: var(--roxoPrincipal);
-    padding: 1em;
-    border-radius: 15px 15px 0 0;
-    color: var(--branco);
-    font-size: 18px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
 
 .custum-file-upload {
-   
     display: flex;
     flex-direction: column;
-    align-items: space-between;
-    gap: 20px;
-    cursor: pointer;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--verdePrincipal);
-    background-color: var(--branco);
-    padding: 1.5rem;
+    padding: 1rem;
+    border: 2px dashed var(--verdePrincipal);
     border-radius: 10px;
-    box-shadow: 0px 48px 35px -48px #e8e8e8;
-    margin: .6em;
-    transition: 0.3s ease-in-out;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
 }
 
 .custum-file-upload:hover {
-    border: 1px solid var(--roxoPrincipal);
-    box-shadow: 1px 0px 3px var(--roxoPrincipal);
-    border: 1px solid var(--roxoPrincipal);
-}
-
-.custum-file-upload .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-color: var(--roxoPrincipal);
 }
 
 .custum-file-upload .icon svg {
@@ -303,43 +172,57 @@ select {
     fill: var(--roxoPrincipal);
 }
 
-.custum-file-upload .text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .custum-file-upload .text span {
-    font-weight: 400;
+    font-size: 0.875rem;
     color: var(--roxoPrincipal);
-    font-size: 14px;
 }
 
-.custum-file-upload input {
+.form-step {
     display: none;
-}
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .form-step.active {
+    display: block;
+  }
+  
+  .form-navigation {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
 
-.content::-webkit-scrollbar-thumb {
-    background-color: var(--roxoPrincipal);
-}
+@media (max-width: 768px) {
+    .form_titulo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
 
-.custum-file-upload {
-    position: relative;
-    overflow: hidden;
-}
+    .btn-save {
+        width: 100%;
+    }
 
-.custum-file-upload img#preview {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-    z-index: 1;
-}
+    .form_cadastro-nomes {
+        grid-template-columns: 1fr !important;
+    }
 
-.custum-file-upload>*:not(#preview) {
-    position: relative;
-    z-index: 1;
+    .form_div {
+        padding: 1rem;
+    }
 }

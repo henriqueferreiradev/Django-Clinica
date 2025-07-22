@@ -171,16 +171,28 @@
   <div class="topbar-div">
     <i class='bx bx-menu'></i>
 
-    {# Bloco opcional para o título #}
     <span class="text">
       {% block topbar_title %}Dashboard{% endblock %}
     </span>
 
-    {# Bloco opcional para o campo de busca #}
     {% block topbar_search %}{% endblock %}
   </div>
 
   <div class="topbar-div">
+    <!-- Ícone de notificação (sino) -->
+    <div class="notification">
+      <i class='bx bx-bell'></i>
+      <span class="badge" id="notification-count">3</span> <!-- Exemplo: 3 alertas -->
+      <div class="notification-dropdown">
+        <ul>
+          <li>🔔 Novo paciente agendado para amanhã</li>
+          <li>⚠️ Falta registrada hoje</li>
+          <li>📅 Feriado na próxima quarta-feira</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Perfil -->
     <div class="dropdown">
       <div class="profile-button">
         {{ user.get_full_name }} <i class='bx bx-chevron-down'></i>
@@ -193,6 +205,7 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
 
       {% block content %}{% endblock %}

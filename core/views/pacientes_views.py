@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente, Pendencia,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
+from core.tokens import gerar_token_precadastro
 def pacientes_view(request):
     
     # Opções de filtro
@@ -113,7 +114,12 @@ def pacientes_view(request):
         'uf_choices': UF_ESCOLHA,
         'cor_choices': COR_RACA,
     })
+    
+    
 @login_required(login_url='login')
+
+
+
 def cadastrar_pacientes_view(request):
     mostrar_todos = request.GET.get('mostrar_todos') == 'on'
     filtra_inativo = request.GET.get('filtra_inativo') == 'on'
@@ -269,17 +275,23 @@ def editar_paciente_view(request,id):
         paciente.vinculo = request.POST.get('vinculo')
         paciente.telEmergencia = request.POST.get('telEmergencia')
 
+        paciente.pre_cadastro=False         
+        paciente.conferido=True         
         paciente.ativo = True
         if 'foto' in request.FILES:
             paciente.foto = request.FILES['foto']
-
+        
         paciente.save()
         messages.success(request, f'Dados de {paciente.nome} atualizados!')
+        print("Conferido:", paciente.conferido)
+        print("Pré-cadastro:", paciente.pre_cadastro)   
+        
         registrar_log(usuario=request.user,
             acao='Edição',
             modelo='Paciente',
             objeto_id=paciente.id,
             descricao=f'Paciente {paciente.nome} editado.')
+        
         return redirect('pacientes')  
 
     context = {
@@ -361,9 +373,81 @@ def dados_paciente(request, paciente_id):
 
 
 
+ 
 def pre_cadastro(request):
-    return render(request, 'core/pacientes/pre_cadastro.html')
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        cpf = request.POST.get('cpf')
+        nascimento = request.POST.get('nascimento')
+        try:
+            nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
+        except ValueError:
+            messages.error(request, 'Formato de data inválido (use DD/MM/AAAA)')
+            return redirect('pre_cadastro')
 
+        foto = request.FILES.get('foto')
+
+        if Paciente.objects.filter(cpf=cpf).exists():
+            messages.error(request, "❌ Já existe um paciente com este CPF.")
+            return redirect('pre_cadastro')
+
+        paciente = Paciente.objects.create(
+            nome=nome,
+            sobrenome=request.POST.get('sobrenome'),
+            nomeSocial=request.POST.get('nomeSocial'),
+            cpf=cpf,
+            vinculo=request.POST.get('vinculo'),
+            redeSocial=request.POST.get('redeSocial'),
+            profissao=request.POST.get('profissao'),
+            rg=request.POST.get('rg'),
+            data_nascimento=nascimento_formatada,
+            cor_raca=request.POST.get('cor'),
+            sexo=request.POST.get('sexo'),
+            naturalidade=request.POST.get('naturalidade'),
+            uf=request.POST.get('uf'),
+            estado_civil=request.POST.get('estado_civil'),
+            complemento=request.POST.get('complemento'),
+            midia=request.POST.get('midia'),
+            cep=request.POST.get('cep'),
+            rua=request.POST.get('rua'),
+            numero=request.POST.get('numero'),
+            bairro=request.POST.get('bairro'),
+            cidade=request.POST.get('cidade'),
+            estado=request.POST.get('estado'),
+            telefone=request.POST.get('telefone'),
+            celular=request.POST.get('celular'),
+            nomeEmergencia=request.POST.get('nomeEmergencia'),
+            telEmergencia=request.POST.get('telEmergencia'),
+            email=request.POST.get('email'),
+            observacao=request.POST.get('observacao'),
+            ativo=True,
+            pre_cadastro=True,         
+            conferido=False            
+        )
+
+        if foto:
+            paciente.foto = foto
+            paciente.save()
+
+        # ✅ Criar pendência para profissional responsável
+        Pendencia.objects.create(
+            tipo='Pré-cadastro',
+            descricao=f"Conferir pré-cadastro de {paciente.nome}",
+            vinculado_paciente=paciente,
+            resolvido=False
+        )
+
+        messages.success(request, "✅ Pré-cadastro enviado com sucesso! Entraremos em contato.")
+        return redirect('pre_cadastro')
+
+    return render(request, 'core/pacientes/pre_cadastro.html', {
+        'estado_civil_choices': ESTADO_CIVIL,
+        'midia_choices': MIDIA_ESCOLHA,
+        'sexo_choices': SEXO_ESCOLHA,
+        'uf_choices': UF_ESCOLHA,
+        'cor_choices': COR_RACA,
+        'vinculo_choices': VINCULO,
+    })
 
 
 FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']

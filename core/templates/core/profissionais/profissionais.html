@@ -21,7 +21,7 @@
 <div class="card-grid">
     {% for profissional in profissionais %}
       <div class="card">
-        <div>
+        <div class='dropdown-wrapper'>
           <button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
           <div class="dropdown_menu">
             <button onclick="abrirModal({{ profissional.id }})">Ver detalhes</button>

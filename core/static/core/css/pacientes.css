@@ -5,7 +5,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    
 }
 
 body {
@@ -170,7 +170,7 @@ body {
 
 
 .inativo {
-    background-color: rgb(255, 194, 194);
+    background-color: rgba(255, 0, 0, 0.109);
 }
 
 
@@ -196,20 +196,7 @@ body {
     margin: 0;
 }
 
-.btn-add {
-    padding: 10px 15px;
-    background-color: #009578;
-    color: var(--branco);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-add:hover {
-    background-color: #007b63;
-}
-
-
+ 
 /*==========TABELA============================TABELA===========================TABELA==========*/
 .tabela-container {
     background: var(--branco);
@@ -311,67 +298,7 @@ thead tr th:last-child {
 
 }
 
-
-.coolinput {
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
-    position: static;
-    max-width: 240px;
-}
-
-.coolinput label.text {
-    font-size: 0.75rem;
-    color: #000000;
-    font-weight: 700;
-    position: relative;
-    top: 0.5rem;
-    margin: 0 0 0 7px;
-    padding: 0 3px;
-    background: #e8e8e8;
-    width: fit-content;
-}
-
-.coolinput input[type="text"].input {
-    padding: 11px 10px;
-    font-size: 0.75rem;
-    border: 2px #000000 solid;
-    border-radius: 5px;
-    background: #e8e8e8;
-}
-
-.coolinput input[type="text"].input:focus {
-    outline: none;
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal {
-    background: var(--branco);
-    padding: 30px;
-    border-radius: 8px;
-    width: 80vw;
-    height: 90vh;
-}
-
-.close-modal {
-    background: #e74c3c;
-    color: var(--branco);
-
-}
-
-
-
+ 
 
 .tabela_infos-dados {
     display: flex;
@@ -385,44 +312,10 @@ thead tr th:last-child {
 
 }
 
-.modal-dados {
-    display: flex;
-    gap: 20px;
-    width: 100%;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 1em;
-
-}
-
-.modal-dados>div {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+ 
 
 
-.modal-dados>div:nth-child(1),
-.modal-dados>div:nth-child(2) {
-    flex: 0 0 35%;
-}
-
-.modal-dados>div:nth-child(3) {
-    flex: 0 0 27%;
-}
-
-
-
-
-.modal-dados-doc {
-    display: flex;
-    align-items: center;
-    gap: 1em;
-
-}
-
+ 
 
 .input-style {
     width: 100%;
@@ -434,43 +327,8 @@ thead tr th:last-child {
     height: 40px;
 }
 
-
-#corInput {
-    flex: 1 1 25%;
-
-}
-
-#sexoInput {
-    flex: 1 1 25%;
-}
-
-#naturalidadeInput {
-    flex: 1 1 25%;
-}
-
-#ufInput {
-    flex: 1 1 10%;
-}
-
-
-.select-s {
-    padding: 0.5em;
-    padding-right: 2.5em;
-
-    padding-right: 35px;
-    outline: none;
-    border: 1px solid var(--cinzaBorda);
-    border-radius: 15px;
-    background-color: var(--cinzaBorda);
-    color: var(--preto);
-    font-size: 14px;
-    font-weight: 400;
-    transition: 0.3s ease-in-out;
-    box-shadow: 0 0 0 5px transparent;
-
-
-
-}
+ 
+ 
 
 @media (max-width: 768px) {
     .content-header {
@@ -607,4 +465,30 @@ thead tr th:last-child {
     to {
         transform: rotate(360deg);
     }
+}
+
+ 
+.linha-pendente {
+    background-color: #fff3cd6f !important;
+    font-weight: 600;
+}
+
+.status-pendente {
+    background-color: #f39c12;
+    /* Laranja */
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: black !important;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-conferido{
+    background-color: #4CAF50;
+    /* Laranja */
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: black !important;
+    font-size: 12px;
+    font-weight: 600;
 }

@@ -211,6 +211,9 @@ class Paciente(models.Model):
      
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
+    pre_cadastro = models.BooleanField(default=False)
+    conferido = models.BooleanField(default=False)
+    
     def __str__(self):
         return self.nome
 
@@ -448,3 +451,10 @@ class LogAcao(models.Model):
     def __str__(self):
         return f"{self.acao} em {self.modelo} (ID {self.objeto_id}) por {self.usuario}"
 
+class Pendencia(models.Model):
+    tipo = models.CharField(max_length=100)
+    descricao = models.TextField()
+    vinculado_paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    resolvido = models.BooleanField(default=False)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    responsavel = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)

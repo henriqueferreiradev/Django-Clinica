@@ -1,9 +1,9 @@
 function abrirFicha(url) {
     const novaAba = window.open(url, '_blank');
     novaAba.onload = function () {
-      novaAba.print();
+        novaAba.print();
     };
-  }
+}
 
 function previewImage(event) {
     const preview = document.getElementById('preview');
@@ -12,7 +12,7 @@ function previewImage(event) {
     if (file) {
         const reader = new FileReader();
 
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             preview.src = e.target.result;
             preview.style.display = 'block'; // Exibe a imagem
         };
@@ -90,7 +90,7 @@ function montarEndereco(data) {
     if (data.bairro) partes.push(data.bairro)
 
     const cidadeEstado = []
-   
+
     if (data.cidade) partes.push(data.cidade)
     if (data.estado) partes.push(data.estado)
     if (cidadeEstado.length) partes.push(cidadeEstado.join(' -'))
@@ -121,12 +121,12 @@ function abrirModal(pacienteId) {
             document.getElementById('pacienteEndereco').innerText = endereco;
             document.getElementById('pacienteObs').innerText = data.observacao;
             const img = document.getElementById('pacienteFoto');
-         
-            
+
+
             if (data.foto) {
-              img.src = window.location.origin + data.foto;
+                img.src = window.location.origin + data.foto;
             } else {
-              img.src = "/static/core/img/defaultPerfil.png";
+                img.src = "/static/core/img/defaultPerfil.png";
             }
             // Mostrar modal
             document.getElementById('modalOverlay').style.display = 'flex';
@@ -150,30 +150,35 @@ document.querySelector('input[name="q"]').addEventListener('keyup', function () 
         const match = nome.includes(search) || cpf.includes(search);
         row.style.display = match ? "" : "none";
     });
+
 })
 
 function toggleDropdown(button) {
-    const dropdown = button.nextElementSibling;
+ 
 
-    // Fecha todos os outros dropdowns
-    document.querySelectorAll(".dropdown").forEach(drop => {
-        if (drop !== dropdown) {
-            drop.style.display = "none";
+    const wrapper = button.closest(".dropdown-wrapper");
+    const dropdown = wrapper.querySelector(".dropdown_menu");
+
+    document.querySelectorAll(".dropdown_menu").forEach(menu => {
+        if (menu !== dropdown) {
+            menu.style.display = "none";
         }
     });
 
-    // Alterna o dropdown atual
     dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
 
-    // Adiciona o listener global só uma vez
-    document.addEventListener("click", function handleClickOutside(event) {
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+    function handleClickOutside(event) {
+        if (!wrapper.contains(event.target)) {
             dropdown.style.display = "none";
-            document.removeEventListener("click", handleClickOutside); // Remove após esconder
+            document.removeEventListener("click", handleClickOutside);
         }
-    });
+    }
+
+    setTimeout(() => {
+        document.addEventListener("click", handleClickOutside);
+    }, 0);
 }
- 
+
 
 function temporizadorAlerta() {
     setTimeout(() => {
@@ -188,14 +193,14 @@ temporizadorAlerta()
 let tooltipDelay;
 
 function mostrarPopupComDelay(elemento) {
-  tooltipDelay = setTimeout(() => {
-    const popup = elemento.querySelector('.tooltip-popup');
-    popup.style.display = 'block';
-  }, 1000); // 1 segundo de delay
+    tooltipDelay = setTimeout(() => {
+        const popup = elemento.querySelector('.tooltip-popup');
+        popup.style.display = 'block';
+    }, 1000); // 1 segundo de delay
 }
 
 function ocultarPopup(elemento) {
-  clearTimeout(tooltipDelay);
-  const popup = elemento.querySelector('.tooltip-popup');
-  popup.style.display = 'none';
+    clearTimeout(tooltipDelay);
+    const popup = elemento.querySelector('.tooltip-popup');
+    popup.style.display = 'none';
 }
