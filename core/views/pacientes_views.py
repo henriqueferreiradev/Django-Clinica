@@ -11,7 +11,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
-from core.tokens import gerar_token_precadastro
+from core.tokens import gerar_token_acesso_unico, verificar_token_acesso
 def pacientes_view(request):
     
     # Opções de filtro
@@ -450,6 +450,15 @@ def pre_cadastro(request):
     })
 
 
+def pre_cadastro_tokenizado(request, token):
+    valido = verificar_token_acesso(token)
+    if not valido:
+        return render(request, 'core/pacientes/link_expirado.html')   
+
+    return pre_cadastro(request) 
+
+
+
 FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
 PENDENTES = ['pre','agendado']
 
@@ -624,3 +633,11 @@ def perfil_paciente(request,paciente_id):
                 'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
+
+@login_required
+def gerar_link_publico_precadastro(request):
+    token = gerar_token_acesso_unico()
+    link = request.build_absolute_uri(f"/pacientes/pre_cadastro_token/{token}/")
+    return render(request, 'core/pacientes/link_gerado.html', {
+        'link_tokenizado': link
+    })

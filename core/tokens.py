@@ -1,15 +1,14 @@
 from itsdangerous import URLSafeTimedSerializer
 from django.conf import settings
 
-def gerar_token_precadastro(paciente_id):
+def gerar_token_acesso_unico(payload="formulario_pre_cadastro"):
     s = URLSafeTimedSerializer(settings.SECRET_KEY)
-    return s.dumps(paciente_id, salt='pre_cadastro')
+    return s.dumps(payload, salt="formulario_paciente")
 
-def verificar_token_precadastro(token, tempo_expiracao=60):
+def verificar_token_acesso(token, tempo_expiracao=60):  # 24h padrão
     s = URLSafeTimedSerializer(settings.SECRET_KEY)
-    try: 
-        paciente_id = s.loads(token, salt='pre_cadastro', max_age=tempo_expiracao)
-        return paciente_id
+    try:
+        payload = s.loads(token, salt="formulario_paciente", max_age=tempo_expiracao)
+        return payload
     except Exception:
         return None
-    

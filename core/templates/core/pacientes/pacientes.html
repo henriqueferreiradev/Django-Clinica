@@ -47,6 +47,9 @@
       </select>
       <button type="submit">Filtrar</button>
     </form>
+    <form action="{% url 'gerar_link_publico_precadastro' %}" method="get" style="display:inline;">
+  <button type="submit" class="btn btn-primary">🔗 Gerar Link de Pré-Cadastro</button>
+</form>
     <button  onclick="window.location.href='{% url 'cadastrar_paciente' %}'">+ Add Paciente</button>
   </div>
   </div>
@@ -68,9 +71,8 @@
       <tbody>
         {% for paciente in pacientes %}
         <tr class="
-    {% if not paciente.ativo %}inativo {% endif %}
-    {% if paciente.pre_cadastro and not paciente.conferido %}linha-pendente{% endif %}
-">
+          {% if not paciente.ativo %}inativo {% endif %}
+          {% if paciente.pre_cadastro and not paciente.conferido %}linha-pendente{% endif %}">
           <td>
             <div class="tooltip-wrapper"
                  onmouseenter="mostrarPopupComDelay(this)"

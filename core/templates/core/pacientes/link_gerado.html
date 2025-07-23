@@ -1,0 +1,21 @@
+{% extends 'core/base.html' %}
+{% block title %}Link de Pré-Cadastro{% endblock %}
+{% block topbar_title %}Link de Pré-Cadastro{% endblock %}
+{% block content %}
+<div class="content">
+  <h2>Link de Pré-Cadastro</h2>
+  <p>Copie o link abaixo e envie para o paciente preencher os dados:</p>
+
+  <input type="text" id="link" value="{{ link_tokenizado }}" readonly style="width: 100%; padding: 10px;">
+  <button onclick="copiarLink()" class="btn-save" style="margin-top: 10px;">📋 Copiar Link</button>
+</div>
+
+<script>
+function copiarLink() {
+  var input = document.getElementById("link");
+  input.select();
+  document.execCommand("copy");
+  alert("Link copiado para área de transferência!");
+}
+</script>
+{% endblock %}
