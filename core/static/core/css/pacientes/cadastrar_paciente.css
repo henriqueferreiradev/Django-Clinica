@@ -248,7 +248,7 @@ select {
   background-color: var(--roxoPrincipal);
   padding: 1em;
   border-radius: 15px 15px 0 0;
-  color: var(--branco);
+  color: white;
   font-size: 18px;
   font-weight: 600;
   display: flex;
