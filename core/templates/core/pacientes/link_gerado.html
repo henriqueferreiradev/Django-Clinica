@@ -1,21 +1,72 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
 {% block title %}Link de Pré-Cadastro{% endblock %}
 {% block topbar_title %}Link de Pré-Cadastro{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/pacientes/link_gerado.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+{% endblock %}
+
 {% block content %}
 <div class="content">
-  <h2>Link de Pré-Cadastro</h2>
-  <p>Copie o link abaixo e envie para o paciente preencher os dados:</p>
+  <div class="right_content">
 
-  <input type="text" id="link" value="{{ link_tokenizado }}" readonly style="width: 100%; padding: 10px;">
-  <button onclick="copiarLink()" class="btn-save" style="margin-top: 10px;">📋 Copiar Link</button>
+    <h2><i class='bx bx-link-alt'></i> Link de Pré-Cadastro</h2>
+
+    <div class="steps">
+      <p>📋 <strong>Passo 1:</strong> Copie o link ou use os botões abaixo</p>
+      <p>📤 <strong>Passo 2:</strong> Envie por WhatsApp ou outro canal</p>
+      <p>📱 <strong>Passo 3:</strong> O paciente preenche no celular</p>
+    </div>
+
+    <div class="right_link">
+      <div class="right_link-link">
+        <input type="text" id="link" value="{{ link_tokenizado }}" readonly>
+        <button onclick="copiarLink()" class="btn-save">
+          <i class='bx bx-copy'></i>
+        </button>
+      </div>
+
+      <div class="social-buttons">
+        <button onclick="enviarWhatsapp()"><i class='bx bxl-whatsapp'></i></button>
+        <button onclick="window.open('https://telegram.me/share/url?url=' + encodeURIComponent(link))"><i class='bx bxl-telegram'></i></button>
+        <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link))"><i class='bx bxl-facebook'></i></button>
+        <button><i class='bx bxl-instagram'></i></button> <!-- Apenas visual, pois o Instagram não aceita links -->
+      </div>
+    </div>
+
+    <p>Ou leia o QR Code</p>
+    <img src="data:image/png;base64,{{ qrcode_base64 }}" alt="QR Code do Link">
+
+    <p style="color:#888; font-size:13px; margin-top:20px;">
+      💡 O preenchimento pode ser feito no consultório ou de casa.  
+      Em caso de dúvidas, a recepção está à disposição.
+    </p>
+  </div>
+  <div class="left_content">
+    <table>
+      
+    </table>
+  </div>
 </div>
 
+<div id="copiado" class="toast">✅ Link copiado com sucesso!</div>
+
 <script>
-function copiarLink() {
-  var input = document.getElementById("link");
-  input.select();
-  document.execCommand("copy");
-  alert("Link copiado para área de transferência!");
-}
+  const link = document.getElementById("link").value;
+
+  function copiarLink() {
+    navigator.clipboard.writeText(link);
+    const toast = document.getElementById("copiado");
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  }
+
+  function enviarWhatsapp() {
+    const mensagem = `Olá! Para agilizar seu atendimento, preencha o formulário: ${encodeURIComponent(link)}`;
+    window.open(`https://wa.me/?text=${mensagem}`, "_blank");
+  }
 </script>
 {% endblock %}

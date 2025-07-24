@@ -12,6 +12,16 @@ from django.contrib import messages
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
 from core.tokens import gerar_token_acesso_unico, verificar_token_acesso
+
+import qrcode
+import base64
+from io import BytesIO
+
+
+
+
+
+
 def pacientes_view(request):
     
     # Opções de filtro
@@ -638,6 +648,14 @@ def perfil_paciente(request,paciente_id):
 def gerar_link_publico_precadastro(request):
     token = gerar_token_acesso_unico()
     link = request.build_absolute_uri(f"/pacientes/pre_cadastro_token/{token}/")
+    
+    qr = qrcode.make(link)
+    buffer = BytesIO()
+    qr.save(buffer, format='PNG')
+    img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+    
     return render(request, 'core/pacientes/link_gerado.html', {
-        'link_tokenizado': link
+        'link_tokenizado': link,
+        'qrcode_base64':img_base64,
     })

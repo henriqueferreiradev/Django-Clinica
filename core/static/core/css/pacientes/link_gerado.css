@@ -1,0 +1,130 @@
+.content {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+
+}
+
+.right_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 700px;
+    width: 30%;
+
+}
+.left_content {
+    width: 70%;
+}
+.right_content p {
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #ccc;
+}
+
+.right_link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.right_link input {
+    flex: 1;
+    background-color: #333;
+    color: #eee;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 15px;
+}
+
+.right_link .btn-save {
+    background-color: var(--roxoPrincipal, #7F4396);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-size: 18px;
+}
+
+.right_link .btn-save:hover {
+    background-color: var(--roxo-primary-hover, #9b58b4);
+    transform: scale(1.05);
+}
+
+.social-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.social-buttons button {
+    background-color: #444;
+    color: #fff;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.social-buttons button:hover {
+    background-color: var(--roxoPrincipal-hover2, #76378f);
+    transform: scale(1.1);
+}
+
+.right_link-link {
+    width: 100%;
+}
+
+.right_content img {
+    width: 100%;
+    max-width: 300px;
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+.steps p {
+    color: #ccc;
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.toast {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+    .right_link {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .right_link input {
+        width: 100%;
+    }
+
+    .social-buttons {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+}
