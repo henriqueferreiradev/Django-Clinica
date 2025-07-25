@@ -1,7 +1,10 @@
 .content {
     display: flex;
     justify-content: center;
-    padding: 40px 20px;
+    background-color: transparent;
+    box-shadow: none;
+    gap: 1em;
+    padding: 0;
 
 }
 
@@ -9,10 +12,20 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 30px;
-    border-radius: 16px;
+    gap: 1em;
+    
     max-width: 700px;
     width: 30%;
+
+
+}
+
+.left_content,
+.right_content {
+    background-color: var(--branco);
+    padding: 1.5em;
+    border-radius: 16px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 
 }
 
@@ -21,44 +34,56 @@
 }
 
 .right_content p {
-    margin-bottom: 16px;
+
     font-size: 16px;
     color: #ccc;
+}
+
+.right_link-link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    padding: 0;
 }
 
 .right_link {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 20px;
+    width: 100%;
 }
 
 .right_link input {
     flex: 1;
     background-color: #333;
     color: #eee;
-    border: 1px solid #555;
-    border-radius: 8px;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 8px 0 0 8px;
     padding: 12px;
     font-size: 15px;
+    outline: none;
+
 }
 
 .right_link .btn-save {
-    background-color: var(--roxoPrincipal, #7F4396);
+    background-color: var(--roxoPrincipal);
     color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 14px;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 0 8px 8px 0;
+     
     cursor: pointer;
     transition: 0.3s ease;
-    font-size: 18px;
+    font-size: 15px;
+    height: 100%;
+
 }
 
 .right_link .btn-save:hover {
     background-color: var(--roxo-primary-hover, #9b58b4);
-    transform: scale(1.05);
+
 }
 
 .social-buttons {
@@ -71,7 +96,7 @@
     background-color: #444;
     color: #fff;
     border: none;
-    padding: 10px 12px;
+    padding: 10px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 20px;
@@ -89,14 +114,22 @@
 
 .right_content img {
     width: 100%;
-    max-width: 300px;
+    max-width: 390px;
     display: block;
     margin: 0 auto;
     border-radius: 10px;
 }
 
+.steps {
+    background-color: #7e43967f;
+    padding: 0.5em;
+    border-radius: 10px;
+    border: 1px solid var(--roxoPrincipal);
+}
+
 .steps p {
-    color: #ccc;
+
+    color: var(--preto);
     margin-bottom: 6px;
     font-size: 15px;
 }

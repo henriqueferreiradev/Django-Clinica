@@ -655,6 +655,10 @@ def gerar_link_publico_precadastro(request):
     img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
     
+    
+    pacientes = Paciente.objects.filter(pre_cadastro=True)
+    print(pacientes)
+    
     return render(request, 'core/pacientes/link_gerado.html', {
         'link_tokenizado': link,
         'qrcode_base64':img_base64,
@@ -663,8 +667,7 @@ def gerar_link_publico_precadastro(request):
 
 def pagina_precadastro(request):
 
-    pacientes = Paciente.objects.filter(pre_cadastro=True)
-    print(pacientes)
+
 
     context = {
         'pacientes':pacientes,

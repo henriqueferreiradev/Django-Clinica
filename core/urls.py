@@ -30,7 +30,7 @@ urlpatterns = [
     path("api/buscar-pacientes/", pacientes_views.buscar_pacientes, name="buscar_pacientes"),
     path('pacientes/pre_cadastro/', pacientes_views.pre_cadastro, name='pre_cadastro'),
     path('pacientes/link/', pacientes_views.gerar_link_publico_precadastro, name='gerar_link_publico_precadastro'),
-    path('pacientes/pre_cadastro_token/<str:token>/', pacientes_views.pre_cadastro_tokenizado, name='pre_cadastro_token'),
+    path('pacientes/link/<str:token>/', pacientes_views.pre_cadastro_tokenizado, name='pre_cadastro_token'),
 
 
     path('profissionais/', profissionais_views.profissionais_view, name='profissionais'),
