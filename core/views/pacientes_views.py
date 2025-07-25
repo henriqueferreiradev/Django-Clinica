@@ -647,7 +647,7 @@ def perfil_paciente(request,paciente_id):
 @login_required
 def gerar_link_publico_precadastro(request):
     token = gerar_token_acesso_unico()
-    link = request.build_absolute_uri(f"/pacientes/pre_cadastro_token/{token}/")
+    link = request.build_absolute_uri(f"/pacientes/link/{token}/")
     
     qr = qrcode.make(link)
     buffer = BytesIO()
@@ -659,3 +659,17 @@ def gerar_link_publico_precadastro(request):
         'link_tokenizado': link,
         'qrcode_base64':img_base64,
     })
+
+
+def pagina_precadastro(request):
+
+    pacientes = Paciente.objects.filter(pre_cadastro=True)
+    print(pacientes)
+
+    context = {
+        'pacientes':pacientes,
+    }
+
+    return render(request, 'core/pacientes/link_gerado.html', context)
+
+

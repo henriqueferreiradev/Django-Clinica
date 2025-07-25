@@ -15,9 +15,11 @@
     width: 30%;
 
 }
+
 .left_content {
     width: 70%;
 }
+
 .right_content p {
     margin-bottom: 16px;
     font-size: 16px;
@@ -111,6 +113,101 @@
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
     z-index: 1000;
 }
+
+
+.left_content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.left_content table thead {
+    background-color: var(--roxoPrincipal);
+    color: var(--branco);
+}
+
+th,
+td {
+    padding: .05em 1em;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid var(--cinzaBorda);
+}
+
+th {
+    padding: 1em;
+}
+
+.badge {
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: white !important;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+thead tr th:first-child {
+    border-top-left-radius: 12px;
+}
+
+thead tr th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.action-btn {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: var(--preto);
+    box-shadow: none;
+}
+
+.action-btn:hover {
+    background: transparent;
+}
+
+.dropdown_menu {
+    position: absolute;
+    background: var(--cinzaBorda);
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    display: none;
+    flex-direction: column;
+    min-width: 120px;
+    z-index: 10;
+    color: var(--preto);
+}
+
+.dropdown_menu button {
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--preto);
+    box-shadow: none
+}
+
+.dropdown_menu button:hover {
+    background: var(--cinzaBorda);
+
+}
+
+
+
+.tabela_infos-dados {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    gap: 1em;
+    position: fixed;
+    bottom: 25px;
+    left: 105px;
+    right: 0;
+
+}
+
+
 
 /* Responsivo */
 @media (max-width: 600px) {
