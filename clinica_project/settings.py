@@ -14,6 +14,8 @@ from pathlib import Path
 import dj_database_url
 import os
 from decouple import config
+from django.contrib.auth import get_user_model
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -136,3 +138,17 @@ DEFAULT_FROM_EMAIL = 'Ponto de Equilibrio <notificacao.pontodeequilibrio@gmail.c
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+if os.environ.get('CREATE_SUPERUSER', 'False') == 'True':
+    try:
+        User = get_user_model()
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser(
+                username='dotzen_log',
+                email='dotzen_log@example.com',
+                password='skillet@56'
+            )
+            print("✅ Superusuário criado com sucesso")
+    except Exception as e:
+        print("❌ Erro ao criar superusuário:", e)
