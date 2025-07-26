@@ -6,6 +6,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/pacientes/link_gerado.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/pacientes/pacientes.css' %}">
 <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
 {% endblock %}
 
@@ -28,6 +29,7 @@
       </form>
       <button type="button" class="btn btn-primary">Atualizar tabela</button>
     </div>
+    <p>Copie o código para enviar</p>
     <div class="right_link">
       <div class="right_link-link">
         <input type="text" id="link" value="{{ link_tokenizado }}" readonly>
@@ -68,6 +70,7 @@
           </tr>
         </thead>
         <tbody>
+          {% if pacientes %}
           {% for paciente in pacientes %}
           <tr>
             <td>{{ paciente.nome }}</td>
@@ -102,8 +105,12 @@
 
           </tr>
           {% endfor %}
-      </table>
+          {% else %}
+          <tr><td class='linha-vazia' colspan="8">No momento não existem pré-cadastros a serem verificados.</td></tr>
+        
+          {% endif %}
       </tbody>
+    </table>
 
     </div>
   </div>
@@ -125,4 +132,6 @@
       window.open(`https://wa.me/?text=${mensagem}`, "_blank");
     }
   </script>
+  <script src="{% static '/core/js/pacientes/base.js' %}"></script>
+
   {% endblock %}

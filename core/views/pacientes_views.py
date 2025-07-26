@@ -662,17 +662,9 @@ def gerar_link_publico_precadastro(request):
     return render(request, 'core/pacientes/link_gerado.html', {
         'link_tokenizado': link,
         'qrcode_base64':img_base64,
+        'pacientes' : pacientes
     })
 
 
-def pagina_precadastro(request):
-
-
-
-    context = {
-        'pacientes':pacientes,
-    }
-
-    return render(request, 'core/pacientes/link_gerado.html', context)
-
+ 
 

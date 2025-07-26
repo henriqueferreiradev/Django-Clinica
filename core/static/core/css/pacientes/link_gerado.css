@@ -13,7 +13,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1em;
-    
+
     max-width: 700px;
     width: 30%;
 
@@ -73,7 +73,7 @@
     color: #fff;
     border: 1px solid var(--roxoPrincipal);
     border-radius: 0 8px 8px 0;
-     
+
     cursor: pointer;
     transition: 0.3s ease;
     font-size: 15px;
@@ -240,7 +240,12 @@ thead tr th:last-child {
 
 }
 
+.linha-vazia {
+    text-align: center;
+    color: var(--cinzaEscuro);
+    padding: 1em;
 
+}
 
 /* Responsivo */
 @media (max-width: 600px) {
