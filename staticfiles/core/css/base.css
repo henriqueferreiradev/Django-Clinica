@@ -7,7 +7,8 @@
   --roxo-primary-hover: #9b58b4;
   --verdePrincipal: #92cbad;
   --branco: #FFF;
-  --preto: #000;
+  --bg-color: #E4E9F7;
+  --preto: #11101d;
   --cinzaBorda: #ccc;
   --cinzaEscuro: #6e6e6e;
   --fontePrincipal: 'Inter';
@@ -18,25 +19,26 @@
   padding: 0;
   box-sizing: border-box;
   font-family: var(--fontePrincipal);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 body {
+  background-color: var(--bg-color);
+  color: var(--preto);
   overflow: hidden;
 }
 
-/*
-input
-{
-  height: 35px;
-  border: none;
-  border-bottom: 2px solid var(--roxoPrincipal);
-  background-color: transparent;
-  outline: none;
-  margin: 1em;
-}
-  */
+
 select {
   border: none;
+}
+
+select,
+input,
+textarea {
+  background-color: var(--branco);
+  color: var(--preto);
+  border: 1px solid var(--cinzaBorda);
 }
 
 button {
@@ -44,7 +46,7 @@ button {
   background-color: var(--roxoPrincipal);
   border-radius: 15px;
   border: none;
-  color: var(--branco);
+  color: white;
   font-weight: 500;
   cursor: pointer;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
@@ -52,6 +54,27 @@ button {
 
 button:hover {
   background-color: var(--roxo-primary-hover);
+}
+
+.bx_btn {
+
+  background-color: transparent;
+  border-radius: 15px;
+  border: none;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+
+}
+
+.content {
+  background: transparent;
+  border-radius: 15px;
+  overflow: auto;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  padding: 1em;
+  margin-top: 1em;
+  height: calc(100vh - 90px);
 }
 
 .sidebar {
@@ -167,7 +190,7 @@ button:hover {
 .sidebar .nav-links li a .link_name {
   font-size: 16px;
   font-weight: 500;
-  color: var(--branco);
+  color: white;
   transition: all 0.4s ease;
 }
 
@@ -189,7 +212,7 @@ button:hover {
 }
 
 .sidebar .nav-links li .sub-menu a {
-  color: var(--branco);
+  color: white;
   font-size: 15px;
   padding: 5px 0;
   white-space: nowrap;
@@ -304,7 +327,7 @@ button:hover {
 
 .home-section {
   position: relative;
-  background: #E4E9F7;
+  background: transparent;
   height: 100vh;
   left: 260px;
   width: calc(100% - 260px);
@@ -353,7 +376,7 @@ button:hover {
 
 .home-section .home-content .bx-menu,
 .home-section .home-content .text {
-  color: #11101d;
+  color: var(--preto);
   font-size: 35px;
 
 }
@@ -423,35 +446,157 @@ button:hover {
   font-size: 20px;
   color: black;
   box-shadow: none;
+
 }
 
 .action-btn:hover {
   background: transparent;
 }
 
-.dropdown {
-  position: absolute;
-  background: var(--branco);
-  border-radius: 8px;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  display: none;
-  flex-direction: column;
-  min-width: 120px;
-  z-index: 10;
-  color: black;
+.bx {
+  font-size: 28px;
 }
 
-.dropdown button {
-  padding: 10px;
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+
+  background-color: var(--roxoPrincipal);
+  color: var(--branco);
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.3em;
+  position: absolute;
+  z-index: 500;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.6s;
+  font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+/* Menu de perfil */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-button {
   background: none;
   border: none;
+  box-shadow: none !important;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   cursor: pointer;
+  color: var(--preto);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: var(--branco);
+  min-width: 160px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.topbar .dropdown .profile-button {
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+.dropdown-content a,
+.dropdown-content button {
+  color: var(--preto);
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  background: none;
+  border: none;
+  border-radius: 0;
+  width: 100%;
   text-align: left;
-  color: black;
-  box-shadow: none
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: none;
 }
 
-.dropdown button:hover {
-  background: #eee;
+.dropdown-content a:hover,
+.dropdown-content button:hover {
+  background-color: #f0f0f0;
 }
 
+/* Hover mostra o menu */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.notification {
+  position: relative;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.topbar .notification i {
+  font-size: 20px;
+  color: var(--preto);
+}
+
+.notification .badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 4px;
+  font-size: 10px;
+}
+
+.notification-dropdown {
+  display: none;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: var(--bg-color);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  min-width: 220px;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.notification:hover .notification-dropdown {
+  display: block;
+}
+
+.notification-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-dropdown li {
+  padding: 5px 0;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}

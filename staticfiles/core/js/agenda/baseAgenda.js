@@ -289,9 +289,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 sugestoes.innerHTML = '';
+                sugestoes.style.display = 'block'
                 data.resultados.forEach(paciente => {
                     const div = document.createElement('div');
                     div.textContent = `${paciente.nome} ${paciente.sobrenome}`;
+
                     div.style.padding = '5px';
                     div.style.cursor = 'pointer';
 
@@ -299,6 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         input.value = `${paciente.nome} ${paciente.sobrenome}`;
                         pacienteIdInput.value = paciente.id;
                         sugestoes.innerHTML = '';
+                        sugestoes.style.display = 'none'
                         verificarPacoteAtivo();
                     });
 

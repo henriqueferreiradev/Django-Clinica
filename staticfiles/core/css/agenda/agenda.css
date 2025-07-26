@@ -1,17 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-:root {
-    --roxoPrincipal: #7F4396;
-    --roxoPrincipal-hover: #76378f11;
-    --roxoPrincipal-hover2: #76378f;
-    --roxo-primary-hover: #9b58b4;
-    --verdePrincipal: #92cbad;
-    --branco: #FFF;
-    --preto: #000;
-    --cinzaBorda: #ccc;
-    --cinzaEscuro: #6e6e6e;
-    --fontePrincipal: 'Inter';
-}
 
 
 
@@ -23,7 +11,7 @@
 }
 
 body {
-    background-color: #f4f6f8;
+    background-color: var(--bg-color);
     display: flex;
     min-height: 100vh;
     margin: 0;
@@ -178,6 +166,7 @@ h2 {
     font-size: 14px;
 }
 
+/* Estilo base dos inputs */
 .formField input[type="text"],
 .formField input[type="date"],
 .formField input[type="time"],
@@ -186,15 +175,61 @@ h2 {
 .formField select,
 .formField textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid var(--roxoPrincipal);
-    border-radius: 6px;
+    padding: 0.7em;
+    border: 1px solid var(--verdePrincipal);
+    border-radius: 10px;
     font-size: 14px;
     outline: none;
+    color: var(--cinzaEscuro);
 }
 
+.buttons_header input[type="text"],
+.buttons_header input[type="date"] {
+    width: 100%;
+    padding: 0.7em;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    color: var(--cinzaEscuro);
+}
+
+/* Estilo específico para input time */
 .formField input[type="time"] {
     text-align: center;
+}
+
+/* Estilo quando preenchido ou em foco */
+.formField input.input-preenchido,
+.formField textarea.input-preenchido,
+.formField select.input-preenchido,
+.formField input:focus,
+.formField textarea:focus,
+.formField select:focus {
+    box-shadow: 1px 0px 3px var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+}
+
+/* Hover apenas para inputs (opcional) */
+.formField input:hover,
+.formField .input-s:hover {
+    box-shadow: 1px 0px 3px var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+    color: var(--preto);
+}
+
+.input-s:focus,
+.input-s.input-preenchido {
+    box-shadow: 1px 0px 3px var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+}
+
+.formField .input-s:hover,
+.formField .input-s:focus,
+.formField .input-s::placeholder:hover {
+    box-shadow: 1px 0px 3px var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+    color: var(--preto);
 }
 
 .submenu input[type="text"],
@@ -206,7 +241,7 @@ h2 {
     width: 100%;
     padding: 10px;
     border: 1px solid var(--roxoPrincipal);
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 14px;
 }
 
@@ -313,6 +348,8 @@ input::-webkit-inner-spin-button {
     box-sizing: border-box;
 }
 
+
+
 #sugestoes {
     position: absolute;
     top: 100%;
@@ -320,10 +357,12 @@ input::-webkit-inner-spin-button {
     width: 100%;
     max-height: 300px;
     overflow-y: auto;
-    background: white;
-    border: 1px solid #ccc;
+    background: var(--branco);
+    border: 1px solid var(--cinzaEscuro);
+    border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 10;
+    display: none;
 }
 
 #sugestoes div:hover {
@@ -399,38 +438,6 @@ thead tr th:last-child {
     background: #7f56d9;
 }
 
-
-.dropdown {
-    position: absolute;
-    background: var(--branco);
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    display: none;
-    flex-direction: column;
-    min-width: 120px;
-    z-index: 10;
-    color: black;
-}
-
-.dropdown button {
-    padding: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    color: black;
-
-}
-
-.dropdown button:hover {
-    background: #eee;
-}
-
-
-.hidden {
-    display: none;
-}
-
 .header-sidebar {
     display: flex;
     align-items: center;
@@ -498,8 +505,9 @@ thead tr th:last-child {
 
 .btn-footer {
     width: 100%;
-    ;
+    padding: 1.5em 1em;
     transition: background 0.3s;
+    border-radius: 15px;
 
 }
 
@@ -595,6 +603,14 @@ thead tr th:last-child {
 
 
 
+.status-select {
+    width: 100%;
+    padding: 6px;
+    border-radius: 15px;
+    border: 1px solid var(--roxoPrincipal);
+    font-size: 13px;
+}
+
 
 /* Coluna de Status */
 .status-col {
@@ -603,13 +619,7 @@ thead tr th:last-child {
 
 }
 
-.status-select {
-    width: 100%;
-    padding: 6px;
-    border-radius: 4px;
-    border: 1px solid var(--cinzaBorda);
-    font-size: 13px;
-}
+
 
 /* Coluna de Ações */
 .actions-col {
@@ -618,11 +628,12 @@ thead tr th:last-child {
 }
 
 .action-btn {
-    background: var(--roxoPrincipal);
-    color: white;
+
+    color: var(--roxoPrincipal);
+    font-size: 20px;
     border: none;
-    padding: 8px 16px;
-    border-radius: 25px;
+    padding: 5px;
+    border-radius: 10px;
     font-size: 12px;
     cursor: pointer;
     white-space: nowrap;
@@ -754,6 +765,35 @@ thead tr th:last-child {
     font-weight: 500;
 }
 
-.bx-edit {
-    font-size: 24px;
+.bx {
+    font-size: 28px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+
+    background-color: var(--roxoPrincipal);
+    color: var(--branco);
+    text-align: center;
+    border-radius: 6px;
+    padding: 0.3em;
+    position: absolute;
+    z-index: 500;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.6s;
+    font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }

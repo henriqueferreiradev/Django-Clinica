@@ -1,0 +1,149 @@
+:root {
+  --roxoPrincipal: #7f4396;
+  --roxoPrincipal-hover: #76378f11;
+  --roxoPrincipal-hover2: #76378f;
+  --roxo-primary-hover: #9b58b4;
+  --verdePrincipal: #92cbad;
+  --branco: #FFF;
+  --bg-btn-1: #eee;
+  --preto: #000;
+  --cinzaBorda: #ccc;
+  --cinzaEscuro: #6e6e6e;
+  --fontePrincipal: 'Inter';
+  --bg-color: #E4E9F7;
+  --hover-dropdown: #F0F0F0;
+  --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
+
+}
+
+.dark {
+  --roxoPrincipal: #7f4396;
+  --roxoPrincipal-hover: #76378f11;
+  --roxoPrincipal-hover2: #76378f;
+  --roxo-primary-hover: #9b58b4;
+  --verdePrincipal: #92cbad;
+
+  --branco: #363636;
+
+  --preto: #f1f1f1;
+
+  --cinzaBorda: #444;
+  --cinzaEscuro: #aaa;
+  --bg-color: #242525;
+  --bg-btn-1: #363636;
+  --hover-dropdown: #7f4396;
+}
+
+* {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body {
+  background-color: var(--bg-color);
+  /* antes era --bg-color */
+  color: var(--preto);
+  /* antes era --text-color */
+  font-family: var(--fontePrincipal);
+}
+
+input,
+textarea,
+select {
+  background-color: var(--branco);
+
+  color: var(--preto);
+
+  border: 1px solid var(--cinzaBorda);
+}
+
+a {
+  color: var(--preto);
+  /* substitui --text-color */
+}
+
+th {
+  color: white;
+}
+
+.content {
+  background-color: var(--branco);
+
+  padding: 1rem;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.home-section {
+
+  color: var(--preto);
+}
+
+.input-s {
+  border: 1px solid var(--verdePrincipal);
+}
+
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+}
+
+.profile-button {
+  background: none;
+  border: none;
+  box-shadow: none !important;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: var(--preto);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: var(--branco);
+  min-width: 160px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.topbar .dropdown .profile-button {
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+.dropdown-content a,
+.dropdown-content button {
+  color: var(--preto);
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  background: none;
+  border: none;
+  border-radius: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: none;
+
+}
+
+.dropdown-content a:hover,
+.dropdown-content button:hover {
+  background-color: var(--hover-dropdown);
+}
+
+/* Hover mostra o menu */
+.dropdown:hover .dropdown-content {
+  display: block;
+}

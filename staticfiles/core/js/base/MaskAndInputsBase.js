@@ -1,20 +1,25 @@
 document.querySelectorAll('.formField input, .formField textarea, .formField select').forEach(el => {
     const atualizarClasse = () => {
-        if (el.value.trim()) {
+        // Verifica se é radio/checkbox (usa `checked`) ou outro campo (usa `value`)
+        const isFilled = el.type === 'radio' || el.type === 'checkbox'
+            ? el.checked
+            : el.value.trim() !== '';
+
+        if (isFilled) {
             el.classList.add('input-preenchido');
         } else {
             el.classList.remove('input-preenchido');
         }
     };
 
-    el.addEventListener('input', atualizarClasse);  // para digitação em inputs/textarea
-    el.addEventListener('change', atualizarClasse); // para selects
-    el.addEventListener('blur', atualizarClasse);   // ao perder o foco
+    // Adiciona os listeners
+    el.addEventListener('input', atualizarClasse);
+    el.addEventListener('change', atualizarClasse);
+    el.addEventListener('blur', atualizarClasse);
 
-    // Inicializa corretamente no carregamento
+    // Inicializa o estado
     atualizarClasse();
 });
-
 function inputMasks() {
     const cpfInput = document.getElementById('cpfInput');
     if (cpfInput) {
@@ -68,7 +73,7 @@ function inputMasks() {
             mask: '00.000.000/0000-00'
         });
     }
- 
+
 
 }
 function capitalizeWords(str) {

@@ -1,0 +1,265 @@
+.content {
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+    box-shadow: none;
+    gap: 1em;
+    padding: 0;
+
+}
+
+.right_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+
+    max-width: 700px;
+    width: 30%;
+
+
+}
+
+.left_content,
+.right_content {
+    background-color: var(--branco);
+    padding: 1.5em;
+    border-radius: 16px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+
+}
+
+.left_content {
+    width: 70%;
+}
+
+.right_content p {
+
+    font-size: 16px;
+    color: #ccc;
+}
+
+.right_link-link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+}
+
+.right_link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.right_link input {
+    flex: 1;
+    background-color: #333;
+    color: #eee;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 8px 0 0 8px;
+    padding: 12px;
+    font-size: 15px;
+    outline: none;
+
+}
+
+.right_link .btn-save {
+    background-color: var(--roxoPrincipal);
+    color: #fff;
+    border: 1px solid var(--roxoPrincipal);
+    border-radius: 0 8px 8px 0;
+
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-size: 15px;
+    height: 100%;
+
+}
+
+.right_link .btn-save:hover {
+    background-color: var(--roxo-primary-hover, #9b58b4);
+
+}
+
+.social-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.social-buttons button {
+    background-color: #444;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.social-buttons button:hover {
+    background-color: var(--roxoPrincipal-hover2, #76378f);
+    transform: scale(1.1);
+}
+
+.right_link-link {
+    width: 100%;
+}
+
+.right_content img {
+    width: 100%;
+    max-width: 390px;
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+.steps {
+    background-color: #7e43967f;
+    padding: 0.5em;
+    border-radius: 10px;
+    border: 1px solid var(--roxoPrincipal);
+}
+
+.steps p {
+
+    color: var(--preto);
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.toast {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+}
+
+
+.left_content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.left_content table thead {
+    background-color: var(--roxoPrincipal);
+    color: var(--branco);
+}
+
+th,
+td {
+    padding: .05em 1em;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid var(--cinzaBorda);
+}
+
+th {
+    padding: 1em;
+}
+
+.badge {
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: white !important;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+thead tr th:first-child {
+    border-top-left-radius: 12px;
+}
+
+thead tr th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.action-btn {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: var(--preto);
+    box-shadow: none;
+}
+
+.action-btn:hover {
+    background: transparent;
+}
+
+.dropdown_menu {
+    position: absolute;
+    background: var(--cinzaBorda);
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    display: none;
+    flex-direction: column;
+    min-width: 120px;
+    z-index: 10;
+    color: var(--preto);
+}
+
+.dropdown_menu button {
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--preto);
+    box-shadow: none
+}
+
+.dropdown_menu button:hover {
+    background: var(--cinzaBorda);
+
+}
+
+
+
+.tabela_infos-dados {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    gap: 1em;
+    position: fixed;
+    bottom: 25px;
+    left: 105px;
+    right: 0;
+
+}
+
+.linha-vazia {
+    text-align: center;
+    color: var(--cinzaEscuro);
+    padding: 1em;
+
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+    .right_link {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .right_link input {
+        width: 100%;
+    }
+
+    .social-buttons {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+}
