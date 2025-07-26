@@ -5,12 +5,17 @@ from datetime import date, datetime, timedelta
 from django.utils import timezone
 from core.utils import alterar_status_agendamento
 import json
-import locale
+ 
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
 import random
 
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+import locale
+try:
+    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+except locale.Error:
+    locale.setlocale(locale.LC_TIME, '')
+
 
 
 DIAS_SEMANA = ['segunda-feira', 'terça-feira', 'quarta-feira',
