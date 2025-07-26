@@ -140,3 +140,16 @@ DEFAULT_FROM_EMAIL = 'Ponto de Equilibrio <notificacao.pontodeequilibrio@gmail.c
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
+
+import django
+from django.contrib.auth import get_user_model
+
+if os.environ.get('RENDER'):
+    django.setup()
+    User = get_user_model()
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser(
+            username='admin',
+            email='admin@admin.com',
+            password='admin123'
+        )
