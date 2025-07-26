@@ -29,6 +29,19 @@ body {
     overflow: hidden;
 }
 
+.content {
+    background: var(--branco);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 1em;
+    margin-top: 1em;
+    height: calc(100vh - 90px);
+    max-height: calc(100vh - 60px - 2em);
+    box-sizing: border-box;
+    overflow-y: auto;
+
+}
 
 .formField {
     display: flex;
@@ -36,6 +49,7 @@ body {
     gap: 1em;
     position: relative;
     width: 100%;
+    margin: 1em 0;
 }
 
 
@@ -161,53 +175,21 @@ select {
 
 .grid-config {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: auto auto auto;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 2fr));
     gap: 1em;
-    grid-template-areas:
-        "a b"
-        "c b"
-        "d d"
-        "e f";
-    padding: 1em;
+    align-items: start;
 }
 
 .grid-config>div {
     background: var(--branco);
     border-radius: 15px;
-
     padding: 1em;
+    border: 1px solid var(--roxoPrincipal);
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    min-height: 0;
 
 }
 
-.form-1 {
-    grid-area: a;
-}
-
-.form-2 {
-    grid-area: b;
-}
-
-.form-3 {
-    grid-area: c;
-}
-
-.form-4 {
-    grid-area: d;
-}
-
-.form-5 {
-    grid-area: e;
-}
-
-.form-6 {
-    grid-area: f;
-}
-
-.form form {
-    display: flex;
-
-}
 
 .tabela-wrapper {
     height: 200px;
@@ -230,6 +212,7 @@ select {
     font-size: 16px;
     margin-bottom: 0.5em;
 }
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -239,46 +222,52 @@ input::-webkit-inner-spin-button {
 table {
     width: 100%;
     border-collapse: collapse;
-    font-family: Arial, sans-serif;
-    background-color: #fff;
+    font-family: var(--fontePrincipal);
+    background-color: var(--branco);
     font-size: 14px;
-
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 thead {
-    position: sticky;
-    top: 0;
-    background-color: #f9f9f9;
+    background-color: var(--roxoPrincipal);
+    color: var(--branco);
 }
 
-th {
+thead tr th:first-child {
+    border-top-left-radius: 12px;
+}
+
+thead tr th:last-child {
+    border-top-right-radius: 12px;
+}
+
+th,
+td {
+    padding: .5em 1em;
     text-align: left;
-    color: var(--roxoPrincipal);
-    /* Roxo elegante */
-    font-weight: bold;
-    padding: 10px 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cinzaBorda);
     white-space: nowrap;
 }
 
-td {
-    padding: .5em;
-    border-bottom: 1px solid #eee;
-    vertical-align: center;
+tbody tr:nth-child(even) {
+    background-color: var(--cinzaBorda);
 }
+
 
 .btn_excluir,
 .btn_reativar {
     font-size: 12px;
-    color: var(--branco);
+    color: var(--preto);
     background: none;
     border: none;
     cursor: pointer;
     border-radius: 10px;
-    padding: .5em;
+    box-shadow: none;
     margin: 0;
-    background-color: var(--roxoPrincipal);
+    background-color: transparent;
     font-weight: 500;
+    padding: 0;
 
 }
 
@@ -290,6 +279,7 @@ td {
 .formField .input_qtd_sessoes {
     width: 70px;
 }
+
 .formField .input_valor {
     width: 100px;
 }

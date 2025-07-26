@@ -3,6 +3,7 @@ from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaci
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
+from core.utils import registrar_log
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 def cadastrar_profissionais_view(request):
@@ -12,12 +13,26 @@ def cadastrar_profissionais_view(request):
             profissional = Profissional.objects.get(id=delete_id)
             profissional.ativo = False
             profissional.save()
+            messages.warning(request, f'Profissional {profissional.nome} inativado com sucesso')
+            registrar_log(usuario=request.user,
+                acao='Inativação',
+                modelo='Profissional',
+                objeto_id=profissional.id,
+                descricao=f'Profissional {profissional.nome} inativado.')
             return redirect('profissionals')
 
         # Criação de novo profissional
         nome = request.POST.get('nome')
         sobrenome = request.POST.get('sobrenome')
         nomeSocial = request.POST.get('nomeSocial')
+        if Profissional.objects.filter(cpf=cpf).exists():
+            messages.error(request, "Já existe um profissional com este CPF.")
+            return redirect('cadastrar_profissional')
+        
+        if Profissional.objects.filter(cnpj=cnpj).exists():
+            messages.error(request, "Já existe um profissional com este CNPJ.")
+            return redirect('cadastrar_profissional') 
+        
         rg = request.POST.get('rg')
         cpf = request.POST.get('cpf')
         cnpj = request.POST.get('cnpj')
@@ -108,8 +123,15 @@ def cadastrar_profissionais_view(request):
             if foto:
                 profissional.foto = foto
                 profissional.save()
+                messages.info(request, 'Foto do profissional atualizada') 
             
             messages.success(request, f'Profissional {profissional.nome} cadastrado com sucesso!')
+            registrar_log(usuario=request.user,
+                acao='Criação',
+                modelo='Paciente',
+                objeto_id=profissional.id,
+                descricao=f'Profissional {profissional.nome} cadastrado.')
+            return redirect('cadastrar_profissional')
     profissionais = Profissional.objects.all().order_by('-id')
     especialidades = Especialidade.objects.all()
 
@@ -132,12 +154,7 @@ def editar_profissional_view(request, id):
     profissional = get_object_or_404(Profissional, id=id)
 
     if request.method == 'POST':
-        if 'delete_id' in request.POST:
-            delete_id = request.POST.get('delete_id')
-            profissional = Profissional.objects.get(id=delete_id)
-            profissional.ativo = False
-            profissional.save()
-            return redirect('profissionais')
+ 
 
         # Criação de novo profissional
         profissional.sobrenome = request.POST.get('sobrenome')
@@ -150,7 +167,9 @@ def editar_profissional_view(request, id):
         try:
             profissional.nascimento_formatada = datetime.strptime( nascimento, "%d/%m/%Y").date()
         except ValueError:
-            profissional.nascimento_formatada = None 
+            messages.error(request, 'Formato de data inválido (use DD/MM/AAAA)')  # Adicionar
+            return redirect('editar_profissional', id=id)
+            
         profissional.cor_raca = request.POST.get('cor')
     
         profissional.sexo = request.POST.get('sexo')
@@ -189,9 +208,14 @@ def editar_profissional_view(request, id):
 
         if 'foto' in request.FILES:
             profissional.foto = request.FILES['foto']
-
+            messages.info(request, 'Foto atualizada com sucesso') 
         profissional.save()
-        messages.success(request, f'Profissional {profissional.nome} editado com sucesso!')
+        messages.success(request, f'Dados do profissional {profissional.nome} atualizados!')
+        registrar_log(usuario=request.user,
+                acao='Edição',
+                modelo='Profissional',
+                objeto_id=profissional.id,
+                descricao=f'Profissional {profissional.nome} editado.')
         return redirect('profissionais')  
     
 

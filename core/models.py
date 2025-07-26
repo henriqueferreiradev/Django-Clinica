@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from datetime import date
 from django.utils.text import slugify
 import os
-
+from dateutil.relativedelta import relativedelta
 import uuid
 
 def caminho_foto_paciente(instance, filename):
@@ -21,13 +23,16 @@ def caminho_foto_profissional(instance, filename):
 
 TIPOS_USUARIO = [
     ('admin', 'Administrador'),
-    ('secretaria', "Secretaria"),
-    ('recepcionista','Recepcionista'),
+    ('secretaria', 'Secretaria'),
+    ('recepcionista', 'Recepcionista'),
     ('profissional', 'Profissional'),
-    ('paciente', 'Paciente'),  
-    
+    ('gerente', 'Gerente'),
+    ('financeiro', 'Financeiro'),
+    ('coordenador', 'Coordenador Clínico'),
+    ('supervisor', 'Supervisor'),
+    ('estagiario', 'Estagiário'),
+    ('suporte', 'Suporte Técnico'),
 ]
-
 FORMAS_PAGAMENTO = [
     ('pix', 'Pix'),
     ('debito', 'Cartão de Débito'),
@@ -206,8 +211,23 @@ class Paciente(models.Model):
      
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
+    pre_cadastro = models.BooleanField(default=False)
+    conferido = models.BooleanField(default=False)
+    
     def __str__(self):
         return self.nome
+
+    @property
+    def idade_formatada(self):
+        if self.data_nascimento:
+            hoje = date.today()
+            idade = relativedelta(hoje, self.data_nascimento)
+            return f'{idade.years} anos, {idade.months} meses e {idade.days} dias'
+        return 'Data de nascimento não informada'
+    @property
+    def endereco_formatado(self):
+        return f'{self.rua}, {self.numero}, {self.complemento} - {self.bairro}, {self.cidade}/{self.uf} - {self.cep}'
+
      
     
 class Profissional(models.Model):
@@ -251,10 +271,44 @@ class Profissional(models.Model):
     nomeEmergencia = models.CharField(max_length=100)
     vinculo = models.CharField(max_length=100, choices=VINCULO)
     telEmergencia = models.CharField(max_length=20, blank=True, null=True)
-     
+    
+    valor_hora = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
     
+    
+    def save(self, *args, **kwargs):
+        criando = self.pk is None
+        
+        super().save(*args, **kwargs)
+        
+        if criando and not self.user and self.email:
+            
+            username = self.email
+            senha_padrao = 'resiliencia'
+            nome = self.nome or ''
+            sobrenome = self.sobrenome or ''
+            
+            if not User.objects.filter(username=username).exists():
+                user = User.objects.create(
+                username=username,
+                email=self.email,
+                first_name=nome,
+                last_name=sobrenome,
+                password=make_password(senha_padrao),
+                tipo='profissional',
+                ativo = True
+                )
+                self.user = user
+                super().save(update_fields=['user'])
+        
+        
+        
+        
+        
+        
+        
+            
     def __str__(self):
         if self.user:
             return self.user.get_full_name() or self.user.username
@@ -299,21 +353,34 @@ class PacotePaciente(models.Model):
         if self.valor_final is None:
             self.valor_final = self.servico.valor 
         super().save(*args, **kwargs)
-
+        
     def get_sessao_atual(self, agendamento=None):
         if agendamento:
-            anteriores = self.agendamento_set.filter(
-                data__lt=agendamento.data
-            ).count()
-            return anteriores + 1
-        return self.sessoes_realizadas + 1
+            agendamentos = self.agendamento_set.filter(
+                status__in=[
+                    'agendado',
+                    'finalizado',
+                    'desistencia_remarcacao',
+                    'falta_remarcacao',
+                    'falta_cobrada',
+                ]
+            ).order_by('data', 'hora_inicio', 'id')
+
+            sessao = 1
+            for ag in agendamentos:
+                if ag.id == agendamento.id:
+                    break
+                sessao += 1
+            return min(sessao, self.qtd_sessoes)  # nunca passa do limite
+        return min(self.sessoes_realizadas + 1, self.qtd_sessoes)
+
         
     @property
     def sessoes_realizadas(self):
-         return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
+        return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
 
     def sessoes_agendadas(self):
-         return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
+        return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
 
     @property
     def sessoes_restantes(self):
@@ -328,7 +395,7 @@ class PacotePaciente(models.Model):
         return self.valor_final - self.total_pago
 
     def __str__(self):
-        return f"Pacote {self.codigo} - {self.paciente}"
+        return f"Pacote {self.codigo} Valor restante {self.valor_restante} - {self.paciente} "
 
  
 
@@ -345,7 +412,9 @@ class Agendamento(models.Model):
     hora_fim_aux = models.TimeField(null=True, blank=True)
     ambiente = models.CharField(max_length=100, blank=True)
     observacoes = models.TextField(blank=True)
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pre')
+    observacao_autor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,related_name='observacoes')
+    observacao_data = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='agendado')
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
     tags = models.CharField(max_length=200, blank=True)
     foi_reposto = models.BooleanField(default=False)
@@ -357,7 +426,7 @@ class Pagamento(models.Model):
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     valor = models.DecimalField(max_digits=8, decimal_places=2)
-    data = models.DateField(default=timezone.now)
+    data = models.DateTimeField(default=timezone.now)
     forma_pagamento = models.CharField(max_length=30, choices=[
         ('pix', 'Pix'),
         ('credito', 'Cartão de Crédito'),
@@ -368,4 +437,24 @@ class Pagamento(models.Model):
 
     def __str__(self):
         ref = self.pacote.codigo if self.pacote else f"Sessão {self.agendamento.id}" if self.agendamento else "Avulso"
-        return f"{self.paciente} - R$ {self.valor} - {ref}"
+        return f"{self.paciente} - R$ {self.valor} - {ref} - {self.data.strftime('%d/%m/%Y')}"
+
+
+class LogAcao(models.Model):
+    usuario = models.ForeignKey('User',on_delete=models.SET_NULL, null=True)
+    acao = models.CharField(max_length=50)
+    modelo  = models.CharField(max_length=100)
+    objeto_id = models.CharField(max_length=50)
+    descricao = models.TextField(blank=True)
+    data_hora = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.acao} em {self.modelo} (ID {self.objeto_id}) por {self.usuario}"
+
+class Pendencia(models.Model):
+    tipo = models.CharField(max_length=100)
+    descricao = models.TextField()
+    vinculado_paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    resolvido = models.BooleanField(default=False)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    responsavel = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)

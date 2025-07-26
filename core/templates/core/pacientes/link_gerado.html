@@ -1,0 +1,137 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Link de Pré-Cadastro{% endblock %}
+{% block topbar_title %}Link de Pré-Cadastro{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/pacientes/link_gerado.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/pacientes/pacientes.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+  <div class="right_content">
+
+    <!--
+
+    <div class="steps"> 
+      <p><strong>Dicas</strong></p>
+      <p><strong>Passo 1:</strong> Copie o link ou use os botões abaixo</p>
+      <p><strong>Passo 2:</strong> Envie por WhatsApp ou outro canal</p>
+      <p><strong>Passo 3:</strong> Quando o paciente preencher irá aparecer na tabela ao lado</p>
+     </div>
+-->
+    <div class="top_btn">
+      <form action="{% url 'gerar_link_publico_precadastro' %}" method="get" style="display:inline;">
+        <button type="submit" class="btn btn-primary">Novo Link</button>
+      </form>
+      <button type="button" class="btn btn-primary">Atualizar tabela</button>
+    </div>
+    <p>Copie o código para enviar</p>
+    <div class="right_link">
+      <div class="right_link-link">
+        <input type="text" id="link" value="{{ link_tokenizado }}" readonly>
+        <button onclick="copiarLink()" class="btn-save">
+          Copiar
+        </button>
+      </div>
+
+      <div class="social-buttons">
+        <form action="{% url 'gerar_link_publico_precadastro' %}" method="get" style="display:inline;">
+          <button type="submit" class="btn btn-primary"><i class='bx bx-folder-open'></i>
+          </button>
+        </form>
+        <button onclick="enviarWhatsapp()"><i class='bx bxl-whatsapp'></i></button>
+        <button onclick="window.open('https://telegram.me/share/url?url=' + encodeURIComponent(link))"><i
+            class='bx bxl-telegram'></i></button>
+        <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link))"><i
+            class='bx bxl-facebook'></i></button>
+        <button onclick="window.open('https://www.instagram.com/')"><i class='bx bxl-instagram'></i></button>  
+      </div>
+    </div>
+    <p>Ou leia o QR Code</p>
+    <img src="data:image/png;base64,{{ qrcode_base64 }}" alt="QR Code do Link">
+  </div>
+  <div class="left_content">
+    <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
+      <table>
+
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Celular</th>
+            <th>Nascimento</th>
+            <th>Cadastro</th>
+            <th>Situação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if pacientes %}
+          {% for paciente in pacientes %}
+          <tr>
+            <td>{{ paciente.nome }}</td>
+            <td>{{ paciente.cpf }}</td>
+            <td>{{ paciente.celular }}</td>
+            <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
+            <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
+            <td>{% if paciente.pre_cadastro %}
+              <span class="status-pendente">Pendente</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="dropdown-wrapper">
+                <button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
+                <div class="dropdown_menu">
+                  <a href="{% url 'perfil_paciente' paciente.id %}">
+                    <button type="button">Ver detalhes</button>
+                  </a>
+                  <button onclick="window.location.href='{% url 'editar_paciente' paciente.id %}'">Editar</button>
+                  <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Gerar Ficha</button>
+                  <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Novo Agendamento</button>
+                  <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_id" value="{{ paciente.id }}">
+                    <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
+                      Inativar
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </td>
+
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr><td class='linha-vazia' colspan="8">No momento não existem pré-cadastros a serem verificados.</td></tr>
+        
+          {% endif %}
+      </tbody>
+    </table>
+
+    </div>
+  </div>
+
+  <div id="copiado" class="toast">✅ Link copiado com sucesso!</div>
+
+  <script>
+    const link = document.getElementById("link").value;
+
+    function copiarLink() {
+      navigator.clipboard.writeText(link);
+      const toast = document.getElementById("copiado");
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    function enviarWhatsapp() {
+      const mensagem = `Olá! Para agilizar seu atendimento, preencha o formulário: ${encodeURIComponent(link)}`;
+      window.open(`https://wa.me/?text=${mensagem}`, "_blank");
+    }
+  </script>
+  <script src="{% static '/core/js/pacientes/base.js' %}"></script>
+
+  {% endblock %}

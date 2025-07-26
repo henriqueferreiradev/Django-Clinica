@@ -5,27 +5,15 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 {% endblock %}
 
-{% block topbar %}
+ 
 <div class="topbar">
-    <div class="topbar-div">
-        <i class='bx bx-menu'></i>
-        <span class="text">Cadastrar pacientes</span>
-        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-        </form>
-    </div>
-    <div class="topbar-div">
-        <div class="name-job">
-            <div class="profile_name">Olá, {{ user.username }}</div>
-        </div>
-        <a href="{% url 'logout' %}">
-            <i class='bx btn-sair bx-log-out'></i>
-        </a>
-    </div>
+        <span class="text">{% block topbar_title %} Cadastrar Pacientes {% endblock %}</span>
+
 </div>
-{% endblock %}
+ 
 {% block content %}
 <div class="content">
     <form method="post" enctype="multipart/form-data">
@@ -192,7 +180,7 @@
                                 <input class=' input-s' type="text" name="cep" id="cepInput" required>
                                 <span class="span-s">CEP*</span>
                             </div>
-                            <button type="button" id="btn-cep" onclick="buscarCep()">...</button>
+                            <button type="button" id="btn-cep" onclick="buscarCep()"> <i class='bx  bx-search'  ></i> </button>
                             <div class="formField field_rua">
                                 <input class='input-s capitalize-input' type="text" name='rua' id="ruaInput" required>
                                 <span class="span-s">Rua*</span>

@@ -1,17 +1,30 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br" dir="ltr">
+<html lang="pt-br" class="light" dir="ltr">
 
 <head>
+ 
   <meta charset="UTF-8">
+  <script>
+ 
+    (function() {
+      const isDark = localStorage.getItem('theme') === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+    })();
+  </script>
   <title>{% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png">
   <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
 </head>
 
 <body>
+
+
   <div class="sidebar close">
     <div class="logo-details">
       <img class='logo_img ' src="{% static 'core/img/icons/logoRoxoFull.png' %}" alt="logo Ponto de Equilíbrio">
@@ -76,7 +89,7 @@
          
         </ul>
       </li>
-
+      {% if request.user.tipo != 'profissional' %}
       <li>
         <a href="{% url 'financeiro' %}">
           <i class='bx bx-pie-chart-alt-2'></i>
@@ -86,7 +99,7 @@
           <li><a class="link_name" href="{% url 'financeiro' %}">Financeiro</a></li>
         </ul>
       </li>
-
+      {% endif %}
       <li>
         <a href="#">
           <i class='bx bx-bell'></i>
@@ -96,7 +109,7 @@
           <li><a class="link_name" href="#">Lembretes</a></li>
         </ul>
       </li>
-
+      {% if request.user.tipo != 'profissional' %}
       <li>
         <a href="#">
           <i class='bx bx-line-chart'></i>
@@ -106,7 +119,20 @@
           <li><a class="link_name" href="#">Relatórios</a></li>
         </ul>
       </li>
-
+      {% endif %}
+      {% if request.user.tipo != 'profissional' %}
+      <li>
+        <a href="{% url 'auditoria_logs' %}">
+          <i class='bx bx-line-chart'></i>
+          <span class="link_name">Logs</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{% url 'auditoria_logs' %}">Logs</a></li>
+        </ul>
+      </li>
+      {% endif %}
+      {% if request.user.tipo != 'profissional' %}
+      
       <li>
         <a href="{% url 'config' %}">
           <i class='bx bx-cog'></i>
@@ -116,15 +142,22 @@
           <li><a class="link_name" href="{% url 'config' %}">Configurações</a></li>
         </ul>
       </li>
-
+      {% endif %}
+      
+ 
       <li>
+
         <div class="profile-details">
           <div class="profile-content">
-            <img src="{% static 'core/img/perfil.png' %}" alt="profileImg">
+            {% if user.profissional.foto %}
+            <img src="{{ user.profissional.foto.url }}" alt="Foto de {{ user.get_full_name }}">
+            {% else %}
+            <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
+            {% endif %}
           </div>
           <div class="name-job">
-            <div class="profile_name">Henrique Ferreira</div>
-            <div class="job">Administrador</div>
+            <div class="profile_name">{{ user.get_full_name }}</div>
+            <div class="job"> {{user.get_tipo_display}}</div>
           </div>
         </div>
       </li>
@@ -133,12 +166,57 @@
 
   <section class="home-section">
     <div class="home-content">
-      {% block topbar %}{% endblock %}
+      {% block topbar %}
+<div class="topbar">
+  <div class="topbar-div">
+    <i class='bx bx-menu'></i>
+
+    <span class="text">
+      {% block topbar_title %}Dashboard{% endblock %}
+    </span>
+
+    {% block topbar_search %}{% endblock %}
+  </div>
+
+  <div class="topbar-div">
+    <!-- Ícone de notificação (sino) -->
+    <div class="notification">
+      <i class='bx bx-bell'></i>
+      <span class="badge" id="notification-count">3</span> <!-- Exemplo: 3 alertas -->
+      <div class="notification-dropdown">
+        <ul>
+          <li>🔔 Novo paciente agendado para amanhã</li>
+          <li>⚠️ Falta registrada hoje</li>
+          <li>📅 Feriado na próxima quarta-feira</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Perfil -->
+    <div class="dropdown">
+      <div class="profile-button">
+        {{ user.get_full_name }} <i class='bx bx-chevron-down'></i>
+      </div>
+      <div class="dropdown-content">
+        <a href="{% url 'config' %}">Ver Perfil</a>
+        <button onclick="toggleDarkMode()">Alternar Tema</button>
+        <a href="{% url 'logout' %}">Sair</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
       {% block content %}{% endblock %}
     </div>
   </section>
   {% block scripts %}{% endblock %}
+   
   <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
+  <script src="{% static 'core/js/base/toggleMode.js' %}"></script>
+ 
+  
   {% block extra_css %}{% endblock %}
 
   

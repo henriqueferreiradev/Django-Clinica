@@ -72,10 +72,10 @@ body {
   margin-left: 20px;
   color: inherit;
 }
-
-
+ 
 
 .confirmation-container {
+  display: none;
   width: 300px;
   height: fit-content;
   background: var(--branco);

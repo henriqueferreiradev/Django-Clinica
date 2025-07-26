@@ -1,18 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-:root {
-    --roxoPrincipal: rgb(127, 67, 150);
-    --roxoPrincipal-hover: #76378f11;
-    --roxoPrincipal-hover2: #76378f;
-    --verdePrincipal: #92cbad;
-    --branco: #FFF;
-    --preto: #000;
-    --cinzaBorda: #ccc;
-    --cinzaEscuro: #6e6e6e;
-    --fontePrincipal: 'Inter';
-    --shadowRoxo: rgb(127, 67, 150, 0.5) 0px 3px 8px
-}
 
+
+body {
+    background-color: var(--bg-color);
+    color: var(--preto);
+    overflow: hidden;
+}
 
 .overlay {
     position: fixed;
@@ -29,7 +23,7 @@
 
 /* Caixa da modal */
 .modal {
-    background-color: white;
+    background-color: var(--branco);
     padding: 20px 30px;
     border-radius: 8px;
     width: 80%;
@@ -72,7 +66,7 @@
 
 .patient-card {
     display: flex;
-    background: white;
+    background: var(--branco);
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     padding: 30px;
@@ -206,44 +200,87 @@
 
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
 }
 
 .card {
-    position: relative;
-
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
+    width: 260px;
+    background: var(--branco);
+    border-radius: 20px;
     box-shadow: var(--shadowRoxo);
-    scale: 1;
-    transition: scale .5s ease-in-out;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    position: relative;
 }
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-top {
+    background: var(--roxoPrincipal);
+    height: 90px;
+    position: relative;
+}
+
+.avatar {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.avatar img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 4px solid var(--branco);
+    object-fit: cover;
+    background-color: #eee;
+}
+
+.card-body {
+    padding: 4rem 1rem 1.5rem;
+    text-align: center;
+}
+
+.name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+    color: var(--preto);
+}
+
+.role {
+    font-size: 0.95rem;
+    color: var(--roxoPrincipal);
+    margin-bottom: 0.8rem;
+}
+
+.info {
+    font-size: 0.85rem;
+    color: var(--cinzaEscuro);
+    text-align: left;
+    max-width: 210px;
+    margin: 0 auto;
+}
+
+.info p {
+    margin: 6px 0;
+    display: flex;
+    align-items: center;
+}
+
+.info i {
+    color: var(--roxoPrincipal);
+    margin-right: 6px;
+}
+
 
 .card:hover {
     scale: 1.05;
     transition: scale .5s ease-in-out;
-}
-
-
-
-.avatar {
-    width: 100px;
-    height: 100px;
-    background: #d6ccfa;
-    border-radius: 50%;
-    margin: 0 auto 10px;
-}
-
-.avatar img {
-    width: 100px;
-    height: 100px;
-    background: #d6ccfa;
-    border-radius: 50%;
-    margin: 0 auto 10px;
-    object-fit: cover;
 }
 
 .name {
@@ -275,10 +312,10 @@
     top: 10px;
     right: 5px;
     font-size: 20px;
-    color: var(--roxoPrincipal);
+    color: var(--branco);
     cursor: pointer;
     padding: 0 .5em;
-
+    z-index: 1000;
 }
 
 
@@ -287,7 +324,7 @@
     color: var(--verdePrincipal);
 }
 
-.dropdown {
+.dropdown_menu {
     position: absolute;
     background: var(--branco);
     border-radius: 8px;
@@ -299,7 +336,7 @@
     color: black;
 }
 
-.dropdown button {
+.dropdown_menu button {
     padding: 10px;
     background: none;
     border: none;
@@ -309,6 +346,6 @@
 
 }
 
-.dropdown button:hover {
+.dropdown_menu button:hover {
     background: #eee;
 }

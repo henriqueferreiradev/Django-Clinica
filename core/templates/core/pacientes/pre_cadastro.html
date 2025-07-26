@@ -1,0 +1,280 @@
+{% load static %}
+ 
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto de Equilíbrio - Pré cadastro</title>.
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/css/pacientes/pre_cadastro.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+    {% endblock %}
+</head>
+
+
+<header class="header-precadastro">
+    <img src="{% static 'core/img/icons/logoCompleto.png' %}" alt="Logo Clínica" height="60">
+    <h2>Pré-Cadastro de Paciente</h2>
+    <p>Preencha os dados abaixo para agilizar seu atendimento inicial. Nossa equipe entrará em contato após a
+        conferência.</p>
+</header>
+
+{% block content %}
+<div class="content">
+    <form method="post" enctype="multipart/form-data" id="multiStepForm">
+        {% csrf_token %}
+
+        <!-- ETAPA 1 -->
+        <div class="form-step active" id="step-1">
+            <div class="form_titulo">Informações Pessoais</div>
+            <div class="form_div">
+                <div class="div_forms">
+                    <!-- Nome, Sobrenome, Nome Social -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s capitalize-input" type="text" name="nome" required>
+                            <span class="span-s">Nome*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s capitalize-input" type="text" name="sobrenome" required>
+                            <span class="span-s">Sobrenome*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s capitalize-input" type="text" name="nomeSocial">
+                            <span class="span-s">Nome Social</span>
+                        </div>
+                    </div>
+
+                    <!-- RG, CPF, Nascimento -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s" type="text" name="rg">
+                            <span class="span-s">RG</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s" type="text" name="cpf" required>
+                            <span class="span-s">CPF*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s date-s" type="text" name="nascimento" required>
+                            <span class="span-s">Nascimento*</span>
+                        </div>
+                    </div>
+
+                    <!-- Cor, Sexo, Estado Civil, Profissão -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <select name="cor" class="input-s">
+                                <option value="" disabled selected></option>
+                                {% for value, label in cor_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Cor/Raça</span>
+                        </div>
+                        <div class="formField">
+                            <select name="sexo" class="input-s">
+                                <option value="" disabled selected></option>
+                                {% for value, label in sexo_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Sexo</span>
+                        </div>
+                        <div class="formField">
+                            <select name="estado_civil" class="input-s" required>
+                                <option value="" disabled selected></option>
+                                {% for value, label in estado_civil_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Estado Civil*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s" type="text" name="profissao">
+                            <span class="span-s">Profissão</span>
+                        </div>
+                    </div>
+
+                    <!-- Naturalidade, UF, Mídia, Rede Social -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s" type="text" name="naturalidade" required>
+                            <span class="span-s">Naturalidade*</span>
+                        </div>
+                        <div class="formField">
+                            <select name="uf" class="input-s" required>
+                                <option value="" disabled selected></option>
+                                {% for value, label in uf_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">UF*</span>
+                        </div>
+                        <div class="formField">
+                            <select name="midia" class="input-s" required>
+                                <option value="" disabled selected></option>
+                                {% for value, label in midia_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Como nos conheceu?*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s" type="text" name="redeSocial">
+                            <span class="span-s">Rede Social</span>
+                        </div>
+                    </div>
+
+                    <!-- Foto + Observação -->
+                    <div class="form_cadastro-nomes">
+                        <label for="file" class="custum-file-upload">
+                            <div class="icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1C9.73478..." /></svg>
+                            </div>
+                            <div class="text"><span>Clique aqui para enviar a imagem</span></div>
+                            <input name="foto" id="file" type="file" accept="image/*" onchange="previewImage(event)">
+                        </label>
+
+                        <div class="formField">
+                            <textarea class="input-s textarea-s" name="observacao" maxlength="500"></textarea>
+                            <span class="span-s">Observação</span>
+                            <p class="contador"><span id="contador">0</span>/500 caracteres</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-navigation">
+                <button type="button" class="btn-save btn-next">Próximo</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 2 -->
+        <div class="form-step" id="step-2">
+            <div class="form_titulo">Endereço e Contato</div>
+            <div class="form_div">
+                <div class="div_forms">
+                    <!-- CEP, Rua -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s" type="text" name="cep" required>
+                            <span class="span-s">CEP*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s capitalize-input" type="text" name="rua" required>
+                            <span class="span-s">Rua*</span>
+                        </div>
+                    </div>
+
+                    <!-- Número, Complemento -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s" type="text" name="numero" required>
+                            <span class="span-s">Número*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s" type="text" name="complemento">
+                            <span class="span-s">Complemento</span>
+                        </div>
+                    </div>
+
+                    <!-- Bairro, Cidade, Estado -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s" type="text" name="bairro" required>
+                            <span class="span-s">Bairro*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s" type="text" name="cidade" required>
+                            <span class="span-s">Cidade*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s" type="text" name="estado" required>
+                            <span class="span-s">UF*</span>
+                        </div>
+                    </div>
+
+                    <!-- Contato -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s" type="text" name="telefone">
+                            <span class="span-s">Telefone</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s" type="text" name="celular" required>
+                            <span class="span-s">Celular*</span>
+                        </div>
+                    </div>
+
+                    <!-- Emergência -->
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s" type="text" name="email" required>
+                            <span class="span-s">Email*</span>
+                        </div>
+                    </div>
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class="input-s capitalize-input" type="text" name="nomeEmergencia" required>
+                            <span class="span-s">Contato de emergência*</span>
+                        </div>
+                        <div class="formField">
+                            <select name="vinculo" class="input-s" required>
+                                <option value="" disabled selected></option>
+                                {% for value, label in vinculo_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Vínculo*</span>
+                        </div>
+                        <div class="formField">
+                            <input class="input-s" type="text" name="telEmergencia" required>
+                            <span class="span-s">Telefone de emergência*</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-navigation">
+                <button type="button" class="btn-save btn-prev">Voltar</button>
+                <button type="submit" class="btn-save">Enviar</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const steps = document.querySelectorAll(".form-step");
+    const nextBtns = document.querySelectorAll(".btn-next");
+    const prevBtns = document.querySelectorAll(".btn-prev");
+    let currentStep = 0;
+
+    function showStep(index) {
+        steps.forEach((step, i) => step.classList.toggle("active", i === index));
+    }
+
+    nextBtns.forEach(btn => btn.addEventListener("click", () => {
+        currentStep++;
+        showStep(currentStep);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }));
+
+    prevBtns.forEach(btn => btn.addEventListener("click", () => {
+        currentStep--;
+        showStep(currentStep);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }));
+
+    showStep(currentStep);
+</script>
+{% endblock %}

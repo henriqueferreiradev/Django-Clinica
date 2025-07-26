@@ -7,25 +7,8 @@
 <link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
 {% endblock %}
 
-{% block topbar %}
-<div class="topbar">
-    <div class="topbar-div">
-        <i class='bx bx-menu'></i>
-        <span class="text">Cadastrar Profissional</span>
-        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui">
-        </form>
-    </div>
-    <div class="topbar-div">
-        <div class="name-job">
-            <div class="profile_name">Olá, {{ user.username }}</div>
-        </div>
-        <a href="{% url 'logout' %}">
-            <i class='bx btn-sair bx-log-out'></i>
-        </a>
-    </div>
-</div>
-{% endblock %}
+    <span class="text">{% block topbar_title %}Editar profissional - {{ profissional.nome }} {{ profissional.sobrenome }}{% endblock %}</span>
+
 {% block content %}
 <div class="content">
 <form method="post" enctype="multipart/form-data">

@@ -5,9 +5,12 @@ from django.utils.text import slugify
 from django.conf import settings
 import locale
 import calendar
+from datetime import date, timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
- 
+from django.shortcuts import get_object_or_404, redirect
+from .models import Agendamento, LogAcao
+from django.contrib import messages
 
 try:
     locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
@@ -119,3 +122,39 @@ def enviar_lembrete_email(destinatario, contexto):
     email = EmailMultiAlternatives(assunto,'', remetente, destinatarios)
     email.attach_alternative(conteudo, 'text/html')
     email.send()
+    
+def alterar_status_agendamento(request, pk, redirect_para):
+    if request.method == "POST":
+        agendamento = get_object_or_404(Agendamento, pk=pk)
+        novo_status = request.POST.get('status')
+
+        if novo_status:
+            agendamento.status = novo_status
+            agendamento.save()
+            messages.success(request, f'Status alterado com sucesso.')
+
+    return redirect(redirect_para)
+
+def get_semana_atual():
+    hoje = date.today()
+    inicio_semana = hoje - timedelta(days=hoje.weekday())  # Segunda-feira
+    fim_semana = inicio_semana + timedelta(days=6)
+    return inicio_semana, fim_semana
+
+
+def calcular_porcentagem_formas(queryset):
+    total = sum(item['quantidade'] for item in queryset)
+    
+    resultado = []
+    for item in queryset:
+        porcentagem = (item['quantidade'] / total) * 100 if total > 0 else 0
+        resultado.append({
+            'forma_pagamento': item['forma_pagamento'],
+            'quantidade': item['quantidade'],
+            'porcentagem': round(porcentagem, 2)  # arredonda para 2 casas decimais
+        })
+    return resultado
+
+
+def registrar_log(usuario, acao, modelo, objeto_id, descricao=''):
+    LogAcao.objects.create(usuario=usuario, acao=acao, modelo=modelo, objeto_id=objeto_id, descricao=descricao)

@@ -5,27 +5,13 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 {% endblock %}
 
-{% block topbar %}
-<div class="topbar">
-    <div class="topbar-div">
-        <i class='bx bx-menu'></i>
-        <span class="text">Editar pacientes</span>
-        <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-        </form>
-    </div>
-    <div class="topbar-div">
-        <div class="name-job">
-            <div class="profile_name">Olá, {{ user.username }}</div>
-        </div>
-        <a href="{% url 'logout' %}">
-            <i class='bx btn-sair bx-log-out'></i>
-        </a>
-    </div>
-</div>
-{% endblock %}
+ 
+        {% block topbar_title %}
+<span class="text">Editar pacientes</span> {%endblock%}
+ 
 {% block content %}
 <div class="content">
     <form method="post" enctype="multipart/form-data">
@@ -90,8 +76,9 @@
 
 
                             <div class="formField">
-                                <input class='input-s date-s' value='{{ paciente.data_nascimento }}' type="text" name="nascimento" id="nascimentoInput"
-                                    required />
+                                <input class='input-s date-s'
+                                    value='{{ paciente.data_nascimento|date:"d/m/Y" }}'
+                                    type="text" name="nascimento" id="nascimentoInput" required />
                                 <span class="span-s">Nascimento*</span>
                             </div>
                         </div>
@@ -220,7 +207,7 @@
                                 <input class=' input-s' value='{{ paciente.cep }}' type="text" name="cep" id="cepInput" required>
                                 <span class="span-s">CEP*</span>
                             </div>
-                            <button type="button" id="btn-cep" onclick="buscarCep()">...</button>
+                            <button type="button" id="btn-cep" onclick="buscarCep()"><i class='bx  bx-search'  ></i> </button>
                             <div class="formField field_rua">
                                 <input class='input-s capitalize-input' value='{{ paciente.rua }}' type="text" name='rua' id="ruaInput" required>
                                 <span class="span-s">Rua*</span>

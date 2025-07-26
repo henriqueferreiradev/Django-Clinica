@@ -6,7 +6,8 @@ from core.views import (
     dashboard_views,
     financeiro_views,
     pacientes_views,
-    profissionais_views
+    profissionais_views,
+    logs_views,
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -14,15 +15,28 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('login/', auth_views.login_view, name='login'),
     path('logout/', auth_views.logout_view, name='logout'), 
+<<<<<<< HEAD
     path('', dashboard_views.dashboard_view, name='dashboard'),
     path('setup/', auth_views.setup),
+=======
+>>>>>>> main
     
+    
+    path('', dashboard_views.dashboard_view, name='dashboard'),
+    path('dashboard/alterar_status/<int:pk>',dashboard_views.alterar_status_dashboard, name='alterar_status_dashboard'),
+
+
     path('pacientes/', pacientes_views.pacientes_view, name='pacientes'),
     path('pacientes/cadastrar', pacientes_views.cadastrar_pacientes_view, name='cadastrar_paciente'),
     path('pacientes/editar/<int:id>/', pacientes_views.editar_paciente_view, name='editar_paciente'),
     path('paciente/<int:id>/ficha/', pacientes_views.ficha_paciente, name='ficha_paciente'),
     path('api/paciente/<int:paciente_id>/', pacientes_views.dados_paciente, name='dados_paciente'),
+    path('paciente/perfil/<int:paciente_id>/', pacientes_views.perfil_paciente, name='perfil_paciente'),
+    #path('paciente/perfil/<int:paciente_id>/todos_agendamentos', pacientes_views.todos_agendamentos, name='todos_agendamentos_paciente'),
     path("api/buscar-pacientes/", pacientes_views.buscar_pacientes, name="buscar_pacientes"),
+    path('pacientes/pre_cadastro/', pacientes_views.pre_cadastro, name='pre_cadastro'),
+    path('pacientes/link/', pacientes_views.gerar_link_publico_precadastro, name='gerar_link_publico_precadastro'),
+    path('pacientes/link/<str:token>/', pacientes_views.pre_cadastro_tokenizado, name='pre_cadastro_token'),
 
 
     path('profissionais/', profissionais_views.profissionais_view, name='profissionais'),
@@ -30,23 +44,25 @@ urlpatterns = [
     path('profissionais/editar/<int:id>/', profissionais_views.editar_profissional_view, name='editar_profissional'),
     path('profissional/<int:id>/ficha/', profissionais_views.ficha_profissional, name='ficha_profissional'),
     path('api/profissional/<int:profissional_id>/', profissionais_views.dados_profissional, name='dados_profissional'),
- 
+    
     path('financeiro/', financeiro_views.financeiro_view, name='financeiro'),
 
 
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
     path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
     path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
- 
+    
     path('agendamento/confirmacao/<int:agendamento_id>/', agendamento_views.confirmacao_agendamento, name='confirmacao_agendamento'),
     path('enviar-email/<int:agendamento_id>/',agendamento_views.enviar_email_agendamento, name='enviar_email_agendamento'),
-    path('agendamento/alterar_status/<int:pk>',agendamento_views.alterar_status, name='alterar_status'),
+    path('agendamento/alterar_status/<int:pk>',agendamento_views.alterar_status_agenda, name='alterar_status_agendamento'),
     path('agendamento/json/<int:agendamento_id>/', agendamento_views.pegar_agendamento, name='get_agendamento'),
     path('agendamento/editar/<int:agendamento_id>/', agendamento_views.editar_agendamento, name='editar_agendamento'),
     path('agendamento/<int:pk>/remarcar/', agendamento_views.remarcar_agendamento, name='remarcar_agendamento'),
 
 
     path('config/', config_views.configuracao_view, name='config'),
+    
+    path('auditoria/', logs_views.logs_view, name='auditoria_logs'),
  
  
 ]
