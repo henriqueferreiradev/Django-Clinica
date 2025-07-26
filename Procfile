@@ -1,1 +1,1 @@
-web: gunicorn clinica_project.wsgi
+web: gunicorn clinica_project.wsgi:application
