@@ -19,32 +19,75 @@ DIAS_SEMANA = ['segunda-feira', 'terça-feira', 'quarta-feira',
 NOMES_MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
                'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 FINALIZADOS = ['finalizado','desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
+FALTAS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
 PENDENTES = ['pre','agendado']
+
+
 @login_required(login_url='login')
 def dashboard_view(request):
     
     
-    agendamentos = Agendamento.objects.filter(data=date.today()).select_related('especialidade')
-    total_pacientes_ativos = Paciente.objects.filter(ativo=True).count()
-    total_profissionais_ativos = Profissional.objects.filter(ativo=True).count()
-
+    # === Datas principais ===
     hoje = timezone.now().date()
+    ontem = hoje - timedelta(days=1)
     primeiro_dia_mes = hoje.replace(day=1)
-    ultimo_dia_mes = (primeiro_dia_mes + timedelta(days=32)).replace(day=1)-timedelta(days=1)
+    ultimo_dia_mes = (primeiro_dia_mes + timedelta(days=32)).replace(day=1) - timedelta(days=1)
     nome_mes_atual = NOMES_MESES[hoje.month - 1].capitalize()
+ 
     inicio_semana = hoje - timedelta(days=hoje.weekday())
-    
-    
-    inicio_semana_passada = inicio_semana - timedelta(days=7)
     fim_semana = inicio_semana + timedelta(days=6)
-    agendamentos_semana = Agendamento.objects.filter(data__gte=inicio_semana, data__lte=fim_semana).count()
+    inicio_semana_passada = inicio_semana - timedelta(days=7)
+    fim_semana_passada = inicio_semana_passada + timedelta(days=7)
+    sete_dias_atras = hoje - timedelta(days=5)
+
+    # === Consultas em agendamentos ===
+    agendamentos = Agendamento.objects.filter(data=date.today()).select_related('especialidade')
     agendamentos_dia = Agendamento.objects.filter(data=date.today()).count()
     agendamentos_dia_finalizados = Agendamento.objects.filter(data=date.today(), status__in=FINALIZADOS).count()
-    agendamentos_dia_pendentes = Agendamento.objects.filter(data=date.today(), status__in=PENDENTES).count() 
-    sete_dias_atras = hoje - timedelta(days=5)
+    agendamentos_dia_finalizados_ontem = Agendamento.objects.filter(data=ontem, status__in=FINALIZADOS).count()
+    
+    agendamentos_dia_pendentes = Agendamento.objects.filter(data=date.today(), status__in=PENDENTES).count()
+    faltas_dia = Agendamento.objects.filter(data=date.today(), status__in=FALTAS).count()
+    agendamentos_semana = Agendamento.objects.filter(data__gte=inicio_semana, data__lte=fim_semana).count()
     agendamentos_ultimos_6_dias = Agendamento.objects.filter(data__range=(sete_dias_atras, hoje))
     
+    
+    contagem_semana_passada = agendamentos_ultimos_6_dias.count()
+    # === Contagens gerais ===
+    total_pacientes_ativos = Paciente.objects.filter(ativo=True).count()
+    total_profissionais_ativos = Profissional.objects.filter(ativo=True).count()
+    
+    # ======== CONTAGENS PARA A VARIAÇÃO =========
+    contagem_pacientes_semana_passada = Paciente.objects.filter(data_cadastro__gte=inicio_semana_passada, data_cadastro__lte=fim_semana_passada).count()
+    contagem_pacientes_semana_atual = Paciente.objects.filter(data_cadastro__gte=inicio_semana, data_cadastro__lte=fim_semana).count()
 
+    contagem_agendamentos_semana_passada = Agendamento.objects.filter(data__gte=inicio_semana_passada, data__lte=fim_semana_passada).count()
+    contagem_agendamentos_semana_atual = Agendamento.objects.filter(data__gte=inicio_semana, data__lte=fim_semana).count()
+    
+    
+    
+    # === Exemplo de cálculo de variação (ajuste conforme necessário) ===
+    def variacao_percentual(valor_atual, valor_anterior):
+        if valor_anterior == 0:
+            if valor_atual == 0:
+                return 0
+            return 100
+        variacao = ((valor_atual - valor_anterior) / valor_anterior) * 100
+        return round(variacao, 1)
+
+    def percentual_diario(parte, total):
+  
+        if total == 0:
+            return 0
+        return round((parte / total) * 100, 1)
+
+
+    variacao_pacientes_ativos = variacao_percentual(contagem_pacientes_semana_atual , contagem_pacientes_semana_passada)
+    variacao_agendamentos = variacao_percentual(contagem_agendamentos_semana_atual, contagem_agendamentos_semana_passada)
+    variacao_sessao = variacao_percentual(agendamentos_dia_finalizados, agendamentos_dia_finalizados_ontem)
+    variacao_finalizadas = percentual_diario(agendamentos_dia_finalizados, agendamentos_dia )
+    variacao_pendentes =  percentual_diario(faltas_dia, agendamentos_dia)
+    print( variacao_finalizadas )
 
     dias_labels = []
     dias_dados = []
@@ -222,7 +265,7 @@ def dashboard_view(request):
 
 
     formas_pagamento = ( Pagamento.objects.values('forma_pagamento')).annotate(total=Count('id'))
-    print(formas_pagamento)
+     
     formas_pagamento_labels = [item['forma_pagamento'].capitalize() for item in formas_pagamento]
     formas_pagamento_dados = [item['total'] for item in formas_pagamento]
     
@@ -240,7 +283,7 @@ def dashboard_view(request):
     
     context = {
         'agendamentos':agendamentos,
-        
+        'faltas_dia': faltas_dia,
         'total_pacientes_ativos':total_pacientes_ativos,
         'total_profissionais_ativos': total_profissionais_ativos,
         'agendamentos_semana':agendamentos_semana,
@@ -253,6 +296,11 @@ def dashboard_view(request):
         'servicos_mais_contratados':grafico_servicos_mais_contratados,
         'grafico_status_agendamentos': grafico_status_agendamentos,
         'grafico_formas_pagamento':grafico_formas_pagamento,
+        'variacao_pacientes_ativos':  variacao_pacientes_ativos,
+        'variacao_agendamentos': variacao_agendamentos,
+        'variacao_sessao':variacao_sessao,
+        'variacao_finalizadas':variacao_finalizadas,
+        'variacao_pendentes': variacao_pendentes,
 
     }
     return render(request, 'core/dashboard.html', context)
