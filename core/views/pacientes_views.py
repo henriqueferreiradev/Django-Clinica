@@ -446,7 +446,7 @@ def pre_cadastro(request):
             vinculado_paciente=paciente,
             resolvido=False
         )
-
+    
         messages.success(request, "✅ Pré-cadastro enviado com sucesso! Entraremos em contato.")
         return redirect('pre_cadastro')
 
