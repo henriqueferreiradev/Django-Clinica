@@ -448,7 +448,7 @@ def pre_cadastro(request):
         )
     
         messages.success(request, "✅ Pré-cadastro enviado com sucesso! Entraremos em contato.")
-        return redirect('pre_cadastro')
+        return render(request, 'core/pacientes/precadastro_confirmacao.html')
 
     return render(request, 'core/pacientes/pre_cadastro.html', {
         'estado_civil_choices': ESTADO_CIVIL,
