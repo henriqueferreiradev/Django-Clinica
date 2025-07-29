@@ -180,32 +180,41 @@ textarea.input-preenchido+.span-s,
 .form-step {
     display: none;
     animation: fadeIn 0.3s ease-in-out;
-  }
-  
-  .form-step.active {
+}
+
+.form-step.active {
     display: block;
-  }
-  
-  .form-navigation {
+}
+
+.form-navigation {
     margin-top: 2rem;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 1rem;
-  }
-  
-  @keyframes fadeIn {
+}
+
+.form-step {
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes fadeIn {
     from {
-      opacity: 0;
-      transform: translateY(10px);
+        opacity: 0;
+        transform: translateY(10px);
     }
-  
+
     to {
-      opacity: 1;
-      transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
     }
-  }
-  
+}
+
 
 @media (max-width: 768px) {
     .form_titulo {
