@@ -448,7 +448,7 @@ def pre_cadastro(request):
         )
     
         messages.success(request, "✅ Pré-cadastro enviado com sucesso! Entraremos em contato.")
-        return render(request, 'core/pacientes/precadastro_confirmacao.html')
+        return render(request, 'core/pacientes/pre_cadastro_confirmacao.html')
 
     return render(request, 'core/pacientes/pre_cadastro.html', {
         'estado_civil_choices': ESTADO_CIVIL,
@@ -656,13 +656,13 @@ def gerar_link_publico_precadastro(request):
 
     
     
-    pacientes = Paciente.objects.filter(pre_cadastro=True)
+    pacientes = Paciente.objects.filter(pre_cadastro=True, ativo=True)
     print(pacientes)
     
     return render(request, 'core/pacientes/link_gerado.html', {
-        'link_tokenizado': link,
+        'link_tokenizado':link,
         'qrcode_base64':img_base64,
-        'pacientes' : pacientes
+        'pacientes':pacientes
     })
 
 
