@@ -1,4 +1,4 @@
-document.querySelectorAll('.formField input, .formField textarea, .formField select').forEach(el => {
+document.querySelectorAll('.form-input, .form-textarea,.form-select').forEach(el => {
     const atualizarClasse = () => {
         // Verifica se é radio/checkbox (usa `checked`) ou outro campo (usa `value`)
         const isFilled = el.type === 'radio' || el.type === 'checkbox'
@@ -21,53 +21,53 @@ document.querySelectorAll('.formField input, .formField textarea, .formField sel
     atualizarClasse();
 });
 function inputMasks() {
-    const cpfInput = document.getElementById('cpfInput');
+    const cpfInput = document.getElementById('cpf');
     if (cpfInput) {
         IMask(cpfInput, {
             mask: '000.000.000-00'
         });
     }
 
-    const telefoneInput = document.getElementById('telefoneInput');
+    const telefoneInput = document.getElementById('telefone');
     if (telefoneInput) {
         IMask(telefoneInput, {
             mask: '(00) 0000-0000'
         });
     }
 
-    const cepInput = document.getElementById('cepInput');
+    const cepInput = document.getElementById('cep');
     if (cepInput) {
         IMask(cepInput, {
             mask: '00.000-000'
         });
     }
 
-    const celularInput = document.getElementById('celularInput');
+    const celularInput = document.getElementById('celular');
     if (celularInput) {
         IMask(celularInput, {
             mask: '(00) 00000-0000'
         });
     }
 
-    const rgInput = document.getElementById('rgInput');
+    const rgInput = document.getElementById('rg');
     if (rgInput) {
         IMask(rgInput, {
             mask: '00.000.000-0'
         });
     }
-    const telEmergenciaInput = document.getElementById('telEmergenciaInput');
+    const telEmergenciaInput = document.getElementById('telEmergencia');
     if (telEmergenciaInput) {
         IMask(telEmergenciaInput, {
             mask: '(00) 00000-0000'
         });
     }
-    const nascimentoInput = document.getElementById('nascimentoInput');
+    const nascimentoInput = document.getElementById('nascimento');
     if (nascimentoInput) {
         IMask(nascimentoInput, {
             mask: '00/00/0000'
         });
     }
-    const cnpjInput = document.getElementById('cnpjInput');
+    const cnpjInput = document.getElementById('cnpj');
     if (cnpjInput) {
         IMask(cnpjInput, {
             mask: '00.000.000/0000-00'

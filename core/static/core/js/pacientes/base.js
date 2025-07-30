@@ -100,43 +100,7 @@ function montarEndereco(data) {
     return partes.join(', ')
 
 }
-
-function abrirModal(pacienteId) {
-    console.log("Chamando modal para o paciente:", pacienteId);
-    fetch(`/api/paciente/${pacienteId}/`)
-        .then(response => response.json())
-        .then(data => {
-            const endereco = montarEndereco(data)
-            document.getElementById('pacienteNome').innerText = `Perfil do paciente - ${data.nome} ${data.sobrenome}`;
-            document.getElementById('pacienteNascimento').innerText = `Nascimento: ${data.nascimento}`;
-            document.getElementById('pacienteIdade').innerText = data.idade;
-            document.getElementById('pacienteRg').innerText = data.rg;
-            document.getElementById('pacienteCpf').innerText = data.cpf;
-            document.getElementById('pacienteTelefone').innerText = data.telefone;
-            document.getElementById('pacienteCelular').innerText = data.celular;
-            document.getElementById('pacienteCor').innerText = data.cor_raca;
-            document.getElementById('pacienteSexo').innerText = data.sexo;
-            document.getElementById('pacienteEstadoCivil').innerText = data.estado_civil;
-            document.getElementById('pacienteEmail').innerText = data.email;
-            document.getElementById('pacienteEndereco').innerText = endereco;
-            document.getElementById('pacienteObs').innerText = data.observacao;
-            const img = document.getElementById('pacienteFoto');
-
-
-            if (data.foto) {
-                img.src = window.location.origin + data.foto;
-            } else {
-                img.src = "/static/core/img/defaultPerfil.png";
-            }
-            // Mostrar modal
-            document.getElementById('modalOverlay').style.display = 'flex';
-        });
-}
-
-function fecharModal() {
-    document.getElementById('modalOverlay').style.display = 'none';
-}
-
+ 
 
 
 document.querySelector('input[name="q"]').addEventListener('keyup', function () {

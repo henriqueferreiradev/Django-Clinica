@@ -8,6 +8,7 @@ from core.views import (
     pacientes_views,
     profissionais_views,
     logs_views,
+    api_views,
 )
  
 
@@ -45,6 +46,8 @@ urlpatterns = [
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
     path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
     path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
+    path('api/verificar-cpf/', api_views.verificar_cpf, name='verificar_cpf'),
+    
     
     path('agendamento/confirmacao/<int:agendamento_id>/', agendamento_views.confirmacao_agendamento, name='confirmacao_agendamento'),
     path('enviar-email/<int:agendamento_id>/',agendamento_views.enviar_email_agendamento, name='enviar_email_agendamento'),

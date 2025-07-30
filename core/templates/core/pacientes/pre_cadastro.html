@@ -14,6 +14,7 @@
       rel="stylesheet"
       href="{% static 'core/css/pacientes/pre_cadastro.css' %}"
     />
+    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -177,6 +178,7 @@
                       aria-required="true"
                       inputmode="numeric"
                     />
+                    <span id="cpf-feedback" class="error-message"></span>
                   </div>
 
                   <div class="form-field">
@@ -316,7 +318,7 @@
                   <div class="form-field form-field-file">
                     <label for="file" class="form-label">Foto (opcional)</label>
                     <div class="file-upload-wrapper">
-                      <input
+                      <input 
                         id="file"
                         name="foto"
                         type="file"
@@ -699,282 +701,12 @@
     </div>
 
     {% block scripts %}
-    <script>
-      // Configurações iniciais
-      document.getElementById("current-year").textContent =
-        new Date().getFullYear();
-
-      // Contador de caracteres
-      const textarea = document.getElementById("observacao");
-      const charCount = document.querySelector(".char-count .current-count");
-
-      if (textarea && charCount) {
-        textarea.addEventListener("input", function () {
-          charCount.textContent = this.value.length;
-        });
-      }
-
-      // Máscaras de campos
-      function applyMasks() {
-        // CPF
-        const cpfField = document.querySelector(".cpf-mask");
-        if (cpfField) {
-          cpfField.addEventListener("input", function (e) {
-            let value = e.target.value.replace(/\D/g, "");
-            value = value.replace(/(\d{3})(\d)/, "$1.$2");
-            value = value.replace(/(\d{3})(\d)/, "$1.$2");
-            value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-            e.target.value = value;
-          });
-        }
-
-        // CEP
-        const cepField = document.querySelector(".cep-mask");
-        if (cepField) {
-          cepField.addEventListener("input", function (e) {
-            let value = e.target.value.replace(/\D/g, "");
-            value = value.replace(/^(\d{5})(\d)/, "$1-$2");
-            e.target.value = value;
-          });
-        }
-
-        // Data
-        const dateField = document.querySelector(".date-mask");
-        if (dateField) {
-          dateField.addEventListener("input", function (e) {
-            let value = e.target.value.replace(/\D/g, "");
-            value = value.replace(/^(\d{2})(\d)/, "$1/$2");
-            value = value.replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3");
-            e.target.value = value;
-          });
-        }
-
-        // Telefone
-        const phoneField = document.querySelector(".phone-mask");
-        if (phoneField) {
-          phoneField.addEventListener("input", function (e) {
-            let value = e.target.value.replace(/\D/g, "");
-            value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
-            value = value.replace(/(\d)(\d{4})$/, "$1-$2");
-            e.target.value = value;
-          });
-        }
-
-        // Celular
-        const cellField = document.querySelector(".cellphone-mask");
-        if (cellField) {
-          cellField.addEventListener("input", function (e) {
-            let value = e.target.value.replace(/\D/g, "");
-            value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
-            value = value.replace(/(\d)(\d{4})$/, "$1-$2");
-            e.target.value = value;
-          });
-        }
-      }
-
-      // Navegação entre steps
-      const steps = document.querySelectorAll(".form-step");
-      const nextBtns = document.querySelectorAll(".btn-next");
-      const prevBtns = document.querySelectorAll(".btn-prev");
-      const progressSteps = document.querySelectorAll(".progress-step");
-      let currentStep = 0;
-
-      function showStep(index) {
-        // Atualiza steps do formulário
-        steps.forEach((step, i) => {
-          step.classList.toggle("active", i === index);
-          step.setAttribute("aria-hidden", i !== index);
-        });
-
-        // Atualiza indicador de progresso
-        progressSteps.forEach((step, i) => {
-          step.classList.toggle("active", i <= index);
-          step.setAttribute("aria-current", i === index ? "step" : "false");
-        });
-
-        currentStep = index;
-      }
-
-      nextBtns.forEach((btn) =>
-        btn.addEventListener("click", (e) => {
-          // Valida os campos antes de avançar
-          const currentStepFields =
-            steps[currentStep].querySelectorAll("[required]");
-          let isValid = true;
-
-          currentStepFields.forEach((field) => {
-            if (!field.value) {
-              field.classList.add("error");
-              isValid = false;
-
-              // Cria mensagem de erro se não existir
-              if (
-                !field.nextElementSibling ||
-                !field.nextElementSibling.classList.contains("error-message")
-              ) {
-                const errorMsg = document.createElement("span");
-                errorMsg.className = "error-message";
-                errorMsg.textContent = "Este campo é obrigatório";
-                field.parentNode.appendChild(errorMsg);
-              }
-            }
-          });
-
-          if (isValid) {
-            currentStep++;
-            showStep(currentStep);
-            window.scrollTo({
-              top: 0,
-              behavior: "smooth",
-            });
-          } else {
-            // Rola até o primeiro erro
-            const firstError = steps[currentStep].querySelector(".error");
-            if (firstError) {
-              firstError.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            }
-          }
-        })
-      );
-
-      prevBtns.forEach((btn) =>
-        btn.addEventListener("click", () => {
-          currentStep--;
-          showStep(currentStep);
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        })
-      );
-
-      // Remove classes de erro ao digitar
-      document
-        .querySelectorAll(".form-input, .form-select, .form-textarea")
-        .forEach((field) => {
-          field.addEventListener("input", function () {
-            if (this.value) {
-              this.classList.remove("error");
-              const errorMsg = this.parentNode.querySelector(".error-message");
-              if (errorMsg) errorMsg.remove();
-            }
-          });
-        });
-
-      // Busca CEP
-      const btnBuscarCep = document.getElementById("btnBuscarCep");
-      if (btnBuscarCep) {
-        btnBuscarCep.addEventListener("click", function () {
-          const cepField = document.getElementById("cep");
-          const cep = cepField.value.replace(/\D/g, "");
-
-          if (cep.length !== 8) {
-            cepField.classList.add("error");
-            return;
-          }
-
-          // Mostra loading
-          btnBuscarCep.innerHTML =
-            '<span class="btn-loading"></span> Buscando...';
-          btnBuscarCep.disabled = true;
-
-          fetch(`https://viacep.com.br/ws/${cep}/json/`)
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.erro) {
-                throw new Error("CEP não encontrado");
-              }
-
-              // Preenche os campos
-              document.getElementById("rua").value = data.logradouro;
-              document.getElementById("bairro").value = data.bairro;
-              document.getElementById("cidade").value = data.localidade;
-              document.getElementById("estado").value = data.uf;
-
-              // Foca no campo número
-              document.getElementById("numero").focus();
-            })
-            .catch((error) => {
-              console.error("Erro ao buscar CEP:", error);
-              alert(
-                "CEP não encontrado. Por favor, verifique e tente novamente."
-              );
-            })
-            .finally(() => {
-              btnBuscarCep.innerHTML = "Buscar CEP";
-              btnBuscarCep.disabled = false;
-            });
-        });
-      }
-
-      // Preview de imagem
-      function previewImage(event) {
-        const input = event.target;
-        const preview = document.getElementById("filePreview");
-
-        if (input.files && input.files[0]) {
-          const reader = new FileReader();
-          const file = input.files[0];
-
-          // Verifica tamanho (2MB máximo)
-          if (file.size > 2 * 1024 * 1024) {
-            alert("A imagem deve ter no máximo 2MB");
-            input.value = "";
-            return;
-          }
-
-          reader.onload = function (e) {
-            preview.innerHTML = `
-            <div class="preview-image">
-              <img src="${e.target.result}" alt="Pré-visualização da foto">
-              <button type="button" class="btn-remove-image" aria-label="Remover imagem">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18 6L6 18M6 6L18 18" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
-          `;
-
-            // Adiciona evento para remover a imagem
-            const btnRemove = preview.querySelector(".btn-remove-image");
-            btnRemove.addEventListener("click", function () {
-              input.value = "";
-              preview.innerHTML = "";
-            });
-          };
-
-          reader.readAsDataURL(input.files[0]);
-        }
-      }
-
-      
-      // Inicializa máscaras e outras funções
-      document.addEventListener("DOMContentLoaded", function () {
-        applyMasks();
-        showStep(0);
-
-        // Animation trigger
-        const formSection = document.querySelector("#form-section");
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add("slide-up");
-                observer.unobserve(entry.target);
-              }
-            });
-          },
-          { threshold: 0.1 }
-        );
-
-        if (formSection) {
-          observer.observe(formSection);
-        }
-      });
-    </script>
+<script type="module" src="{% static 'core/js/pacientes/main.js' %}"></script>
+      <script src="https://unpkg.com/imask"></script>
+    <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
+    <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
+    <script src="{% static '/core/js/base/cep.js' %}"></script>
+    <script src="{% static '/core/js/pacientes/base.js' %}"></script>
     {% endblock %}
   </body>
 </html>
