@@ -92,11 +92,13 @@ export async function validateCurrentStep() {
             cpfFeedback.textContent = 'Verificando CPF...';
             cpfFeedback.style.color = '#666';
 
-            const data = await checkCPF(cpfField.value);
+            // Verifica se está em modo de edição (procura um campo hidden com o ID)
+            const pacienteId = document.querySelector('input[name="paciente_id"]')?.value || null;
+            const data = await checkCPF(cpfField.value, pacienteId);
 
             if (data.existe) {
                 cpfField.classList.add("error");
-                cpfFeedback.textContent = 'Este CPF já está cadastrado!';
+                cpfFeedback.textContent = 'Este CPF já está cadastrado para outro paciente!';
                 cpfFeedback.style.color = '#d32f2f';
                 return false;
             }
@@ -113,7 +115,6 @@ export async function validateCurrentStep() {
 
     return isValid;
 }
-
 export function validateAllSteps() {
     let allValid = true;
 

@@ -4,9 +4,13 @@ from core.models import Paciente
 
 def verificar_cpf(request):
     cpf = request.GET.get('cpf', None)
+    exclude_id = request.GET.get('exclude', None)
     existe = False
     
     if cpf:
-        existe = Paciente.objects.filter(cpf=cpf).exists()
+        queryset = Paciente.objects.filter(cpf=cpf)
+        if exclude_id:
+            queryset = queryset.exclude(id=exclude_id)
+        existe = queryset.exists()
     
-        return JsonResponse({'existe':existe})
+    return JsonResponse({'existe': existe})

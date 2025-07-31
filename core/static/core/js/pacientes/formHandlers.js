@@ -37,7 +37,7 @@ export function setupFormNavigation() {
     prevBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
             prevStep();
-            showStep(currentStep);
+            showStep(getCurrentStep());
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     });
@@ -56,7 +56,7 @@ export function setupFormNavigation() {
             
             if (firstInvalidStep !== -1) {
                 currentStep = firstInvalidStep;
-                showStep(currentStep);
+                showStep(getCurrentStep());
                 window.scrollTo({ top: 0, behavior: "smooth" });
             }
         }

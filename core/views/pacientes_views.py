@@ -249,6 +249,11 @@ def editar_paciente_view(request,id):
     paciente = get_object_or_404(Paciente, id=id)
 
     if request.method == 'POST':
+        novo_cpf = request.POST.get('cpf')
+        if Paciente.objects.filter(cpf=novo_cpf).exclude(id=paciente.id).exists():
+            messages.error(request, 'CPF já cadastrado para outro paciente!')
+            return redirect('editar_paciente', id=paciente.id)
+        
         paciente.nome = request.POST.get('nome')
         paciente.sobrenome = request.POST.get('sobrenome')
         paciente.nomeSocial = request.POST.get('nomeSocial')

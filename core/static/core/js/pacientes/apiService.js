@@ -1,10 +1,15 @@
 // apiService.js
-export async function checkCPF(cpf) {
+export async function checkCPF(cpf, excludeId = null) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
     try {
-        const response = await fetch(`/api/verificar-cpf/?cpf=${cpf}`, {
+        let url = `/api/verificar-cpf/?cpf=${cpf}`;
+        if (excludeId) {
+            url += `&exclude=${excludeId}`;
+        }
+
+        const response = await fetch(url, {
             signal: controller.signal
         });
         
@@ -17,7 +22,6 @@ export async function checkCPF(cpf) {
         throw error;
     }
 }
-
 export async function buscarCEP(cep) {
     const cepNumerico = cep.replace(/\D/g, '');
     
