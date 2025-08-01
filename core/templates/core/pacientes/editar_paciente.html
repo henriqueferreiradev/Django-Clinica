@@ -287,7 +287,15 @@
                     </span>
                     <span class="file-upload-text">Selecione uma foto</span>
                   </label>
-                  <div id="filePreview" class="file-preview"></div>
+                  <div id="filePreview" class="file-preview">
+                    {% if paciente.foto %}
+                    <img id="preview" src="{{ paciente.foto.url }}" alt="Foto atual" 
+                         class="preview-image" style="display: block;">
+                  {% else %}
+                    <img id="preview" src="#" alt="Preview da imagem" 
+                         class="preview-image" style="display: none;">
+                  {% endif %}
+                  </div>
                   <small id="fileHelp" class="form-help-text"
                     >Formatos aceitos: JPG, PNG (máx. 2MB)</small
                   >
