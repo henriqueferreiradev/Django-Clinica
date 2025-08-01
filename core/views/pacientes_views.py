@@ -653,7 +653,7 @@ def perfil_paciente(request,paciente_id):
 def gerar_link_publico_precadastro(request):
     token = gerar_token_acesso_unico()
     link = request.build_absolute_uri(f"/pacientes/link/{token}/")
-    
+
     qr = qrcode.make(link)
     buffer = BytesIO()
     qr.save(buffer, format='PNG')

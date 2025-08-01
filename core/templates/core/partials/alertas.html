@@ -1,55 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/core/static/core/css/alerts.css">
+    <title>Toast Notifications</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      * {
+        font-family: "Poppins";
+      }
+        /* Botões */
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+            margin-right: 8px;
+        }
+        
+        .btn-success {
+            background-color: #48bb78;
+        }
+        
+        .btn-success:hover {
+            background-color: #38a169;
+        }
+        
+        .btn-dark {
+            background-color: #2d3748;
+        }
+        
+        .btn-dark:hover {
+            background-color: #1a202c;
+        }
+        
+        /* Toast Container */
+        .toast-container {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            width: 320px;
+            z-index: 50;
+        }
+        
+        .toast-container > * + * {
+            margin-top: 12px;
+        }
+        
+        /* Animations */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); }
+            to { transform: translateX(100%); }
+        }
+        
+        @keyframes flipInX {
+            from { transform: perspective(400px) rotateX(90deg); opacity: 0; }
+            to { transform: perspective(400px) rotateX(0deg); opacity: 1; }
+        }
+        
+        @keyframes flipOutX {
+            from { transform: perspective(400px) rotateX(0deg); opacity: 1; }
+            to { transform: perspective(400px) rotateX(90deg); opacity: 0; }
+        }
+        
+        .toast-slide-in {
+            animation: slideInRight 0.5s forwards;
+        }
+        
+        .toast-slide-out {
+            animation: slideOutRight 0.5s forwards;
+        }
+        
+        .toast-flip-in {
+            animation: flipInX 0.75s forwards;
+        }
+        
+        .toast-flip-out {
+            animation: flipOutX 0.75s forwards;
+        }
+        
+        /* Toast Styles */
+        .toast {
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .toast-success {
+            background-color: #22C55E;
+        }
+        
+        .toast-error {
+            background-color: #EF4444;
+        }
+        
+        .toast-warning {
+            background-color: #F59E0B;
+        }
+        
+        .toast-info {
+            background-color: #3B82F6;
+        }
+        
+        .toast-debug {
+            background-color: #6B7280;
+        }
+        
+        .toast-dark {
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+        }
+        
+        .toast-content {
+            padding: 16px;
+        }
+        
+        .toast-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .toast-icon {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .toast-title {
+            font-weight: bold;
+        }
+        
+        .toast-close {
+            margin-left: auto;
+            color: rgba(255, 255, 255, 0.7);
+            background: none;
+            border: none;
+            cursor: pointer;
+            box-shadow:none;
+            transition: color 0.3s ease;
+        }
+        
+        .toast-close:hover {
+            color: white;
+            background-color: transparent;
+        }
+        
+        .dark-icon {
+            color: #63b3ed;
+        }
+    </style>
 </head>
-
 <body>
-    {% if messages %}
-    <div class="messages-container" id="alert-container">
-        {% for message in messages %}
-        <div class="alert {{ message.tags }}">
-            <span class="icon">
-                {% if message.tags == 'success' %}
-                ✅
-                {% elif message.tags == 'warning' %}
-                ⚠️
-                {% elif message.tags == 'error' %}
-                ❌
-                {% elif message.tags == 'info' %}
-                ℹ️
-                {% endif %}
-            </span>
-            {{ message }}
-
-        </div>
-        {% endfor %}
+<!-- Toast Container -->
+    <div id="toast-container" class="toast-container">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="toast toast-{{ message.tags }} toast-slide-in">
+                <div class="toast-content">
+                    <div class="toast-header">
+                        <div class="toast-icon">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                            {% elif message.tags == 'error' %}
+                                <i class="fas fa-exclamation-circle"></i>
+                            {% elif message.tags == 'info' %}
+                                <i class="fas fa-info-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div class="toast-title">
+                            {{ message.tags|title }}
+                        </div>
+                        <button class="toast-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div>{{ message }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
     </div>
-    {% endif %}
 
-<!--
-    <div class="confirmation-container" id="confirmation-alert">
-        <div class="card-content">
-            <p class="card-heading">Excluir?</p>
-            <p class="card-description">Tem certeza que deseja excluir?</p>
-        </div>
-        <div class="card-button-wrapper">
-            <button class="card-button secondary">Cancelar</button>
-            <button class="card-button primary">Excluir</button>
-        </div>
-        <button class="exit-button">
-            <svg height="20px" viewBox="0 0 384 512">
-                <path
-                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z">
-                </path>
-            </svg>
-        </button>
-    </div>
--->
+    <script>
+        // Fechar toasts automaticamente e ao clicar no botão
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast');
+            
+            toasts.forEach(toast => {
+                // Configurar fechamento automático
+                setTimeout(() => {
+                    toast.classList.remove('toast-slide-in');
+                    toast.classList.add('toast-slide-out');
+                    setTimeout(() => toast.remove(), 500);
+                }, 5000);
+                
+                // Configurar botão de fechar
+                const closeBtn = toast.querySelector('.toast-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
+                        toast.classList.remove('toast-slide-in');
+                        toast.classList.add('toast-slide-out');
+                        setTimeout(() => toast.remove(), 500);
+                    });
+                }
+            });
+        });
+
+        // Slide Animation Toast
+        function showSlideToast(type) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            // Set toast content
+            toast.className = 'toast toast-success toast-slide-in';
+            
+            const content = document.createElement('div');
+            content.className = 'toast-content';
+            
+            const header = document.createElement('div');
+            header.className = 'toast-header';
+            
+            const iconDiv = document.createElement('div');
+            iconDiv.className = 'toast-icon';
+            iconDiv.innerHTML = '<i class="fas fa-check-circle"></i>';
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'toast-title';
+            titleDiv.textContent = 'Success';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'toast-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.onclick = () => toast.remove();
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = 'Operation completed successfully!';
+            
+            header.appendChild(iconDiv);
+            header.appendChild(titleDiv);
+            header.appendChild(closeBtn);
+            
+            content.appendChild(header);
+            content.appendChild(messageDiv);
+            toast.appendChild(content);
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('toast-slide-in');
+                toast.classList.add('toast-slide-out');
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+        
+        // Dark Toast
+        function showDarkToast() {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            toast.className = 'toast toast-dark toast-flip-in';
+            
+            const content = document.createElement('div');
+            content.className = 'toast-content';
+            
+            const header = document.createElement('div');
+            header.className = 'toast-header';
+            
+            const iconDiv = document.createElement('div');
+            iconDiv.className = 'toast-icon dark-icon';
+            iconDiv.innerHTML = '<i class="fas fa-moon"></i>';
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'toast-title';
+            titleDiv.textContent = 'Dark Notification';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'toast-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.onclick = () => {
+                toast.classList.remove('toast-flip-in');
+                toast.classList.add('toast-flip-out');
+                setTimeout(() => toast.remove(), 750);
+            };
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = 'This is a dark mode notification';
+            
+            header.appendChild(iconDiv);
+            header.appendChild(titleDiv);
+            header.appendChild(closeBtn);
+            
+            content.appendChild(header);
+            content.appendChild(messageDiv);
+            toast.appendChild(content);
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('toast-flip-in');
+                toast.classList.add('toast-flip-out');
+                setTimeout(() => toast.remove(), 750);
+            }, 5000);
+        }
+    </script>
 </body>
-
 </html>

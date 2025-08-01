@@ -7,27 +7,6 @@
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 {% endblock %}
 {% block content %}
-{% if messages %}
-<div class="messages-container" id="alert-container">
-    {% for message in messages %}
-    <div class="alert {{ message.tags }}">
-        <span class="icon">
-            {% if message.tags == 'success' %}
-            ✅
-            {% elif message.tags == 'warning' %}
-            ⚠️
-            {% elif message.tags == 'error' %}
-            ❌
-            {% elif message.tags == 'info' %}
-            ℹ️
-            {% endif %}
-        </span>
-        {{ message }}
-
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
 <div class="content">
 <div class="content-loader">
   <div class="spinner"></div>
@@ -154,11 +133,8 @@
     </div>
     </table>
   </div>
-
- 
-
 </div>
-
+{% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
