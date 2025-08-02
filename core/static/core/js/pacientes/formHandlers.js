@@ -1,12 +1,14 @@
 // formHandlers.js
 import { showStep, validateCurrentStep, validateAllSteps, steps, nextStep, getCurrentStep, prevStep } from './formSteps.js';
 import { buscarCEP } from './apiService.js';
-console.log('CurrentStep no handlers:', getCurrentStep());
-console.log('Tipo de currentStep:', typeof getCurrentStep());
+
+
 export function setupFormNavigation() {
     const nextBtns = document.querySelectorAll(".btn-next");
     const prevBtns = document.querySelectorAll(".btn-prev");
     const submitBtn = document.getElementById('submitBtn');
+    const formContent = document.getElementById('form-content');
+    
 
     nextBtns.forEach((btn) => {
         btn.addEventListener("click", async (e) => {
@@ -15,13 +17,16 @@ export function setupFormNavigation() {
             
             try {
                 if (await validateCurrentStep()) {
-                    console.log("Valor ANTES:", getCurrentStep());
                     nextStep();
-                    console.log("Valor DEPOIS:", getCurrentStep());
                     showStep(getCurrentStep());
-                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    if (formContent){
+                        formContent.scrollTo({ top: 0, behavior: "smooth" });
+
+                    } else {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
                 } else {
-                    const firstError = steps[currentStep].querySelector(".error");
+                    const firstError = steps[getCurrentStep()].querySelector(".error");
                     if (firstError) {
                         firstError.scrollIntoView({ behavior: "smooth", block: "center" });
                     }
@@ -38,7 +43,12 @@ export function setupFormNavigation() {
         btn.addEventListener("click", () => {
             prevStep();
             showStep(getCurrentStep());
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            if (formContent){
+                formContent.scrollTo({ top: 0, behavior: "smooth" });
+
+            } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
         });
     });
 
@@ -55,7 +65,7 @@ export function setupFormNavigation() {
             );
             
             if (firstInvalidStep !== -1) {
-                currentStep = firstInvalidStep;
+                getCurrentStep() = firstInvalidStep;
                 showStep(getCurrentStep());
                 window.scrollTo({ top: 0, behavior: "smooth" });
             }

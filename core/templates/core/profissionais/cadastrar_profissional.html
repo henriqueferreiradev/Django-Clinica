@@ -4,7 +4,7 @@
 {% block title %}Cadastrar Profissional - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/profissionais/cadastrar_profissional.css' %}">
-<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
+ 
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,7 @@
 
 <main id="form-section" class="form-section">
   <div class="container">
-    <div class="content">
+    <div id='form-content' class="content">
       <!-- Progress Steps -->
       <div class="form-progress">
         <div class="progress-step active" data-step="1" aria-current="step">
@@ -262,10 +262,7 @@
                   aria-required="true"
                 />
               </div>
-            </div>
-
-            <!-- Conselhos Complementares -->
-            <div class="form-row">
+ 
               <div class="form-field">
                 <label for="conselho2" class="form-label">Conselho Complementar</label>
                 <select id="conselho2" name="conselho2" class="form-select">
@@ -307,9 +304,7 @@
                   name="num3_conselho"
                 />
               </div>
-            </div>
-
-            <div class="form-row">
+ 
               <div class="form-field">
                 <label for="conselho4" class="form-label">Conselho Complementar</label>
                 <select id="conselho4" name="conselho4" class="form-select">

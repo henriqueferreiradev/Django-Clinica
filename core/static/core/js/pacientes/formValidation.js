@@ -28,7 +28,7 @@ export function validarFormatoCPF(cpf) {
 
 export function validarCNPJ(cnpj) {
     
-function validarCNPJ(cnpj) {
+ 
     cnpj = cnpj.replace(/[^\d]+/g, '');
 
     if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
@@ -59,5 +59,4 @@ function validarCNPJ(cnpj) {
 
     resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
     return resultado === parseInt(digitos.charAt(1));
-}
 }
