@@ -255,7 +255,7 @@ class Profissional(models.Model):
     num4_conselho = models.CharField(max_length=20, blank=True, null=True)
     foto = models.ImageField(upload_to=caminho_foto_profissional, blank=True, null=True)
     observacao = models.TextField(max_length=5000, null=True)
-
+    redeSocial = models.CharField(default='Não informado', max_length=35)   
 
     cep = models.CharField(max_length=10, blank=True, null=True)
     rua = models.TextField(max_length=255, blank=True, null=True)
@@ -276,7 +276,16 @@ class Profissional(models.Model):
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
     
-    
+    @property
+    def idade_formatada(self):
+        if self.data_nascimento:
+            hoje = date.today()
+            idade = relativedelta(hoje, self.data_nascimento)
+            return f'{idade.years} anos, {idade.months} meses e {idade.days} dias'
+        return 'Data de nascimento não informada'
+    @property
+    def endereco_formatado(self):
+        return f'{self.rua}, {self.numero}, {self.complemento} - {self.bairro}, {self.cidade}/{self.uf} - {self.cep}'
     def save(self, *args, **kwargs):
         criando = self.pk is None
         

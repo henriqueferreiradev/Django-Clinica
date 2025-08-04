@@ -39,6 +39,8 @@ urlpatterns = [
     path('profissionais/editar/<int:id>/', profissionais_views.editar_profissional_view, name='editar_profissional'),
     path('profissional/<int:id>/ficha/', profissionais_views.ficha_profissional, name='ficha_profissional'),
     path('api/profissional/<int:profissional_id>/', profissionais_views.dados_profissional, name='dados_profissional'),
+    path('profissional/perfil/<int:profissional_id>/', profissionais_views.perfil_profissional, name='perfil_profissional'),
+    
     
     path('financeiro/', financeiro_views.financeiro_view, name='financeiro'),
 

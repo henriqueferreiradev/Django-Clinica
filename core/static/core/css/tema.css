@@ -13,7 +13,8 @@
   --bg-color: #E4E9F7;
   --hover-dropdown: #F0F0F0;
   --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
-
+  --btn-red-exclude: #ff000025;
+  --btn-red-font: #efc4c4;
 }
 
 .dark {
@@ -61,7 +62,7 @@ select {
 
 a {
   color: var(--preto);
-  /* substitui --text-color */
+  text-decoration: none;
 }
 
 th {

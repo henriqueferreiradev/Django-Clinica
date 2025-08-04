@@ -63,6 +63,7 @@
             <li><a class="link_name" href="#">Pacientes</a></li>
             <li><a href="{% url 'pacientes' %}">Ver Pacientes</a></li>
             <li><a href="{% url 'cadastrar_paciente' %}">Novo Paciente</a></li>
+            <li><a href="{% url 'gerar_link_publico_precadastro' %}">Pré-Cadastro</a></li>
           </ul>
         </li>
 
@@ -77,9 +78,8 @@
           <ul class="sub-menu">
             <li><a class="link_name" href="#">Profissionais</a></li>
             <li><a href="{% url 'profissionais' %}">Ver Profissionais</a></li>
-            <li>
-              <a href="{% url 'cadastrar_profissional' %}">Novo Profissional</a>
-            </li>
+            <li><a href="{% url 'cadastrar_profissional' %}">Novo Profissional</a></li>
+            <li><a href="#">Follow-Ups</a></li>
           </ul>
         </li>
 
@@ -97,17 +97,27 @@
           </ul>
         </li>
         {% if request.user.tipo != 'profissional' %}
+       
         <li>
-          <a href="{% url 'financeiro' %}">
-            <i class="bx bx-pie-chart-alt-2"></i>
-            <span class="link_name">Financeiro</span>
-          </a>
-          <ul class="sub-menu blank">
-            <li>
-              <a class="link_name" href="{% url 'financeiro' %}">Financeiro</a>
-            </li>
+          <div class="iocn-link">
+            <a href="#">
+              <i class="bx bx-pie-chart-alt-2"></i>
+              <span class="link_name">Financeiro</span>
+            </a>
+            <i class="bx bxs-chevron-down arrow"></i>
+          </div>
+          <ul class="sub-menu">
+             <li><a class="link_name" href="{% url 'financeiro' %}">Financeiro</a></li>
+            <li><a href="{% url 'financeiro' %}">Dashboard</a></li>
+            <li><a href="{% url 'financeiro' %}">Fluxo de Caixa</a></li>
+            <li><a href="{% url 'financeiro' %}">Contas a Receber</a></li>
+            <li><a href="{% url 'financeiro' %}">Contas a Pagar</a></li>
+            <li><a href="{% url 'financeiro' %}">Faturamento</a></li>
+            <li><a href="{% url 'financeiro' %}">Folha de pagamento</a></li>
+            <li><a href="{% url 'financeiro' %}">Relatórios</a></li>
           </ul>
         </li>
+          
         {% endif %}
         <li>
           <a href="#">

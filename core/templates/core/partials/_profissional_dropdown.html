@@ -1,0 +1,38 @@
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'core/css/partials/_dropdown.css' %}">{% endblock %}
+<div class="dropdown-wrapper">
+  <button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
+  <div class="dropdown_menu">
+    <a href="{% url 'perfil_profissional' profissional.id %}">
+      <button type="button"><i class="bx bx-show"></i>Ver perfil</button>
+    </a>
+    <button
+      onclick="window.location.href='{% url 'editar_profissional' profissional.id %}'"
+    >
+      <i class="bx bx-edit"></i> Editar
+    </button>
+    <button onclick="abrirFicha('{% url 'ficha_profissional' profissional.id %}')">
+      <i class="bx bx-file-blank"></i> Gerar Ficha
+    </button>
+ 
+    <form
+      method="POST"
+      action="{% url 'profissionais' %}"
+      style="margin: 0"
+      id="inativarForm{{ profissional.id }}"
+    >
+      {% csrf_token %}
+      <input type="hidden" name="delete_id" value="{{ profissional.id }}" />
+      <button
+        type="button"
+        onclick="showConfirmModal(
+    'Inativar Paciente', 
+    'Deseja realmente inativar o profissional {{ profissional.nome }}?', 
+    document.getElementById('inativarForm{{ profissional.id }}')
+  )"
+      >
+        <i class="bx bx-user-x"></i> Inativar
+      </button>
+    </form>
+  </div>
+</div>

@@ -3,9 +3,12 @@ from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaci
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
-from core.utils import registrar_log
+from core.utils import registrar_log, get_semana_atual
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
+from django.db.models import Min, Max,Count 
+
+
 def cadastrar_profissionais_view(request):
     if request.method == 'POST':
         if 'delete_id' in request.POST:
@@ -289,3 +292,64 @@ def dados_profissional(request, profissional_id):
         "cnpj":profissional.cnpj,
     }
     return JsonResponse(data)
+
+
+FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
+PENDENTES = ['pre','agendado']
+
+def perfil_profissional(request, profissional_id):
+    inicio_semana, fim_semana = get_semana_atual()
+
+    profissional = get_object_or_404(Profissional, id=profissional_id)
+    
+    # Agendamentos onde o profissional é o principal
+    agendamentos_principal = Agendamento.objects.filter(profissional_1=profissional)
+    
+    # Agendamentos onde o profissional é auxiliar
+    agendamentos_auxiliar = Agendamento.objects.filter(profissional_2=profissional)
+    
+    # Todos os agendamentos do profissional (como principal ou auxiliar)
+    todos_agendamentos = agendamentos_principal | agendamentos_auxiliar
+    
+    frequencia_semanal = todos_agendamentos.filter(data__range=[inicio_semana, fim_semana]).count()
+    quantidade_agendamentos = todos_agendamentos.count()
+    quantidade_faltas = todos_agendamentos.filter(status__in=FINALIZADOS).count()
+    
+    primeiro_agendamento = todos_agendamentos.aggregate(Min('data'))['data__min']
+    ultimo_agendamento = todos_agendamentos.aggregate(Max('data'))['data__max']
+    
+    # Pacientes mais atendidos
+    pacientes_mais_atendidos = (todos_agendamentos
+        .values('paciente__id', 'paciente__nome', 'paciente__foto')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:5]
+    )
+    
+    # Especialidades mais utilizadas
+    especialidades_mais_utilizadas = (todos_agendamentos
+        .values('especialidade__id', 'especialidade__nome')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:5]
+    )
+    
+    # Prontuários (observações feitas pelo profissional)
+    prontuarios = todos_agendamentos.exclude(observacoes='').order_by('-data', '-hora_inicio')
+    
+    # Últimos 3 agendamentos
+    tres_ultimos_agendamentos = todos_agendamentos.order_by('-data')[:3]
+    
+    context = {
+        'profissional': profissional,
+        'frequencia_semanal': frequencia_semanal,
+        'quantidade_agendamentos': quantidade_agendamentos,
+        'quantidade_faltas': quantidade_faltas,
+        'primeiro_agendamento': primeiro_agendamento,
+        'ultimo_agendamento': ultimo_agendamento,
+        'pacientes_mais_atendidos': pacientes_mais_atendidos,
+        'especialidades_mais_utilizadas': especialidades_mais_utilizadas,
+        'prontuarios': prontuarios,
+        'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
+        'todos_agendamentos': todos_agendamentos,
+    }
+    
+    return render(request, 'core/profissionais/perfil_profissional.html', context)

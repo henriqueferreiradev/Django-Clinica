@@ -3,16 +3,21 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    
+      <script>
+ 
+    (function() {
+      const isDark = localStorage.getItem('theme') === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+    })();
+  </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil do Paciente | Gestão Clínica</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/pacientes/perfil_paciente.css' %}">
- <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+    <title>Perfil do Profissional - Ponto de Equilíbrio</title>.
 
-{% endblock %}
-</head>
+    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/pacientes/perfil_paciente.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+</head>             
 <body>
     <div class="container">
         <!-- Header Section -->
@@ -20,18 +25,18 @@
             <div class="header-content">
                 <div class="patient-info">
                     <div class="patient-avatar">
-                    {% if paciente.foto %}
-                    <img src="{{ paciente.foto.url }}" alt="Foto de {{ paciente.nome }}">
+                    {% if profissional.foto %}
+                    <img src="{{ profissional.foto.url }}" alt="Foto de {{ profissional.nome }}">
                     {% else %}
                     <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
                     {% endif %}                    </div>
                     <div>
-                        <h1 class="patient-name">{{ paciente.nome }} {{ paciente.sobrenome }}</h1>
-                        <p class="patient-id">ID: {{ paciente.id }}</p>
+                        <h1 class="patient-name">{{ profissional.nome }} {{ profissional.sobrenome }}</h1>
+                        <p class="patient-id">ID: {{ profissional.id }}</p>
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='{% url 'editar_paciente' paciente.id %}'">
+                    <button class="btn btn-primary" onclick="window.location.href='{% url 'editar_profissional' profissional.id %}'">
                         <i class="fas fa-edit"></i> Editar Dados
                     </button>
                     <button class="btn btn-secondary">
@@ -53,32 +58,32 @@
                     <div class="data-grid">
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Nome Completo</label>
-                            <p class="font-medium" > {{ paciente.nome }} {{ paciente.sobrenome }}</p>
+                            <p class="font-medium" > {{ profissional.nome }} {{ profissional.sobrenome }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Nome Social</label>
-                            <p class="font-medium" > {{ paciente.nomeSocial }}</p>
+                            <p class="font-medium" > {{ profissional.nomeSocial }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">CPF/RG</label>
-                            <p class="font-medium" >{{ paciente.cpf }} / {{paciente.rg }}</p>
+                            <p class="font-medium" >{{ profissional.cpf }} / {{profissional.rg }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Data de Nascimento</label>
-                            <p class="font-medium" >{{ paciente.data_nascimento }}</p>
+                            <p class="font-medium" >{{ profissional.data_nascimento }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Idade</label>
-                            <p class="font-medium">{{ paciente.idade_formatada}}</p>
+                            <p class="font-medium">{{ profissional.idade_formatada}}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Telefone</label>
-                            <p class="font-medium" > {{ paciente.telefone }}</p>
+                            <p class="font-medium" > {{ profissional.telefone }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">WhatsApp</label>
                             <div class="flex items-center gap-2">
-                                <p class="font-medium" >{{ paciente.celular }}</p>
+                                <p class="font-medium" >{{ profissional.celular }}</p>
                                 <button class="text-green-500 hover:text-green-600">
                                     <i class="fab fa-whatsapp"></i>
                                 </button>
@@ -86,36 +91,62 @@
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">E-mail</label>
-                            <p class="font-medium" >{{paciente.email}}</p>
+                            <p class="font-medium" >{{profissional.email}}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Endereço</label>
-                            <p class="font-medium" >{{ paciente.endereco_formatado }} </p>
+                            <p class="font-medium" >{{ profissional.endereco_formatado }} </p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Cor/Raça</label>
-                            <p class="font-medium" >{{ paciente.get_cor_raca_display }}</p>
+                            <p class="font-medium" >{{ profissional.get_cor_raca_display }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Sexo/Gênero</label>
-                            <p class="font-medium" >{{ paciente.get_sexo_display }}</p>
+                            <p class="font-medium" >{{ profissional.get_sexo_display }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Estado Civil</label>
-                            <p class="font-medium" >{{ paciente.get_estado_civil_display }}</p>
+                            <p class="font-medium" >{{ profissional.get_estado_civil_display }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Profissão</label>
-                            <p class="font-medium" >{{ paciente.profissao }}</p>
+                            <p class="font-medium" >{{ profissional.especialidade }}</p>
                         </div>
-                        <div class="data-card">
-                            <label class="text-sm text-gray-500">Como nos conheceu?</label>
-                            <p class="font-medium" >{{ paciente.get_midia_display }}</p>
-                        </div>
+ 
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Rede Social</label>
-                            <p class="font-medium" >{{ paciente.redeSocial }}</p>
+                            <p class="font-medium" >{{ profissional.redeSocial }}</p>
                         </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Conselho Principal</label>
+                            <p class="font-medium" >{{ profissional.get_conselho1_display  }} - {{ profissional.num1_conseho }}</p>
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Conselho Complementar</label>
+                            {% if profissional.get_conselho2_display %}
+                                <p class="font-medium">{{ profissional.get_conselho2_display }} - {{ profissional.num2_conseho }}</p>
+                            {% else %}
+                                <p class="font-medium text-gray-400">Não informado</p>
+                            {% endif %}
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Conselho Complementar</label>
+                            {% if profissional.get_conselho2_display %}
+                                <p class="font-medium">{{ profissional.get_conselho3_display }} - {{ profissional.num3_conseho }}</p>
+                            {% else %}
+                                <p class="font-medium text-gray-400">Não informado</p>
+                            {% endif %}
+                        </div>
+                        <div class="data-card">
+                            <label class="text-sm text-gray-500">Conselho Complementar</label>
+                            {% if profissional.get_conselho2_display %}
+                                <p class="font-medium">{{ profissional.get_conselho4_display }} - {{ profissional.num4_conseho }}</p>
+                            {% else %}
+                                <p class="font-medium text-gray-400">Não informado</p>
+                            {% endif %}
+                        </div>
+
                     </div>
                 </section>
 
@@ -133,7 +164,7 @@
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Status</label>
-                            <span class="badge badge-success">{% if paciente.ativo %} Ativo {% else %} Inativo {% endif %}</span>
+                            <span class="badge badge-success">{% if profissional.ativo %} Ativo {% else %} Inativo {% endif %}</span>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Frequência Semanal</label>
@@ -153,7 +184,32 @@
                         </div>
                     </div>
                 </section>
-
+    <section class="section">
+        <h2 class="section-title">Pacientes Mais Atendidos</h2>
+        <div class="space-y-4">
+            {% if pacientes_mais_atendidos %}
+                {% for paciente in pacientes_mais_atendidos %}
+                    <div class="professional-card">
+                        <div class="professional-avatar">
+                            {% if paciente.paciente__foto %}
+                                <img src="{{ MEDIA_URL }}{{ paciente.paciente__foto }}" alt="Foto de {{ paciente.paciente__nome }}">
+                            {% else %}
+                                <div class="profile-placeholder">
+                                    {{ paciente.paciente__nome|slice:":1" }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h3 class="professional-name">{{ paciente.paciente__nome }}</h3>
+                            <p class="professional-sessions">{{ paciente.total }} atendimentos</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-gray-500">Nenhum paciente atendido ainda.</p>
+            {% endif %}
+        </div>
+    </section>
                 <!-- Section 3: Pacotes e Sessões -->
                 <section class="section">
                     <h2 class="section-title">Pacotes e Sessões</h2>
@@ -255,7 +311,7 @@
             <div class="space-y-6">
                 <!-- Section 5: Profissionais que mais atenderam -->
                 <section class="section">
-                    <h2 class="section-title">Profissionais que mais atenderam</h2>
+                    <h2 class="section-title">Tempo de atendimento</h2>
                     <h2 class="section-subtitle">Como Condutor da Sessão</h2>
                     <div class="space-y-4">
                     {% if profissional_principal %}
@@ -272,7 +328,7 @@
                                 </div>
                                 <div>
                                     <h3 class="professional-name">{{profissional.profissional_1__nome}}</h3>
-                                    <p class="professional-sessions">{{profissional.total}} atendimentos | {{profissional.tempo_sessao}}h totais</p>
+                                    <p class="professional-sessions">{{profissional.total}} atendimentos | {{profissional.tempo_sessao}} totais</p>
                             
                                 </div>
                             </div>
@@ -295,7 +351,7 @@
                             </div>
                             <div>
                                 <h3 class="professional-name">{{profissional.profissional_2__nome}}</h3>
-                                <p class="professional-sessions">{{profissional.total}} atendimentos | {{profissional.tempo_sessao}}h totais</p>
+                                <p class="professional-sessions">{{profissional.total}} atendimentos | {{profissional.tempo_sessao}} totais</p>
                             </div>
                         </div>
                      {% endfor %}
@@ -309,97 +365,61 @@
                 <section class="section">
                     <h2 class="section-title">Histórico de Agendamentos</h2>
                     <ul class="timeline space-y-4">
-                    {% if tres_ultimos_agendamentos %}
-                    {% for agendamento in tres_ultimos_agendamentos %}
-                    
-                        <li class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                            
-                                <div class="timeline-header">
-                                    <div>
-                                        <h3 class="timeline-title"> {{agendamento.paciente.nome}} </h3>
-                                        <p class="timeline-date text-sm">{{agendamento.data|date:"d/m/Y"}} - {{ agendamento.hora_inicio|time:"H:i" }} / {{ agendamento.hora_fim|time:"H:i" }}</p>
+                        {% if tres_ultimos_agendamentos %}
+                            {% for agendamento in tres_ultimos_agendamentos %}
+                                <li class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-header">
+                                            <div>
+                                                <h3 class="timeline-title">{{ agendamento.paciente.nome }}</h3>
+                                                <p class="timeline-date text-sm">
+                                                    {{ agendamento.data|date:"d/m/Y" }} - 
+                                                    {{ agendamento.hora_inicio|time:"H:i" }} / 
+                                                    {{ agendamento.hora_fim|time:"H:i" }}
+                                                </p>
+                                            </div>
+                                            <span class="badge badge-success">{{ agendamento.get_status_display }}</span>
+                                        </div>
+                                        <p class="timeline-meta text-sm">{{ agendamento.especialidade.nome }}</p>
+                                        {% if agendamento.observacoes %}
+                                            <p class="timeline-note">{{ agendamento.observacoes|truncatechars:100 }}</p>
+                                        {% endif %}
                                     </div>
-                                    <span class="badge badge-success">{{agendamento.get_status_display}}</span>
-                                </div>
-                                <p class="timeline-meta text-sm">{{agendamento.profissional_1.nome}}</p>
-                                {% if not agendamento.observacoes %}
-                                <p class="timeline-note">Paciente ainda não possui observações nessa consulta.</p>
-                                {% else %}
-                                <p class="timeline-note">{{agendamento.observacoes}}</p>
-                                {%endif%}
-                            </div>
-                        </li>
-
-                    {% endfor %}
-
-                        <button style='width: 100%;' class="btn btn-primary">
-                            Ver histórico completo
-                        </button>
-                    {% else %}
-                        <h3 class="professional-name">Não há informações no momento.</h3>
-                    {% endif %}
+                                </li>
+                            {% endfor %}
+                            <button style='width: 100%;' class="btn btn-primary">
+                                Ver histórico completo
+                            </button>
+                        {% else %}
+                            <p class="text-gray-500">Nenhum agendamento registrado.</p>
+                        {% endif %}
                     </ul>
                 </section>
 
                 <!-- Section 7: Observações Gerais -->
                 <section class="section">
-                    <h2 class="section-title">Observações Gerais</h2>
+                    <h2 class="section-title">Prontuários</h2>
                     <div class="space-y-3">
-                    {% if ultimos_agendamentos %}
-                    <form style='display:none' id="obs-container" method="POST" action="">
-                        {% csrf_token %}
-                        
-                        <div  class="observacao-div space-y-2">
-                            <select name="agendamento_id" id="agendamento_id" required>
-                                <option disabled selected>-- Selecione o agendamento --</option>
-                                {% for agendamento in ultimos_agendamentos %}
-                                    <option value="{{ agendamento.id }}">
-                                        {{ agendamento.data|date:"d/m/Y" }} - {{ agendamento.hora_inicio|time:"H:i" }} com {{ agendamento.profissional_1.nome }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                    
-                            <textarea name="observacao" id="observacao" rows="4" required></textarea>
- 
-                        </div>
-                    
-
-                    <div style='display:flex; width: 100%; gap: 1em; margin-top:1em;'>
-                    <button  id="btnCancelObs" style="display: block; width: 50%;" onclick="toggleObservacao()" class="btn btn-primary">
-                            Cancelar
-                        </button>
-                        <button  type="submit" style=' display:none; width:50%' id='btnSave' class="btn btn-primary">Salvar</button>
-                    </div>
-                    </form>
-                    <button  id="btnToggleObs" onclick="toggleObservacao()" class="btn btn-primary">Adicionar nova observação</button>
-
-
-                    {% for agendamento in ultimos_agendamentos %}
-                    {% if agendamento.observacoes %}
-                    <div class="note-card">
-                    {% if agendamento.observacoes %}
-                        <div class="note-header">
-                            {% if agendamento.observacao_autor %}
-                            <p class="note-author"> {{ agendamento.observacao_autor.get_full_name|default:agendamento.observacao_autor.username }}</p>
-                            {% else %}
-                            <p class="note-author">Sem usuário</p>
-                            {% endif %}
-                            <p class="note-date">{{ agendamento.observacao_data|date:"d/m/Y" }}</p>
-                            </div>
-                            <p class="note-content">{{agendamento.observacoes}}</p>
-                    </div>
+                        {% if prontuarios %}
+                            {% for agendamento in prontuarios %}
+                                <div class="note-card">
+                                    <div class="note-header">
+                                        <p class="note-author">
+                                            {{ agendamento.paciente.nome }} - 
+                                            {{ agendamento.data|date:"d/m/Y" }} - 
+                                            {{ agendamento.hora_inicio|time:"H:i" }}
+                                        </p>
+                                        <p class="note-date">{{ agendamento.observacao_data|date:"d/m/Y" }}</p>
+                                    </div>
+                                    <p class="note-content">{{ agendamento.observacoes }}</p>
+                                </div>
+                            {% empty %}
+                                <p class="text-gray-500">Nenhum prontuário registrado.</p>
+                            {% endfor %}
                         {% else %}
-                             <h3 class="professional-name">Não há informações no momento.</h3>
+                            <p class="text-gray-500">Nenhum prontuário registrado.</p>
                         {% endif %}
-                        {% endif %}
-                        {% endfor %}
-                
-                    {% else %}
-                        <h3 class="professional-name">Não há informações no momento.</h3>
-                    {% endif %}
-
                     </div>
                 </section>
 
@@ -472,6 +492,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y">
+                    {% if ultimos_pagamentos %}
                     {% for pagamento in ultimos_pagamentos %}
                     <tr>
                         <td class="py-2 px-3">{{ pagamento.data|date:'d/m/Y' }}</td>
@@ -500,10 +521,10 @@
             <button class="action-btn action-btn-success">
                 <i class="fab fa-whatsapp"></i>
             </button>
-            <button class="action-btn action-btn-instagram" onclick="window.open('https://instagram.com/{{ paciente.redeSocial }}', '_blank')">
+            <button class="action-btn action-btn-instagram" onclick="window.open('https://instagram.com/{{ profissional.redeSocial }}', '_blank')">
                 <i class="fab fa-instagram"></i>
             </button>
-            <button  class="action-btn action-btn-dark" onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">
+            <button  class="action-btn action-btn-dark" onclick="abrirFicha('{% url 'ficha_profissional' profissional.id %}')">
                 <i class="fas fa-file-pdf"></i>
             </button>
         </div>
@@ -537,8 +558,9 @@ function toggleObservacao() {
   
 <script src="https://unpkg.com/imask"></script>
 
-<script src="{% static '/core/js/pacientes/base.js' %}"></script>
-<script src="{% static '/core/js/pacientes/cep.js' %}"></script>
+<script src="{% static '/core/js/profissionals/base.js' %}"></script>
+<script src="{% static '/core/js/base/base.js' %}"></script>
+<script src="{% static '/core/js/profissionals/cep.js' %}"></script>
 {% endblock %}
 </body>
 

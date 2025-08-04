@@ -324,28 +324,4 @@ body {
     color: var(--verdePrincipal);
 }
 
-.dropdown_menu {
-    position: absolute;
-    background: var(--branco);
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    display: none;
-    flex-direction: column;
-    min-width: 120px;
-    z-index: 10;
-    color: black;
-}
-
-.dropdown_menu button {
-    padding: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    color: black;
-
-}
-
-.dropdown_menu button:hover {
-    background: #eee;
-}
+ 

@@ -271,49 +271,6 @@ thead tr th:last-child {
     background: transparent;
 }
 
-.dropdown_menu {
-    position: absolute;
- 
-    background: var(--cinzaBorda);
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    display: none;
-    flex-direction: column;
-    min-width: 180px;
-    z-index: 10;
-    color: var(--preto);
-    
- 
-}
-
-/* Adicione esta media query para telas pequenas */
-@media (max-width: 768px) {
-    .dropdown_menu {
-        right: 10px; /* Ajusta para não cortar em telas pequenas */
-        min-width: 180px; /* Reduz slightly em mobile */
-    }
-}
-
-.dropdown_menu button {
-    padding: 10px;
-    margin: 5px 5px;
-    background: none;
-    border: none;
-    font-size: 14px;
-    border-radius: 10px ;
-    cursor: pointer;
-    text-align: left;
-    color: var(--preto);
-    box-shadow: none;
-    width: 100%;
-}
-
-.dropdown_menu button:hover {
-    background: var(--roxoPrincipal);
-
-}
-
- 
 
 .tabela_infos-dados {
     display: flex;
