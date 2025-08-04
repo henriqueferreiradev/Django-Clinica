@@ -8,18 +8,18 @@ export function setupFormNavigation() {
     const prevBtns = document.querySelectorAll(".btn-prev");
     const submitBtn = document.getElementById('submitBtn');
     const formContent = document.getElementById('form-content');
-    
+
 
     nextBtns.forEach((btn) => {
         btn.addEventListener("click", async (e) => {
             e.preventDefault();
             btn.disabled = true;
-            
+
             try {
                 if (await validateCurrentStep()) {
                     nextStep();
                     showStep(getCurrentStep());
-                    if (formContent){
+                    if (formContent) {
                         formContent.scrollTo({ top: 0, behavior: "smooth" });
 
                     } else {
@@ -43,7 +43,7 @@ export function setupFormNavigation() {
         btn.addEventListener("click", () => {
             prevStep();
             showStep(getCurrentStep());
-            if (formContent){
+            if (formContent) {
                 formContent.scrollTo({ top: 0, behavior: "smooth" });
 
             } else {
@@ -52,7 +52,7 @@ export function setupFormNavigation() {
         });
     });
 
-    submitBtn.addEventListener('click', function(e) {
+    submitBtn.addEventListener('click', function (e) {
         e.preventDefault();
 
         if (validateAllSteps()) {
@@ -60,10 +60,10 @@ export function setupFormNavigation() {
             this.querySelector('.btn-loading').classList.remove('hidden');
             document.querySelector('form').submit();
         } else {
-            const firstInvalidStep = [...steps].findIndex(step => 
+            const firstInvalidStep = [...steps].findIndex(step =>
                 step.querySelector("[required].error")
             );
-            
+
             if (firstInvalidStep !== -1) {
                 getCurrentStep() = firstInvalidStep;
                 showStep(getCurrentStep());
@@ -73,7 +73,7 @@ export function setupFormNavigation() {
     });
 
     document.querySelectorAll(".form-input, .form-select, .form-textarea").forEach((field) => {
-        field.addEventListener("input", function() {
+        field.addEventListener("input", function () {
             if (this.value) {
                 this.classList.remove("error");
                 const errorMsg = this.parentNode.querySelector(".error-message");
@@ -95,13 +95,13 @@ export function setupCEPHandler() {
                 btnBuscarCep.disabled = true;
 
                 const data = await buscarCEP(cep);
-                
+
                 document.getElementById("rua").value = data.logradouro;
                 document.getElementById("bairro").value = data.bairro;
                 document.getElementById("cidade").value = data.localidade;
                 document.getElementById("estado").value = data.uf;
                 document.getElementById("numero").focus();
-                
+
             } catch (error) {
                 console.error("Erro ao buscar CEP:", error);
                 alert(error.message);
@@ -160,12 +160,12 @@ export function setupImagePreview() {
 export function setupCPFValidation() {
     const cpfField = document.getElementById('cpf');
     if (cpfField) {
-        cpfField.addEventListener('blur', function() {
+        cpfField.addEventListener('blur', function () {
             if (this.value) {
-                const cpfFeedback = this.nextElementSibling?.classList?.contains("error-message") 
+                const cpfFeedback = this.nextElementSibling?.classList?.contains("error-message")
                     ? this.nextElementSibling
                     : document.createElement("span");
-                
+
                 if (!validarCPF(this.value)) {
                     this.classList.add("error");
                     cpfFeedback.textContent = 'CPF inválido';
