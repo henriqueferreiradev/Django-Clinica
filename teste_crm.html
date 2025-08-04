@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM da Clínica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        secondary: {
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        
+        .sidebar.collapsed .sidebar-text {
+            display: none;
+        }
+        
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        
+        .sidebar.collapsed .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn {
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                z-index: 50;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+            }
+            
+            .overlay.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="sidebar bg-white w-64 border-r border-gray-200 flex flex-col">
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-heartbeat text-primary-500 text-2xl"></i>
+                    <span class="logo-text font-semibold text-lg text-gray-800">CRM Clínica</span>
+                </div>
+                <button class="expand-icon text-gray-500 hover:text-gray-700 focus:outline-none hidden md:block">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav>
+                    <ul class="space-y-1 px-2">
+                        <li>
+                            <a href="#" class="dashboard-link flex items-center p-3 rounded-lg bg-primary-50 text-primary-600 font-medium">
+                                <i class="fas fa-tachometer-alt mr-3 text-primary-500"></i>
+                                <span class="sidebar-text">Dashboard CRM</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="tasks-link flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 font-medium">
+                                <i class="fas fa-tasks mr-3 text-gray-500"></i>
+                                <span class="sidebar-text">Minhas Tarefas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="history-link flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 font-medium">
+                                <i class="fas fa-history mr-3 text-gray-500"></i>
+                                <span class="sidebar-text">Histórico de Interações</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="no-return-link flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 font-medium">
+                                <i class="fas fa-user-clock mr-3 text-gray-500"></i>
+                                <span class="sidebar-text">Pacientes sem Retorno</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="birthdays-link flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 font-medium">
+                                <i class="fas fa-birthday-cake mr-3 text-gray-500"></i>
+                                <span class="sidebar-text">Aniversariantes do Dia</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="packages-link flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 font-medium">
+                                <i class="fas fa-box-open mr-3 text-gray-500"></i>
+                                <span class="sidebar-text">Pacotes Finalizados</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User profile">
+                    </div>
+                    <div class="ml-3 sidebar-text">
+                        <p class="text-sm font-medium text-gray-700">Dr. João Silva</p>
+                        <p class="text-xs font-medium text-gray-500">Médico</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Overlay for mobile sidebar -->
+        <div class="overlay"></div>
+        
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200">
+                <div class="flex items-center justify-between px-4 py-3">
+                    <div class="flex items-center">
+                        <button class="md:hidden text-gray-500 hover:text-gray-600 focus:outline-none sidebar-toggle">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h1 class="ml-2 md:ml-0 text-xl font-semibold text-gray-800">CRM da Clínica</h1>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="relative hidden md:block">
+                            <input type="text" placeholder="Buscar paciente..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent w-64">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        
+                        <button class="text-gray-500 hover:text-gray-700 relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                        </button>
+                        
+                        <div class="hidden md:block">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User profile">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile search -->
+                <div class="px-4 py-2 md:hidden">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar paciente..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main content area -->
+            <main class="flex-1 overflow-y-auto p-4 bg-gray-50">
+                <!-- Dashboard CRM -->
+                <div class="dashboard-content">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Dashboard CRM</h2>
+                        <p class="text-gray-600">Visão geral das atividades da clínica</p>
+                    </div>
+                    
+                    <!-- Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Pacientes ativos hoje</p>
+                                    <p class="text-3xl font-bold text-gray-800 mt-1">42</p>
+                                </div>
+                                <div class="p-3 rounded-full bg-primary-100 text-primary-600">
+                                    <i class="fas fa-user-injured text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-sm font-medium text-green-600">+12% em relação à ontem</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Tarefas pendentes</p>
+                                    <p class="text-3xl font-bold text-gray-800 mt-1">18</p>
+                                </div>
+                                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                    <i class="fas fa-tasks text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-sm font-medium text-yellow-600">5 atrasadas</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Reengajamentos (mês)</p>
+                                    <p class="text-3xl font-bold text-gray-800 mt-1">27</p>
+                                </div>
+                                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                    <i class="fas fa-phone-volume text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-sm font-medium text-green-600">+8% em relação ao mês passado</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Interações negativas</p>
+                                    <p class="text-3xl font-bold text-gray-800 mt-1">3</p>
+                                </div>
+                                <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                    <i class="fas fa-frown text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-sm font-medium text-red-600">-1 em relação à semana passada</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Próximas Tarefas -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">Próximas Tarefas</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paciente</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição da tarefa</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data prevista</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/32.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Maria Oliveira</div>
+                                                    <div class="text-sm text-gray-500">Consulta de rotina</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Ligar para confirmar consulta</div>
+                                            <div class="text-sm text-gray-500">Pré-consulta</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Hoje</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">Concluir</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/75.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Carlos Souza</div>
+                                                    <div class="text-sm text-gray-500">Pós-operatório</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Enviar questionário de satisfação</div>
+                                            <div class="text-sm text-gray-500">Follow-up</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Amanhã</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">Concluir</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/63.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Ana Santos</div>
+                                                    <div class="text-sm text-gray-500">Primeira consulta</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Enviar documentos pré-consulta</div>
+                                            <div class="text-sm text-gray-500">Documentação</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Quinta-feira</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">Concluir</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Minhas Tarefas (hidden by default) -->
+                <div class="tasks-content hidden">
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="text-2xl font-semibold text-gray-800">Minhas Tarefas</h2>
+                                <p class="text-gray-600">Gerencie suas tarefas pendentes</p>
+                            </div>
+                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md">
+                                <i class="fas fa-plus mr-2"></i> Nova Tarefa
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Task Card 1 -->
+                        <div class="card bg-white rounded-lg shadow overflow-hidden border-l-4 border-yellow-500">
+                            <div class="p-5">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">Ligar para confirmar consulta</h3>
+                                        <p class="text-sm text-gray-600 mt-1">Maria Oliveira</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pendente</span>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-sm text-gray-700">Confirmar horário da consulta de rotina marcada para sexta-feira.</p>
+                                </div>
+                                <div class="mt-4 flex items-center text-sm text-gray-500">
+                                    <i class="far fa-calendar-alt mr-2"></i>
+                                    <span>Prazo: Hoje, 15:00</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-5 py-3 flex justify-end space-x-2">
+                                <button class="btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fas fa-check mr-1"></i> Concluir
+                                </button>
+                                <button class="btn bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fas fa-edit mr-1"></i> Editar
+                                </button>
+                                <a href="https://wa.me/5511999999999" class="btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fab fa-whatsapp mr-1"></i> WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Task Card 2 -->
+                        <div class="card bg-white rounded-lg shadow overflow-hidden border-l-4 border-red-500">
+                            <div class="p-5">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">Enviar exames</h3>
+                                        <p class="text-sm text-gray-600 mt-1">Carlos Souza</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Atrasado</span>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-sm text-gray-700">Enviar resultados dos exames de sangue por e-mail.</p>
+                                </div>
+                                <div class="mt-4 flex items-center text-sm text-gray-500">
+                                    <i class="far fa-calendar-alt mr-2"></i>
+                                    <span>Prazo: Ontem, 18:00</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-5 py-3 flex justify-end space-x-2">
+                                <button class="btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fas fa-check mr-1"></i> Concluir
+                                </button>
+                                <button class="btn bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fas fa-edit mr-1"></i> Editar
+                                </button>
+                                <a href="https://wa.me/5511999999999" class="btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fab fa-whatsapp mr-1"></i> WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Task Card 3 -->
+                        <div class="card bg-white rounded-lg shadow overflow-hidden border-l-4 border-blue-500">
+                            <div class="p-5">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">Agendar retorno</h3>
+                                        <p class="text-sm text-gray-600 mt-1">Ana Santos</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Em dia</span>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-sm text-gray-700">Agendar consulta de retorno após primeira avaliação.</p>
+                                </div>
+                                <div class="mt-4 flex items-center text-sm text-gray-500">
+                                    <i class="far fa-calendar-alt mr-2"></i>
+                                    <span>Prazo: Amanhã, 10:00</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-5 py-3 flex justify-end space-x-2">
+                                <button class="btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fas fa-check mr-1"></i> Concluir
+                                </button>
+                                <button class="btn bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fas fa-edit mr-1"></i> Editar
+                                </button>
+                                <a href="https://wa.me/5511999999999" class="btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fab fa-whatsapp mr-1"></i> WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Histórico de Interações (hidden by default) -->
+                <div class="history-content hidden">
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="text-2xl font-semibold text-gray-800">Histórico de Interações</h2>
+                                <p class="text-gray-600">Registro de todas as interações com pacientes</p>
+                            </div>
+                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md new-interaction-btn">
+                                <i class="fas fa-plus mr-2"></i> Nova Interação
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="bg-white rounded-lg shadow p-4 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Paciente</label>
+                                <select class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <option>Todos</option>
+                                    <option>Maria Oliveira</option>
+                                    <option>Carlos Souza</option>
+                                    <option>Ana Santos</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">De</label>
+                                <input type="date" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Até</label>
+                                <input type="date" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            </div>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button class="btn bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md mr-2">
+                                Limpar
+                            </button>
+                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md">
+                                Aplicar Filtros
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paciente</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responsável</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">15/06/2023</div>
+                                            <div class="text-sm text-gray-500">10:30</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">Maria Oliveira</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                <i class="fas fa-phone mr-1"></i> Ligação
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-900">Confirmada consulta para 20/06 às 14h.</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Dr. João Silva</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">14/06/2023</div>
+                                            <div class="text-sm text-gray-500">16:45</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">Carlos Souza</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                <i class="fab fa-whatsapp mr-1"></i> WhatsApp
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-900">Enviado questionário de satisfação pós-consulta.</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Dra. Ana Paula</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">13/06/2023</div>
+                                            <div class="text-sm text-gray-500">09:15</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">Ana Santos</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                                <i class="fas fa-envelope mr-1"></i> E-mail
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-900">Enviado lembrete para agendamento de retorno.</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Dr. João Silva</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pacientes sem Retorno (hidden by default) -->
+                <div class="no-return-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Pacientes sem Retorno</h2>
+                        <p class="text-gray-600">Pacientes que não retornaram dentro do período esperado</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paciente</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Último atendimento</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dias sem contato</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Pedro Almeida</div>
+                                                    <div class="text-sm text-gray-500">Consulta de check-up</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">15/05/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">32 dias</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">
+                                                <i class="fas fa-plus mr-1"></i> Tarefa
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Juliana Costa</div>
+                                                    <div class="text-sm text-gray-500">Acompanhamento</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">22/05/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">25 dias</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">
+                                                <i class="fas fa-plus mr-1"></i> Tarefa
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/68.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Roberto Ferreira</div>
+                                                    <div class="text-sm text-gray-500">Retorno</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">28/05/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">19 dias</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">
+                                                <i class="fas fa-plus mr-1"></i> Tarefa
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Aniversariantes do Dia (hidden by default) -->
+                <div class="birthdays-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Aniversariantes do Dia</h2>
+                        <p class="text-gray-600">Pacientes que estão comemorando aniversário hoje</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Birthday Card 1 -->
+                        <div class="card bg-white rounded-lg shadow overflow-hidden">
+                            <div class="p-5 flex items-center">
+                                <div class="flex-shrink-0 h-16 w-16 rounded-full bg-pink-100 flex items-center justify-center">
+                                    <i class="fas fa-birthday-cake text-pink-500 text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-800">Maria Oliveira</h3>
+                                    <p class="text-sm text-gray-600">45 anos</p>
+                                    <div class="mt-1">
+                                        <span class="text-xs font-medium text-gray-500">Última consulta: 15/06/2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-5 py-3 flex justify-end">
+                                <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fas fa-envelope mr-1"></i> Enviar mensagem
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Birthday Card 2 -->
+                        <div class="card bg-white rounded-lg shadow overflow-hidden">
+                            <div class="p-5 flex items-center">
+                                <div class="flex-shrink-0 h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-birthday-cake text-blue-500 text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-800">Carlos Souza</h3>
+                                    <p class="text-sm text-gray-600">38 anos</p>
+                                    <div class="mt-1">
+                                        <span class="text-xs font-medium text-gray-500">Última consulta: 10/06/2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-5 py-3 flex justify-end">
+                                <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">
+                                    <i class="fas fa-envelope mr-1"></i> Enviar mensagem
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-white rounded-lg shadow p-6 text-center">
+                        <i class="fas fa-gift text-4xl text-gray-300 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-700">Nenhum outro paciente está comemorando aniversário hoje</h3>
+                        <p class="text-gray-500 mt-2">Você pode verificar os aniversariantes da semana na aba de relatórios</p>
+                    </div>
+                </div>
+                
+                <!-- Pacotes Finalizados (hidden by default) -->
+                <div class="packages-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Pacotes Finalizados</h2>
+                        <p class="text-gray-600">Pacotes de tratamento que foram concluídos recentemente</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paciente</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pacote</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Início</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Término</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/28.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Fernanda Lima</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Fisioterapia Pós-Operatória</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">10/04/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">12/06/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Concluído</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">
+                                                <i class="fas fa-eye mr-1"></i> Detalhes
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/42.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Ricardo Mendes</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Tratamento de Coluna</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">05/03/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">10/06/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Concluído</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">
+                                                <i class="fas fa-eye mr-1"></i> Detalhes
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/65.jpg" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Patrícia Alves</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Pacote de Pilates</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">15/02/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">08/06/2023</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Concluído</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="btn bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">
+                                                <i class="fas fa-eye mr-1"></i> Detalhes
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modal Nova Interação -->
+    <div class="fixed inset-0 overflow-y-auto z-50 hidden" id="interaction-modal">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div>
+                    <div class="mt-3 text-center sm:mt-0 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Nova Interação
+                        </h3>
+                        <div class="mt-2">
+                            <form>
+                                <div class="mb-4">
+                                    <label for="interaction-type" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Interação</label>
+                                    <select id="interaction-type" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                        <option>Selecione...</option>
+                                        <option>Ligação</option>
+                                        <option>WhatsApp</option>
+                                        <option>E-mail</option>
+                                        <option>Presencial</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="interaction-patient" class="block text-sm font-medium text-gray-700 mb-1">Paciente</label>
+                                    <select id="interaction-patient" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                        <option>Selecione...</option>
+                                        <option>Maria Oliveira</option>
+                                        <option>Carlos Souza</option>
+                                        <option>Ana Santos</option>
+                                        <option>Pedro Almeida</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="interaction-description" class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                                    <textarea id="interaction-description" rows="4" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Descreva a interação realizada..."></textarea>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                    <button type="button" class="btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium w-full sm:ml-3 sm:w-auto save-interaction-btn">
+                        Salvar
+                    </button>
+                    <button type="button" class="btn bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium mt-3 sm:mt-0 w-full sm:w-auto cancel-interaction-btn">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sidebar toggle
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.overlay');
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const expandIcon = document.querySelector('.expand-icon');
+        
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+        
+        expandIcon.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+        
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        // Navigation between pages
+        const dashboardLink = document.querySelector('.dashboard-link');
+        const tasksLink = document.querySelector('.tasks-link');
+        const historyLink = document.querySelector('.history-link');
+        const noReturnLink = document.querySelector('.no-return-link');
+        const birthdaysLink = document.querySelector('.birthdays-link');
+        const packagesLink = document.querySelector('.packages-link');
+        
+        const dashboardContent = document.querySelector('.dashboard-content');
+        const tasksContent = document.querySelector('.tasks-content');
+        const historyContent = document.querySelector('.history-content');
+        const noReturnContent = document.querySelector('.no-return-content');
+        const birthdaysContent = document.querySelector('.birthdays-content');
+        const packagesContent = document.querySelector('.packages-content');
+        
+        function resetNavLinks() {
+            dashboardLink.classList.remove('bg-primary-50', 'text-primary-600');
+            tasksLink.classList.remove('bg-primary-50', 'text-primary-600');
+            historyLink.classList.remove('bg-primary-50', 'text-primary-600');
+            noReturnLink.classList.remove('bg-primary-50', 'text-primary-600');
+            birthdaysLink.classList.remove('bg-primary-50', 'text-primary-600');
+            packagesLink.classList.remove('bg-primary-50', 'text-primary-600');
+            
+            dashboardLink.classList.add('text-gray-600', 'hover:bg-gray-100');
+            tasksLink.classList.add('text-gray-600', 'hover:bg-gray-100');
+            historyLink.classList.add('text-gray-600', 'hover:bg-gray-100');
+            noReturnLink.classList.add('text-gray-600', 'hover:bg-gray-100');
+            birthdaysLink.classList.add('text-gray-600', 'hover:bg-gray-100');
+            packagesLink.classList.add('text-gray-600', 'hover:bg-gray-100');
+        }
+        
+        function hideAllContent() {
+            dashboardContent.classList.add('hidden');
+            tasksContent.classList.add('hidden');
+            historyContent.classList.add('hidden');
+            noReturnContent.classList.add('hidden');
+            birthdaysContent.classList.add('hidden');
+            packagesContent.classList.add('hidden');
+        }
+        
+        dashboardLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetNavLinks();
+            hideAllContent();
+            dashboardLink.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            dashboardLink.classList.add('bg-primary-50', 'text-primary-600');
+            dashboardContent.classList.remove('hidden');
+            
+            // Close sidebar on mobile
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        tasksLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetNavLinks();
+            hideAllContent();
+            tasksLink.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            tasksLink.classList.add('bg-primary-50', 'text-primary-600');
+            tasksContent.classList.remove('hidden');
+            
+            // Close sidebar on mobile
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        historyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetNavLinks();
+            hideAllContent();
+            historyLink.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            historyLink.classList.add('bg-primary-50', 'text-primary-600');
+            historyContent.classList.remove('hidden');
+            
+            // Close sidebar on mobile
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        noReturnLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetNavLinks();
+            hideAllContent();
+            noReturnLink.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            noReturnLink.classList.add('bg-primary-50', 'text-primary-600');
+            noReturnContent.classList.remove('hidden');
+            
+            // Close sidebar on mobile
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        birthdaysLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetNavLinks();
+            hideAllContent();
+            birthdaysLink.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            birthdaysLink.classList.add('bg-primary-50', 'text-primary-600');
+            birthdaysContent.classList.remove('hidden');
+            
+            // Close sidebar on mobile
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        packagesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetNavLinks();
+            hideAllContent();
+            packagesLink.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            packagesLink.classList.add('bg-primary-50', 'text-primary-600');
+            packagesContent.classList.remove('hidden');
+            
+            // Close sidebar on mobile
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        // Interaction modal
+        const interactionModal = document.getElementById('interaction-modal');
+        const newInteractionBtn = document.querySelector('.new-interaction-btn');
+        const cancelInteractionBtn = document.querySelector('.cancel-interaction-btn');
+        const saveInteractionBtn = document.querySelector('.save-interaction-btn');
+        
+        newInteractionBtn.addEventListener('click', () => {
+            interactionModal.classList.remove('hidden');
+        });
+        
+        cancelInteractionBtn.addEventListener('click', () => {
+            interactionModal.classList.add('hidden');
+        });
+        
+        saveInteractionBtn.addEventListener('click', () => {
+            // Here you would typically save the interaction to your database
+            alert('Interação salva com sucesso!');
+            interactionModal.classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === interactionModal) {
+                interactionModal.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
