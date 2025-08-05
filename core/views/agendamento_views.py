@@ -287,7 +287,7 @@ def verificar_pacotes_ativos(request, paciente_id):
     pacotes = PacotePaciente.objects.filter(paciente_id=paciente_id, ativo=True)
     
     pacotes_data = []
-
+    print(pacotes )
     for pacote in pacotes:
         sessoes_usadas = pacote.sessoes_realizadas
         pacotes_data.append({
@@ -295,6 +295,7 @@ def verificar_pacotes_ativos(request, paciente_id):
             "quantidade_total": pacote.qtd_sessoes,
             "quantidade_usadas": sessoes_usadas,
             "valor_total": float(pacote.valor_total),
+           "valor_desconto": float(pacote.valor_desconto),
             "valor_pago": float(pacote.total_pago),   
             "valor_restante": float(pacote.valor_restante),
             'servico_id': pacote.servico.id  

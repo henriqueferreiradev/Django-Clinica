@@ -377,20 +377,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-function mudarStatus(id) {
-    alert('Alterar status do agendamento: ' + id);
-}
-
-function verDetalhes(id) {
-    alert('Ver detalhes do agendamento: ' + id);
-}
-
-
-
-
-
-
-
 
 
 

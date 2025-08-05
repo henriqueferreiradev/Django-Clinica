@@ -39,7 +39,7 @@
                 <div  id="pacote_atual"></div>
                 <div  id="info_reposicao"></div>
                 <div id="aviso-desmarcacoes"
-                style="display: none; margin: 1em 0; padding: 10px; background-color:rgb(255, 230, 230); border: 1px solidrgb(175, 76, 76); border-radius: 5px;">
+                style="display: none; margin: 1em 0; padding: 10px; background-color:rgb(255, 230, 230); border: 1px solid rgb(175, 76, 76); border-radius: 5px;">
                 <strong style="color:rgb(125, 46, 46);">Saldos de sessões desmarcadas detectados!</strong><br>
                 <span id="mensagem-desmarcacoes" style="color:rgb(125, 46, 46); font-size: 13px;"></span>
                 <button type="button" id="usar-reposicao-btn"
@@ -344,37 +344,7 @@
 
 {% block scripts %}
   
-    
-<script>
-    
-    document.getElementById("btn_gerar_cupom").addEventListener("click", function () {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        const codigo = document.getElementById("codigo_pacote_display").textContent;
-        const valorPago = document.getElementById("valor_pago_display").textContent;
-        const valorRestante = document.getElementById("valor_restante_display").textContent;
-        const sessaoAtual = document.getElementById("sessao_atual_display").textContent;
-        const totalSessoes = document.getElementById("total_sessoes_display").textContent;
-
-        doc.setFontSize(16);
-        doc.text("Comprovante de Sessão", 20, 20);
-        doc.setFontSize(12);
-        doc.text('')
-
-        doc.setFontSize(12);
-        doc.text(`Código do Pacote: ${codigo}`, 20, 40);
-        doc.text(`Valor Pago: R$ ${valorPago}`, 20, 50);
-        doc.text(`Valor Restante: R$ ${valorRestante}`, 20, 60);
-        doc.text(`Sessão Atual: ${sessaoAtual} de ${totalSessoes}`, 20, 70);
-
-        const dataAtual = new Date().toLocaleString("pt-BR");
-        doc.text(`Data/Hora: ${dataAtual}`, 20, 85);
-
-        doc.save(`comprovante_${codigo || sessaoAtual}.pdf`);
-    });
-</script>
-
+  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/imask"></script>

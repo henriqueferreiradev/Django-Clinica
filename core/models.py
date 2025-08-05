@@ -403,6 +403,14 @@ class PacotePaciente(models.Model):
     def valor_restante(self):
         return self.valor_final - self.total_pago
 
+    @property
+    def valor_desconto(self):
+        if self.desconto_reais:
+            return round(self.desconto_reais, 2)
+        elif self.desconto_percentual:
+            return (self.valor_original or 0) * (self.desconto_percentual / 100)
+        return 0
+    
     def __str__(self):
         return f"Pacote {self.codigo} Valor restante {self.valor_restante} - {self.paciente} "
 

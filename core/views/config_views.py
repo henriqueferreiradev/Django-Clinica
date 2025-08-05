@@ -115,4 +115,7 @@ def configuracao_view(request):
      
       
     })
- 
+
+def testes(request):
+    
+    return render(request, 'core/agendamentos/testes.html')

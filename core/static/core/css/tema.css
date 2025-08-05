@@ -15,6 +15,21 @@
   --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
   --btn-red-exclude: #ff000025;
   --btn-red-font: #efc4c4;
+
+    /* Espaçamentos */
+    --espaco-xs: 0.5rem;
+    --espaco-sm: 1rem;
+    --espaco-md: 1.5rem;
+    --espaco-lg: 2rem;
+    --espaco-xl: 3rem;
+  
+    /* Bordas */
+    --borda-radius: 8px;
+    --borda-radius-sm: 4px;
+  
+    /* Sombras */
+    --sombra: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --sombra-focus: 0 0 0 3px rgba(127, 67, 150, 0.3);
 }
 
 .dark {

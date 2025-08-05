@@ -33,7 +33,8 @@ urlpatterns = [
     path('pacientes/link/', pacientes_views.gerar_link_publico_precadastro, name='gerar_link_publico_precadastro'),
     path('pacientes/link/<str:token>/', pacientes_views.pre_cadastro_tokenizado, name='pre_cadastro_token'),
 
-
+    path('testes/', config_views.testes, name='testes' ),
+    
     path('profissionais/', profissionais_views.profissionais_view, name='profissionais'),
     path('profissionais/cadastrar', profissionais_views.cadastrar_profissionais_view, name='cadastrar_profissional'),
     path('profissionais/editar/<int:id>/', profissionais_views.editar_profissional_view, name='editar_profissional'),
