@@ -29,10 +29,13 @@
     'Inativar Paciente', 
     'Deseja realmente inativar o profissional {{ profissional.nome }}?', 
     document.getElementById('inativarForm{{ profissional.id }}')
-  )"
-      >
+  )">
         <i class="bx bx-user-x"></i> Inativar
       </button>
     </form>
   </div>
 </div>
+ {% block scripts %}
+<script src="{% static '/core/js/base/confirm_modal.js' %}"></script>
+{% endblock %}
+

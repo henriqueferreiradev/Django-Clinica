@@ -200,8 +200,12 @@ body {
 
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    /* ou largura fixa: 200px */
+    gap: 100px;
+    justify-content: center;
+    /* Centraliza o grid na página */
+    width: 100%;
 }
 
 .card {
@@ -323,5 +327,3 @@ body {
     background: transparent;
     color: var(--verdePrincipal);
 }
-
- 

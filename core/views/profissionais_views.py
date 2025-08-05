@@ -244,7 +244,22 @@ def ficha_profissional(request,id ):
 
 @login_required(login_url='login')
 def profissionais_view(request):
-    profissionais = Profissional.objects.all().order_by('-id')
+    profissionais = Profissional.objects.filter(ativo=True).all().order_by('-id')
+
+    if request.method == 'POST':
+        if 'delete_id' in request.POST:
+            profissional = Profissional.objects.get(id=request.POST['delete_id'])
+            profissional.ativo = False
+            profissional.save()
+            messages.success(request, f'Profissional {profissional.nome} inativado com sucesso!') 
+            registrar_log(usuario=request.user,
+                acao='Inativação',
+                modelo='Profissional',
+                objeto_id=profissional.id,
+                descricao=f'Profissional {profissional.nome} inativado.')
+            return redirect('profissionais')
+
+
     return render(request, 'core/profissionais/profissionais.html', {
         "profissionais": profissionais,
     })

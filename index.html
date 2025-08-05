@@ -1,466 +1,352 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Facil</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+{% extends 'core/base.html' %}
 
-    <style>
-        :root {
-            --primary: #04ECB4;
-            --primary-light: #d1fae5;
-            --primary-dark: #059669;
-            --gray-light: #f3f4f6;
-            --gray-medium: #e5e7eb;
-            --gray-dark: #6b7280;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f9fafb;
-            color: #374151;
-        }
-        
-        .step-indicator {
-            position: relative;
-        }
-        
-        .step-indicator:not(:last-child):after {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            height: 2px;
-            width: 100%;
-            background-color: var(--gray-medium);
-            z-index: 0;
-        }
-        
-        .step-active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary) !important;
-        }
-        
-        .email-preview {
-            border: 1px solid var(--gray-medium);
-            border-radius: 0.75rem;
-            max-width: 600px;
-            margin: 0 auto;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        
-        .dynamic-variable {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            padding: 0.125rem 0.25rem;
-            border-radius: 0.25rem;
-            font-family: monospace;
-            font-weight: 500;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .upload-area {
-            transition: all 0.2s ease;
-        }
-        
-        .upload-area:hover {
-            border-color: var(--primary);
-            background-color: #f8fafc;
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-gray-50">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <!-- Header -->
-        <header class="mb-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                <div class="flex items-center mb-4 md:mb-0">
-                    <h1 class="text-2xl font-semibold text-gray-800">
-                        <span class="text-primary">Email</span> Marketing
-                    </h1>
-                </div>
-                <div class="bg-white px-4 py-2 rounded-lg border border-gray-200">
-                    <span class="text-sm font-medium text-gray-600">Clínica Médica Exemplo</span>
-                </div>
-            </div>
-            <p class="text-gray-500 mt-2">Envie lembretes e comunicações para seus pacientes</p>
-        </header>
+{% load static %}
+{% block title %}Cadastrar Profissional - Ponto de Equilíbrio{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/profissionais/cadastrar_profissional.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
+{% endblock %}
 
-        <!-- Progress Steps -->
-        <div class="mb-12">
-            <div class="flex justify-between relative">
-                <div class="step-indicator flex-1 text-center">
-                    <div class="flex flex-col items-center">
-                        <div class="w-10 h-10 rounded-full border-2 border-green-200 bg-white flex items-center justify-center mb-2 relative z-10 step-1 step-active">
-                            <span class="text-green-600 font-medium">1</span>
-                        </div>
-                        <span class="text-sm font-medium text-gray-700">Importar Lista</span>
-                    </div>
-                </div>
-                <div class="step-indicator flex-1 text-center">
-                    <div class="flex flex-col items-center">
-                        <div class="w-10 h-10 rounded-full border-2 border-gray-200 bg-white flex items-center justify-center mb-2 relative z-10 step-2">
-                            <span class="text-gray-500 font-medium">2</span>
-                        </div>
-                        <span class="text-sm font-medium text-gray-500">Criar Campanha</span>
-                    </div>
-                </div>
-                <div class="step-indicator flex-1 text-center">
-                    <div class="flex flex-col items-center">
-                        <div class="w-10 h-10 rounded-full border-2 border-gray-200 bg-white flex items-center justify-center mb-2 relative z-10 step-3">
-                            <span class="text-gray-500 font-medium">3</span>
-                        </div>
-                        <span class="text-sm font-medium text-gray-500">Enviar</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <span class="text">{% block topbar_title %}Editar profissional - {{ profissional.nome }} {{ profissional.sobrenome }}{% endblock %}</span>
 
-        <!-- Main Content -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <!-- Step 1: Import List -->
-            <div id="step-1" class="p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6">Importar lista de pacientes</h2>
-                
-                <div class="mb-8">
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-white upload-area">
-                        <div class="max-w-md mx-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            <h3 class="mt-3 text-sm font-medium text-gray-700">Arraste e solte seu arquivo aqui</h3>
-                            <p class="mt-1 text-xs text-gray-500">Formatos suportados: .xlsx ou .csv</p>
-                            <div class="mt-4">
-                                <label for="file-upload" class="cursor-pointer inline-flex items-center btn-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+{% block content %}
+<div class="content">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form_cadastro">
+        <div class="form_cadastro-pessoa">
+            <div class="form_titulo">Informações pessoais <button class="btn-save" type="submit">Salvar</button></div>
+            <div class="form_div">
+                <div class="div_forms">
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s capitalize-input' value='{{ profissional.nome }}' type="text" name="nome" id="nomeInput" required>
+                            <span class="span-s">Nome*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s capitalize-input' value='{{ profissional.sobrenome }}' name="sobrenome" id="sobrenomeInput" type="text" required />
+                            <span class="span-s">Sobrenome*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s capitalize-input' value='{{ profissional.nomeSocial }}' type="text" name="nomeSocial" id="nomeSocialInput">
+                            <span class="span-s">Nome Social</span>
+                        </div>
+                    </div>
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.rg }}' name="rg" id="rgInput" type="text" required />
+                            <span class="span-s">RG</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.cpf }}' name="cpf" id="cpfInput" type="text" required />
+                            <span class="span-s">CPF*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.cnpj }}' name="cnpj" id="cnpjInput" type="text">
+                            <span class="span-s">CNPJ</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s date-s' value='{{ profissional.data_nascimento }}' type="text" name="nascimento" id="nascimentoInput" required />
+                            <span class="span-s">Nascimento*</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <select name="cor" id="corInput" class='input-s' required>
+                           
+                            <span class="span-s">Cor/Raça</span>
+                        </div>
+
+                        <div class="formField">
+                            <select name="sexo" id="sexoInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in sexo_choices %}
+                                <option value="{{ value }}" {% if profissional.sexo == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Sexo</span>
+                        </div>
+                        <div class="formField">
+                            <select name="estado_civil" id="estadoCivilInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in estado_civil_choices %}
+                                <option value="{{ value }}" {% if profissional.estado_civil == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Estado Civil</span>
+                        </div>
+
+                    </div>
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.naturalidade }}' name="naturalidade" id="naturalidadeInput" type="text" required />
+                            <span class="span-s">Naturalidade*</span>
+                        </div>
+
+                        <div class="formField">
+                            <select name="uf" id="ufInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in uf_choices %}
+                                <option value="{{ value }}" {% if profissional.uf == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">UF*</span>
+                        </div>
+                        <div class="formField">
+                            <select name="especialidade" id="especialidadeInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+
+                                {% for esp in especialidade_choices %}
+                                <option value="{{ esp.id }}" {% if profissional.especialidade.id == esp.id %}selected{% endif %}>
+                                    {{ esp.nome }}
+                                {% endfor %}
+
+                            </select>
+                            <span class="span-s">Especialidade</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <select name="conselho1" id="conselhoInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in conselho_choices %}
+                                <option value="{{ value }}" {% if profissional.conselho1 == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Conselho Principal*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.num1_conselho }}' name="num1_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho*</span>
+                        </div>
+
+
+                        <div class="formField">
+                            <select name="conselho2" id="conselhoInput" class='input-s' >
+                            <option value="" disabled selected></option>
+                                {% for value, label in conselho_choices %}
+                                <option value="{{ value }}" {% if profissional.conselho2  == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Conselho Comp.</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.num2_conselho }}' name="num2_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <select name="conselho3" id="conselhoInput" class='input-s' >
+                            <option value="" disabled selected></option>
+                                {% for value, label in conselho_choices %}
+                                <option value="{{ value }}" {% if profissional.conselho3  == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Conselho Comp.</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.num3_conselho }}' name="num3_conselho" id="conselho1Input" type="text">
+                            <span class="span-s"> Nº Conselho</span>
+                        </div>
+                        
+                        
+                        <div class="formField">
+                            <select name="conselho4" id="conselhoInput" class='input-s' >
+                            <option value="" disabled selected></option>
+                                {% for value, label in conselho_choices %}
+                                <option value="{{ value }}" {% if profissional.conselho4 == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Conselho Comp.</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.num4_conselho }}' name="num4_conselho" id="conselho1Input" type="text" >
+                            <span class="span-s"> Nº Conselho</span>
+                        </div>
+                    </div>
+                        <div class="form_cadastro-nomes">
+                        
+                            <label for="file" class="custum-file-upload">
+                                
+                                {% if profissional.foto %}
+                                <img id="preview" src="{{ profissional.foto.url }}" alt="Foto atual"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                           object-fit: cover; border-radius: 10px; z-index: 1000; display: block;">
+                            {% else %}
+                                <img id="preview" src="#" alt="Preview da imagem"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                           object-fit: cover; border-radius: 10px; z-index: 1000; display: none;">
+                            {% endif %}
+                                <div class="text">
+                                    <span>Imagem de perfil</span>
+                                </div>
+                                <div class="icon">
+                                    <svg viewBox="0 0 24 24" fill="" xmlns="http://www.w3.org/2000/svg">
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                        </g>
+                                        <g id="SVGRepo_iconCarrier">
+                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z"
+                                                fill=""></path>
+                                        </g>
                                     </svg>
-                                    Selecionar arquivo
-                                    <input id="file-upload" name="file-upload" type="file" class="sr-only" accept=".xlsx,.csv">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <h3 class="text-sm font-medium text-gray-700 mb-2">Exemplo de formato esperado:</h3>
-                    <div class="bg-gray-50 p-3 rounded-md border border-gray-200 overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr>
-                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">João Silva</td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">joao@exemplo.com</td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">(11) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">Maria Souza</td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">maria@exemplo.com</td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">(11) 98888-8888</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="imported-data" class="hidden">
-                    <h3 class="text-sm font-medium text-gray-700 mb-2">Dados importados:</h3>
-                    <div class="border border-gray-200 rounded-md overflow-hidden">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
-                                </tr>
-                            </thead>
-                            <tbody id="imported-data-body" class="bg-white divide-y divide-gray-200">
-                                <!-- Data will be inserted here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="mt-2 text-sm text-gray-500"><span id="total-contacts">0</span> contatos importados</p>
-                </div>
-
-                <div class="flex justify-end mt-8">
-                    <button id="next-step-1" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        Próximo passo
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 2: Create Campaign -->
-            <div id="step-2" class="hidden p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6">Criar campanha</h2>
-                
-                <div class="space-y-6">
-                    <div class="space-y-1">
-                        <label for="campaign-name" class="block text-sm font-medium text-gray-700">Nome interno da campanha</label>
-                        <input type="text" id="campaign-name" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Ex: Lembrete consulta março">
-                        <p class="text-xs text-gray-500">Apenas para sua referência</p>
-                    </div>
-                    
-                    <div class="space-y-1">
-                        <label for="email-subject" class="block text-sm font-medium text-gray-700">Assunto do e-mail</label>
-                        <input type="text" id="email-subject" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Ex: Lembrete da sua consulta">
-                        <p class="text-xs text-gray-500">O que seus pacientes verão na caixa de entrada</p>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Conteúdo do e-mail</label>
-                        <div class="mb-2 text-xs text-gray-500">
-                            Use <span class="dynamic-variable">{{nome}}</span> para personalizar com o nome do paciente
-                        </div>
-                        <div id="editor-container" class="h-96">
-                            <div id="email-content">
-                                <p>Olá <span class="dynamic-variable">{{nome}}</span>,</p>
-                                <p>Este é um lembrete da sua consulta agendada na nossa clínica.</p>
-                                <p>Qualquer dúvida, entre em contato conosco.</p>
-                                <p>Atenciosamente,<br>Equipe Médica</p>
-                            </div>
-                        </div>
-                    </div>
-                    <script>
-                        const quill = new Quill('#email-content', {
-                            theme: 'snow',
-                            modules: {
-                                toolbar: [
-                                    [{ 'header': [1, 2, 3, false] }],
-                                    ['bold', 'italic', 'underline', 'strike'],
-                                    [{ 'color': [] }, { 'background': [] }],
-                                    [{ 'align': [] }],
-                                    ['link', 'image'],
-                                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                                    ['clean']
-                                ]
-                            },
-                            placeholder: 'Escreva seu conteúdo aqui...',
-                        });
-                    </script>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Imagem (opcional)</label>
-                        <div class="mt-1 flex items-center">
-                            <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-                                <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                            </span>
-                            <button type="button" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                Alterar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-between mt-8">
-                    <button id="prev-step-2" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Voltar
-                    </button>
-                    <button id="next-step-2" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors">
-                        Pré-visualizar
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 3: Preview and Send -->
-            <div id="step-3" class="hidden p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6">Pré-visualização e envio</h2>
-                
-                <div class="mb-8">
-                    <div class="email-preview bg-white p-6">
-                        <h3 id="preview-subject" class="text-xl font-medium text-gray-800 mb-4">Lembrete da sua consulta</h3>
-                        <div id="preview-content" class="text-gray-700">
-                            <p>Olá <span class="dynamic-variable">João Silva</span>,</p>
-                            <p>Este é um lembrete da sua consulta agendada na nossa clínica.</p>
-                            <p>Qualquer dúvida, entre em contato conosco.</p>
-                            <p class="mt-4">Atenciosamente,<br>
-                            Equipe Médica</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <h3 class="text-sm font-medium text-gray-700 mb-2">Resumo da campanha</h3>
-                    <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <p class="text-xs text-gray-500">Nome da campanha</p>
-                                <p id="summary-name" class="text-sm font-medium text-gray-800">Lembrete consulta março</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500">Assunto</p>
-                                <p id="summary-subject" class="text-sm font-medium text-gray-800">Lembrete da sua consulta</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500">Destinatários</p>
-                                <p id="summary-recipients" class="text-sm font-medium text-gray-800">125 pacientes</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Opções de envio</label>
-                    <div class="space-y-3">
-                        <div class="flex items-center">
-                            <input id="send-now" name="send-option" type="radio" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300" checked>
-                            <label for="send-now" class="ml-2 block text-sm text-gray-700">
-                                Enviar agora
+                                </div>
+                                <div class="text">
+                                    <span>Clique aqui para enviar a imagem</span>
+                                </div>
+                                <input name='foto' id="file" type="file" accept="image/*" onchange="previewImage(event)">
+                               
                             </label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="schedule-send" name="send-option" type="radio" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300">
-                            <label for="schedule-send" class="ml-2 block text-sm text-gray-700">
-                                Agendar envio
-                            </label>
-                        </div>
-                        <div id="schedule-container" class="ml-6 mt-2 hidden">
-                            <input type="datetime-local" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+
+                        <div class="formField">
+                            <textarea class='input-s textarea-s' type="textarea" name='observacao' id="observacaoInput"
+                                required></textarea>
+                            <span class="span-s">Observação</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex justify-between mt-8">
-                    <button id="prev-step-3" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Voltar
-                    </button>
-                    <button id="send-campaign" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        Enviar campanha
-                    </button>
+            </div>
+        </div>
+
+        <div class="form_cadastro-endereco">
+            <div class="form_titulo">Endereço e Contato</div>
+            <div class="form_div">
+                <div class="div_forms">
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField field_cep">
+                            <input class=' input-s' value='{{ profissional.cep }}' type="text" name="cep" id="cepInput" required>
+                            <span class="span-s">CEP*</span>
+                        </div>
+                        <button type="button" id="btn-cep" onclick="buscarCep()">...</button>
+                        <div class="formField field_rua">
+                            <input class='input-s'  value='{{ profissional.rua }}' type="text" name='rua' id="ruaInput" required>
+                            <span class="span-s">Rua*</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s field_numero'  value='{{ profissional.numero }}' type="text" name='numero' id="numero" required>
+                            <span class="span-s">Numero*</span>
+                        </div>
+
+                        <div class="formField">
+                            <input class='input-s '  value='{{ profissional.complemento }}' type="text" name='complemento' id="complementoInput" required>
+                            <span class="span-s">Complemento</span>
+                        </div>
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s'  value='{{ profissional.bairro }}' type="text" name='bairro' id="bairro" required>
+                            <span class="span-s">Bairro*</span>
+                        </div>
+
+                        <div class="formField">
+                            <input class='input-s'  value='{{ profissional.cidade }}' type="text" name='cidade' id="cidade" required>
+                            <span class="span-s">Cidade*</span>
+                        </div>
+                        <div class="formField">
+                            <input class='input-s'  value='{{ profissional.uf }}' type="text" name='estado' id="estado" required>
+                            <span class="span-s">UF*</span>
+                        </div>
+                    </div>
+                </div>
+                <!--FIM - ENDEREÇO-->
+
+                <!--CONTATO-->
+                <div class="div_forms">
+
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.telefone }}' type="text" name="telefone" id="telefoneInput" required>
+                            <span class="span-s">Telefone</span>
+                        </div>
+
+
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.celular }}' type="text" name="celular" id="celularInput" required>
+                            <span class="span-s">Celular*</span>
+                        </div>
+
+                    </div>
+                    <!--CONTATO DE EMERGENCIA-->
+                    <div class="form_cadastro-nomes">
+
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.email }}' type="text" name="email" id="emailInput" required>
+                            <span class="span-s">Email*</span>
+                        </div>
+
+                    </div>
+                    <div class="form_cadastro-nomes">
+                        <div class="formField">
+                            <input class='input-s capitalize-input' value='{{ profissional.nomeEmergencia }}' type="text" name="nomeEmergencia" id="nomeEmergenciaInput" required>
+                            <span class="span-s">Contato de emergência*</span>
+                        </div>
+
+                        <div class="formField">
+                            <select name="vinculo" id="vinculoInput" class='input-s' required>
+                            <option value="" disabled selected></option>
+                                {% for value, label in vinculo_choices %} <!--MUDAR DEPOIS-->
+                                <option value="{{ value }}" {% if profissional.vinculo == value %}selected{% endif %}>
+                                    {{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="span-s">Vínculo*</span>
+                        </div>
+
+                        <div class="formField">
+                            <input class='input-s' value='{{ profissional.telEmergencia }}' type="text" name="telEmergencia" id="telEmergenciaInput" required>
+                            <span class="span-s">Telefone de emergência*</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+     </div>
     </div>
+</form>
+</div>
+{% if messages %}
+<div class="messages-container" id="alert-container">
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        <span class="icon">
+            {% if message.tags == 'success' %}
+            ✅
+            {% elif message.tags == 'warning' %}
+            ⚠️
+            {% elif message.tags == 'error' %}
+            ❌
+            {% elif message.tags == 'info' %}
+            ℹ️
+            {% endif %}
+        </span>
+        {{ message }}
 
-    <script>
-         
-        // Sample data for demonstration
-        const sampleData = [
-            { nome: "João Silva", email: "joao@exemplo.com", telefone: "(11) 99999-9999" },
-            { nome: "Maria Souza", email: "maria@exemplo.com", telefone: "(11) 98888-8888" },
-            { nome: "Carlos Oliveira", email: "carlos@exemplo.com", telefone: "(11) 97777-7777" },
-            { nome: "Ana Santos", email: "ana@exemplo.com", telefone: "(11) 96666-6666" }
-        ];
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+        {% endblock %}
 
-        // File upload handler
-        document.getElementById('file-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // In a real app, you would parse the Excel/CSV file here
-                // For this demo, we'll use sample data
-                displayImportedData(sampleData);
-                document.getElementById('next-step-1').disabled = false;
-            }
-        });
+        {% block scripts %}
 
-        // Display imported data in table
-        function displayImportedData(data) {
-            const tableBody = document.getElementById('imported-data-body');
-            tableBody.innerHTML = '';
-            
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${item.nome}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${item.email}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${item.telefone}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-            
-            document.getElementById('total-contacts').textContent = data.length;
-            document.getElementById('imported-data').classList.remove('hidden');
-            document.getElementById('summary-recipients').textContent = `${data.length} pacientes`;
-        }
-
-        // Step navigation
-        document.getElementById('next-step-1').addEventListener('click', function() {
-            document.getElementById('step-1').classList.add('hidden');
-            document.getElementById('step-2').classList.remove('hidden');
-            document.querySelector('.step-1').classList.remove('step-active');
-            document.querySelector('.step-2').classList.add('step-active');
-        });
-
-        document.getElementById('prev-step-2').addEventListener('click', function() {
-            document.getElementById('step-2').classList.add('hidden');
-            document.getElementById('step-1').classList.remove('hidden');
-            document.querySelector('.step-2').classList.remove('step-active');
-            document.querySelector('.step-1').classList.add('step-active');
-        });
-
-        document.getElementById('next-step-2').addEventListener('click', function() {
-            // Update preview with actual content
-            document.getElementById('preview-subject').textContent = document.getElementById('email-subject').value || "Lembrete da sua consulta";
-            document.getElementById('preview-content').innerHTML = quill.root.innerHTML.replace(/{{nome}}/g, '<span class="dynamic-variable">João Silva</span>');
-            
-            // Update summary
-            document.getElementById('summary-name').textContent = document.getElementById('campaign-name').value || "Sem nome";
-            document.getElementById('summary-subject').textContent = document.getElementById('email-subject').value || "Sem assunto";
-            
-            // Move to next step
-            document.getElementById('step-2').classList.add('hidden');
-            document.getElementById('step-3').classList.remove('hidden');
-            document.querySelector('.step-2').classList.remove('step-active');
-            document.querySelector('.step-3').classList.add('step-active');
-        });
-
-        document.getElementById('prev-step-3').addEventListener('click', function() {
-            document.getElementById('step-3').classList.add('hidden');
-            document.getElementById('step-2').classList.remove('hidden');
-            document.querySelector('.step-3').classList.remove('step-active');
-            document.querySelector('.step-2').classList.add('step-active');
-        });
-
-        // Schedule options toggle
-        document.getElementById('schedule-send').addEventListener('change', function() {
-            document.getElementById('schedule-container').classList.toggle('hidden', !this.checked);
-        });
-
-        document.getElementById('send-now').addEventListener('change', function() {
-            document.getElementById('schedule-container').classList.toggle('hidden', this.checked);
-        });
-
-        // Send campaign
-        document.getElementById('send-campaign').addEventListener('click', function() {
-            alert('Campanha enviada com sucesso!');
-            // In a real app, you would send the data to your backend here
-        });
-    </script>
-</body>
-</html>
+        <script src="https://unpkg.com/imask"></script>
+        <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
+        <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
+        <script src="{% static '/core/js/base/cep.js' %}"></script>
+        <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
+        {% endblock %}

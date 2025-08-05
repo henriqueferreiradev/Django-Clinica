@@ -6,6 +6,7 @@
   <span class="text">{% block topbar_title %}Profissionais{% endblock %}</span>
 
 {% block content %}
+{% include "core/partials/_confirm_modal.html" %}
   <div class="content">
     <div class="content-header">
       <h2>Lista de profissionais</h2>
@@ -19,6 +20,7 @@
     </div>
 
 <div class="card-grid">
+    
     {% for profissional in profissionais %}
       <div class="card">
         {% include "core/partials/_profissional_dropdown.html" %}
@@ -45,9 +47,9 @@
 
       </div>
     {% endfor %}
+    
   </div>
-
-
+ 
  
 </div>
 {% endblock %} {% block scripts %}

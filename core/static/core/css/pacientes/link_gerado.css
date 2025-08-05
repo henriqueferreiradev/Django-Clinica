@@ -36,7 +36,7 @@
 .right_content p {
 
     font-size: 16px;
-    color: #ccc;
+    color: var(--preto);
 }
 
 .right_link-link {
@@ -58,8 +58,8 @@
 
 .right_link input {
     flex: 1;
-    background-color: #333;
-    color: #eee;
+    background-color: var(--bg-btn-1);
+    color: var(--preto);
     border: 1px solid var(--roxoPrincipal);
     border-radius: 8px 0 0 8px;
     padding: 12px;
@@ -93,18 +93,18 @@
 }
 
 .social-buttons button {
-    background-color: #444;
-    color: #fff;
+    background-color: var(--roxoPrincipal);
+    color: white;
     border: none;
     padding: 10px;
-    border-radius: 50%;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 20px;
     transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .social-buttons button:hover {
-    background-color: var(--roxoPrincipal-hover2, #76378f);
+    background-color: var(--roxo-primary-hover);
     transform: scale(1.1);
 }
 
