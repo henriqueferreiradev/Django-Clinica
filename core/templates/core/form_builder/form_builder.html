@@ -1,0 +1,930 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Form Builder - Ponto de Equilíbrio{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
+ 
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+{% endblock %}
+    {% block topbar_title %}<span class="text">Criador de formulário</span>{% endblock %}
+{% block content %}
+
+
+
+ 
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .option-input {
+            transition: all 0.2s ease;
+        }
+        
+        .option-input:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .form-container {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid #8b5cf6;
+            color: #8b5cf6;
+            font-weight: 500;
+        }
+        .bg-white {
+
+            background-color: var(--cinza-medium)
+        }
+        button {
+            box-shadow: none;
+            border-radius:0;
+        }
+    </style>
+ 
+<div class="content bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+ 
+            <div class="flex space-x-2">
+                <button id="toggleMode" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
+                    <i class="fas fa-exchange-alt mr-2"></i>Alternar Modo
+                </button>
+                <button id="viewResponses" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition hidden">
+                    <i class="fas fa-chart-bar mr-2"></i>Ver Respostas
+                </button>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="flex border-b mb-6">
+            <button id="formsTab" class="px-4 py-2 mr-2">Formulários Ativos</button>
+            <button id="createTab" class="tab-active px-4 py-2 mr-2">Criar Formulário</button>
+            <button id="respondTab" class="px-4 py-2 mr-2 text-gray-600 hidden">Responder</button>
+            <button id="responsesTab" class="px-4 py-2 text-gray-600 hidden">Respostas</button>
+        </div>
+
+        <div id="formsListSection" class="hidden">
+            <div class="form-container bg-white rounded-lg p-6 mb-6 slide-in">
+                <h2 class="text-2xl font-semibold mb-4 text-purple-700">Formulários Ativos</h2>
+                <div id="formsList" class="space-y-4">
+                    <!-- Lista será carregada via JS -->
+                </div>
+            </div>
+        </div>
+        <!-- Create Form Section -->
+        <div id="createSection">
+            <div class="form-container bg-white rounded-lg p-6 mb-6 slide-in">
+                <input type="text" id="formTitle" placeholder="Título do formulário" 
+                    class="w-full text-2xl font-medium border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-2 mb-2">
+                <input type="text" id="formDescription" placeholder="Descrição do formulário" 
+                    class="w-full text-gray-600 border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-2">
+            </div>
+
+            <div id="questionsContainer" class="space-y-6"></div>
+
+            <div class="flex justify-between mt-6">
+                <button id="addQuestion" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
+                    <i class="fas fa-plus mr-2"></i>Adicionar Pergunta
+                </button>
+                <button id="saveForm" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                    <i class="fas fa-save mr-2"></i>Salvar Formulário
+                </button>
+            </div>
+        </div>
+
+        <!-- Respond Section -->
+        <div id="respondSection" class="hidden">
+            <div class="form-container bg-white rounded-lg p-6 mb-6">
+                <h2 id="respondFormTitle" class="text-2xl font-medium mb-2">Título do Formulário</h2>
+                <p id="respondFormDescription" class="text-gray-600 mb-6">Descrição do formulário</p>
+                
+                <div id="respondQuestionsContainer" class="space-y-6"></div>
+                
+                <button id="submitForm" class="mt-6 px-6 py-3 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
+                    Enviar
+                </button>
+            </div>
+        </div>
+
+        <!-- Responses Section -->
+        <div id="responsesSection" class="hidden">
+            <div class="bg-white rounded-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-medium">Respostas Recebidas</h2>
+                    <button id="exportCSV" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                        <i class="fas fa-file-export mr-2"></i>Exportar CSV
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Filtrar por pergunta:</label>
+                    <select id="filterQuestion" class="w-full p-2 border rounded">
+                        <option value="">Todas as perguntas</option>
+                    </select>
+                </div>
+                
+                <div id="responsesList" class="space-y-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Type Modal -->
+    <div id="questionTypeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-xl font-medium mb-4">Selecione o tipo de pergunta</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <button data-type="short-text" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
+                    <i class="fas fa-font text-purple-600 mb-2"></i>
+                    <p>Texto curto</p>
+                </button>
+                <button data-type="paragraph" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
+                    <i class="fas fa-align-left text-purple-600 mb-2"></i>
+                    <p>Parágrafo</p>
+                </button>
+                <button data-type="multiple-choice" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
+                    <i class="fas fa-dot-circle text-purple-600 mb-2"></i>
+                    <p>Múltipla escolha</p>
+                </button>
+                <button data-type="checkbox" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
+                    <i class="fas fa-check-square text-purple-600 mb-2"></i>
+                    <p>Caixas de seleção</p>
+                </button>
+                <button data-type="dropdown" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
+                    <i class="fas fa-caret-square-down text-purple-600 mb-2"></i>
+                    <p>Menu suspenso</p>
+                </button>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="closeModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Cancelar</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+ 
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const createSection = document.getElementById('createSection');
+            const respondSection = document.getElementById('respondSection');
+            const responsesSection = document.getElementById('responsesSection');
+            const createTab = document.getElementById('createTab');
+            const respondTab = document.getElementById('respondTab');
+            const responsesTab = document.getElementById('responsesTab');
+            const toggleMode = document.getElementById('toggleMode');
+            const viewResponses = document.getElementById('viewResponses');
+            const addQuestion = document.getElementById('addQuestion');
+            const saveForm = document.getElementById('saveForm');
+            const submitForm = document.getElementById('submitForm');
+            const exportCSV = document.getElementById('exportCSV');
+            const filterQuestion = document.getElementById('filterQuestion');
+            const questionTypeModal = document.getElementById('questionTypeModal');
+            const closeModal = document.getElementById('closeModal');
+            const questionsContainer = document.getElementById('questionsContainer');
+            const respondQuestionsContainer = document.getElementById('respondQuestionsContainer');
+            const responsesList = document.getElementById('responsesList');
+            const formTitle = document.getElementById('formTitle');
+            const formDescription = document.getElementById('formDescription');
+            const respondFormTitle = document.getElementById('respondFormTitle');
+            const respondFormDescription = document.getElementById('respondFormDescription');
+            const AtualTab = document.getElementById('formsTab')
+
+            // State
+            let currentQuestionId = 0;
+            let formData = {
+                title: '',
+                description: '',
+                questions: []
+            };
+            let responses = [];
+            let currentMode = 'create'; // 'create' or 'respond'
+
+            // Load saved form from localStorage
+            loadForm();
+
+            // Event Listeners
+            toggleMode.addEventListener('click', toggleFormMode);
+            viewResponses.addEventListener('click', showResponses);
+            addQuestion.addEventListener('click', showQuestionTypeModal);
+            saveForm.addEventListener('click', saveCurrentForm);
+            submitForm.addEventListener('click', submitCurrentForm);
+            exportCSV.addEventListener('click', exportToCSV);
+            closeModal.addEventListener('click', hideQuestionTypeModal);
+            filterQuestion.addEventListener('change', filterResponses);
+
+            // Tab switching
+            AtualTab.addEventListener('click', () => showSection('ativos'));
+            createTab.addEventListener('click', () => showSection('create'));
+            respondTab.addEventListener('click', () => showSection('respond'));
+            responsesTab.addEventListener('click', () => showSection('responses'));
+
+            // Question type selection
+            document.querySelectorAll('[data-type]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    addNewQuestion(type);
+                    hideQuestionTypeModal();
+                });
+            });
+
+            // Functions
+            function loadForm() {
+                const savedForm = localStorage.getItem('formBuilderData');
+                if (savedForm) {
+                    formData = JSON.parse(savedForm);
+                    formTitle.value = formData.title;
+                    formDescription.value = formData.description;
+                    renderQuestions();
+                    
+                    // Update respond view
+                    respondFormTitle.textContent = formData.title;
+                    respondFormDescription.textContent = formData.description;
+                }
+                
+                const savedResponses = localStorage.getItem('formBuilderResponses');
+                if (savedResponses) {
+                    responses = JSON.parse(savedResponses);
+                    renderResponses();
+                    updateFilterQuestions();
+                }
+            }
+
+            function saveCurrentForm() {
+    formData.title = formTitle.value;
+    formData.description = formDescription.value;
+
+    formData.questions = [];
+    document.querySelectorAll('.question-card').forEach(card => {
+        const questionId = card.getAttribute('data-id');
+        const questionText = card.querySelector('.question-text').value;
+        const questionType = card.getAttribute('data-type');
+        const isRequired = card.querySelector('.required-checkbox').checked;
+
+        const question = {
+            text: questionText,
+            type: questionType,
+            required: isRequired,
+            options: []
+        };
+
+        if (questionType === 'multiple-choice' || questionType === 'checkbox' || questionType === 'dropdown') {
+            card.querySelectorAll('.option-input').forEach(option => {
+                question.options.push(option.value);
+            });
+        }
+
+        formData.questions.push(question);
+    });
+
+    // Enviar pro backend
+    fetch('/form-builder/salvar/', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken') // ou remova se estiver usando @csrf_exempt
+    },
+    body: JSON.stringify(formularioData)
+    })
+    .then(async response => {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        console.log("✅ Resposta do servidor:", data);
+    } else {
+        const text = await response.text();
+        console.error("❌ Resposta não-JSON:", text);
+    }
+    })
+    .catch(error => {
+    console.error("⚠️ Erro de rede ou parsing:", error);
+    });
+
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+            function renderQuestions() {
+                questionsContainer.innerHTML = '';
+                
+                formData.questions.forEach(question => {
+                    addQuestionToDOM(question);
+                    currentQuestionId = Math.max(currentQuestionId, parseInt(question.id));
+                });
+                
+                currentQuestionId++;
+            }
+
+            function showQuestionTypeModal() {
+                questionTypeModal.classList.remove('hidden');
+            }
+
+            function hideQuestionTypeModal() {
+                questionTypeModal.classList.add('hidden');
+            }
+
+            function addNewQuestion(type) {
+                const questionId = currentQuestionId++;
+                
+                const question = {
+                    id: questionId.toString(),
+                    text: '',
+                    type: type,
+                    required: false,
+                    options: type === 'multiple-choice' || type === 'checkbox' || type === 'dropdown' 
+                        ? ['Opção 1'] 
+                        : []
+                };
+                
+                formData.questions.push(question);
+                addQuestionToDOM(question);
+            }
+
+            function addQuestionToDOM(question) {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card form-container bg-white rounded-lg p-6 fade-in';
+                questionCard.setAttribute('data-id', question.id);
+                questionCard.setAttribute('data-type', question.type);
+                
+                let optionsHTML = '';
+                
+                if (question.type === 'multiple-choice' || question.type === 'checkbox' || question.type === 'dropdown') {
+                    question.options.forEach((option, index) => {
+                        optionsHTML += `
+                            <div class="option-container flex items-center mb-2">
+                                <i class="fas fa-${question.type === 'multiple-choice' ? 'dot-circle' : question.type === 'checkbox' ? 'check-square' : 'caret-square-down'} text-gray-400 mr-3"></i>
+                                <input type="text" value="${option}" class="option-input flex-grow p-2 border-b focus:border-purple-500 focus:outline-none" placeholder="Opção ${index + 1}">
+                                <button class="remove-option ml-2 text-gray-500 hover:text-red-500">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    
+                    optionsHTML += `
+                        <button class="add-option mt-2 text-sm text-purple-600 hover:text-purple-800">
+                            <i class="fas fa-plus mr-1"></i>Adicionar opção
+                        </button>
+                    `;
+                }
+                
+                questionCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <input type="text" class="question-text w-full text-lg font-medium border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-1" 
+                            value="${question.text}" placeholder="Pergunta">
+                        <select class="question-type ml-4 p-2 border rounded bg-gray-50">
+                            <option value="short-text" ${question.type === 'short-text' ? 'selected' : ''}>Texto curto</option>
+                            <option value="paragraph" ${question.type === 'paragraph' ? 'selected' : ''}>Parágrafo</option>
+                            <option value="multiple-choice" ${question.type === 'multiple-choice' ? 'selected' : ''}>Múltipla escolha</option>
+                            <option value="checkbox" ${question.type === 'checkbox' ? 'selected' : ''}>Caixas de seleção</option>
+                            <option value="dropdown" ${question.type === 'dropdown' ? 'selected' : ''}>Menu suspenso</option>
+                        </select>
+                    </div>
+                    
+                    <div class="question-options mb-4">
+                        ${optionsHTML}
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="required-checkbox mr-2" ${question.required ? 'checked' : ''}>
+                            <span class="text-gray-600">Resposta obrigatória</span>
+                        </label>
+                        <button class="remove-question text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash mr-1"></i>Remover
+                        </button>
+                    </div>
+                `;
+                
+                questionsContainer.appendChild(questionCard);
+                
+                // Add event listeners for dynamic elements
+                const removeQuestionBtn = questionCard.querySelector('.remove-question');
+                removeQuestionBtn.addEventListener('click', () => {
+                    questionCard.classList.add('hidden');
+                    formData.questions = formData.questions.filter(q => q.id !== question.id);
+                });
+                
+                const questionTypeSelect = questionCard.querySelector('.question-type');
+                questionTypeSelect.addEventListener('change', function() {
+                    const newType = this.value;
+                    questionCard.setAttribute('data-type', newType);
+                    
+                    let newOptionsHTML = '';
+                    if (newType === 'multiple-choice' || newType === 'checkbox' || newType === 'dropdown') {
+                        newOptionsHTML = `
+                            <div class="option-container flex items-center mb-2">
+                                <i class="fas fa-${newType === 'multiple-choice' ? 'dot-circle' : newType === 'checkbox' ? 'check-square' : 'caret-square-down'} text-gray-400 mr-3"></i>
+                                <input type="text" value="Opção 1" class="option-input flex-grow p-2 border-b focus:border-purple-500 focus:outline-none" placeholder="Opção 1">
+                                <button class="remove-option ml-2 text-gray-500 hover:text-red-500">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <button class="add-option mt-2 text-sm text-purple-600 hover:text-purple-800">
+                                <i class="fas fa-plus mr-1"></i>Adicionar opção
+                            </button>
+                        `;
+                    }
+                    
+                    questionCard.querySelector('.question-options').innerHTML = newOptionsHTML;
+                    
+                    // Re-add event listeners for new elements
+                    const addOptionBtn = questionCard.querySelector('.add-option');
+                    if (addOptionBtn) {
+                        addOptionBtn.addEventListener('click', addOption);
+                    }
+                    
+                    questionCard.querySelectorAll('.remove-option').forEach(btn => {
+                        btn.addEventListener('click', removeOption);
+                    });
+                });
+                
+                const addOptionBtn = questionCard.querySelector('.add-option');
+                if (addOptionBtn) {
+                    addOptionBtn.addEventListener('click', addOption);
+                }
+                
+                questionCard.querySelectorAll('.remove-option').forEach(btn => {
+                    btn.addEventListener('click', removeOption);
+                });
+                
+                function addOption() {
+                    const optionsContainer = questionCard.querySelector('.question-options');
+                    const optionCount = optionsContainer.querySelectorAll('.option-container').length + 1;
+                    
+                    const optionHTML = `
+                        <div class="option-container flex items-center mb-2">
+                            <i class="fas fa-${questionCard.getAttribute('data-type') === 'multiple-choice' ? 'dot-circle' : questionCard.getAttribute('data-type') === 'checkbox' ? 'check-square' : 'caret-square-down'} text-gray-400 mr-3"></i>
+                            <input type="text" value="Opção ${optionCount}" class="option-input flex-grow p-2 border-b focus:border-purple-500 focus:outline-none" placeholder="Opção ${optionCount}">
+                            <button class="remove-option ml-2 text-gray-500 hover:text-red-500">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Insert before the add option button
+                    addOptionBtn.insertAdjacentHTML('beforebegin', optionHTML);
+                    
+                    // Add event listener to the new remove button
+                    const newRemoveBtn = optionsContainer.querySelectorAll('.remove-option');
+                    newRemoveBtn[newRemoveBtn.length - 1].addEventListener('click', removeOption);
+                }
+                
+                function removeOption() {
+                    this.closest('.option-container').remove();
+                }
+            }
+
+            function toggleFormMode() {
+                if (currentMode === 'create') {
+                    currentMode = 'respond';
+                    toggleMode.innerHTML = '<i class="fas fa-exchange-alt mr-2"></i>Modo Edição';
+                    viewResponses.classList.remove('hidden');
+                    respondTab.classList.remove('hidden');
+                    responsesTab.classList.remove('hidden');
+                    showSection('respond');
+                } else {
+                    currentMode = 'create';
+                    toggleMode.innerHTML = '<i class="fas fa-exchange-alt mr-2"></i>Alternar Modo';
+                    viewResponses.classList.add('hidden');
+                    respondTab.classList.add('hidden');
+                    responsesTab.classList.add('hidden');
+                    showSection('create');
+                }
+            }
+            function carregarFormulariosAtivos() {
+                fetch('/form-builder/listar/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const formsList = document.getElementById('formsList');
+                        formsList.innerHTML = '';
+
+                        if (data.length === 0) {
+                            formsList.innerHTML = '<p class="text-gray-500">Nenhum formulário encontrado.</p>';
+                            return;
+                        }
+
+                        data.forEach(form => {
+                            const formCard = document.createElement('div');
+                            formCard.className = 'border rounded p-4 bg-gray-50 hover:bg-gray-100 transition';
+
+                            formCard.innerHTML = `
+                                <h3 class="text-xl font-bold text-purple-600">${form.titulo}</h3>
+                                <p class="text-gray-700 mb-2">${form.descricao || 'Sem descrição'}</p>
+                                <p class="text-sm text-gray-500">Criado em: ${new Date(form.criado_em).toLocaleString()}</p>
+                                <div class="mt-3 flex gap-2">
+                                    <a href="/form-builder/visualizar/${form.id}/" class="text-blue-600 hover:underline">Visualizar</a>
+                                    <a href="/form-builder/editar/${form.id}/" class="text-yellow-600 hover:underline">Editar</a>
+                                    <a href="/form-builder/respostas/${form.id}/" class="text-green-600 hover:underline">Ver Respostas</a>
+                                </div>
+                            `;
+
+                            formsList.appendChild(formCard);
+                        });
+                    });
+            }
+            function showSection(section) {
+    createSection.classList.add('hidden');
+    respondSection.classList.add('hidden');
+    responsesSection.classList.add('hidden');
+    formsListSection.classList.add('hidden');
+
+    createTab.classList.remove('tab-active');
+    respondTab.classList.remove('tab-active');
+    responsesTab.classList.remove('tab-active');
+    AtualTab.classList.remove('tab-active');
+
+    if (section === 'create') {
+        createSection.classList.remove('hidden');
+        createTab.classList.add('tab-active');
+    } else if (section === 'respond') {
+        respondSection.classList.remove('hidden');
+        respondTab.classList.add('tab-active');
+        renderRespondQuestions();
+    } else if (section === 'responses') {
+        responsesSection.classList.remove('hidden');
+        responsesTab.classList.add('tab-active');
+    } else if (section === 'ativos') {
+        formsListSection.classList.remove('hidden');
+        AtualTab.classList.add('tab-active');
+        carregarFormulariosAtivos();
+    }
+}
+
+
+            function renderRespondQuestions() {
+                respondQuestionsContainer.innerHTML = '';
+                
+                formData.questions.forEach(question => {
+                    const questionElement = document.createElement('div');
+                    questionElement.className = 'question-respond mb-8';
+                    
+                    let inputHTML = '';
+                    
+                    switch (question.type) {
+                        case 'short-text':
+                            inputHTML = `
+                                <input type="text" class="w-full p-3 border rounded focus:border-purple-500 focus:ring-1 focus:ring-purple-500" 
+                                    data-question-id="${question.id}" placeholder="Sua resposta">
+                            `;
+                            break;
+                        case 'paragraph':
+                            inputHTML = `
+                                <textarea class="w-full p-3 border rounded focus:border-purple-500 focus:ring-1 focus:ring-purple-500" 
+                                    data-question-id="${question.id}" rows="4" placeholder="Sua resposta"></textarea>
+                            `;
+                            break;
+                        case 'multiple-choice':
+                            inputHTML = `
+                                <div class="space-y-2">
+                                    ${question.options.map((option, index) => `
+                                        <div class="flex items-center">
+                                            <input type="radio" id="q${question.id}_opt${index}" name="q${question.id}" 
+                                                value="${option}" class="mr-2" data-question-id="${question.id}">
+                                            <label for="q${question.id}_opt${index}">${option}</label>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `;
+                            break;
+                        case 'checkbox':
+                            inputHTML = `
+                                <div class="space-y-2">
+                                    ${question.options.map((option, index) => `
+                                        <div class="flex items-center">
+                                            <input type="checkbox" id="q${question.id}_opt${index}" 
+                                                value="${option}" class="mr-2" data-question-id="${question.id}">
+                                            <label for="q${question.id}_opt${index}">${option}</label>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `;
+                            break;
+                        case 'dropdown':
+                            inputHTML = `
+                                <select class="w-full p-3 border rounded focus:border-purple-500 focus:ring-1 focus:ring-purple-500" 
+                                    data-question-id="${question.id}">
+                                    <option value="" disabled selected>Selecione uma opção</option>
+                                    ${question.options.map(option => `
+                                        <option value="${option}">${option}</option>
+                                    `).join('')}
+                                </select>
+                            `;
+                            break;
+                    }
+                    
+                    questionElement.innerHTML = `
+                        <h3 class="text-lg font-medium mb-2">${question.text} ${question.required ? '<span class="text-red-500">*</span>' : ''}</h3>
+                        ${inputHTML}
+                    `;
+                    
+                    respondQuestionsContainer.appendChild(questionElement);
+                });
+            }
+
+            function submitCurrentForm() {
+                const response = {
+                    id: Date.now().toString(),
+                    timestamp: new Date().toISOString(),
+                    answers: {}
+                };
+                
+                let isValid = true;
+                
+                formData.questions.forEach(question => {
+                    if (question.required) {
+                        let answerValue;
+                        
+                        if (question.type === 'short-text' || question.type === 'paragraph') {
+                            const input = document.querySelector(`[data-question-id="${question.id}"]`);
+                            answerValue = input.value.trim();
+                            if (!answerValue) {
+                                input.classList.add('border-red-500');
+                                isValid = false;
+                            } else {
+                                input.classList.remove('border-red-500');
+                            }
+                        } else if (question.type === 'multiple-choice') {
+                            const selected = document.querySelector(`input[name="q${question.id}"]:checked`);
+                            if (!selected) {
+                                isValid = false;
+                                document.querySelectorAll(`input[name="q${question.id}"]`).forEach(radio => {
+                                    radio.closest('div').classList.add('text-red-500');
+                                });
+                            } else {
+                                answerValue = selected.value;
+                                document.querySelectorAll(`input[name="q${question.id}"]`).forEach(radio => {
+                                    radio.closest('div').classList.remove('text-red-500');
+                                });
+                            }
+                        } else if (question.type === 'checkbox') {
+                            const checked = document.querySelectorAll(`input[data-question-id="${question.id}"]:checked`);
+                            if (checked.length === 0) {
+                                isValid = false;
+                                document.querySelectorAll(`input[data-question-id="${question.id}"]`).forEach(cb => {
+                                    cb.closest('div').classList.add('text-red-500');
+                                });
+                            } else {
+                                answerValue = Array.from(checked).map(cb => cb.value);
+                                document.querySelectorAll(`input[data-question-id="${question.id}"]`).forEach(cb => {
+                                    cb.closest('div').classList.remove('text-red-500');
+                                });
+                            }
+                        } else if (question.type === 'dropdown') {
+                            const select = document.querySelector(`select[data-question-id="${question.id}"]`);
+                            answerValue = select.value;
+                            if (!answerValue) {
+                                select.classList.add('border-red-500');
+                                isValid = false;
+                            } else {
+                                select.classList.remove('border-red-500');
+                            }
+                        }
+                        
+                        if (answerValue) {
+                            response.answers[question.id] = {
+                                question: question.text,
+                                answer: answerValue
+                            };
+                        }
+                    } else {
+                        // Not required questions
+                        if (question.type === 'short-text' || question.type === 'paragraph') {
+                            const input = document.querySelector(`[data-question-id="${question.id}"]`);
+                            response.answers[question.id] = {
+                                question: question.text,
+                                answer: input.value.trim()
+                            };
+                        } else if (question.type === 'multiple-choice') {
+                            const selected = document.querySelector(`input[name="q${question.id}"]:checked`);
+                            if (selected) {
+                                response.answers[question.id] = {
+                                    question: question.text,
+                                    answer: selected.value
+                                };
+                            }
+                        } else if (question.type === 'checkbox') {
+                            const checked = document.querySelectorAll(`input[data-question-id="${question.id}"]:checked`);
+                            if (checked.length > 0) {
+                                response.answers[question.id] = {
+                                    question: question.text,
+                                    answer: Array.from(checked).map(cb => cb.value)
+                                };
+                            }
+                        } else if (question.type === 'dropdown') {
+                            const select = document.querySelector(`select[data-question-id="${question.id}"]`);
+                            if (select.value) {
+                                response.answers[question.id] = {
+                                    question: question.text,
+                                    answer: select.value
+                                };
+                            }
+                        }
+                    }
+                });
+                
+                if (!isValid) {
+                    alert('Por favor, responda todas as perguntas obrigatórias.');
+                    return;
+                }
+                
+                responses.push(response);
+                localStorage.setItem('formBuilderResponses', JSON.stringify(responses));
+                
+                // Clear form
+                document.querySelectorAll('input[type="text"], textarea').forEach(input => {
+                    if (input.type !== 'checkbox' && input.type !== 'radio') {
+                        input.value = '';
+                    }
+                });
+                
+                document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+                    input.checked = false;
+                });
+                
+                document.querySelectorAll('select').forEach(select => {
+                    select.selectedIndex = 0;
+                });
+                
+                alert('Resposta enviada com sucesso!');
+                renderResponses();
+                updateFilterQuestions();
+            }
+
+            function showResponses() {
+                showSection('responses');
+            }
+
+            function renderResponses() {
+                responsesList.innerHTML = '';
+                
+                if (responses.length === 0) {
+                    responsesList.innerHTML = '<p class="text-gray-500">Nenhuma resposta recebida ainda.</p>';
+                    return;
+                }
+                
+                responses.forEach(response => {
+                    const responseElement = document.createElement('div');
+                    responseElement.className = 'response-item border-b pb-4 mb-4';
+                    
+                    let answersHTML = '';
+                    
+                    Object.values(response.answers).forEach(answer => {
+                        const answerValue = Array.isArray(answer.answer) 
+                            ? answer.answer.join(', ') 
+                            : answer.answer;
+                        
+                        answersHTML += `
+                            <div class="mb-3">
+                                <h4 class="font-medium">${answer.question}</h4>
+                                <p class="text-gray-700 pl-4">${answerValue || '<span class="text-gray-400">(Sem resposta)</span>'}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    responseElement.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-medium">Resposta #${responses.indexOf(response) + 1}</h3>
+                            <span class="text-sm text-gray-500">${new Date(response.timestamp).toLocaleString()}</span>
+                        </div>
+                        ${answersHTML}
+                    `;
+                    
+                    responsesList.appendChild(responseElement);
+                });
+            }
+
+            function updateFilterQuestions() {
+                filterQuestion.innerHTML = '<option value="">Todas as perguntas</option>';
+                
+                formData.questions.forEach(question => {
+                    const option = document.createElement('option');
+                    option.value = question.id;
+                    option.textContent = question.text;
+                    filterQuestion.appendChild(option);
+                });
+            }
+
+            function filterResponses() {
+                const questionId = this.value;
+                
+                if (!questionId) {
+                    renderResponses();
+                    return;
+                }
+                
+                const filteredResponses = responses.map(response => {
+                    const filteredAnswers = {};
+                    
+                    if (response.answers[questionId]) {
+                        filteredAnswers[questionId] = response.answers[questionId];
+                    }
+                    
+                    return {
+                        ...response,
+                        answers: filteredAnswers
+                    };
+                }).filter(response => Object.keys(response.answers).length > 0);
+                
+                if (filteredResponses.length === 0) {
+                    responsesList.innerHTML = '<p class="text-gray-500">Nenhuma resposta encontrada para esta pergunta.</p>';
+                    return;
+                }
+                
+                responsesList.innerHTML = '';
+                
+                filteredResponses.forEach(response => {
+                    const answer = response.answers[questionId];
+                    const answerValue = Array.isArray(answer.answer) 
+                        ? answer.answer.join(', ') 
+                        : answer.answer;
+                    
+                    const responseElement = document.createElement('div');
+                    responseElement.className = 'response-item border-b pb-4 mb-4';
+                    
+                    responseElement.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-medium">Resposta #${responses.findIndex(r => r.id === response.id) + 1}</h3>
+                            <span class="text-sm text-gray-500">${new Date(response.timestamp).toLocaleString()}</span>
+                        </div>
+                        <div class="mb-3">
+                            <h4 class="font-medium">${answer.question}</h4>
+                            <p class="text-gray-700 pl-4">${answerValue || '<span class="text-gray-400">(Sem resposta)</span>'}</p>
+                        </div>
+                    `;
+                    
+                    responsesList.appendChild(responseElement);
+                });
+            }
+        
+
+            function exportToCSV() {
+                if (responses.length === 0) {
+                    alert('Nenhuma resposta para exportar.');
+                    return;
+                }
+                
+                let csv = 'Pergunta,Resposta,Data\n';
+                
+                responses.forEach(response => {
+                    Object.values(response.answers).forEach(answer => {
+                        const answerValue = Array.isArray(answer.answer) 
+                            ? answer.answer.join('; ') 
+                            : answer.answer;
+                        
+                        csv += `"${answer.question.replace(/"/g, '""')}","${answerValue.replace(/"/g, '""')}","${new Date(response.timestamp).toLocaleString()}"\n`;
+                    });
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `respostas_${new Date().toISOString().slice(0, 10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+    </script>
+
+ 
+{% endblock %}
+ 

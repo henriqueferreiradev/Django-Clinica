@@ -9,6 +9,7 @@ from core.views import (
     profissionais_views,
     logs_views,
     api_views,
+    form_builder_views,
 )
  
 
@@ -63,6 +64,19 @@ urlpatterns = [
     path('config/', config_views.configuracao_view, name='config'),
     
     path('auditoria/', logs_views.logs_view, name='auditoria_logs'),
+    
+    
+    
+    
+    path('criar_formulario/', form_builder_views.form_builder, name='criar_formulario'),
+    path('form-builder/salvar/', form_builder_views.salvar_formulario, name='salvar_formulario'),
+    path('form-builder/listar/', form_builder_views.listar_formularios, name='listar_formularios'),
+    path('form-builder/visualizar/<int:id>/', form_builder_views.visualizar_formulario, name='visualizar_formulario'),
+ 
+
+
+    
+    
  
  
 ]

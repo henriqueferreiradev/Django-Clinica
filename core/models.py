@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.urls import reverse
 from django.utils import timezone
 from datetime import date
 from django.utils.text import slugify
@@ -475,3 +476,102 @@ class Pendencia(models.Model):
     resolvido = models.BooleanField(default=False)
     criado_em = models.DateTimeField(auto_now_add=True)
     responsavel = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+from django.db import models
+from core.models import Paciente  # ou de onde estiver importado
+import uuid
+
+TIPO_PERGUNTA = (
+    ('short-text', 'Texto Curto'),
+    ('paragraph', 'Parágrafo'),
+    ('multiple-choice', 'Múltipla Escolha'),
+    ('checkbox', 'Checkbox'),
+    ('dropdown', 'Dropdown'),
+)
+
+class Formulario(models.Model):
+    titulo = models.CharField(max_length=255)
+    descricao = models.TextField()
+    criado_em = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
+
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.titulo)
+        super().save(*args, **kwargs)
+
+class Pergunta(models.Model):
+    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE, related_name='perguntas')
+    texto = models.CharField(max_length=500)
+    tipo = models.CharField(max_length=20, choices=TIPO_PERGUNTA)
+    obrigatoria = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.texto
+
+
+class OpcaoResposta(models.Model):
+    pergunta = models.ForeignKey(Pergunta, on_delete=models.CASCADE, related_name='opcoes')
+    texto = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.texto
+
+
+class LinkFormularioPaciente(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100, unique=True, default=uuid.uuid4)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.formulario.titulo} - {self.paciente.nome}"
+
+
+class RespostaFormulario(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
+    enviado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Resposta de {self.paciente.nome} em {self.formulario.titulo}"
+
+
+import uuid
+
+class Resposta(models.Model):
+    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    token = models.CharField(max_length=32, unique=True, editable=False)
+    data_resposta = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = uuid.uuid4().hex[:10]
+        super().save(*args, **kwargs)
+
+    def get_resposta_url(self):
+        return reverse('responder_formulario_token', kwargs={
+            'slug': self.formulario.slug,
+            'token': self.token
+        })
+
