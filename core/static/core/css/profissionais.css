@@ -361,7 +361,7 @@ body {
 .filter_input i {
     position: absolute;
     left: 10px;
-    color: #6b7280;
+    color: var(--roxo-principal);
     z-index: 1;
 }
 
