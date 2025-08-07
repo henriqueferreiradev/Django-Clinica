@@ -55,10 +55,7 @@
 
             background-color: var(--cinza-medium)
         }
-        button {
-            box-shadow: none;
-            border-radius:0;
-        }
+ 
     </style>
  
 <div class="content bg-gray-50 min-h-screen">
@@ -275,56 +272,56 @@
             }
 
             function saveCurrentForm() {
-    formData.title = formTitle.value;
-    formData.description = formDescription.value;
+                formData.title = formTitle.value;
+                formData.description = formDescription.value;
 
-    formData.questions = [];
-    document.querySelectorAll('.question-card').forEach(card => {
-        const questionId = card.getAttribute('data-id');
-        const questionText = card.querySelector('.question-text').value;
-        const questionType = card.getAttribute('data-type');
-        const isRequired = card.querySelector('.required-checkbox').checked;
+                formData.questions = [];
+                document.querySelectorAll('.question-card').forEach(card => {
+                    const questionId = card.getAttribute('data-id');
+                    const questionText = card.querySelector('.question-text').value;
+                    const questionType = card.getAttribute('data-type');
+                    const isRequired = card.querySelector('.required-checkbox').checked;
 
-        const question = {
-            text: questionText,
-            type: questionType,
-            required: isRequired,
-            options: []
-        };
+                    const question = {
+                        text: questionText,
+                        type: questionType,
+                        required: isRequired,
+                        options: []
+                    };
 
-        if (questionType === 'multiple-choice' || questionType === 'checkbox' || questionType === 'dropdown') {
-            card.querySelectorAll('.option-input').forEach(option => {
-                question.options.push(option.value);
-            });
-        }
+                    if (questionType === 'multiple-choice' || questionType === 'checkbox' || questionType === 'dropdown') {
+                        card.querySelectorAll('.option-input').forEach(option => {
+                            question.options.push(option.value);
+                        });
+                    }
 
-        formData.questions.push(question);
-    });
+                    formData.questions.push(question);
+                });
 
-    // Enviar pro backend
-    fetch('/form-builder/salvar/', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken') // ou remova se estiver usando @csrf_exempt
-    },
-    body: JSON.stringify(formularioData)
-    })
-    .then(async response => {
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
-        const data = await response.json();
-        console.log("✅ Resposta do servidor:", data);
-    } else {
-        const text = await response.text();
-        console.error("❌ Resposta não-JSON:", text);
-    }
-    })
-    .catch(error => {
-    console.error("⚠️ Erro de rede ou parsing:", error);
-    });
+                // Enviar pro backend
+                fetch('/form-builder/salvar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') // ou remova se estiver usando @csrf_exempt
+                },
+                body: JSON.stringify(formData) 
+                })
+                .then(async response => {
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await response.json();
+                    console.log("✅ Resposta do servidor:", data);
+                } else {
+                    const text = await response.text();
+                    console.error("❌ Resposta não-JSON:", text);
+                }
+                })
+                .catch(error => {
+                console.error("⚠️ Erro de rede ou parsing:", error);
+                });
 
-}
+            }
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {

@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 import json
-from core.models import Formulario, Pergunta, OpcaoResposta
+from core.models import Formulario, Pergunta, OpcaoResposta, LinkFormularioPaciente,RespostaFormulario,RespostaPergunta
 
 
 def salvar_formulario(request):
@@ -75,4 +75,47 @@ def visualizar_formulario(request, id):
         'perguntas': perguntas,
     })
     
+def responder_formulario_token(request, slug, token):
+    link = get_object_or_404(LinkFormularioPaciente, formulario__slug=slug, token=token)
+    formulario = link.formulario
+    paciente = link.paciente
+    perguntas = formulario.perguntas.prefetch_related('opcoes')
 
+    if request.method == 'POST':
+        resposta = RespostaFormulario.objects.create(paciente=paciente, formulario=formulario)
+        for pergunta in perguntas:
+            key = f'pergunta_{pergunta.id}'
+
+            if pergunta.tipo == 'checkbox':
+                valores = request.POST.getlist(key)
+                valor = ', '.join(valores)
+            else:
+                valor = request.POST.get(key)
+
+            if valor:
+                RespostaPergunta.objects.create(
+                    resposta=resposta,
+                    pergunta=pergunta,
+                    valor=valor
+                )
+
+        return render(request, 'core/form_builder/agradecimento.html', {'formulario': formulario})
+
+    return render(request, 'core/form_builder/responder_formulario.html', {
+        'formulario': formulario,
+        'perguntas': perguntas
+    })
+
+def formularios_para_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    formularios = Formulario.objects.all()
+    links_personalizados = []
+
+    for form in formularios:
+        link, _ = LinkFormularioPaciente.objects.get_or_create(formulario=form, paciente=paciente)
+        links_personalizados.append(link)
+
+    return render(request, 'core/form_builder/formularios_para_paciente.html', {
+        'paciente': paciente,
+        'links': links_personalizados
+    })

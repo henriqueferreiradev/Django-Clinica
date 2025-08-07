@@ -17,9 +17,11 @@
     <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">
       <i class="bx bx-calendar-plus"></i>Agendar
     </button>
-    <button>
-      <i class="bx bx-calendar-plus"></i>Enviar Forms
-    </button>
+    <a href="{% url 'formularios_paciente' paciente.id %}">
+      <button>
+        <i class="bx bx-calendar-plus"></i> Enviar Forms
+      </button>
+    </a>
     <form
       method="POST"
       action="{% url 'pacientes' %}"

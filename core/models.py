@@ -537,6 +537,7 @@ class OpcaoResposta(models.Model):
         return self.texto
 
 
+
 class LinkFormularioPaciente(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
@@ -546,6 +547,11 @@ class LinkFormularioPaciente(models.Model):
     def __str__(self):
         return f"{self.formulario.titulo} - {self.paciente.nome}"
 
+    def get_url(self):
+        return reverse('responder_formulario_token', kwargs={
+            'slug': self.formulario.slug,
+            'token': self.token
+        })
 
 class RespostaFormulario(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
@@ -559,8 +565,8 @@ class RespostaFormulario(models.Model):
 import uuid
 
 class Resposta(models.Model):
-    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
-    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    formulario = models.ForeignKey('Formulario', on_delete=models.CASCADE)
+    paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE)
     token = models.CharField(max_length=32, unique=True, editable=False)
     data_resposta = models.DateTimeField(auto_now_add=True)
 
@@ -575,3 +581,10 @@ class Resposta(models.Model):
             'token': self.token
         })
 
+class RespostaPergunta(models.Model):
+    resposta = models.ForeignKey(RespostaFormulario, on_delete=models.CASCADE, related_name='respostas')
+    pergunta = models.ForeignKey(Pergunta, on_delete=models.CASCADE)
+    valor = models.TextField()
+
+    def __str__(self):
+        return f"{self.pergunta.texto[:40]}...: {self.valor[:40]}"

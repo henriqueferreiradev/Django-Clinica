@@ -19,13 +19,14 @@
       href="{% static 'core/img/icons/logoRoxoFull.png' %}"
       type="image/png"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}" />
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
     <link
       href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
       rel="stylesheet"
     />
+    
   </head>
 
   <body>
@@ -238,9 +239,9 @@
       </div>
     </section>
     {% block scripts %}{% endblock %}
+
     <script type="module" src="{% static 'core/js/alertas/main.js' %}"></script>
     <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
-
-    {% block extra_css %}{% endblock %}
+     {% block extra_css %}{% endblock %}
   </body>
 </html>
