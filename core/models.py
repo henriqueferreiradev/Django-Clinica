@@ -507,17 +507,34 @@ TIPO_PERGUNTA = (
     ('dropdown', 'Dropdown'),
 )
 
+from django.db import models
+from django.utils.text import slugify
+
 class Formulario(models.Model):
     titulo = models.CharField(max_length=255)
     descricao = models.TextField()
     criado_em = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True, blank=True, null=True)
-
-
+    ativo = models.BooleanField(default=True) 
+    
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.titulo)
+
+            base_slug = slugify(self.titulo)
+            slug = base_slug
+            counter = 2
+
+            while Formulario.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug
+
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.titulo
+
 
 class Pergunta(models.Model):
     formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE, related_name='perguntas')

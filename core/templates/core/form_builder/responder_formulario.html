@@ -79,16 +79,16 @@
                 <div class="mb-8">
                     <label class="block text-gray-800 font-medium mb-2 text-lg">{{ pergunta.texto }}</label>
 
-                    {% if pergunta.tipo == 'texto' %}
+                    {% if pergunta.tipo == 'short-text' %}
                         <input type="text" name="pergunta_{{ pergunta.id }}" 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
 
-                    {% elif pergunta.tipo == 'longo' %}
+                    {% elif pergunta.tipo == 'paragraph' %}
                         <textarea name="pergunta_{{ pergunta.id }}" 
                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" 
                                   rows="4"></textarea>
 
-                    {% elif pergunta.tipo == 'radio' %}
+                    {% elif pergunta.tipo == 'multiple-choice' %}
                         <div class="space-y-2 mt-3">
                             {% for opcao in pergunta.opcoes.all %}
                                 <label class="flex items-center space-x-3">
@@ -99,7 +99,7 @@
                             {% endfor %}
                         </div>
 
-                    {% elif pergunta.tipo == 'checkbox' or pergunta.tipo == 'multiple-choice' %}
+                    {% elif pergunta.tipo == 'checkbox' %}
                         <div class="space-y-2 mt-3">
                             {% for opcao in pergunta.opcoes.all %}
                                 <label class="flex items-center space-x-3">

@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 
 {% load static %}
-{% block title %}Form Builder - Ponto de Equilíbrio{% endblock %}
+{% block title %}Gerenciador de formulários - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -19,6 +19,7 @@
         background: transparent;
         box-shadow: none;
         padding: 0;
+        overflow: hidden;
 
     }
     .slide-in {
@@ -48,15 +49,13 @@
         font-weight: 500;
     }
     
-    .bg-white {
-        background-color: var(--cinza-medium)
-    }
-    
-    /* Layout de duas colunas */
+ 
+    /* Layout de duas colunas com scroll independente */
     .two-column-layout {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
+        gap: 1em;
+        height: calc(100vh - 90px);
     }
     
     .column {
@@ -64,18 +63,39 @@
         border-radius: 0.5rem;
         padding: 1.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* Importante para conter o scroll interno */
     }
     
-    /* Header fixo */
-    .sticky-header {
-        position: sticky;
-        top: 0;
-        background: white;
-        z-index: 50;
-        padding: 1rem 0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 1.5rem;
+    /* Container de conteúdo rolável em ambas as colunas */
+    .scrollable-content {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 0.5rem;
     }
+    
+    /* Estilização do scroll */
+    .scrollable-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .scrollable-content::-webkit-scrollbar-thumb {
+        background-color: #c7d2fe;
+        border-radius: 3px;
+    }
+    
+    /* Ajustes para o formulário */
+    .form-builder-container {
+        height: 100%;
+    }
+    
+    .form-actions {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+ 
     
     /* Ajustes para formulário */
     .form-builder-container {
@@ -109,23 +129,19 @@
 </style>
 {% endblock %}
 
-{% block topbar_title %}<span class="text">Criador de formulário</span>{% endblock %}
+{% block topbar_title %}<span class="text">Gerenciador de Formulário</span>{% endblock %}
 
 {% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+
 <div class="content">
-    <div class="container">
-        <!-- Header fixo -->
-        <div class="sticky-header">
-            <h1 class="text-2xl font-bold text-purple-700 mb-4">Gerenciador de Formulários</h1>
-
-        </div>
-
+ 
         <!-- Layout de duas colunas -->
         <div class="two-column-layout">
             <!-- Coluna 1: Formulários Ativos -->
             <div class="column">
                 <h2 class="text-xl font-semibold mb-4 text-purple-700 border-b pb-2">Formulários Ativos</h2>
-                <div id="formsList" class="space-y-4">
+                <div id="formsList" class="scrollable-content space-y-4">
                     <!-- Lista será carregada via JS -->
                     <div class="text-center py-8">
                         <i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i>
@@ -137,16 +153,7 @@
             <!-- Coluna 2: Criar Formulário -->
             <div class="column form-builder-container">
                 <h2 class="text-xl font-semibold mb-4 text-purple-700 border-b pb-2">Criar Novo Formulário</h2>
-                <div class="flex justify-between items-center">
-                    <div class="flex space-x-2">
-                        <button id="addQuestion" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Adicionar Pergunta
-                        </button>
-                        <button id="saveForm" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                            <i class="fas fa-save mr-2"></i>Salvar Formulário
-                        </button>
-                    </div>
-                </div>
+ 
                 <div class="form-container bg-white rounded-lg p-6 mb-6">
                     <input type="text" id="formTitle" placeholder="Título do formulário" 
                         class="w-full text-xl font-medium border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-2 mb-2">
@@ -168,7 +175,7 @@
                 </div>
             </div>
         </div>
-    </div>
+ 
 
     <!-- Modal de tipos de pergunta -->
     <div id="questionTypeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
@@ -202,15 +209,16 @@
         </div>
     </div>
 </div>
+{% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // DOM Elements
-        const addQuestion = document.getElementById('addQuestion');
+        
         const addQuestionBottom = document.getElementById('addQuestionBottom');
-        const saveForm = document.getElementById('saveForm');
+        
         const saveFormBottom = document.getElementById('saveFormBottom');
         const questionTypeModal = document.getElementById('questionTypeModal');
         const closeModal = document.getElementById('closeModal');
@@ -232,9 +240,9 @@
         carregarFormulariosAtivos();
 
         // Event Listeners
-        addQuestion.addEventListener('click', showQuestionTypeModal);
+         
         addQuestionBottom.addEventListener('click', showQuestionTypeModal);
-        saveForm.addEventListener('click', saveCurrentForm);
+         
         saveFormBottom.addEventListener('click', saveCurrentForm);
         closeModal.addEventListener('click', hideQuestionTypeModal);
 
@@ -257,7 +265,6 @@
                 renderQuestions();
             }
         }
-
         function saveCurrentForm() {
             formData.title = formTitle.value;
             formData.description = formDescription.value;
@@ -295,21 +302,34 @@
                 body: JSON.stringify(formData) 
             })
             .then(async response => {
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    const data = await response.json();
-                    console.log("✅ Resposta do servidor:", data);
-                    alert('Formulário salvo com sucesso!');
-                    carregarFormulariosAtivos();
-                } else {
-                    const text = await response.text();
-                    console.error("❌ Resposta não-JSON:", text);
-                    alert('Erro ao salvar formulário: ' + text);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Erro desconhecido ao salvar formulário');
                 }
+                return response.json();
+            })
+            .then(data => {
+                console.log("✅ Resposta do servidor:", data);
+                
+                // Limpar todo o formulário após salvar
+                formTitle.value = '';
+                formDescription.value = '';
+                questionsContainer.innerHTML = '';
+                formData = {
+                    title: '',
+                    description: '',
+                    questions: []
+                };
+                currentQuestionId = 0;
+                
+                // Atualizar a lista de formulários
+                carregarFormulariosAtivos();
+                
+                alert('Formulário salvo com sucesso!');
             })
             .catch(error => {
-                console.error("⚠️ Erro de rede ou parsing:", error);
-                alert('Erro ao conectar com o servidor');
+                console.error("⚠️ Erro:", error);
+                alert(error.message);
             });
         }
 
@@ -400,7 +420,7 @@
             
             questionCard.innerHTML = `
                 <div class="flex justify-between items-start mb-4">
-                    <input type="text" class="question-text w-full text-lg font-medium border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-1" 
+                    <input type="text" class="question-text w-full text-base font-medium border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-1" 
                         value="${question.text}" placeholder="Pergunta">
                     <select class="question-type ml-4 p-2 border rounded bg-gray-50">
                         <option value="short-text" ${question.type === 'short-text' ? 'selected' : ''}>Texto curto</option>
@@ -504,6 +524,38 @@
                 this.closest('.option-container').remove();
             }
         }
+        function inativarFormulario(id) {
+    if (!confirm("Tem certeza que deseja inativar este formulário?")) return;
+
+    fetch(`/form-builder/inativar/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        if (data.success) {
+            alert("Formulário inativado com sucesso!");
+            carregarFormulariosAtivos(); // recarrega lista
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
         function carregarFormulariosAtivos() {
             fetch('/form-builder/listar/')
@@ -522,18 +574,36 @@
 
                         formCard.innerHTML = `
                             <h3 class="text-xl font-bold text-purple-600">${form.titulo}</h3>
-                            <p class="text-gray-700 mb-2">${form.descricao || 'Sem descrição'}</p>
+                            <p class="text-sm text-gray-700 mb-2">${form.descricao || 'Sem descrição'}</p>
                             <p class="text-sm text-gray-500">Criado em: ${new Date(form.criado_em).toLocaleString()}</p>
                             <div class="mt-3 flex gap-2">
-                                <a href="/form-builder/visualizar/${form.id}/" class="text-blue-600 hover:underline">
+                                <a href="/form-builder/visualizar/${form.id}/" class="text-sm text-blue-600 hover:underline">
                                     <i class="fas fa-eye mr-1"></i>Visualizar
                                 </a>
-                                <a href="/form-builder/editar/${form.id}/" class="text-yellow-600 hover:underline">
+                                <a href="/form-builder/editar/${form.id}/" class="text-sm text-yellow-600 hover:underline">
                                     <i class="fas fa-edit mr-1"></i>Editar
                                 </a>
-                                <a href="/form-builder/respostas/${form.id}/" class="text-green-600 hover:underline">
-                                    <i class="fas fa-chart-bar mr-1"></i>Respostas
-                                </a>
+                                <form
+                                    method="POST"
+                                    action="{% url 'criar_formulario' %}"
+                                    style="margin: 0"
+                                    id="inativarForm{{ formulario.id }}"
+                                >
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_id" value="{{ formulario.id }}" />
+                                    <button
+                                        type="button"
+                                        onclick="showConfirmModal(
+                                            'Inativar Formulário', 
+                                            'Deseja realmente inativar o formulário {{ formulario.nome }}?', 
+                                            document.getElementById('inativarForm{{ formulario.id }}')
+                                        )"
+                                        class="text-sm text-red-600 hover:underline"
+                                    >
+                                        <i class="fas fa-ban mr-1"></i>Inativar
+                                    </button>
+                                </form>
+
                             </div>
                         `;
 
