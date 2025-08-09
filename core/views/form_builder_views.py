@@ -1,46 +1,59 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Resposta,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
-from datetime import date, datetime, timedelta
-from django.utils import timezone
+ 
 from core.utils import alterar_status_agendamento, registrar_log
-import json
-import locale
-from django.db.models.functions import TruncMonth
-from django.db.models import Count
-import random
+ 
 # views.py
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponseNotAllowed, Http404
 from django.views.decorators.http import require_POST
 import json
-from core.models import Formulario, Pergunta, OpcaoResposta, LinkFormularioPaciente,RespostaFormulario,RespostaPergunta
+from core.models import Formulario, Pergunta, OpcaoResposta, LinkFormularioPaciente,RespostaFormulario,RespostaPergunta,Paciente
 from django.contrib import messages
 
 
 def form_builder(request):
     if request.method == 'POST':
-        if 'delete_id' in request.POST:
-            formulario = Formulario.objects.get(id=request.POST['delete_id'])
-            formulario.ativo = False
-            formulario.save()
-            messages.warning(request, f'Formulário {formulario.nome} inativado') 
-            registrar_log(usuario=request.user,
-                acao='Inativação',
-                modelo='Formulário',
-                objeto_id=formulario.id,
-                descricao=f'Paciente {formulario.nome} inativado.')
+        delete_id = request.POST.get('delete_id')
+        
+        if delete_id:  # Verifica se não está vazio
+            try:
+                formulario = Formulario.objects.get(id=int(delete_id)) 
+                formulario.ativo = False
+                formulario.save()
+                messages.warning(request, f'Formulário {formulario.titulo} inativado') 
+                registrar_log(
+                    usuario=request.user,
+                    acao='Inativação',
+                    modelo='Formulário',
+                    objeto_id=formulario.id,
+                    descricao=f'Formulário {formulario.titulo} inativado.'
+                )
+                return redirect('criar_formulario')
+            except (ValueError, Formulario.DoesNotExist):
+                messages.error(request, 'ID do formulário inválido')
+                return redirect('criar_formulario')
+        else:
+            messages.error(request, 'Nenhum ID de formulário fornecido')
             return redirect('criar_formulario')
 
     return render(request, 'core/form_builder/form_builder.html')
 
-
-
-
+@csrf_exempt
 def salvar_formulario(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    
     try:
         print("📥 Dados recebidos:", request.body)
         data = json.loads(request.body)
+
+        # Verifica se é para editar (não deveria chegar aqui se for edição)
+        if 'id' in data and data['id']:
+            return JsonResponse({
+                'status': 'erro', 
+                'msg': 'Use a rota de edição para formulários existentes'
+            }, status=400)
 
         formulario = Formulario.objects.create(
             titulo=data['title'],
@@ -61,22 +74,62 @@ def salvar_formulario(request):
                         pergunta=pergunta,
                         texto=opcao
                     )
-                    
-       
-       
         
-        
-        print("✅ Formulário salvo com sucesso:", formulario)
-        return JsonResponse({'status': 'ok'})
+        print("✅ Novo formulário salvo com sucesso:", formulario.id)
+        return JsonResponse({'status': 'ok', 'id': formulario.id})
+    
     except Exception as e:
         print("❌ Erro ao salvar:", str(e))
         return JsonResponse({'status': 'erro', 'msg': str(e)}, status=400)
     
+def editar_formulario(request, form_id):
+    if request.method != 'PUT':
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
+    try:
+        print(f"📥 Editando formulário ID: {form_id}")
+        data = json.loads(request.body)
+        
+        # Obtém o formulário existente
+        formulario = Formulario.objects.get(id=form_id)
+        if not data.get('title') or not data.get('questions'):
+            messages.error(request, 'Formulário não pode estar vazio!')
+            return JsonResponse({'status': 'error'}, status=400)
+        # Atualiza os dados básicos
+        formulario.titulo = data.get('title', formulario.titulo)
+        formulario.descricao = data.get('description', formulario.descricao)
+        formulario.save()
+        
+        # Remove perguntas antigas (opcional, depende da sua lógica de negócio)
+        formulario.perguntas.all().delete()
+        
+        # Recria as perguntas com os novos dados
+        for q in data['questions']:
+            pergunta = Pergunta.objects.create(
+                formulario=formulario,
+                texto=q['text'],
+                tipo=q['type'],
+                obrigatoria=q['required']
+            )
+
+            if pergunta.tipo in ['multiple-choice', 'checkbox', 'dropdown']:
+                for opcao in q['options']:
+                    OpcaoResposta.objects.create(
+                        pergunta=pergunta,
+                        texto=opcao
+                    )
+        
+        messages.success(request, f'Formulário "{formulario.titulo}" atualizado com sucesso!')
+
+        return JsonResponse({'status': 'ok'})
     
-    
+    except Formulario.DoesNotExist:
+        return JsonResponse({'status': 'erro', 'msg': 'Formulário não encontrado'}, status=404)
+    except Exception as e:
+        print(f"❌ Erro ao editar: {str(e)}")
+        return JsonResponse({'status': 'erro', 'msg': str(e)}, status=400)
     
 def listar_formularios(request):
-    formularios = Formulario.objects.all().order_by('-criado_em')
+    formularios = Formulario.objects.filter(ativo=True).order_by('-criado_em')
     data = [
         {
             'id': f.id,
@@ -130,7 +183,24 @@ def responder_formulario_token(request, slug, token):
         'formulario': formulario,
         'perguntas': perguntas
     })
+ 
 
+def obter_formulario(request, form_id):
+    try:
+        formulario = Formulario.objects.get(id=form_id)
+        perguntas = Pergunta.objects.filter(formulario=formulario).values('texto', 'tipo', 'obrigatoria', 'opcoes')
+        
+        data = {
+            'titulo': formulario.titulo,
+            'descricao': formulario.descricao,
+            'perguntas': list(perguntas)
+        }
+        
+        return JsonResponse(data)
+    
+    except Formulario.DoesNotExist:
+        return JsonResponse({'error': 'Formulário não encontrado'}, status=404)
+    
 def formularios_para_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
     formularios = Formulario.objects.all()
