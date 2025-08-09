@@ -292,8 +292,13 @@
                 formData.questions.push(question);
             });
 
+            // Determina se é uma criação ou edição
+            const formId = window.location.pathname.includes('/editar/') ? 
+                window.location.pathname.split('/editar/')[1].replace('/', '') : 
+                null;
+
             // Enviar pro backend
-            fetch('/form-builder/salvar/', {
+            fetch(formId ? `/form-builder/editar/${formId}/` : '/form-builder/salvar/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -326,6 +331,9 @@
                 carregarFormulariosAtivos();
                 
                 alert('Formulário salvo com sucesso!');
+                
+                // Volta para o modo de criação
+                document.querySelector('.form-builder-container h2').textContent = 'Criar Novo Formulário';
             })
             .catch(error => {
                 console.error("⚠️ Erro:", error);
@@ -543,82 +551,89 @@
 }
 
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
+let cookieValue = null;
+if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
         }
     }
-    return cookieValue;
 }
-
-        function carregarFormulariosAtivos() {
-            fetch('/form-builder/listar/')
-                .then(response => response.json())
-                .then(data => {
-                    formsList.innerHTML = '';
-
-                    if (data.length === 0) {
-                        formsList.innerHTML = '<p class="text-gray-500">Nenhum formulário encontrado.</p>';
-                        return;
-                    }
-
-                    data.forEach(form => {
-                        const formCard = document.createElement('div');
-                        formCard.className = 'border rounded p-4 bg-gray-50 hover:bg-gray-100 transition mb-3';
-
-                        formCard.innerHTML = `
-                            <h3 class="text-xl font-bold text-purple-600">${form.titulo}</h3>
-                            <p class="text-sm text-gray-700 mb-2">${form.descricao || 'Sem descrição'}</p>
-                            <p class="text-sm text-gray-500">Criado em: ${new Date(form.criado_em).toLocaleString()}</p>
-                            <div class="mt-3 flex gap-2">
-                                <a href="/form-builder/visualizar/${form.id}/" class="text-sm text-blue-600 hover:underline">
-                                    <i class="fas fa-eye mr-1"></i>Visualizar
-                                </a>
-                                <a href="/form-builder/editar/${form.id}/" class="text-sm text-yellow-600 hover:underline">
-                                    <i class="fas fa-edit mr-1"></i>Editar
-                                </a>
-                                <form
-                                    method="POST"
-                                    action="{% url 'criar_formulario' %}"
-                                    style="margin: 0"
-                                    id="inativarForm{{ formulario.id }}"
-                                >
-                                    {% csrf_token %}
-                                    <input type="hidden" name="delete_id" value="{{ formulario.id }}" />
-                                    <button
-                                        type="button"
-                                        onclick="showConfirmModal(
-                                            'Inativar Formulário', 
-                                            'Deseja realmente inativar o formulário {{ formulario.nome }}?', 
-                                            document.getElementById('inativarForm{{ formulario.id }}')
-                                        )"
-                                        class="text-sm text-red-600 hover:underline"
-                                    >
-                                        <i class="fas fa-ban mr-1"></i>Inativar
-                                    </button>
-                                </form>
-
-                            </div>
-                        `;
-
-                        formsList.appendChild(formCard);
-                    });
-                })
-                .catch(error => {
-                    formsList.innerHTML = `
-                        <div class="text-red-500 p-4 bg-red-50 rounded">
-                            <i class="fas fa-exclamation-circle mr-2"></i>
-                            Erro ao carregar formulários: ${error.message}
-                        </div>
-                    `;
-                });
-        }
+return cookieValue;
+}
+function carregarFormularioParaEdicao(formId) {
+fetch(`/form-builder/obter/${formId}/`)
+    .then(response => response.json())
+    .then(data => {
+        // Preenche os campos básicos
+        document.getElementById('formTitle').value = data.titulo;
+        document.getElementById('formDescription').value = data.descricao;
+        
+        // Limpa as perguntas existentes
+        document.getElementById('questionsContainer').innerHTML = '';
+        
+        // Atualiza o estado do formData
+        formData = {
+            title: data.titulo,
+            description: data.descricao,
+            questions: data.perguntas || []
+        };
+        
+        // Renderiza as perguntas
+        renderQuestions();
+        
+        // Muda o título da coluna para "Editar Formulário"
+        document.querySelector('.form-builder-container h2').textContent = 'Editar Formulário';
+        
+        // Rolagem para o topo
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch(error => {
+        console.error('Erro ao carregar formulário:', error);
+        alert('Erro ao carregar formulário para edição');
     });
+}
+function carregarFormulariosAtivos() {
+fetch('/form-builder/listar/')
+    .then(response => response.json())
+    .then(data => {
+        formsList.innerHTML = '';
+
+        if (data.length === 0) {
+            formsList.innerHTML = '<p class="text-gray-500">Nenhum formulário encontrado.</p>';
+            return;
+        }
+
+        data.forEach(form => {
+            const formCard = document.createElement('div');
+            formCard.className = 'border rounded p-4 bg-gray-50 hover:bg-gray-100 transition mb-3';
+
+            formCard.innerHTML = `
+                <h3 class="text-xl font-bold text-purple-600">${form.titulo}</h3>
+                <p class="text-sm text-gray-700 mb-2">${form.descricao || 'Sem descrição'}</p>
+                <p class="text-sm text-gray-500">Criado em: ${new Date(form.criado_em).toLocaleString()}</p>
+                <div class="mt-3 flex gap-2">
+                    <a href="/form-builder/visualizar/${form.id}/" class="text-sm text-white bg-blue-600 hover:bg-blue-800 px-3 py-1 rounded inline-flex items-center transition-colors duration-200">
+                        <i class="fas fa-eye mr-1"></i>Visualizar
+                    </a>
+                    
+                    <button onclick="carregarFormularioParaEdicao(${form.id})" class="text-sm text-white bg-yellow-600 hover:bg-yellow-800 px-3 py-1 rounded inline-flex items-center transition-colors duration-200">
+                        <i class="fas fa-edit mr-1"></i>Editar
+                    </button>
+                    
+                    <button onclick="inativarFormulario(${form.id})" class="text-sm text-white bg-red-600 hover:bg-red-800 px-3 py-1 rounded no-underline inline-flex items-center transition-colors duration-200">
+                        <i class="fas fa-ban mr-1"></i>Inativar
+                    </button>
+                </div>
+            `;
+
+            formsList.appendChild(formCard);
+        });
+    });
+}
+            });
 </script>
 {% endblock %}
