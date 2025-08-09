@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 
 {% load static %}
-{% block title %}Gerenciador de formulários - Ponto de Equilíbrio{% endblock %}
+{% block title %}Formulários Ativos - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -15,67 +15,13 @@
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    .content {
-        background: transparent;
-        box-shadow: none;
-        padding: 0;
-        overflow: hidden;
-
-    }
-    .slide-in {
-        animation: slideIn 0.3s ease-out;
-    }
     
-    @keyframes slideIn {
-        from { transform: translateX(-20px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    .option-input {
-        transition: all 0.2s ease;
-    }
-    
-    .option-input:hover {
-        background-color: #f3f4f6;
-    }
-    
-    .form-container {
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    }
-    
-    .tab-active {
-        border-bottom: 3px solid #8b5cf6;
-        color: #8b5cf6;
-        font-weight: 500;
-    }
-    
- 
-    /* Layout de duas colunas com scroll independente */
-    .two-column-layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1em;
-        height: calc(100vh - 90px);
-    }
-    
-    .column {
-        background: white;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden; /* Importante para conter o scroll interno */
-    }
-    
-    /* Container de conteúdo rolável em ambas as colunas */
     .scrollable-content {
         flex: 1;
         overflow-y: auto;
         padding-right: 0.5rem;
     }
     
-    /* Estilização do scroll */
     .scrollable-content::-webkit-scrollbar {
         width: 6px;
     }
@@ -84,156 +30,41 @@
         background-color: #c7d2fe;
         border-radius: 3px;
     }
-    
-    /* Ajustes para o formulário */
-    .form-builder-container {
-        height: 100%;
-    }
-    
-    .form-actions {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #e5e7eb;
-    }
- 
-    
-    /* Ajustes para formulário */
-    .form-builder-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-    
-    .questions-content {
-        flex: 1;
-        overflow-y: auto;
-        max-height: 60vh;
-        padding-right: 0.5rem;
-    }
-    
-    .form-actions {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #e5e7eb;
-    }
-    
-    /* Scroll personalizado */
-    .questions-content::-webkit-scrollbar {
-        width: 6px;
-    }
-    
-    .questions-content::-webkit-scrollbar-thumb {
-        background-color: #c7d2fe;
-        border-radius: 3px;
-    }
 </style>
 {% endblock %}
 
-{% block topbar_title %}<span class="text">Gerenciador de Formulário</span>{% endblock %}
+{% block topbar_title %}<span class="text">Formulários Ativos</span>{% endblock %}
 
 {% block content %}
 {% include "core/partials/_confirm_modal.html" %}
 
 <div class="content">
- 
-        <!-- Layout de duas colunas -->
-        <div class="two-column-layout">
-            <!-- Coluna 1: Formulários Ativos -->
-            <div class="column">
-                <h2 class="text-xl font-semibold mb-4 text-purple-700 border-b pb-2">Formulários Ativos</h2>
-                <div id="formsList" class="scrollable-content space-y-4">
-                    <!-- Lista será carregada via JS -->
-                    <div class="text-center py-8">
-                        <i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i>
-                        <p class="mt-2 text-gray-500">Carregando formulários...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Coluna 2: Criar Formulário -->
-            <div class="column form-builder-container">
-                <h2 class="text-xl font-semibold mb-4 text-purple-700 border-b pb-2">Criar Novo Formulário</h2>
- 
-                <div class="form-container bg-white rounded-lg p-6 mb-6">
-                    <input type="text" id="formTitle" placeholder="Título do formulário" 
-                        class="w-full text-xl font-medium border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-2 mb-2">
-                    <input type="text" id="formDescription" placeholder="Descrição do formulário" 
-                        class="w-full text-gray-600 border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-2">
-                </div>
-
-                <div id="questionsContainer" class="questions-content space-y-6"></div>
-
-                <div class="form-actions">
-                    <div class="flex justify-between">
-                        <button id="addQuestionBottom" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Adicionar Pergunta
-                        </button>
-                        <button id="saveFormBottom" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                            <i class="fas fa-save mr-2"></i>Salvar Formulário
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <div class="bg-white rounded-lg p-6 shadow-sm">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-purple-700">Formulários Ativos</h2>
+            <a href="{% url 'criar_formulario' %}" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
+                <i class="fas fa-plus mr-2"></i>Criar Novo Formulário
+            </a>
         </div>
- 
-
-    <!-- Modal de tipos de pergunta -->
-    <div id="questionTypeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 class="text-xl font-medium mb-4">Selecione o tipo de pergunta</h3>
-            <div class="grid grid-cols-2 gap-4">
-                <button data-type="short-text" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
-                    <i class="fas fa-font text-purple-600 mb-2"></i>
-                    <p>Texto curto</p>
-                </button>
-                <button data-type="paragraph" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
-                    <i class="fas fa-align-left text-purple-600 mb-2"></i>
-                    <p>Parágrafo</p>
-                </button>
-                <button data-type="multiple-choice" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
-                    <i class="fas fa-dot-circle text-purple-600 mb-2"></i>
-                    <p>Múltipla escolha</p>
-                </button>
-                <button data-type="checkbox" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
-                    <i class="fas fa-check-square text-purple-600 mb-2"></i>
-                    <p>Caixas de seleção</p>
-                </button>
-                <button data-type="dropdown" class="p-4 border rounded hover:bg-purple-50 hover:border-purple-300 transition">
-                    <i class="fas fa-caret-square-down text-purple-600 mb-2"></i>
-                    <p>Menu suspenso</p>
-                </button>
-            </div>
-            <div class="mt-6 flex justify-end">
-                <button id="closeModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Cancelar</button>
+        
+        <div id="formsList" class="scrollable-content space-y-4">
+            <!-- Lista será carregada via JS -->
+            <div class="text-center py-8">
+                <i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i>
+                <p class="mt-2 text-gray-500">Carregando formulários...</p>
             </div>
         </div>
     </div>
 </div>
+
 {% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const addQuestionBottom = document.getElementById('addQuestionBottom');
-    const saveFormBottom = document.getElementById('saveFormBottom');
-    const questionTypeModal = document.getElementById('questionTypeModal');
-    const closeModal = document.getElementById('closeModal');
-    const questionsContainer = document.getElementById('questionsContainer');
-    const formTitle = document.getElementById('formTitle');
-    const formDescription = document.getElementById('formDescription');
     const formsList = document.getElementById('formsList');
 
-    // State
-    let currentQuestionId = 0;
-    let formData = {
-        title: '',
-        description: '',
-        questions: []
-    };
-
-    // Helper Functions
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -249,288 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return cookieValue;
     }
 
-    function mapTipoBackendParaFrontend(tipo) {
-        const mapa = {
-            'short-text': 'short-text',
-            'paragraph': 'paragraph',
-            'multiple-choice': 'multiple-choice',
-            'checkbox': 'checkbox',
-            'dropdown': 'dropdown',
-            'texto_curto': 'short-text',
-            'paragrafo': 'paragraph',
-            'multipla_escolha': 'multiple-choice',
-            'caixa_selecao': 'checkbox',
-            'menu_suspenso': 'dropdown',
-        };
-        return mapa[tipo] || 'short-text';
-    }
-
-    function normalizarOpcoes(opcoes) {
-        if (!opcoes) return [];
-        if (Array.isArray(opcoes)) return opcoes;
-        try {
-            const parsed = JSON.parse(opcoes);
-            if (Array.isArray(parsed)) return parsed;
-        } catch (e) {}
-        if (typeof opcoes === 'string') return opcoes.split(';').map(s => s.trim()).filter(Boolean);
-        return [];
-    }
-
-    // Form Functions
-    function loadForm() {
-        const savedForm = localStorage.getItem('formBuilderData');
-        if (savedForm) {
-            formData = JSON.parse(savedForm);
-            formTitle.value = formData.title;
-            formDescription.value = formData.description;
-            renderQuestions();
-        }
-    }
-
-    function renderQuestions() {
-        questionsContainer.innerHTML = '';
-        
-        formData.questions.forEach(question => {
-            addQuestionToDOM(question);
-            currentQuestionId = Math.max(currentQuestionId, parseInt(question.id));
-        });
-        
-        currentQuestionId++;
-    }
-
-    function saveCurrentForm() {
-        formData.title = formTitle.value;
-        formData.description = formDescription.value;
-
-        formData.questions = [];
-        document.querySelectorAll('.question-card').forEach(card => {
-            const questionId = card.getAttribute('data-id');
-            const questionText = card.querySelector('.question-text').value;
-            const questionType = card.getAttribute('data-type');
-            const isRequired = card.querySelector('.required-checkbox').checked;
-
-            const question = {
-                text: questionText,
-                type: questionType,
-                required: isRequired,
-                options: []
-            };
-
-            if (questionType === 'multiple-choice' || questionType === 'checkbox' || questionType === 'dropdown') {
-                card.querySelectorAll('.option-input').forEach(option => {
-                    question.options.push(option.value);
-                });
-            }
-
-            formData.questions.push(question);
-        });
-
-        // Verifica se estamos editando um formulário existente
-        const urlParams = new URLSearchParams(window.location.search);
-        let formId = urlParams.get('editar');
-        
-        if (!formId) {
-            const match = window.location.pathname.match(/editar\/(\d+)/);
-            formId = match ? match[1] : null;
-        }
-
-        // Debug: verifique o ID extraído
-        console.log("ID do formulário para edição:", formId);
-
-        // Determina a URL e método corretos
-        const url = formId ? `/editar/${formId}/` : '/form-builder/salvar/';
-        const method = formId ? 'PUT' : 'POST';
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(async response => {
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Erro ao salvar formulário');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Atualiza a URL SEM o parâmetro de edição
-            window.history.pushState({}, '', '/criar_formulario/');
-            
-            // Recarrega a página para limpar completamente o estado
-            window.location.reload();
-        })
-        .catch(error => {
-            console.error("Erro:", error);
-  
-        });
-        }
-
-    // Question Functions
-    function showQuestionTypeModal() {
-        questionTypeModal.classList.remove('hidden');
-    }
-
-    function hideQuestionTypeModal() {
-        questionTypeModal.classList.add('hidden');
-    }
-
-    function addNewQuestion(type) {
-        const questionId = currentQuestionId++;
-        
-        const question = {
-            id: questionId.toString(),
-            text: '',
-            type: type,
-            required: false,
-            options: type === 'multiple-choice' || type === 'checkbox' || type === 'dropdown' 
-                ? ['Opção 1'] 
-                : []
-        };
-        
-        formData.questions.push(question);
-        addQuestionToDOM(question);
-        
-        setTimeout(() => {
-            const lastQuestion = questionsContainer.lastElementChild;
-            lastQuestion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 100);
-    }
-
-    function addQuestionToDOM(question) {
-        const questionCard = document.createElement('div');
-        questionCard.className = 'question-card form-container bg-white rounded-lg p-6 fade-in';
-        questionCard.setAttribute('data-id', question.id);
-        questionCard.setAttribute('data-type', question.type);
-        
-        let optionsHTML = '';
-        
-        if (question.type === 'multiple-choice' || question.type === 'checkbox' || question.type === 'dropdown') {
-            question.options.forEach((option, index) => {
-                optionsHTML += `
-                    <div class="option-container flex items-center mb-2">
-                        <i class="fas fa-${question.type === 'multiple-choice' ? 'dot-circle' : question.type === 'checkbox' ? 'check-square' : 'caret-square-down'} text-gray-400 mr-3"></i>
-                        <input type="text" value="${option}" class="option-input flex-grow p-2 border-b focus:border-purple-500 focus:outline-none" placeholder="Opção ${index + 1}">
-                        <button class="remove-option ml-2 text-gray-500 hover:text-red-500">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-            });
-            
-            optionsHTML += `
-                <button class="add-option mt-2 text-sm text-purple-600 hover:text-purple-800">
-                    <i class="fas fa-plus mr-1"></i>Adicionar opção
-                </button>
-            `;
-        }
-        
-        questionCard.innerHTML = `
-            <div class="flex justify-between items-start mb-4">
-                <input type="text" class="question-text w-full text-base font-medium border-0 border-b-2 border-gray-200 focus:border-purple-500 focus:ring-0 pb-1" 
-                    value="${question.text}" placeholder="Pergunta">
-                <select class="question-type ml-4 p-2 border rounded bg-gray-50">
-                    <option value="short-text" ${question.type === 'short-text' ? 'selected' : ''}>Texto curto</option>
-                    <option value="paragraph" ${question.type === 'paragraph' ? 'selected' : ''}>Parágrafo</option>
-                    <option value="multiple-choice" ${question.type === 'multiple-choice' ? 'selected' : ''}>Múltipla escolha</option>
-                    <option value="checkbox" ${question.type === 'checkbox' ? 'selected' : ''}>Caixas de seleção</option>
-                    <option value="dropdown" ${question.type === 'dropdown' ? 'selected' : ''}>Menu suspenso</option>
-                </select>
-            </div>
-            
-            <div class="question-options mb-4">
-                ${optionsHTML}
-            </div>
-            
-            <div class="flex justify-between items-center">
-                <label class="flex items-center">
-                    <input type="checkbox" class="required-checkbox mr-2" ${question.required ? 'checked' : ''}>
-                    <span class="text-gray-600">Resposta obrigatória</span>
-                </label>
-                <button class="remove-question text-red-600 hover:text-red-800">
-                    <i class="fas fa-trash mr-1"></i>Remover
-                </button>
-            </div>
-        `;
-        
-        questionsContainer.appendChild(questionCard);
-        
-        // Add event listeners
-        questionCard.querySelector('.remove-question').addEventListener('click', () => {
-            questionCard.classList.add('hidden');
-            formData.questions = formData.questions.filter(q => q.id !== question.id);
-        });
-        
-        const questionTypeSelect = questionCard.querySelector('.question-type');
-        questionTypeSelect.addEventListener('change', function() {
-            const newType = this.value;
-            questionCard.setAttribute('data-type', newType);
-            
-            let newOptionsHTML = '';
-            if (newType === 'multiple-choice' || newType === 'checkbox' || newType === 'dropdown') {
-                newOptionsHTML = `
-                    <div class="option-container flex items-center mb-2">
-                        <i class="fas fa-${newType === 'multiple-choice' ? 'dot-circle' : newType === 'checkbox' ? 'check-square' : 'caret-square-down'} text-gray-400 mr-3"></i>
-                        <input type="text" value="Opção 1" class="option-input flex-grow p-2 border-b focus:border-purple-500 focus:outline-none" placeholder="Opção 1">
-                        <button class="remove-option ml-2 text-gray-500 hover:text-red-500">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <button class="add-option mt-2 text-sm text-purple-600 hover:text-purple-800">
-                        <i class="fas fa-plus mr-1"></i>Adicionar opção
-                    </button>
-                `;
-            }
-            
-            questionCard.querySelector('.question-options').innerHTML = newOptionsHTML;
-            
-            if (newOptionsHTML) {
-                setupOptionButtons(questionCard);
-            }
-        });
-        
-        setupOptionButtons(questionCard);
-    }
-
-    function setupOptionButtons(questionCard) {
-        const addOptionBtn = questionCard.querySelector('.add-option');
-        if (addOptionBtn) {
-            addOptionBtn.addEventListener('click', function() {
-                const optionsContainer = questionCard.querySelector('.question-options');
-                const optionCount = optionsContainer.querySelectorAll('.option-container').length + 1;
-                const questionType = questionCard.getAttribute('data-type');
-                
-                const optionHTML = `
-                    <div class="option-container flex items-center mb-2">
-                        <i class="fas fa-${questionType === 'multiple-choice' ? 'dot-circle' : questionType === 'checkbox' ? 'check-square' : 'caret-square-down'} text-gray-400 mr-3"></i>
-                        <input type="text" value="Opção ${optionCount}" class="option-input flex-grow p-2 border-b focus:border-purple-500 focus:outline-none" placeholder="Opção ${optionCount}">
-                        <button class="remove-option ml-2 text-gray-500 hover:text-red-500">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-                
-                addOptionBtn.insertAdjacentHTML('beforebegin', optionHTML);
-                
-                // Add event listener to the new remove button
-                const newRemoveBtn = optionsContainer.querySelectorAll('.remove-option');
-                newRemoveBtn[newRemoveBtn.length - 1].addEventListener('click', function() {
-                    this.closest('.option-container').remove();
-                });
-            });
-        }
-        
-        questionCard.querySelectorAll('.remove-option').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.closest('.option-container').remove();
-            });
-        });
-    }
-
-    // Form List Functions
     function carregarFormulariosAtivos() {
         fetch('/form-builder/listar/')
             .then(response => response.json())
@@ -544,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 data.forEach(form => {
                     const formCard = document.createElement('div');
-                    formCard.className = 'border rounded p-4 bg-gray-50 hover:bg-gray-100 transition mb-3';
+                    formCard.className = 'border rounded p-4 bg-gray-50 hover:bg-gray-100 transition mb-3 fade-in';
 
                     formCard.innerHTML = `
                         <h3 class="text-xl font-bold text-purple-600">${form.titulo}</h3>
@@ -555,9 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <i class="fas fa-eye mr-1"></i>Visualizar
                             </a>
                             
-                            <button data-action="editar" data-id="${form.id}" class="text-sm text-white bg-yellow-600 hover:bg-yellow-800 px-3 py-1 rounded inline-flex items-center transition-colors duration-200">
+                            <a href="/form-builder/editar/${form.id}/" class="text-sm text-white bg-yellow-600 hover:bg-yellow-800 px-3 py-1 rounded inline-flex items-center transition-colors duration-200">
                                 <i class="fas fa-edit mr-1"></i>Editar
-                            </button>
+                            </a>
                             <button data-action="inativar" data-id="${form.id}" class="text-sm text-white bg-red-600 hover:bg-red-800 px-3 py-1 rounded no-underline inline-flex items-center transition-colors duration-200">
                                 <i class="fas fa-ban mr-1"></i>Inativar
                             </button>
@@ -566,46 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     formsList.appendChild(formCard);
                 });
-            });
-    }
-
-    function carregarFormularioParaEdicao(formId) {
-        // Adiciona o ID à URL para que o saveCurrentForm possa detectar que é uma edição
-        window.history.pushState({}, '', `?editar=${formId}`);
-        
-        fetch(`/form-builder/obter/${formId}/`)
-            .then(r => {
-                if (!r.ok) throw new Error('Não foi possível obter o formulário');
-                return r.json();
-            })
-            .then(data => {
-                formTitle.value = data.titulo || '';
-                formDescription.value = data.descricao || '';
-
-                const perguntas = (data.perguntas || []).map((p, i) => ({
-                    id: String(i + 1),
-                    text: p.texto || '',
-                    type: mapTipoBackendParaFrontend(p.tipo),
-                    required: !!p.obrigatoria,
-                    options: normalizarOpcoes(p.opcoes),
-                }));
-
-                formData = {
-                    title: data.titulo || '',
-                    description: data.descricao || '',
-                    questions: perguntas,
-                };
-                currentQuestionId = perguntas.length + 1;
-
-                questionsContainer.innerHTML = '';
-                renderQuestions();
-
-                document.querySelector('.form-builder-container h2').textContent = 'Editar Formulário';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            })
-            .catch(err => {
-                console.error('Erro ao carregar formulário:', err);
-                alert('Erro ao carregar formulário para edição');
             });
     }
 
@@ -627,43 +136,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialization
-    function init() {
-        loadForm();
-        carregarFormulariosAtivos();
+    // Event Listeners
+    formsList.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
 
-        // Event Listeners
-        addQuestionBottom.addEventListener('click', showQuestionTypeModal);
-        saveFormBottom.addEventListener('click', saveCurrentForm);
-        closeModal.addEventListener('click', hideQuestionTypeModal);
+        const id = btn.dataset.id;
 
-        // Question type selection
-        document.querySelectorAll('[data-type]').forEach(button => {
-            button.addEventListener('click', function() {
-                const type = this.getAttribute('data-type');
-                addNewQuestion(type);
-                hideQuestionTypeModal();
-            });
-        });
+        if (btn.dataset.action === 'inativar') {
+            inativarFormulario(id);
+        }
+    });
 
-        // Forms list actions
-        formsList.addEventListener('click', (e) => {
-            const btn = e.target.closest('button[data-action]');
-            if (!btn) return;
-
-            const id = btn.dataset.id;
-
-            if (btn.dataset.action === 'editar') {
-                carregarFormularioParaEdicao(id);
-            }
-            if (btn.dataset.action === 'inativar') {
-                inativarFormulario(id);
-            }
-        });
-    }
-
-    // Start the application
-    init();
+    // Initial load
+    carregarFormulariosAtivos();
 });
 </script>
 {% endblock %}
