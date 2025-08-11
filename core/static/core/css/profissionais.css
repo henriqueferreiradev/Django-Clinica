@@ -360,14 +360,14 @@ body {
 
 .filter_input i {
     position: absolute;
-    left: 10px;
+    left: 5px;
     color: var(--roxo-principal);
     z-index: 1;
 }
 
 .form-input,
 .form-select,
-.btn-with-icon {
+.btn {
     width: 100%;
     height: var(--altura-padrao);
     padding: 0 0.8em;
@@ -375,7 +375,7 @@ body {
     border-radius: var(--borda-radius-sm);
     font-size: 0.9rem;
     transition: all 0.3s ease;
-    background-color: white;
+    background-color: var(--branco);
 }
 
 .form-input {
@@ -391,7 +391,7 @@ body {
     padding-right: 2.5rem;
 }
 
-.btn-with-icon {
+.btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -405,7 +405,7 @@ body {
     padding: 0 1em;
 }
 
-.btn-with-icon:hover {
+.btn:hover {
     background-color: #6a3780;
 }
 
@@ -423,7 +423,7 @@ body {
     }
 
     .filter_input,
-    .btn-with-icon {
+    .btn {
         width: 100%;
         min-width: auto;
     }

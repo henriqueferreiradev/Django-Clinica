@@ -22,10 +22,9 @@
     
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}" />
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
-    <link
-      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
+      rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
   </head>
 
@@ -159,10 +158,12 @@
             <i class="bx bx-cog"></i>
             <span class="link_name">Configurações</span>
           </a>
-          <ul class="sub-menu blank">
-            <li>
-              <a class="link_name" href="{% url 'config' %}">Configurações</a>
-            </li>
+          <ul class="sub-menu">
+            <li><a class="link_name" href="{% url 'config' %}">Configurações</a></li>
+            <li><a href="{% url 'config' %}">Configurações Gerais</a></li>
+            <li><a href="{% url 'formularios' %}">Gerenciador de Formulários</a></li>
+             
+            
           </ul>
         </li>
         {% endif %}

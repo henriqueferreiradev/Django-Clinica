@@ -6,14 +6,15 @@
 <link rel="stylesheet" href="{% static 'core/css/pacientes.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 {% endblock %}
+{% block topbar_title %}Pacientes{% endblock %}
 {% block content %}
+
 {% include "core/partials/_confirm_modal.html" %}
 <div class="content">
 <div class="content-loader">
   <div class="spinner"></div>
 </div>
   <div class="content-header">
-    <h2>Lista de Pacientes</h2>
     <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
       <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
     </form>
