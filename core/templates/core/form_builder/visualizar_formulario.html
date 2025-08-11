@@ -4,9 +4,10 @@
 {% block title %}{{ formulario.titulo }} - Ponto de Equilíbrio{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
+ 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% block topbar_title %}Visualizando - {{ formulario.titulo }} {% endblock %}
 <style>
     @keyframes fadeIn {
         from { opacity: 0; }
@@ -16,7 +17,9 @@
     .animate-fade-in {
         animation: fadeIn 0.8s ease-in-out;
     }
-    
+    .content {
+        padding: 0;
+    }
     .header-curve {
         position: absolute;
         bottom: 0;
@@ -71,7 +74,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Header Section with Curve -->
+<div class='content'>
 <div class="relative gradient-bg text-white pt-16 pb-32 overflow-hidden">
     <div class="container mx-auto px-4 md:px-6">
         <div class="max-w-3xl mx-auto text-center relative z-10">
@@ -151,13 +154,15 @@
 
             <div class="mt-10 text-center">
                 <button type="submit" 
-                        class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                       class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
                     Enviar Respostas
                 </button>
             </div>
         </form>
     </div>
 </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %} 

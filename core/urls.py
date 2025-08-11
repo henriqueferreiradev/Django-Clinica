@@ -68,10 +68,11 @@ urlpatterns = [
     
     
     
-    path('criar_formulario/', form_builder_views.form_builder, name='criar_formulario'),
-    path('form-builder/salvar/', form_builder_views.salvar_formulario, name='salvar_formulario'),
+    path('formularios/', form_builder_views.form_builder, name='formularios'),
+    path('formularios/form/novo/', form_builder_views.novo_formulario, name='novo_formulario'),
+    path('formularios/form/inativar/<int:form_id>/', form_builder_views.inativar_formulario, name='inativar_formulario'),
     path('form-builder/listar/', form_builder_views.listar_formularios, name='listar_formularios'),
-    path('editar/<int:form_id>/', form_builder_views.editar_formulario, name='editar_formulario'),
+    path('formularios/form/editar/<int:form_id>/', form_builder_views.editar_formulario, name='editar_formulario'),
 
     path('form-builder/visualizar/<int:id>/', form_builder_views.visualizar_formulario, name='visualizar_formulario'),
     path('<slug:slug>/<str:token>/', form_builder_views.responder_formulario_token, name='responder_formulario_token'),

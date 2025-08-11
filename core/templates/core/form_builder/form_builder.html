@@ -2,20 +2,11 @@
 
 {% load static %}
 {% block title %}Formulários Ativos - Ponto de Equilíbrio{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
-<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    .fade-in {
-        animation: fadeIn 0.3s ease-in-out;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
     .scrollable-content {
         flex: 1;
         overflow-y: auto;
@@ -30,6 +21,7 @@
         background-color: #c7d2fe;
         border-radius: 3px;
     }
+
 </style>
 {% endblock %}
 
@@ -41,18 +33,41 @@
 <div class="content">
     <div class="bg-white rounded-lg p-6 shadow-sm">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold text-purple-700">Formulários Ativos</h2>
-            <a href="{% url 'criar_formulario' %}" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
+            <a href="{% url 'novo_formulario' %}" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
                 <i class="fas fa-plus mr-2"></i>Criar Novo Formulário
             </a>
         </div>
         
-        <div id="formsList" class="scrollable-content space-y-4">
-            <!-- Lista será carregada via JS -->
-            <div class="text-center py-8">
-                <i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i>
-                <p class="mt-2 text-gray-500">Carregando formulários...</p>
-            </div>
+        <div class="scrollable-content space-y-4">
+            {% if formularios %}
+                {% for formulario in formularios %}
+                <div class="border rounded p-4 bg-gray-50 hover:bg-gray-100 transition mb-3">
+                    <h3 class="text-xl font-bold text-purple-600">{{ formulario.titulo }}</h3>
+                    <p class="text-sm text-gray-700 mb-2">{{ formulario.descricao|default:"Sem descrição" }}</p>
+                    <p class="text-sm text-gray-500">Criado em: {{ formulario.criado_em|date:"d/m/Y H:i" }}</p>
+                    <div class="mt-3 flex gap-2">
+                        <a href="{% url 'visualizar_formulario' formulario.id %}" class="text-sm text-white bg-blue-600 hover:bg-blue-800 px-3 py-1 rounded inline-flex items-center transition-colors duration-200">
+                            <i class="fas fa-eye mr-1"></i>Visualizar
+                        </a>
+                        
+                        <a href="{% url 'editar_formulario' formulario.id %}" class="text-sm text-white bg-yellow-600 hover:bg-yellow-800 px-3 py-1 rounded inline-flex items-center transition-colors duration-200">
+                            <i class="fas fa-edit mr-1"></i>Editar
+                        </a>
+                        
+                        <form method="post" action="{% url 'inativar_formulario' formulario.id %}">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    class="text-sm text-white bg-red-600 hover:bg-red-800 px-3 py-1 rounded no-underline inline-flex items-center transition-colors duration-200"
+                                    onclick="return confirm('Tem certeza que deseja inativar este formulário?');">
+                                <i class="fas fa-ban mr-1"></i>Inativar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-gray-500">Nenhum formulário encontrado.</p>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -61,95 +76,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const formsList = document.getElementById('formsList');
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    function carregarFormulariosAtivos() {
-        fetch('/form-builder/listar/')
-            .then(response => response.json())
-            .then(data => {
-                formsList.innerHTML = '';
-
-                if (data.length === 0) {
-                    formsList.innerHTML = '<p class="text-gray-500">Nenhum formulário encontrado.</p>';
-                    return;
-                }
-
-                data.forEach(form => {
-                    const formCard = document.createElement('div');
-                    formCard.className = 'border rounded p-4 bg-gray-50 hover:bg-gray-100 transition mb-3 fade-in';
-
-                    formCard.innerHTML = `
-                        <h3 class="text-xl font-bold text-purple-600">${form.titulo}</h3>
-                        <p class="text-sm text-gray-700 mb-2">${form.descricao || 'Sem descrição'}</p>
-                        <p class="text-sm text-gray-500">Criado em: ${new Date(form.criado_em).toLocaleString()}</p>
-                        <div class="mt-3 flex gap-2">
-                            <a href="/form-builder/visualizar/${form.id}/" class="text-sm text-white bg-blue-600 hover:bg-blue-800 px-3 py-1 rounded inline-flex items-center transition-colors duration-200">
-                                <i class="fas fa-eye mr-1"></i>Visualizar
-                            </a>
-                            
-                            <a href="/form-builder/editar/${form.id}/" class="text-sm text-white bg-yellow-600 hover:bg-yellow-800 px-3 py-1 rounded inline-flex items-center transition-colors duration-200">
-                                <i class="fas fa-edit mr-1"></i>Editar
-                            </a>
-                            <button data-action="inativar" data-id="${form.id}" class="text-sm text-white bg-red-600 hover:bg-red-800 px-3 py-1 rounded no-underline inline-flex items-center transition-colors duration-200">
-                                <i class="fas fa-ban mr-1"></i>Inativar
-                            </button>
-                        </div>
-                    `;
-
-                    formsList.appendChild(formCard);
-                });
-            });
-    }
-
-    function inativarFormulario(id) {
-        if (!confirm("Tem certeza que deseja inativar este formulário?")) return;
-
-        fetch(`/form-builder/inativar/${id}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        })
-        .then(resp => resp.json())
-        .then(data => {
-            if (data.success) {
-                alert("Formulário inativado com sucesso!");
-                carregarFormulariosAtivos();
-            }
-        });
-    }
-
-    // Event Listeners
-    formsList.addEventListener('click', (e) => {
-        const btn = e.target.closest('button[data-action]');
-        if (!btn) return;
-
-        const id = btn.dataset.id;
-
-        if (btn.dataset.action === 'inativar') {
-            inativarFormulario(id);
-        }
-    });
-
-    // Initial load
-    carregarFormulariosAtivos();
-});
-</script>
+<script src="https://cdn.tailwindcss.com"></script>
 {% endblock %}

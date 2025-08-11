@@ -1,14 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
- 
-from core.utils import alterar_status_agendamento, registrar_log
- 
-# views.py
+from core.utils import registrar_log
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponseNotAllowed, Http404
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_http_methods
 import json
-from core.models import Formulario, Pergunta, OpcaoResposta, LinkFormularioPaciente,RespostaFormulario,RespostaPergunta,Paciente
+from core.models import Formulario, Pergunta, OpcaoResposta, LinkFormularioPaciente, RespostaFormulario, RespostaPergunta, Paciente
 from django.contrib import messages
 
 
@@ -36,98 +33,119 @@ def form_builder(request):
         else:
             messages.error(request, 'Nenhum ID de formulário fornecido')
             return redirect('criar_formulario')
-
-    return render(request, 'core/form_builder/form_builder.html')
-
-@csrf_exempt
-def salvar_formulario(request):
-    if request.method != 'POST':
-        return HttpResponseNotAllowed(['POST'])
     
-    try:
-        print("📥 Dados recebidos:", request.body)
-        data = json.loads(request.body)
+    formularios = Formulario.objects.filter(ativo=True).order_by('-criado_em')
+     
+    return render(request, 'core/form_builder/form_builder.html',{'formularios': formularios})
 
-        # Verifica se é para editar (não deveria chegar aqui se for edição)
-        if 'id' in data and data['id']:
-            return JsonResponse({
-                'status': 'erro', 
-                'msg': 'Use a rota de edição para formulários existentes'
-            }, status=400)
-
-        formulario = Formulario.objects.create(
-            titulo=data['title'],
-            descricao=data['description']
-        )
-
-        for q in data['questions']:
-            pergunta = Pergunta.objects.create(
-                formulario=formulario,
-                texto=q['text'],
-                tipo=q['type'],
-                obrigatoria=q['required']
+ 
+@require_http_methods(["GET", "POST"])
+def novo_formulario(request):
+    if request.method == 'POST':
+        try:
+            # Processar dados do formulário diretamente do POST
+            titulo = request.POST.get('title')
+            descricao = request.POST.get('description')
+            
+            formulario = Formulario.objects.create(
+                titulo=titulo,
+                descricao=descricao
             )
-
-            if pergunta.tipo in ['multiple-choice', 'checkbox', 'dropdown']:
-                for opcao in q['options']:
-                    OpcaoResposta.objects.create(
-                        pergunta=pergunta,
-                        texto=opcao
-                    )
+            
+            # Processar perguntas
+            question_count = int(request.POST.get('question_count', 0))
+            for i in range(question_count):
+                texto = request.POST.get(f'questions[{i}][text]')
+                tipo = request.POST.get(f'questions[{i}][type]')
+                obrigatoria = request.POST.get(f'questions[{i}][required]') == 'on'
+                
+                pergunta = Pergunta.objects.create(
+                    formulario=formulario,
+                    texto=texto,
+                    tipo=tipo,
+                    obrigatoria=obrigatoria
+                )
+                
+                # Processar opções para perguntas de múltipla escolha
+                if tipo in ['multiple-choice', 'checkbox', 'dropdown']:
+                    option_count = int(request.POST.get(f'questions[{i}][option_count]', 0))
+                    for j in range(option_count):
+                        opcao = request.POST.get(f'questions[{i}][options][{j}]')
+                        if opcao:
+                            OpcaoResposta.objects.create(
+                                pergunta=pergunta,
+                                texto=opcao
+                            )
+            messages.success(request, 'Formulário criado com sucesso!')
+            return redirect('formularios')
         
-        print("✅ Novo formulário salvo com sucesso:", formulario.id)
-        return JsonResponse({'status': 'ok', 'id': formulario.id})
+        except Exception as e:
+            # Tratar erro e mostrar mensagem ao usuário
+            return render(request, 'core/form_builder/criar_formulario.html', {
+                'error': str(e)
+            })
     
-    except Exception as e:
-        print("❌ Erro ao salvar:", str(e))
-        return JsonResponse({'status': 'erro', 'msg': str(e)}, status=400)
-    
+    # GET request - mostrar formulário vazio
+    return render(request, 'core/form_builder/criar_formulario.html')
+
+
+
 def editar_formulario(request, form_id):
-    if request.method != 'PUT':
-        return JsonResponse({'error': 'Método não permitido'}, status=405)
-    try:
-        print(f"📥 Editando formulário ID: {form_id}")
-        data = json.loads(request.body)
-        
-        # Obtém o formulário existente
-        formulario = Formulario.objects.get(id=form_id)
-        if not data.get('title') or not data.get('questions'):
-            messages.error(request, 'Formulário não pode estar vazio!')
-            return JsonResponse({'status': 'error'}, status=400)
-        # Atualiza os dados básicos
-        formulario.titulo = data.get('title', formulario.titulo)
-        formulario.descricao = data.get('description', formulario.descricao)
-        formulario.save()
-        
-        # Remove perguntas antigas (opcional, depende da sua lógica de negócio)
-        formulario.perguntas.all().delete()
-        
-        # Recria as perguntas com os novos dados
-        for q in data['questions']:
-            pergunta = Pergunta.objects.create(
-                formulario=formulario,
-                texto=q['text'],
-                tipo=q['type'],
-                obrigatoria=q['required']
-            )
-
-            if pergunta.tipo in ['multiple-choice', 'checkbox', 'dropdown']:
-                for opcao in q['options']:
-                    OpcaoResposta.objects.create(
-                        pergunta=pergunta,
-                        texto=opcao
-                    )
-        
-        messages.success(request, f'Formulário "{formulario.titulo}" atualizado com sucesso!')
-
-        return JsonResponse({'status': 'ok'})
+    formulario = get_object_or_404(Formulario, id=form_id)
     
-    except Formulario.DoesNotExist:
-        return JsonResponse({'status': 'erro', 'msg': 'Formulário não encontrado'}, status=404)
-    except Exception as e:
-        print(f"❌ Erro ao editar: {str(e)}")
-        return JsonResponse({'status': 'erro', 'msg': str(e)}, status=400)
+    if request.method == 'GET':
+        # Carrega o formulário com todas as perguntas e opções relacionadas
+        perguntas = formulario.perguntas.all().prefetch_related('opcoes')
+        
+        return render(request, 'core/form_builder/editar_formulario.html', {
+            'formulario': formulario,
+            'perguntas': perguntas
+        })
     
+    elif request.method == 'PUT':
+        try:
+            data = json.loads(request.body)
+            
+            # Atualiza dados básicos do formulário
+            formulario.titulo = data.get('title', formulario.titulo)
+            formulario.descricao = data.get('description', formulario.descricao)
+            formulario.save()
+            
+            # Remove perguntas antigas
+            formulario.perguntas.all().delete()
+            
+            # Cria novas perguntas
+            for q in data['questions']:
+                pergunta = Pergunta.objects.create(
+                    formulario=formulario,
+                    texto=q['text'],
+                    tipo=q['type'],
+                    obrigatoria=q['required']
+                )
+
+                # Adiciona opções se for tipo com opções
+                if pergunta.tipo in ['multiple-choice', 'checkbox', 'dropdown']:
+                    for opcao in q['options']:
+                        OpcaoResposta.objects.create(
+                            pergunta=pergunta,
+                            texto=opcao
+                        )
+            
+            return JsonResponse({'status': 'ok', 'id': formulario.id})
+        
+        except Exception as e:
+            print(f"Erro ao editar formulário: {str(e)}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
+    return JsonResponse({'error': 'Método não permitido'}, status=405)
+ 
+def inativar_formulario(request, form_id):
+    formulario = get_object_or_404(Formulario, id=form_id)
+    formulario.ativo = False
+    formulario.save()
+    messages.success(request, 'Formulário inativado com sucesso!')
+    
+    return redirect('formularios')   
 def listar_formularios(request):
     formularios = Formulario.objects.filter(ativo=True).order_by('-criado_em')
     data = [
@@ -140,9 +158,6 @@ def listar_formularios(request):
         for f in formularios
     ]
     return JsonResponse(data, safe=False)
-
- 
- 
 
 def visualizar_formulario(request, id):
     formulario = get_object_or_404(Formulario, id=id)
