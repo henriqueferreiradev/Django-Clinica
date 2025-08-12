@@ -36,7 +36,7 @@ def form_builder(request):
     
     formularios = Formulario.objects.filter(ativo=True).order_by('-criado_em')
      
-    return render(request, 'core/form_builder/form_builder.html',{'formularios': formularios})
+    return render(request, 'core/formularios/formularios_ativos.html',{'formularios': formularios})
 
  
 @require_http_methods(["GET", "POST"])
@@ -77,16 +77,23 @@ def novo_formulario(request):
                                 texto=opcao
                             )
             messages.success(request, 'Formulário criado com sucesso!')
+            registrar_log(
+                    usuario=request.user,
+                    acao='Criação',
+                    modelo='Formulário',
+                    objeto_id=formulario.id,
+                    descricao=f'Formulário {formulario.titulo} criado.'
+                )
             return redirect('formularios')
         
         except Exception as e:
             # Tratar erro e mostrar mensagem ao usuário
-            return render(request, 'core/form_builder/criar_formulario.html', {
+            return render(request, 'core/formularios/criar_formulario.html', {
                 'error': str(e)
             })
     
     # GET request - mostrar formulário vazio
-    return render(request, 'core/form_builder/criar_formulario.html')
+    return render(request, 'core/formularios/criar_formulario.html')
 
 
 
@@ -97,7 +104,7 @@ def editar_formulario(request, form_id):
         # Carrega o formulário com todas as perguntas e opções relacionadas
         perguntas = formulario.perguntas.all().prefetch_related('opcoes')
         
-        return render(request, 'core/form_builder/editar_formulario.html', {
+        return render(request, 'core/formularios/editar_formulario.html', {
             'formulario': formulario,
             'perguntas': perguntas
         })
@@ -130,7 +137,13 @@ def editar_formulario(request, form_id):
                             pergunta=pergunta,
                             texto=opcao
                         )
-            
+            registrar_log(
+                    usuario=request.user,
+                    acao='Edição',
+                    modelo='Formulário',
+                    objeto_id=formulario.id,
+                    descricao=f'Formulário {formulario.titulo} editado.'
+                )
             return JsonResponse({'status': 'ok', 'id': formulario.id})
         
         except Exception as e:
@@ -144,7 +157,13 @@ def inativar_formulario(request, form_id):
     formulario.ativo = False
     formulario.save()
     messages.success(request, 'Formulário inativado com sucesso!')
-    
+    registrar_log(
+        usuario=request.user,
+        acao='Criação',
+        modelo='Formulário',
+        objeto_id=formulario.id,
+        descricao=f'Formulário {formulario.titulo} criado.'
+    )
     return redirect('formularios')   
 def listar_formularios(request):
     formularios = Formulario.objects.filter(ativo=True).order_by('-criado_em')
@@ -163,7 +182,7 @@ def visualizar_formulario(request, id):
     formulario = get_object_or_404(Formulario, id=id)
     perguntas = formulario.perguntas.all().prefetch_related('opcoes')
 
-    return render(request, 'core/form_builder/visualizar_formulario.html', {
+    return render(request, 'core/formularios/visualizar_formulario.html', {
         'formulario': formulario,
         'perguntas': perguntas,
     })
@@ -192,9 +211,9 @@ def responder_formulario_token(request, slug, token):
                     valor=valor
                 )
         print(f'Nova Resposta recebida de {paciente.nome}')
-        return render(request, 'core/form_builder/agradecimento.html', {'formulario': formulario})
+        return render(request, 'core/formularios/agradecimento.html', {'formulario': formulario})
 
-    return render(request, 'core/form_builder/responder_formulario.html', {
+    return render(request, 'core/formularios/responder_formulario.html', {
         'formulario': formulario,
         'perguntas': perguntas
     })
@@ -218,14 +237,14 @@ def obter_formulario(request, form_id):
     
 def formularios_para_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
-    formularios = Formulario.objects.all()
+    formularios = Formulario.objects.filter(ativo=True)
     links_personalizados = []
 
     for form in formularios:
         link, _ = LinkFormularioPaciente.objects.get_or_create(formulario=form, paciente=paciente)
         links_personalizados.append(link)
 
-    return render(request, 'core/form_builder/formularios_para_paciente.html', {
+    return render(request, 'core/formularios/formularios_para_paciente.html', {
         'paciente': paciente,
         'links': links_personalizados
     })

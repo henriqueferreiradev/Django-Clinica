@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Formulários Ativos - Ponto de Equilíbrio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/formularios/formularios_ativos.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+{% endblock %}
+
+{% block topbar_title %}<span class="text">Formulários Ativos</span>{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+
+<div class="content">
+    <div class="flex-between">
+        <a href="{% url 'novo_formulario' %}" class="btn-primary">
+            <i class="fas fa-plus btn-icon"></i>Criar Novo Formulário
+        </a>
+    </div>
+    
+    <div class="scrollable-content">
+        {% if formularios %}
+        <div class="form-grid">
+            {% for formulario in formularios %}
+            <div class="form-card">
+                <h3 class="form-title">{{ formulario.titulo }}</h3>
+                <p class="form-description">{{ formulario.descricao|default:"Sem descrição" }}</p>
+                <p class="form-date">Criado em: {{ formulario.criado_em|date:"d/m/Y H:i" }}</p>
+                <div class="action-buttons">
+                    <a href="{% url 'visualizar_formulario' formulario.id %}" class="btn-view">
+                        <i class="fas fa-eye btn-icon"></i>Visualizar
+                    </a>
+                    
+                    <a href="{% url 'editar_formulario' formulario.id %}" class="btn-edit">
+                        <i class="fas fa-edit btn-icon"></i>Editar
+                    </a>
+                    
+                    <form method="post" action="{% url 'inativar_formulario' formulario.id %}">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="btn-deactivate"
+                                onclick="return confirm('Tem certeza que deseja inativar este formulário?');">
+                            <i class="fas fa-ban btn-icon"></i>Inativar
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="empty-message">Nenhum formulário encontrado.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% include "core/partials/alertas.html" %}
+{% endblock %}
+
+{% block scripts %}
+ 
+{% endblock %}

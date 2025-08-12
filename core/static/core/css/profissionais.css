@@ -174,15 +174,7 @@ body {
 
 }
 
-.content::-webkit-scrollbar-thumb {
-    background-color: var(--roxoPrincipal);
-    border-radius: 50px;
-}
 
-.content::-webkit-scrollbar {
-    background-color: var(--branco);
-    width: 5px;
-}
 
 .content-header {
     display: flex;

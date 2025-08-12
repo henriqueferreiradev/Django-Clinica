@@ -578,7 +578,7 @@ button:hover {
   top: 30px;
   right: 0;
   background-color: var(--bg-color);
-  border: 1px solid #ccc;
+  border: 1px solid var(--cinzaBorda);
   border-radius: 5px;
   min-width: 220px;
   z-index: 1000;
@@ -599,4 +599,17 @@ button:hover {
   padding: 5px 0;
   font-size: 14px;
   border-bottom: 1px solid #eee;
+}
+
+
+.content::-webkit-scrollbar {
+  width: 4px; /* mais fino */
+  background: transparent; /* ou var(--branco) */
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: var(--roxo-primary-hover);
+  border-radius: 50px;
+  margin: 2px; /* não funciona em todos browsers, mas border sim */
+  border: 1px solid transparent; /* afasta do canto */
 }
