@@ -42,49 +42,56 @@ def form_builder(request):
 @require_http_methods(["GET", "POST"])
 def novo_formulario(request):
     if request.method == 'POST':
+        
         try:
             # Processar dados do formulário diretamente do POST
             titulo = request.POST.get('title')
             descricao = request.POST.get('description')
             
-            formulario = Formulario.objects.create(
-                titulo=titulo,
-                descricao=descricao
-            )
+            if titulo or descricao == '':
+                messages.error(request, 'Os campos "Título" e "Descrição" devem ser preenchidos.')
+                return redirect('novo_formulario')
             
-            # Processar perguntas
-            question_count = int(request.POST.get('question_count', 0))
-            for i in range(question_count):
-                texto = request.POST.get(f'questions[{i}][text]')
-                tipo = request.POST.get(f'questions[{i}][type]')
-                obrigatoria = request.POST.get(f'questions[{i}][required]') == 'on'
-                
-                pergunta = Pergunta.objects.create(
-                    formulario=formulario,
-                    texto=texto,
-                    tipo=tipo,
-                    obrigatoria=obrigatoria
+            else:
+                formulario = Formulario.objects.create(
+                    titulo=titulo,
+                    descricao=descricao
                 )
-                
-                # Processar opções para perguntas de múltipla escolha
-                if tipo in ['multiple-choice', 'checkbox', 'dropdown']:
-                    option_count = int(request.POST.get(f'questions[{i}][option_count]', 0))
-                    for j in range(option_count):
-                        opcao = request.POST.get(f'questions[{i}][options][{j}]')
-                        if opcao:
-                            OpcaoResposta.objects.create(
-                                pergunta=pergunta,
-                                texto=opcao
-                            )
-            messages.success(request, 'Formulário criado com sucesso!')
-            registrar_log(
-                    usuario=request.user,
-                    acao='Criação',
-                    modelo='Formulário',
-                    objeto_id=formulario.id,
-                    descricao=f'Formulário {formulario.titulo} criado.'
-                )
-            return redirect('formularios')
+
+            
+                # Processar perguntas
+                question_count = int(request.POST.get('question_count', 0))
+                for i in range(question_count):
+                    texto = request.POST.get(f'questions[{i}][text]')
+                    tipo = request.POST.get(f'questions[{i}][type]')
+                    obrigatoria = request.POST.get(f'questions[{i}][required]') == 'on'
+                    
+                    pergunta = Pergunta.objects.create(
+                        formulario=formulario,
+                        texto=texto,
+                        tipo=tipo,
+                        obrigatoria=obrigatoria
+                    )
+                    
+                    # Processar opções para perguntas de múltipla escolha
+                    if tipo in ['multiple-choice', 'checkbox', 'dropdown']:
+                        option_count = int(request.POST.get(f'questions[{i}][option_count]', 0))
+                        for j in range(option_count):
+                            opcao = request.POST.get(f'questions[{i}][options][{j}]')
+                            if opcao:
+                                OpcaoResposta.objects.create(
+                                    pergunta=pergunta,
+                                    texto=opcao
+                                )
+                messages.success(request, 'Formulário criado com sucesso!')
+                registrar_log(
+                        usuario=request.user,
+                        acao='Criação',
+                        modelo='Formulário',
+                        objeto_id=formulario.id,
+                        descricao=f'Formulário {formulario.titulo} criado.'
+                    )
+                return redirect('formularios')
         
         except Exception as e:
             # Tratar erro e mostrar mensagem ao usuário
@@ -92,7 +99,7 @@ def novo_formulario(request):
                 'error': str(e)
             })
     
-    # GET request - mostrar formulário vazio
+  
     return render(request, 'core/formularios/criar_formulario.html')
 
 
