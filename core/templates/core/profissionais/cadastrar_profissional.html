@@ -16,7 +16,7 @@
 
 
 <main id="form-section" class="form-section">
-  <div class="container">
+  
     <div id='form-content' class="content">
       <!-- Progress Steps -->
       <div class="form-progress">
@@ -658,30 +658,10 @@
         </div>
       </form>
     </div>
-  </div>
+  
 </main>
-
-{% if messages %}
-<div class="messages-container" id="alert-container">
-    {% for message in messages %}
-    <div class="alert {{ message.tags }}">
-        <span class="icon">
-            {% if message.tags == 'success' %}
-            ✅
-            {% elif message.tags == 'warning' %}
-            ⚠️
-            {% elif message.tags == 'error' %}
-            ❌
-            {% elif message.tags == 'info' %}
-            ℹ️
-            {% endif %}
-        </span>
-        {{ message }}
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
-{% endblock %}
+{% include "core/partials/alertas.html" %}
+ {% endblock %}
 
 {% block scripts %}
 <script type="module" src="{% static 'core/js/pacientes/main.js' %}"></script>
@@ -690,13 +670,6 @@
 <script src="{% static 'core/js/base/validadorCpfCnpj.js' %}"></script>
 <script src="{% static 'core/js/base/cep.js' %}"></script>
 <script src="{% static 'core/js/pacientes/base.js' %}"></script>
-<script>
-console.log("Debug - Arquivos carregados:");
-console.log({
-    mainJs: typeof Main !== 'undefined',
-    mask: typeof IMask !== 'undefined',
-    base: typeof PacienteBase !== 'undefined'
-});
-</script>
+ 
  
 {% endblock %}
