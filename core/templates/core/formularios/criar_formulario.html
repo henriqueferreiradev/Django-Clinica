@@ -14,7 +14,7 @@
 
 {% block content %}
 {% include "core/partials/_confirm_modal.html" %}
-
+{% include "core/partials/alertas.html" %}
 <div class="content">
      
         <a href="{% url 'formularios' %}" class="btn-voltar">
@@ -30,7 +30,7 @@
     
 
     <!-- Botões fixos -->
-    <div class="fixed-actions">
+    <div class="content-actions">
         <div class="actions-container">
             <button id="addQuestionBottom" class="btn-primary">
                 <i class="fas fa-plus btn-icon"></i> Adicionar Pergunta
@@ -272,58 +272,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveCurrentForm() {
-        formData.title = formTitle.value;
-        formData.description = formDescription.value;
-
-        // Criar um objeto FormData para enviar os dados
-        const formDataToSend = new FormData();
-        formDataToSend.append('title', formTitle.value);
-        formDataToSend.append('description', formDescription.value);
-
-        // Adicionar perguntas ao FormData
+    // Cria um formulário tradicional
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/formularios/form/novo/';
+        form.enctype = 'multipart/form-data';
+        
+        // Adiciona campos básicos
+        const addField = (name, value) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        };
+        
+        addField('title', formTitle.value);
+        addField('description', formDescription.value);
+        addField('csrfmiddlewaretoken', getCookie('csrftoken'));
+        addField('question_count', document.querySelectorAll('.question-card').length);
+        
+        // Adiciona perguntas
         document.querySelectorAll('.question-card').forEach((card, index) => {
             const questionText = card.querySelector('.question-text-input').value;
             const questionType = card.getAttribute('data-type');
             const isRequired = card.querySelector('.required-checkbox').checked;
-
-            formDataToSend.append(`questions[${index}][text]`, questionText);
-            formDataToSend.append(`questions[${index}][type]`, questionType);
-            formDataToSend.append(`questions[${index}][required]`, isRequired ? 'on' : 'off');
-
+            
+            addField(`questions[${index}][text]`, questionText);
+            addField(`questions[${index}][type]`, questionType);
+            addField(`questions[${index}][required]`, isRequired ? 'on' : 'off');
+            
             if (questionType === 'multiple-choice' || questionType === 'checkbox' || questionType === 'dropdown') {
                 const options = card.querySelectorAll('.option-input');
-                formDataToSend.append(`questions[${index}][option_count]`, options.length);
+                addField(`questions[${index}][option_count]`, options.length);
                 
                 options.forEach((option, optionIndex) => {
-                    formDataToSend.append(`questions[${index}][options][${optionIndex}]`, option.value);
+                    addField(`questions[${index}][options][${optionIndex}]`, option.value);
                 });
             }
         });
-
-        formDataToSend.append('question_count', document.querySelectorAll('.question-card').length);
-
-        fetch('/formularios/form/novo/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: formDataToSend
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro ao salvar formulário');
-            }
-            return response;
-        })
-        .then(() => {
-            window.location.href = '/formularios/';
-        })
-        .catch(error => {
-            console.error("Erro:", error);
-            alert(error.message || 'Ocorreu um erro ao salvar o formulário');
-        });
+        
+        // Adiciona o formulário ao DOM e submete
+        document.body.appendChild(form);
+        form.submit();
     }
-
     // Event Listeners
     addQuestionBottom.addEventListener('click', showQuestionTypeModal);
     saveFormBottom.addEventListener('click', saveCurrentForm);

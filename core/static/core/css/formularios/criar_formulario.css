@@ -48,7 +48,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--espaco-md);
-    margin-bottom: 100px;
+    margin-bottom: 20px;
 }
 
 /* Card de pergunta */
@@ -145,7 +145,7 @@
     border: none;
     box-shadow: none;
     background: none;
- 
+
 }
 
 .add-option-btn {
@@ -164,7 +164,7 @@
     color: var(--roxo-primary-hover);
     border: none;
     box-shadow: none;
-   
+
 }
 
 /* Rodapé do card */
@@ -199,21 +199,11 @@
     border: none;
     box-shadow: none;
     background: none;
- 
+
 }
 
 /* Botões fixos */
-.fixed-actions {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--branco);
-    padding: var(--espaco-md);
-    border-top: 1px solid var(--cinza-borda);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-    z-index: 100;
-}
+
 
 .actions-container {
     display: flex;
@@ -366,5 +356,49 @@
     .question-type-select {
         margin-left: 0;
         margin-top: var(--espaco-sm);
+    }
+}
+
+.content {
+    position: relative;
+
+}
+
+.content-actions {
+    position: absolute;
+    /* Mudamos de sticky para absolute */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--branco);
+    padding: var(--espaco-md);
+    border-top: 1px solid var(--cinza-borda);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+}
+
+.actions-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: var(--espaco-md);
+}
+
+/* Mantenha os estilos dos botões existentes */
+.btn-primary,
+.btn-success {
+    flex: 1;
+    max-width: 48%;
+}
+
+/* Ajuste para telas pequenas */
+@media (max-width: 768px) {
+    .content-actions {
+        bottom: 10px;
+    }
+
+    .actions-container {
+        flex-direction: column;
     }
 }
