@@ -626,8 +626,7 @@ def perfil_paciente(request,paciente_id, formulario_id):
     tres_ultimos_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).order_by('-data')[:3]
         
  
-
-    print(resposta_form)
+ 
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
