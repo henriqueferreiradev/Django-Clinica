@@ -15,12 +15,12 @@
 {% block content %}
 {% include "core/partials/_confirm_modal.html" %}
 {% include "core/partials/alertas.html" %}
-<div class="content">
+<div class="content form-builder">
      
         <a href="{% url 'formularios' %}" class="btn-voltar">
             <i class="fas fa-arrow-left btn-icon"></i> Voltar para formulários ativos
         </a>
-
+        
         <div class="form-header">
             <input type="text" id="formTitle" placeholder="Título do formulário" class="form-title-input">
             <textarea id="formDescription" placeholder="Descrição do formulário" class="form-description-input"></textarea>
@@ -28,8 +28,7 @@
 
         <div id="questionsContainer" class="questions-container"></div>
     
-
-    <!-- Botões fixos -->
+ 
     <div class="content-actions">
         <div class="actions-container">
             <button id="addQuestionBottom" class="btn-primary">
@@ -40,7 +39,7 @@
             </button>
         </div>
     </div>
-
+</div>
     <!-- Modal de tipos de pergunta -->
     <div id="questionTypeModal" class="modal-overlay">
         <div class="modal-content">

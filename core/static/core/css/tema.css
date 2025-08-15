@@ -19,6 +19,7 @@
   --cinza-medio: #888;
   --cinza-claro: #eee;
   --cinza-borda: #ddd;
+  --erro: #ff0000;
   /* Espaçamentos */
   --espaco-xs: 0.5rem;
   --espaco-sm: 1rem;
@@ -35,7 +36,7 @@
   --sombra-focus: 0 0 0 3px rgba(127, 67, 150, 0.3);
 
   --backgroundCard: #FFF;
-  --backgroundCard-hover:  #6d398e38;
+  --backgroundCard-hover: #6d398e38;
 }
 
 .dark {
@@ -55,13 +56,13 @@
   --bg-btn-1: #363636;
   --hover-dropdown: #7f4396;
   --sucesso-bg: #4444;
-  --cinza-escuro: #ccc;  
-  --cinza-medio:  #aaa;  
-  --cinza-claro:  #444;  
-  --cinza-borda:  #555;
+  --cinza-escuro: #ccc;
+  --cinza-medio: #aaa;
+  --cinza-claro: #444;
+  --cinza-borda: #555;
 
-  --backgroundCard:  #00000078;
-  --backgroundCard-hover:  #00000025;
+  --backgroundCard: #00000078;
+  --backgroundCard-hover: #00000025;
 }
 
 * {

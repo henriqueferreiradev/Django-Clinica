@@ -6,10 +6,10 @@ export const steps = document.querySelectorAll(".form-step");
 export const progressSteps = document.querySelectorAll(".progress-step");
 export let currentStep = 0;
 
- 
+
 const state = {
     currentStep: 0,
-    
+
 };
 
 export function getCurrentStep() {
@@ -75,16 +75,16 @@ export async function validateCurrentStep() {
         const cpfNumerico = cpfField.value.replace(/\D/g, '');
 
         if (cpfNumerico.length !== 11) {
-            cpfField.classList.add("error");
+            cpfField.classList.add("error-message");
             cpfFeedback.textContent = 'CPF deve ter 11 dígitos';
             cpfFeedback.style.color = '#d32f2f';
             return false;
         }
 
         if (!validarCPF(cpfField.value)) {
-            cpfField.classList.add("error");
+            cpfField.classList.add("error-message");
             cpfFeedback.textContent = 'CPF inválido';
-            cpfFeedback.style.color = '#d32f2f';
+            cpfFeedback.style.color = '#ff0000';
             return false;
         }
 

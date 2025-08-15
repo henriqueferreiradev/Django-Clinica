@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente, Pendencia,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario, Pendencia,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -323,6 +323,9 @@ def editar_paciente_view(request,id):
 
 def ficha_paciente(request, id):
     paciente = get_object_or_404(Paciente, id=id)
+    
+ 
+ 
     return render(request, 'core/pacientes/ficha_paciente.html', {'paciente': paciente})
 
 
@@ -477,7 +480,7 @@ def pre_cadastro_tokenizado(request, token):
 FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
 PENDENTES = ['pre','agendado']
 
-def perfil_paciente(request,paciente_id):
+def perfil_paciente(request,paciente_id, formulario_id):
     inicio_semana, fim_semana = get_semana_atual()
 
     paciente = get_object_or_404(Paciente, id=paciente_id)
@@ -622,7 +625,9 @@ def perfil_paciente(request,paciente_id):
  
     tres_ultimos_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).order_by('-data')[:3]
         
-    
+ 
+
+    print(resposta_form)
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,

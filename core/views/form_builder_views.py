@@ -119,6 +119,8 @@ def editar_formulario(request, form_id):
                             pergunta=pergunta,
                             texto=opcao
                         )
+            messages.success(request, 'Formulário editado com sucesso!')
+ 
             registrar_log(
                     usuario=request.user,
                     acao='Edição',
