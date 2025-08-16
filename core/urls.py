@@ -66,7 +66,7 @@ urlpatterns = [
     path('auditoria/', logs_views.logs_view, name='auditoria_logs'),
     
     
-    
+    path('respostas/<int:resposta_id>/', pacientes_views.visualizar_respostas_formulario, name='visualizar_respostas'),
     
     path('formularios/', form_builder_views.form_builder, name='formularios'),
     path('formularios/form/novo/', form_builder_views.novo_formulario, name='novo_formulario'),
@@ -77,5 +77,7 @@ urlpatterns = [
     path('<slug:slug>/<str:token>/', form_builder_views.responder_formulario_token, name='responder_formulario_token'),
     path('paciente/formularios/<int:paciente_id>/',  form_builder_views.formularios_para_paciente,name='formularios_paciente'),
     path('form-builder/obter/<int:form_id>/', form_builder_views.obter_formulario, name='obter_formulario'),
+    
+ 
 
 ]

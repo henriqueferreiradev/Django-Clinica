@@ -1,0 +1,18 @@
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/partials/loading.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+{% endblock %}
+
+<div class="loader-container">
+    <div class="loader"></div>
+    <div class="loader-text">Carregando...</div>
+</div>
+<script>
+window.addEventListener('load', function () {
+    setTimeout(() => {
+        document.querySelector('.content').classList.add('loaded');
+    }, 2000);
+});
+</script>

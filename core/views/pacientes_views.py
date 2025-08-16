@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario, Pendencia,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -480,7 +480,7 @@ def pre_cadastro_tokenizado(request, token):
 FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
 PENDENTES = ['pre','agendado']
 
-def perfil_paciente(request,paciente_id, formulario_id):
+def perfil_paciente(request,paciente_id):
     inicio_semana, fim_semana = get_semana_atual()
 
     paciente = get_object_or_404(Paciente, id=paciente_id)
@@ -625,7 +625,10 @@ def perfil_paciente(request,paciente_id, formulario_id):
  
     tres_ultimos_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).order_by('-data')[:3]
         
- 
+    respostas_formularios = RespostaFormulario.objects.filter(
+        paciente_id=paciente_id
+    ).select_related('formulario').order_by('-enviado_em')
+    
  
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
@@ -650,6 +653,7 @@ def perfil_paciente(request,paciente_id, formulario_id):
                 'ultimos_agendamentos':agendamentos_select,
                 'todos_agendamentos':todos_agendamentos,
                 'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
+                'respostas_formularios':respostas_formularios
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
 
@@ -677,3 +681,31 @@ def gerar_link_publico_precadastro(request):
 
  
 
+
+
+def visualizar_respostas_formulario(request, resposta_id):
+    resposta = get_object_or_404(RespostaFormulario, id=resposta_id)
+    respostas_perguntas = RespostaPergunta.objects.filter(resposta=resposta).select_related('pergunta')
+    
+    # Prepara os dados para o template
+    respostas_preparadas = []
+    for rp in respostas_perguntas:
+        if rp.pergunta.tipo in ['multiple-choice', 'checkbox']:
+            valor = rp.valor.split(',')  # Divide os valores aqui
+        else:
+            valor = rp.valor
+        
+        respostas_preparadas.append({
+            'pergunta': rp.pergunta,
+            'valor': valor,
+            'tipo': rp.pergunta.tipo
+        })
+    
+    context = {
+        'formulario': resposta.formulario,
+        'respostas_preparadas': respostas_preparadas,  # Usamos essa nova variável
+        'paciente': resposta.paciente,
+        'data_resposta': resposta.enviado_em,
+    }
+    
+    return render(request, 'core/pacientes/respostas_formulario.html', context)

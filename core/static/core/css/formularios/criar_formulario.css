@@ -12,7 +12,7 @@
 
 /* Formulário principal */
 .form-header {
-    margin-bottom: var(--espaco-lg);
+    margin-bottom: var(--espaco-xs);
 }
 
 .form-title-input {

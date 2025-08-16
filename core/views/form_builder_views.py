@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 import json
 from core.models import Formulario, Pergunta, OpcaoResposta, LinkFormularioPaciente, RespostaFormulario, RespostaPergunta, Paciente
 from django.contrib import messages
+from django.template.context_processors import request
 
 
 def form_builder(request):
@@ -232,3 +233,7 @@ def formularios_para_paciente(request, paciente_id):
         'paciente': paciente,
         'links': links_personalizados
     })
+    
+    
+    
+ 
