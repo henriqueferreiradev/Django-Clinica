@@ -44,7 +44,8 @@ urlpatterns = [
     path('profissional/perfil/<int:profissional_id>/', profissionais_views.perfil_profissional, name='perfil_profissional'),
     
     
-    path('financeiro/', financeiro_views.financeiro_view, name='financeiro'),
+    path('financeiro/dashboard', financeiro_views.financeiro_view, name='financeiro_dashboard'),
+    path('financeiro/fluxo-caixa', financeiro_views.fluxo_caixa_view, name='fluxo_caixa'),
 
 
     path('agenda/', agendamento_views.agenda_view, name='agenda'),

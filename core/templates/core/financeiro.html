@@ -1,24 +1,291 @@
-{% extends 'core/base.html' %}
-{% load static %}
-
-
-
-{% block title %}Financeiro | Clínica{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/agendamentos.css' %}">
-{% endblock %}
-
-{% block content %}
-<div class="main">
-
-    <div class="topbar">
-      <h1>Agenda</h1>
-      <div class="user-info">Olá, {{ user.get_full_name }}</div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financeiro - Ponto de Equilíbrio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.css">
+    <style>
+        .card-dashboard {
+            transition: all 0.3s;
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .card-receita {
+            border-left: 4px solid #28a745;
+        }
+        .card-despesa {
+            border-left: 4px solid #dc3545;
+        }
+        .card-saldo {
+            border-left: 4px solid #007bff;
+        }
+        .sidebar {
+            background: #343a40;
+            min-height: 100vh;
+            color: white;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar p-0">
+                <div class="p-3">
+                    <h4 class="text-center">Clínica Saúde</h4>
+                    <hr>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-cash-coin me-2"></i> Fluxo de Caixa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-receipt me-2"></i> Contas a Receber</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-credit-card me-2"></i> Contas a Pagar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-graph-up me-2"></i> Faturamento</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-people me-2"></i> Comissões</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-bank me-2"></i> Conciliação Bancária</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-file-earmark-text me-2"></i> Relatórios</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 p-4">
+                <h2 class="mb-4">Dashboard Financeiro</h2>
+                
+                <!-- Cards Resumo -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card card-dashboard card-receita">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">Receitas</h5>
+                                <h2 class="card-text">R$ 28.750,00</h2>
+                                <p class="text-muted">+12% em relação ao mês anterior</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-dashboard card-despesa">
+                            <div class="card-body">
+                                <h5 class="card-title text-danger">Despesas</h5>
+                                <h2 class="card-text">R$ 15.230,00</h2>
+                                <p class="text-muted">+5% em relação ao mês anterior</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-dashboard card-saldo">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">Saldo</h5>
+                                <h2 class="card-text">R$ 13.520,00</h2>
+                                <p class="text-muted">+22% em relação ao mês anterior</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gráficos -->
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <h5 class="card-title">Faturamento Mensal</h5>
+                                <canvas id="faturamentoChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <h5 class="card-title">Formas de Pagamento</h5>
+                                <canvas id="pagamentosChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabelas Rápidas -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <h5 class="card-title d-flex justify-content-between align-items-center">
+                                    Últimos Recebimentos
+                                    <a href="#" class="btn btn-sm btn-outline-success">Ver Todos</a>
+                                </h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Data</th>
+                                                <th>Paciente</th>
+                                                <th>Valor</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>15/05/2023</td>
+                                                <td>Maria Silva</td>
+                                                <td>R$ 350,00</td>
+                                                <td><span class="badge bg-success">Pago</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>14/05/2023</td>
+                                                <td>João Santos</td>
+                                                <td>R$ 280,00</td>
+                                                <td><span class="badge bg-success">Pago</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>13/05/2023</td>
+                                                <td>Ana Oliveira</td>
+                                                <td>R$ 420,00</td>
+                                                <td><span class="badge bg-warning text-dark">Pendente</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-dashboard">
+                            <div class="card-body">
+                                <h5 class="card-title d-flex justify-content-between align-items-center">
+                                    Próximos Vencimentos
+                                    <a href="#" class="btn btn-sm btn-outline-danger">Ver Todos</a>
+                                </h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Vencimento</th>
+                                                <th>Descrição</th>
+                                                <th>Valor</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>20/05/2023</td>
+                                                <td>Aluguel</td>
+                                                <td>R$ 5.000,00</td>
+                                                <td><span class="badge bg-warning text-dark">Pendente</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>22/05/2023</td>
+                                                <td>Energia</td>
+                                                <td>R$ 850,00</td>
+                                                <td><span class="badge bg-warning text-dark">Pendente</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>25/05/2023</td>
+                                                <td>Internet</td>
+                                                <td>R$ 220,00</td>
+                                                <td><span class="badge bg-warning text-dark">Pendente</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  
-    <div class="content">
-  
-  </div>
-</div>
-{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script>
+        // Gráfico de Faturamento
+        const fatCtx = document.getElementById('faturamentoChart').getContext('2d');
+        const fatChart = new Chart(fatCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'Receita',
+                    data: [18500, 19500, 22000, 24000, 28750, 0],
+                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Despesa',
+                    data: [12500, 13500, 14200, 14800, 15230, 0],
+                    backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Formas de Pagamento
+        const pagCtx = document.getElementById('pagamentosChart').getContext('2d');
+        const pagChart = new Chart(pagCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pix', 'Débito', 'Crédito', 'Dinheiro'],
+                datasets: [{
+                    data: [35, 25, 30, 10],
+                    backgroundColor: [
+                        'rgba(13, 110, 253, 0.7)',
+                        'rgba(111, 66, 193, 0.7)',
+                        'rgba(214, 51, 132, 0.7)',
+                        'rgba(253, 126, 20, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

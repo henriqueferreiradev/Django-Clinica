@@ -20,6 +20,8 @@
   --cinza-claro: #eee;
   --cinza-borda: #ddd;
   --erro: #ff0000;
+  --titulo-perfil: #64748b;
+
   /* Espaçamentos */
   --espaco-xs: 0.5rem;
   --espaco-sm: 1rem;
@@ -60,7 +62,7 @@
   --cinza-medio: #aaa;
   --cinza-claro: #444;
   --cinza-borda: #555;
-
+  --titulo-perfil: #64748b;
   --backgroundCard: #00000078;
   --backgroundCard-hover: #00000025;
 }

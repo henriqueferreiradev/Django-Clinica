@@ -67,11 +67,11 @@ header {
     font-size: 24px;
     font-weight: 700;
     margin: 0;
-    color: #1e293b;
+    color: var(--preto);
 }
 
 .patient-id {
-    color: #64748b;
+    color: var(--titulo-perfil);
     margin: 4px 0 0;
 }
 
@@ -205,7 +205,7 @@ header {
 
 .data-card {
     padding: 16px;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--cinza-borda);
     border-radius: 8px;
     transition: all 0.3s ease;
 }
@@ -217,7 +217,7 @@ header {
 
 .data-card label {
     font-size: 14px;
-    color: #64748b;
+    color: var(--titulo-perfil);
     display: block;
     margin-bottom: 4px;
 }
@@ -292,7 +292,7 @@ header {
 
 .package-description {
     font-size: 14px;
-    color: #64748b;
+    color: var(--titulo-perfil);
     margin-bottom: 12px;
 }
 
@@ -391,7 +391,7 @@ header {
 
 .timeline-date {
     font-size: 14px;
-    color: #64748b;
+    color: var(--titulo-perfil);
     margin: 4px 0 0;
 }
 
@@ -402,7 +402,7 @@ header {
 
 .timeline-note {
     font-size: 12px;
-    color: #64748b;
+    color: var(--titulo-perfil);
     margin-top: 4px;
 }
 
@@ -438,7 +438,7 @@ header {
 
 .professional-sessions {
     font-size: 14px;
-    color: #64748b;
+    color: var(--titulo-perfil);
     margin: 4px 0 0;
 }
 
@@ -465,7 +465,7 @@ header {
 
 .note-date {
     font-size: 12px;
-    color: #64748b;
+    color: var(--titulo-perfil);
 }
 
 .note-content {
@@ -482,7 +482,7 @@ header {
 
 .financial-label {
     font-size: 14px;
-    color: #64748b;
+    color: var(--titulo-perfil);
     border-bottom: 1px solid #eee;
 
 }
@@ -851,19 +851,19 @@ select {
 }
 
 .text-gray-500 {
-    color: #64748b;
+    color: var(--cinza-escuro);
 }
 
 .text-gray-600 {
-    color: #475569;
+    color: var(--cinza-escuro);
 }
 
 .text-gray-700 {
-    color: #334155;
+    color: var(--cinza-escuro);
 }
 
 .text-gray-800 {
-    color: #1e293b;
+    color: var(--cinza-escuro);
 }
 
 .mb-1 {
@@ -961,7 +961,13 @@ select {
     background-color: var(--roxoPrincipal);
     padding: 2px 8px;
     border-radius: var(--borda-radius-sm);
+    font-size: 14px;
 
+
+}
+
+.form-header a i {
+    margin-right: 2px ;
 }
 
 .label-title {

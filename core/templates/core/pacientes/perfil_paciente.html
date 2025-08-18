@@ -16,6 +16,7 @@
     
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/pacientes/perfil_paciente.css' %}">
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
  
 </head>             
@@ -254,19 +255,19 @@
                     </div>
                 </section>
                 <section class="section">
-                    <h2 class="section-title">Formulários Respondido</h2>
+                    <h2 class="section-title">Formulários Respondidos</h2>
                     <div class="data-grid">
                     {% if respostas_formularios %}
                         {% for resposta in respostas_formularios %}
-                        <div class="note-card">
+                        <div class="data-card">
                             <div class="form-header">
                                 <h3 class="package-title text-sm">{{ resposta.formulario.titulo }}</h3>
-                                <div>
+                                 
                                     <span class="badge badge-info">
                                         Respondido em {{ resposta.enviado_em|date:"d/m/Y" }} às {{ resposta.enviado_em|date:"H:i" }}
                                     </span>
-                                    <a href="{% url 'visualizar_respostas' resposta.id %}">Visualizar</a>
-                                </div>
+                                    <a href="{% url 'visualizar_respostas' resposta.id %}"> <i class="bx bx-show"></i>Ver respostas</a>
+                                
                             </div>
                         </div>
                         {% endfor %}
@@ -275,7 +276,7 @@
                     {% endif %}
                     </div>
                 </section>
-               
+
             </div>
 
             <!-- Right Column -->

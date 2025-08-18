@@ -6,5 +6,9 @@ from django.http import HttpResponseForbidden
 def financeiro_view(request):
     if request.user.tipo == 'profissional':
         return HttpResponseForbidden("Acesso negado.")
-    return render(request, 'core/financeiro.html')
+    return render(request, 'core/financeiro/dashboard.html')
+
+def fluxo_caixa_view(request):
+ 
+    return render(request, 'core/financeiro/fluxo_caixa.html')
 
