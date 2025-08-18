@@ -11,8 +11,9 @@
     })();
   </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png"/>
     <title>Perfil do Paciente | Ponto de Equilíbrio</title>.
-
+    
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/pacientes/perfil_paciente.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -84,9 +85,7 @@
                             <label class="text-sm text-gray-500">WhatsApp</label>
                             <div class="flex items-center gap-2">
                                 <p class="font-medium" >{{ paciente.celular }}</p>
-                                <button class="text-green-500 hover:text-green-600">
-                                    <i class="fab fa-whatsapp"></i>
-                                </button>
+ 
                             </div>
                         </div>
                         <div class="data-card">
@@ -255,20 +254,19 @@
                     </div>
                 </section>
                 <section class="section">
-                    <h2 class="section-title">Respostas dos formulários</h2>
+                    <h2 class="section-title">Formulários Respondido</h2>
                     <div class="data-grid">
                     {% if respostas_formularios %}
                         {% for resposta in respostas_formularios %}
                         <div class="note-card">
-                            <div class="package-header">
+                            <div class="form-header">
                                 <h3 class="package-title text-sm">{{ resposta.formulario.titulo }}</h3>
-                                <span class="badge badge-info" style='color:white; background:#7F4396'>
-                                    Respondido em {{ resposta.enviado_em|date:"d/m/Y" }}
-                                </span>
-                                <a href="{% url 'visualizar_respostas' resposta.id %}" 
-                                class="ml-2 px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
-                                    Visualizar
-                                </a>
+                                <div>
+                                    <span class="badge badge-info">
+                                        Respondido em {{ resposta.enviado_em|date:"d/m/Y" }} às {{ resposta.enviado_em|date:"H:i" }}
+                                    </span>
+                                    <a href="{% url 'visualizar_respostas' resposta.id %}">Visualizar</a>
+                                </div>
                             </div>
                         </div>
                         {% endfor %}
@@ -440,83 +438,89 @@
                             <p class="financial-label">Total gasto</p>
                             <p class="financial-total">{{soma_pagamentos}}</p>
                         </div>
+                        
                         <div class="payment-ranking">
-    <p class="financial-label">Ranking de Pagamentos</p>
-    <div class="table-wrapper">
-        <table class="ranking-table">
-            <thead>
-                <tr>
-                    <th>Ícone</th>
-                    <th>Forma de Pagamento</th>
-                    
-                    <th>Quantidade</th>
-                    <th>Porcentagem</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pagamento in top_forma_pagamento %}
-                <tr>
-                <td>
-                       <div class="{% if pagamento.forma_pagamento == 'pix' %}payment-icon blue
-                                {% elif pagamento.forma_pagamento == 'dinheiro' %}payment-icon green
-                                {% elif pagamento.forma_pagamento == 'credito' %}payment-icon yellow
-                                {% elif pagamento.forma_pagamento == 'debito' %}payment-icon purple
-                                {% else %}payment-icon red{% endif %}">
-                                    <i class="{% if pagamento.forma_pagamento == 'pix' %}fas fa-qrcode blue
-                                    {% elif pagamento.forma_pagamento == 'dinheiro' %}fas fa-money-bill-wave green
-                                    {% elif pagamento.forma_pagamento == 'credito' %}fas fa-credit-card yellow
-                                    {% elif pagamento.forma_pagamento == 'debito' %}fas fa-money-check purple
-                                    {% else %}fas fa-question-circle red{% endif %}"></i> 
-                                </div>
-                                
-                    </td>
-                    <td>{{ pagamento.forma_pagamento|title }}</td>
-                    
-                    <td>{{ pagamento.quantidade }}x</td>
-                    <td>{{ pagamento.porcentagem }}%</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
+                            <p class="financial-label label-title">Ranking de Pagamentos</p>
+                            <div class="table-wrapper">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ícone</th>
+                                            <th>Pagamento</th>
+                                            <th>Quantidade</th>
+                                            <th>Porcentagem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if top_forma_pagamento %}
+                                        {% for pagamento in top_forma_pagamento %}
+                                        <tr>
+                                            <td>
+                                                <div class="{% if pagamento.forma_pagamento == 'pix' %}payment-icon blue
+                                                          {% elif pagamento.forma_pagamento == 'dinheiro' %}payment-icon green
+                                                          {% elif pagamento.forma_pagamento == 'credito' %}payment-icon yellow
+                                                          {% elif pagamento.forma_pagamento == 'debito' %}payment-icon purple
+                                                          {% else %}payment-icon red{% endif %}">
+                                                    <i class="{% if pagamento.forma_pagamento == 'pix' %}fas fa-qrcode blue
+                                                             {% elif pagamento.forma_pagamento == 'dinheiro' %}fas fa-money-bill-wave green
+                                                             {% elif pagamento.forma_pagamento == 'credito' %}fas fa-credit-card yellow
+                                                             {% elif pagamento.forma_pagamento == 'debito' %}fas fa-money-check purple
+                                                             {% else %}fas fa-question-circle red{% endif %}"></i> 
+                                                </div>
+                                            </td>
+                                            <td>{{ pagamento.forma_pagamento|title }}</td>
+                                            <td>{{ pagamento.quantidade }}x</td>
+                                            <td>{{ pagamento.porcentagem }}%</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="3" >Não há informações no momento</td>
+                                    </tr>
+                                {% endif %}
+                                </table>
+                            </div>
+                        </div>
+                
                         <div>
                             <p class="financial-label">Débitos pendentes</p>
                             {% if total_debito %}
-                            <p class=" financial-total font-medium text-green-600">R$ {{total_debito}}</p>
+                            <p class="financial-total font-medium text-green-600">R$ {{total_debito}}</p>
                             {% else %}
                             <p class="font-medium text-green-600">Nenhum débito pendente</p>
                             {% endif %}
                         </div>
-                       <div class="payment-list">
-        <h3 class="text-sm font-medium mb-2">Últimos pagamentos</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-left">
-                <thead>
-                    <tr class="border-b">
-                        <th class="py-2 px-3 ">Data</th>
-                        <th class="py-2 px-3 ">Forma de Pagamento</th>
-                        <th class="py-2 px-3 ">Valor</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y">
-                    {% if ultimos_pagamentos %}
-                    {% for pagamento in ultimos_pagamentos %}
-                    <tr>
-                        <td class="py-2 px-3">{{ pagamento.data|date:'d/m/Y' }}</td>
-                        <td class="py-2 px-3">{{ pagamento.get_forma_pagamento_display }}</td>
-                        <td class="py-2 px-3 text-green-600 font-medium">R$ {{ pagamento.valor }}</td>
                         
-                    </tr>
-                    {% endfor %}
-                    {% else %}
-                        <h3 class="professional-name">Não há informações no momento.</h3>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+                        <div class="payment-list">
+                            <h3 class="label-title">Últimos pagamentos</h3>
+                            <div class="table-wrapper">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Forma de Pagamento</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if ultimos_pagamentos %}
+                                            {% for pagamento in ultimos_pagamentos %}
+                                            <tr>
+                                                <td>{{ pagamento.data|date:'d/m/Y' }}</td>
+                                                <td>{{ pagamento.get_forma_pagamento_display }}</td>
+                                                <td class="text-green-600 font-medium">R$ {{ pagamento.valor }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3" >Não há informações no momento</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -542,6 +546,8 @@
 
     {% block scripts %}
 <script>
+
+
 const btnToggleObs = document.getElementById('btnToggleObs');
 const btnCancelObs = document.getElementById('btnCancelObs');
 const obsContainer = document.getElementById('obs-container');

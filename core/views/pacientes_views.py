@@ -687,23 +687,18 @@ def visualizar_respostas_formulario(request, resposta_id):
     resposta = get_object_or_404(RespostaFormulario, id=resposta_id)
     respostas_perguntas = RespostaPergunta.objects.filter(resposta=resposta).select_related('pergunta')
     
-    # Prepara os dados para o template
     respostas_preparadas = []
     for rp in respostas_perguntas:
-        if rp.pergunta.tipo in ['multiple-choice', 'checkbox']:
-            valor = rp.valor.split(',')  # Divide os valores aqui
-        else:
-            valor = rp.valor
-        
+        print(rp.valor)
         respostas_preparadas.append({
             'pergunta': rp.pergunta,
-            'valor': valor,
+            'valor': rp.valor,  # Mantém o valor original
             'tipo': rp.pergunta.tipo
         })
     
     context = {
         'formulario': resposta.formulario,
-        'respostas_preparadas': respostas_preparadas,  # Usamos essa nova variável
+        'respostas_preparadas': respostas_preparadas,
         'paciente': resposta.paciente,
         'data_resposta': resposta.enviado_em,
     }
