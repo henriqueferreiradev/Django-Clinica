@@ -46,6 +46,11 @@ urlpatterns = [
     
     path('financeiro/dashboard', financeiro_views.financeiro_view, name='financeiro_dashboard'),
     path('financeiro/fluxo-caixa', financeiro_views.fluxo_caixa_view, name='fluxo_caixa'),
+    path('financeiro/entradas', financeiro_views.contas_a_receber_view, name='entradas'),
+    path('financeiro/saidas', financeiro_views.contas_a_pagar_view, name='saidas'),
+    path('financeiro/faturamento', financeiro_views.faturamento_view, name='faturamento'),
+    path('financeiro/folha-pagamento', financeiro_views.folha_pagamento_view, name='folha_pagamento'),
+    path('financeiro/relatorios', financeiro_views.relatorios_view, name='financeiro_relatorios'),
 
 
     path('agenda/', agendamento_views.agenda_view, name='agenda'),

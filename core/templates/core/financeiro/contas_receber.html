@@ -1,0 +1,1180 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Contas a Receber - Clínica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/formularios/formularios_ativos.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Estilos Base */
+    .receber-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    /* Cabeçalho */
+    .receber-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+    }
+    
+    .receber-title {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .receber-title i {
+        font-size: 1.5rem;
+        color: #3498db;
+    }
+    
+    /* Cards de Resumo */
+    .resumo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+    
+    .resumo-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .resumo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .resumo-titulo {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        color: #7f8c8d;
+    }
+    
+    .resumo-valor {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .resumo-card .resumo-icon {
+        font-size: 2.2rem;
+        opacity: 0.8;
+    }
+    
+    .valor-total {
+        color: #3498db;
+    }
+    
+    .valor-atrasado {
+        color: #e74c3c;
+    }
+    
+    .valor-hoje {
+        color: #f39c12;
+    }
+    
+    /* Filtros */
+    .filtros-container {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .filtros-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+    }
+    
+    .filtro-group {
+        margin-bottom: 0;
+    }
+    
+    .filtro-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        font-weight: 500;
+    }
+    
+    .filtro-input, .filtro-select {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 1px solid #dfe6e9;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        background: white;
+    }
+    
+    .filtro-button {
+        width: 100%;
+        padding: 0.7rem;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: background 0.2s;
+    }
+    
+    .filtro-button:hover {
+        background: #2980b9;
+    }
+    
+    /* Tabela */
+    .tabela-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+    }
+    
+    .tabela-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .tabela-titulo {
+        font-size: 1.2rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    .tabela-acoes {
+        display: flex;
+        gap: 0.8rem;
+    }
+    
+    .tabela-scroll {
+        overflow-x: auto;
+    }
+    
+    .tabela {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+    
+    .tabela th {
+        background: #f8f9fa;
+        padding: 1rem;
+        text-align: left;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .tabela td {
+        padding: 1rem;
+        border-bottom: 1px solid #ecf0f1;
+        font-size: 0.9rem;
+    }
+    
+    .tabela tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .tabela tr:hover {
+        background: #f8f9fa;
+    }
+    
+    /* Status */
+    .status-pendente {
+        border-left: 4px solid #f39c12;
+        background: rgba(243, 156, 18, 0.05);
+    }
+    
+    .status-atrasado {
+        border-left: 4px solid #e74c3c;
+        background: rgba(231, 76, 60, 0.05);
+    }
+    
+    .status-pago {
+        border-left: 4px solid #27ae60;
+        background: rgba(39, 174, 96, 0.05);
+    }
+    
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .badge-pendente {
+        background: #f39c12;
+        color: white;
+    }
+    
+    .badge-atrasado {
+        background: #e74c3c;
+        color: white;
+    }
+    
+    .badge-pago {
+        background: #27ae60;
+        color: white;
+    }
+    
+    .badge-agendamento {
+        background: #95a5a6;
+        color: white;
+        font-size: 0.7rem;
+    }
+    
+    /* Botões */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #2980b9;
+    }
+    
+    .btn-success {
+        background: #27ae60;
+        color: white;
+    }
+    
+    .btn-success:hover {
+        background: #219653;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 1px solid #bdc3c7;
+        color: #7f8c8d;
+    }
+    
+    .btn-outline:hover {
+        background: #f8f9fa;
+    }
+    
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Paginação */
+    .paginacao {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .paginacao-list {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+    }
+    
+    .paginacao-item {
+        display: flex;
+    }
+    
+    .paginacao-link {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #dfe6e9;
+        color: #3498db;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    
+    .paginacao-item.active .paginacao-link {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+    
+    .paginacao-item.disabled .paginacao-link {
+        color: #bdc3c7;
+        pointer-events: none;
+    }
+    
+    /* Checkbox */
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: 0.2em;
+    }
+    
+    /* Dropdown */
+    .dropdown {
+        position: relative;
+    }
+    
+    .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .dropdown-toggle::after {
+        content: "▼";
+        font-size: 0.6rem;
+        margin-top: 0.2rem;
+    }
+    
+    .dropdown-menu {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 0.5rem 0;
+        min-width: 200px;
+        z-index: 100;
+        display: none;
+    }
+    
+    .dropdown-menu.show {
+        display: block;
+    }
+    
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.6rem 1.5rem;
+        color: #2c3e50;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+    }
+    
+    .dropdown-item:hover {
+        background: #f8f9fa;
+    }
+    
+    .dropdown-item i {
+        width: 1.2rem;
+        text-align: center;
+    }
+    
+    .dropdown-divider {
+        height: 1px;
+        background: #ecf0f1;
+        margin: 0.5rem 0;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+    }
+    
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .modal-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: translateY(20px);
+        transition: transform 0.3s;
+    }
+    
+    .modal-overlay.active .modal-container {
+        transform: translateY(0);
+    }
+    
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #ecf0f1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-title {
+        font-size: 1.4rem;
+        color: #2c3e50;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #7f8c8d;
+        padding: 0.5rem;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #ecf0f1;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+    
+    /* Formulário */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #dfe6e9;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+    
+    .form-control:read-only {
+        background-color: #f8f9fa;
+    }
+    
+    .form-select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #dfe6e9;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background-color: white;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+    }
+    
+    .form-col {
+        flex: 1;
+    }
+    
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+    
+    .form-check-input {
+        margin: 0;
+    }
+    
+    .form-check-label {
+        font-size: 0.9rem;
+    }
+    
+    /* Botão de salvar */
+    .btn-save {
+        background: #27ae60;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .btn-save:hover {
+        background: #219653;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 1024px) {
+        .resumo-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filtros-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .receber-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .filtros-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .tabela-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .tabela-acoes {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block topbar_title %}<span class="text">Contas a Receber</span>{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+<div class="content">
+    <div class="receber-container">
+        <!-- Cabeçalho -->
+        <div class="receber-header">
+            <h1 class="receber-title">
+                <i class="fas fa-receipt"></i> Contas a Receber
+            </h1>
+            <div class="receber-botoes">
+                <button class="btn btn-primary" id="openModalRecebimento">
+                    <i class="fas fa-plus-circle"></i> Novo Recebimento
+                </button>
+                <button class="btn btn-outline">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="filtros-container">
+            <div class="filtros-grid">
+                <div class="filtro-group">
+                    <label class="filtro-label">Status</label>
+                    <select class="filtro-select">
+                        <option value="">Todos</option>
+                        <option value="pendente">Pendentes</option>
+                        <option value="atrasado">Atrasados</option>
+                        <option value="pago">Pagas</option>
+                    </select>
+                </div>
+                <div class="filtro-group">
+                    <label class="filtro-label">Vencimento</label>
+                    <select class="filtro-select">
+                        <option value="">Todos</option>
+                        <option value="hoje">Vence hoje</option>
+                        <option value="semana">Esta semana</option>
+                        <option value="mes">Este mês</option>
+                        <option value="atrasado">Atrasados</option>
+                    </select>
+                </div>
+                <div class="filtro-group">
+                    <label class="filtro-label">Paciente</label>
+                    <input type="text" class="filtro-input" placeholder="Filtrar por paciente">
+                </div>
+                <div class="filtro-group">
+                    <button class="filtro-button">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumo -->
+        <div class="resumo-grid">
+            <div class="resumo-card">
+                <div class="resumo-content">
+                    <div class="resumo-titulo">A Receber (Total)</div>
+                    <div class="resumo-valor valor-total">R$ 8.420,00</div>
+                    <div class="resumo-info">Em aberto</div>
+                </div>
+                <i class="fas fa-coins resumo-icon valor-total"></i>
+            </div>
+            <div class="resumo-card">
+                <div class="resumo-content">
+                    <div class="resumo-titulo">Atrasados</div>
+                    <div class="resumo-valor valor-atrasado">R$ 2.150,00</div>
+                    <div class="resumo-info">Não pagos</div>
+                </div>
+                <i class="fas fa-exclamation-triangle resumo-icon valor-atrasado"></i>
+            </div>
+            <div class="resumo-card">
+                <div class="resumo-content">
+                    <div class="resumo-titulo">Vencem Hoje</div>
+                    <div class="resumo-valor valor-hoje">R$ 1.080,00</div>
+                    <div class="resumo-info">Para receber hoje</div>
+                </div>
+                <i class="fas fa-calendar-day resumo-icon valor-hoje"></i>
+            </div>
+        </div>
+        
+        <!-- Tabela -->
+        <div class="tabela-container">
+            <div class="tabela-header">
+                <h2 class="tabela-titulo">Lançamentos</h2>
+                <div class="tabela-acoes">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-envelope"></i> Enviar Lembretes
+                    </button>
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-outline btn-sm dropdown-toggle">
+                            <i class="fas fa-list-check"></i> Ações em Lote
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-check-circle"></i> Marcar como Pago
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-envelope"></i> Enviar Lembretes
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-file-pdf"></i> Gerar Boletos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tabela-scroll">
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th width="40"><input type="checkbox" class="form-check-input"></th>
+                            <th>Vencimento</th>
+                            <th>Paciente</th>
+                            <th>Descrição</th>
+                            <th>Agendamento</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Título em Atraso -->
+                        <tr class="status-atrasado">
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td class="valor-atrasado">10/05/2023</td>
+                            <td>Maria Silva</td>
+                            <td>Consulta - Dra. Ana</td>
+                            <td><span class="badge badge-agendamento">#AGE-230510</span></td>
+                            <td class="valor-atrasado">R$ 350,00</td>
+                            <td><span class="badge badge-atrasado">Atrasado</span></td>
+                            <td>
+                                <button class="btn btn-success btn-sm" title="Registrar Pagamento">
+                                    <i class="fas fa-cash-register"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Emitir Boleto">
+                                    <i class="fas fa-barcode"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Título em Atraso -->
+                        <tr class="status-atrasado">
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td class="valor-atrasado">12/05/2023</td>
+                            <td>João Santos</td>
+                            <td>Parcela 2/3 - Pacote Fisioterapia</td>
+                            <td><span class="badge badge-agendamento">#PAC-FT2301</span></td>
+                            <td class="valor-atrasado">R$ 180,00</td>
+                            <td><span class="badge badge-atrasado">Atrasado</span></td>
+                            <td>
+                                <button class="btn btn-success btn-sm" title="Registrar Pagamento">
+                                    <i class="fas fa-cash-register"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Emitir Boleto">
+                                    <i class="fas fa-barcode"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Título Vence Hoje -->
+                        <tr class="status-pendente">
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td class="valor-hoje">16/05/2023</td>
+                            <td>Ana Oliveira</td>
+                            <td>Consulta - Dr. Carlos</td>
+                            <td><span class="badge badge-agendamento">#AGE-230516</span></td>
+                            <td class="valor-hoje">R$ 280,00</td>
+                            <td><span class="badge badge-pendente">Pendente</span></td>
+                            <td>
+                                <button class="btn btn-success btn-sm" title="Registrar Pagamento">
+                                    <i class="fas fa-cash-register"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Emitir Boleto">
+                                    <i class="fas fa-barcode"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Título Vence Hoje -->
+                        <tr class="status-pendente">
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td class="valor-hoje">16/05/2023</td>
+                            <td>Pedro Costa</td>
+                            <td>Sessão de Fisioterapia</td>
+                            <td><span class="badge badge-agendamento">#AGE-230516</span></td>
+                            <td class="valor-hoje">R$ 150,00</td>
+                            <td><span class="badge badge-pendente">Pendente</span></td>
+                            <td>
+                                <button class="btn btn-success btn-sm" title="Registrar Pagamento">
+                                    <i class="fas fa-cash-register"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Emitir Boleto">
+                                    <i class="fas fa-barcode"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Título para o Futuro -->
+                        <tr class="status-pendente">
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td class="valor-futuro">20/05/2023</td>
+                            <td>Carlos Mendes</td>
+                            <td>Parcela 3/3 - Pacote Fisioterapia</td>
+                            <td><span class="badge badge-agendamento">#PAC-FT2301</span></td>
+                            <td class="valor-futuro">R$ 180,00</td>
+                            <td><span class="badge badge-pendente">Pendente</span></td>
+                            <td>
+                                <button class="btn btn-success btn-sm" title="Registrar Pagamento">
+                                    <i class="fas fa-cash-register"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Emitir Boleto">
+                                    <i class="fas fa-barcode"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Título Pago -->
+                        <tr class="status-pago">
+                            <td><input type="checkbox" class="form-check-input" disabled></td>
+                            <td>05/05/2023</td>
+                            <td>Luana Pereira</td>
+                            <td>Consulta - Dra. Ana</td>
+                            <td><span class="badge badge-agendamento">#AGE-230505</span></td>
+                            <td>R$ 350,00</td>
+                            <td><span class="badge badge-pago">Pago</span></td>
+                            <td>
+                                <button class="btn btn-outline btn-sm" title="Ver Comprovante">
+                                    <i class="fas fa-receipt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="paginacao">
+                <ul class="paginacao-list">
+                    <li class="paginacao-item disabled">
+                        <a href="#" class="paginacao-link">Anterior</a>
+                    </li>
+                    <li class="paginacao-item active">
+                        <a href="#" class="paginacao-link">1</a>
+                    </li>
+                    <li class="paginacao-item">
+                        <a href="#" class="paginacao-link">2</a>
+                    </li>
+                    <li class="paginacao-item">
+                        <a href="#" class="paginacao-link">3</a>
+                    </li>
+                    <li class="paginacao-item">
+                        <a href="#" class="paginacao-link">Próxima</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo Recebimento -->
+<div class="modal-overlay" id="modalRecebimento">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-plus-circle"></i> Novo Recebimento
+            </h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <form id="formRecebimento">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Data do Recebimento</label>
+                            <input type="date" class="form-control" value="2023-05-16" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Tipo</label>
+                            <select class="form-select" required>
+                                <option value="">Selecione...</option>
+                                <option value="consulta">Consulta</option>
+                                <option value="pacote">Pacote de Sessões</option>
+                                <option value="exame">Exame</option>
+                                <option value="procedimento">Procedimento</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Paciente</label>
+                    <input type="text" class="form-control" placeholder="Nome do paciente" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Valor (R$)</label>
+                            <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Vencimento</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" class="form-control" placeholder="Descrição detalhada">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Forma de Pagamento</label>
+                            <select class="form-select" required>
+                                <option value="">Selecione...</option>
+                                <option>Dinheiro</option>
+                                <option>Pix</option>
+                                <option>Cartão de Débito</option>
+                                <option>Cartão de Crédito</option>
+                                <option>Boleto</option>
+                                <option>Transferência</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" required>
+                                <option value="pendente">Pendente</option>
+                                <option value="pago">Pago</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Agendamento (opcional)</label>
+                    <input type="text" class="form-control" placeholder="Código do agendamento">
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="gerarBoleto">
+                        <label class="form-check-label" for="gerarBoleto">Gerar boleto automaticamente</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="cancelModal">Cancelar</button>
+            <button class="btn-save" id="saveRecebimento">
+                <i class="fas fa-save"></i> Salvar Recebimento
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registrar Pagamento -->
+<div class="modal-overlay" id="modalPagamento">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-cash-register"></i> Registrar Pagamento
+            </h3>
+            <button class="modal-close" id="closePaymentModal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <form id="formPagamento">
+                <div class="form-group">
+                    <label class="form-label">Paciente</label>
+                    <input type="text" class="form-control" value="Maria Silva" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" class="form-control" value="Consulta - Dra. Ana" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Valor Original</label>
+                            <input type="text" class="form-control" value="R$ 350,00" readonly>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Data do Pagamento</label>
+                            <input type="date" class="form-control" value="2023-05-16" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Forma de Pagamento</label>
+                            <select class="form-select" required>
+                                <option value="pix">Pix</option>
+                                <option value="debito">Cartão de Débito</option>
+                                <option value="credito">Cartão de Crédito</option>
+                                <option value="dinheiro">Dinheiro</option>
+                                <option value="boleto">Boleto</option>
+                                <option value="transferencia">Transferência Bancária</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Valor Recebido</label>
+                            <input type="text" class="form-control" value="350,00" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="gerarRecibo">
+                        <label class="form-check-label" for="gerarRecibo">Gerar recibo</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="cancelPaymentModal">Cancelar</button>
+            <button class="btn-save" id="savePagamento">
+                <i class="fas fa-check-circle"></i> Confirmar Pagamento
+            </button>
+        </div>
+    </div>
+</div>
+
+{% include "core/partials/alertas.html" %}
+
+{% block extra_js %}
+<script>
+    // Modal Novo Recebimento
+    const modalRecebimento = document.getElementById('modalRecebimento');
+    const btnOpenRecebimento = document.getElementById('openModalRecebimento');
+    const btnCloseModal = document.getElementById('closeModal');
+    const btnCancelModal = document.getElementById('cancelModal');
+    const btnSaveRecebimento = document.getElementById('saveRecebimento');
+    
+    // Modal Pagamento
+    const modalPagamento = document.getElementById('modalPagamento');
+    const btnClosePaymentModal = document.getElementById('closePaymentModal');
+    const btnCancelPaymentModal = document.getElementById('cancelPaymentModal');
+    const btnSavePagamento = document.getElementById('savePagamento');
+    
+    // Abrir modal de novo recebimento
+    btnOpenRecebimento.addEventListener('click', () => {
+        modalRecebimento.classList.add('active');
+    });
+    
+    // Fechar modais
+    function closeAllModals() {
+        modalRecebimento.classList.remove('active');
+        modalPagamento.classList.remove('active');
+    }
+    
+    btnCloseModal.addEventListener('click', closeAllModals);
+    btnCancelModal.addEventListener('click', closeAllModals);
+    btnClosePaymentModal.addEventListener('click', closeAllModals);
+    btnCancelPaymentModal.addEventListener('click', closeAllModals);
+    
+    // Fechar ao clicar fora
+    modalRecebimento.addEventListener('click', (e) => {
+        if (e.target === modalRecebimento) {
+            closeAllModals();
+        }
+    });
+    
+    modalPagamento.addEventListener('click', (e) => {
+        if (e.target === modalPagamento) {
+            closeAllModals();
+        }
+    });
+    
+    // Salvar recebimento (simulação)
+    btnSaveRecebimento.addEventListener('click', (e) => {
+        e.preventDefault();
+        const form = document.getElementById('formRecebimento');
+        const inputs = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        inputs.forEach(input => {
+            if (!input.value) {
+                input.style.borderColor = '#e74c3c';
+                isValid = false;
+            } else {
+                input.style.borderColor = '#dfe6e9';
+            }
+        });
+        
+        if (isValid) {
+            // Simular salvamento
+            setTimeout(() => {
+                form.reset();
+                closeAllModals();
+                // Aqui você atualizaria a tabela com o novo recebimento
+            }, 1000);
+        }
+    });
+    
+    // Abrir modal de pagamento ao clicar nos botões da tabela
+    document.querySelectorAll('.btn-success').forEach(btn => {
+        btn.addEventListener('click', () => {
+            modalPagamento.classList.add('active');
+        });
+    });
+    
+    // Confirmar pagamento (simulação)
+    btnSavePagamento.addEventListener('click', (e) => {
+        e.preventDefault();
+        const form = document.getElementById('formPagamento');
+        const inputs = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        inputs.forEach(input => {
+            if (!input.value) {
+                input.style.borderColor = '#e74c3c';
+                isValid = false;
+            } else {
+                input.style.borderColor = '#dfe6e9';
+            }
+        });
+        
+        if (isValid) {
+            // Simular confirmação de pagamento
+            setTimeout(() => {
+                form.reset();
+                closeAllModals();
+                // Aqui você atualizaria a linha na tabela para status "Pago"
+            }, 1000);
+        }
+    });
+    
+    // Dropdown
+    document.querySelector('.dropdown-toggle').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector('.dropdown-menu').classList.toggle('show');
+    });
+    
+    // Fechar dropdown ao clicar fora
+    window.addEventListener('click', function(e) {
+        if (!e.target.matches('.dropdown-toggle')) {
+            const dropdowns = document.querySelectorAll('.dropdown-menu');
+            dropdowns.forEach(function(dropdown) {
+                dropdown.classList.remove('show');
+            });
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

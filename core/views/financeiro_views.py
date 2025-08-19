@@ -12,3 +12,22 @@ def fluxo_caixa_view(request):
  
     return render(request, 'core/financeiro/fluxo_caixa.html')
 
+def contas_a_receber_view(request):
+ 
+    return render(request, 'core/financeiro/contas_receber.html')
+
+
+def contas_a_pagar_view(request):
+ 
+    return render(request, 'core/financeiro/contas_pagar.html')
+
+    
+def faturamento_view(request):
+ 
+    return render(request, 'core/financeiro/faturamento.html')
+
+def folha_pagamento_view(request):
+    return render(request, 'core/financeiro/folha_pagamento.html')
+
+def relatorios_view(request):
+    return render(request, 'core/financeiro/relatorios.html')
