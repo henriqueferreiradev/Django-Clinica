@@ -22,8 +22,9 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
 
 {% block content %}
 <main id="form-section" class="form-section">
-  <div class="container">
+   
     <div class="content">
+    {% include "core/partials/_loader.html" %}
       <!-- Progress Steps -->
       <div class="form-progress">
         <div class="progress-step active" data-step="1" aria-current="step">
@@ -581,7 +582,7 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
         </div>
       </form>
     </div>
-  </div>
+  
 </main>
 {% endblock %}
 

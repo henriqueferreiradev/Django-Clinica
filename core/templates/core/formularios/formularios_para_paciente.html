@@ -2,6 +2,7 @@
 {% block topbar_title %}Formulários para - {{ paciente.nome }}{% endblock %}
 {% block content %}
 <div class="content">
+{% include "core/partials/_loader.html" %}
   <div class="form-container">
     <div class="form-grid">
       {% for item in links %}

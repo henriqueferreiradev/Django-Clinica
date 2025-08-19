@@ -1,18 +1,26 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/partials/loading.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/partials/_loader.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 {% endblock %}
 
-<div class="loader-container">
-    <div class="loader"></div>
-    <div class="loader-text">Carregando...</div>
+<div class="loader-container" role="status" aria-live="polite" aria-label="Carregando">
+  <svg class="logo-loader" viewBox="0 0 456 457" aria-hidden="true">
+     
+    <path class="fill" fill-rule="evenodd"
+      d="M448,81 L331,97 L304,111 L280,115 L265,177 L273,244 L255,324 L258,380 L246,431 L246,444 L251,450 L266,456 Z M0,77 L190,455 L205,450 L210,444 L210,430 L199,389 L201,323 L183,243 L191,176 L176,115 L150,110 L125,97 L16,83 Z M233,0 L241,4 L248,14 L250,33 L243,48 L245,69 L251,73 L258,75 L281,74 L292,79 L327,79 L346,75 L402,77 L429,72 L450,73 L372,1 Z M0,73 L26,72 L53,77 L109,75 L128,79 L163,79 L174,74 L201,74 L208,71 L212,63 L212,48 L205,32 L207,15 L214,4 L223,0 L77,0 Z" />
+   
+    <path class="stroke" fill-rule="evenodd"
+      d="M448,81 L331,97 L304,111 L280,115 L265,177 L273,244 L255,324 L258,380 L246,431 L246,444 L251,450 L266,456 Z M0,77 L190,455 L205,450 L210,444 L210,430 L199,389 L201,323 L183,243 L191,176 L176,115 L150,110 L125,97 L16,83 Z M233,0 L241,4 L248,14 L250,33 L243,48 L245,69 L251,73 L258,75 L281,74 L292,79 L327,79 L346,75 L402,77 L429,72 L450,73 L372,1 Z M0,73 L26,72 L53,77 L109,75 L128,79 L163,79 L174,74 L201,74 L208,71 L212,63 L212,48 L205,32 L207,15 L214,4 L223,0 L77,0 Z" />
+  </svg>
+  <div class="loader-text">Carregando...</div>
 </div>
+
 <script>
-window.addEventListener('load', function () {
+  window.addEventListener('load', function () {
     setTimeout(() => {
-        document.querySelector('.content').classList.add('loaded');
-    }, 2000);
-});
+      document.querySelector('.content')?.classList.add('loaded');
+    }, 10000);
+  });
 </script>

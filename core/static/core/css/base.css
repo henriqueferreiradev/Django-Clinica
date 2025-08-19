@@ -205,6 +205,7 @@ button:hover {
   background: var(--roxo-primary-hover);
   display: none;
   color: var(--preto);
+  z-index: 9999;
 }
 
 .sidebar .nav-links li.showMenu .sub-menu {
@@ -218,6 +219,7 @@ button:hover {
   white-space: nowrap;
   opacity: 0.6;
   transition: all 0.3s ease;
+  z-index: 9999;
 }
 
 .sidebar .nav-links li .sub-menu a:hover {
@@ -235,6 +237,7 @@ button:hover {
   display: block;
   pointer-events: none;
   transition: 0s;
+  z-index: 9999;
 }
 
 .sidebar.close .nav-links li:hover .sub-menu {
@@ -242,6 +245,7 @@ button:hover {
   opacity: 1;
   pointer-events: auto;
   transition: all 0.4s ease;
+  z-index: 9999;
 }
 
 .sidebar .nav-links li .sub-menu .link_name {

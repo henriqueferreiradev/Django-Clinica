@@ -1,0 +1,749 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Relatórios Financeiros - Clínica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/financeiro/relatorios.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --roxoPrincipal: #6D398E;
+        --roxoPrincipal-hover: #76378f11;
+        --roxoPrincipal-hover2: #76378f;
+        --roxo-primary-hover: #9b58b4;
+        --verdePrincipal: #92cbad;
+        --branco: #FFF;
+        --bg-btn-1: #eee;
+        --preto: #000;
+        --cinzaBorda: #ccc;
+        --cinzaEscuro: #6e6e6e;
+        --fontePrincipal: 'Inter', sans-serif;
+        --bg-color: #E4E9F7;
+        --hover-dropdown: #F0F0F0;
+        --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
+        --btn-red-exclude: #ff000025;
+        --btn-red-font: #efc4c4;
+        --cinza-escuro: #555;
+        --cinza-medio: #888;
+        --cinza-claro: #eee;
+        --cinza-borda: #ddd;
+        --erro: #ff0000;
+        --titulo-perfil: #64748b;
+
+        /* Espaçamentos */
+        --espaco-xs: 0.5rem;
+        --espaco-sm: 1rem;
+        --espaco-md: 1.5rem;
+        --espaco-lg: 2rem;
+        --espaco-xl: 3rem;
+
+        /* Bordas */
+        --borda-radius: 8px;
+        --borda-radius-sm: 4px;
+
+        /* Sombras */
+        --sombra: 0 2px 10px rgba(0, 0, 0, 0.1);
+        --sombra-focus: 0 0 0 3px rgba(127, 67, 150, 0.3);
+
+        --backgroundCard: #FFF;
+        --backgroundCard-hover: #6d398e38;
+    }
+
+    .content {
+        padding: var(--espaco-md);
+    }
+
+    /* Botões */
+    .btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: var(--borda-radius-sm);
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-family: var(--fontePrincipal);
+    }
+
+    .btn-primary {
+        background-color: var(--roxoPrincipal);
+        color: var(--branco);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--roxo-primary-hover);
+    }
+
+    .btn-outline-secondary {
+        background-color: transparent;
+        border: 1px solid var(--cinzaBorda);
+        color: var(--cinzaEscuro);
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: var(--cinzaBorda);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: var(--branco);
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-group {
+        position: relative;
+        display: inline-flex;
+    }
+
+    /* Cards */
+    .card {
+        background-color: var(--backgroundCard);
+        border-radius: var(--borda-radius);
+        box-shadow: var(--sombra);
+        margin-bottom: var(--espaco-md);
+        overflow: hidden;
+    }
+
+    .card-comissao {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        border: none;
+    }
+
+    .card-pendente {
+        border-left: 4px solid #ffc107;
+    }
+
+    .card-pago {
+        border-left: 4px solid #28a745;
+    }
+
+    .card-total {
+        border-left: 4px solid #007bff;
+    }
+
+    .card-body {
+        padding: var(--espaco-md);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .card-subtitle {
+        color: var(--cinza-medio);
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Filtros */
+    .filter-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-select, .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--cinzaBorda);
+        border-radius: var(--borda-radius-sm);
+        font-size: 1rem;
+        font-family: var(--fontePrincipal);
+    }
+
+    .form-select:focus, .form-control:focus {
+        outline: none;
+        border-color: var(--roxoPrincipal);
+        box-shadow: var(--sombra-focus);
+    }
+
+    /* Grid system */
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -10px;
+    }
+
+    .col-md-3, .col-md-4, .col-md-6 {
+        position: relative;
+        width: 100%;
+        padding: 0 10px;
+        margin-bottom: var(--espaco-sm);
+    }
+
+    @media (min-width: 768px) {
+        .col-md-3 {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
+        .col-md-4 {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+        }
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+    }
+
+    /* Status das comissões */
+    .status-pendente {
+        background-color: rgba(255, 193, 7, 0.05);
+    }
+
+    .status-pago {
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .bg-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .bg-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .bg-info {
+        background-color: #0dcaf0;
+        color: black;
+    }
+
+    .bg-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .bg-primary {
+        background-color: var(--roxoPrincipal);
+        color: white;
+    }
+
+    .bg-dark {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .badge-especialidade {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+
+    /* Tabela */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: var(--espaco-md);
+        font-family: var(--fontePrincipal);
+    }
+
+    .table th, .table td {
+        padding: 0.75rem;
+        border-top: 1px solid var(--cinza-borda);
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid var(--cinza-borda);
+        vertical-align: bottom;
+        font-weight: 600;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.03);
+    }
+
+    .text-end {
+        text-align: right;
+    }
+
+    .table-light {
+        background-color: #f8f9fa;
+    }
+
+    .table-secondary {
+        background-color: #e9ecef;
+    }
+
+    /* Gráficos */
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+
+    /* Utilitários */
+    .d-flex {
+        display: flex;
+    }
+
+    .justify-content-between {
+        justify-content: space-between;
+    }
+
+    .align-items-center {
+        align-items: center;
+    }
+
+    .mb-4 {
+        margin-bottom: var(--espaco-lg);
+    }
+
+    .mb-3 {
+        margin-bottom: var(--espaco-md);
+    }
+
+    .mb-0 {
+        margin-bottom: 0;
+    }
+
+    .me-1 {
+        margin-right: 0.25rem;
+    }
+
+    .me-2 {
+        margin-right: var(--espaco-xs);
+    }
+
+    .mt-3 {
+        margin-top: var(--espaco-md);
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+
+    .text-warning {
+        color: #fd7e14;
+    }
+
+    .text-info {
+        color: #0dcaf0;
+    }
+
+    .text-primary {
+        color: var(--roxoPrincipal);
+    }
+
+    .text-muted {
+        color: var(--cinza-medio);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .w-100 {
+        width: 100%;
+    }
+
+    .d-none {
+        display: none;
+    }
+
+    /* Header */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--espaco-lg);
+    }
+
+    .header h2 {
+        color: var(--roxoPrincipal);
+        font-size: 1.8rem;
+    }
+
+    .header h2 i {
+        margin-right: var(--espaco-xs);
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .header .buttons {
+            margin-top: var(--espaco-xs);
+            width: 100%;
+        }
+        
+        .header .buttons .btn {
+            width: 100%;
+            margin-bottom: var(--espaco-xs);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block topbar_title %}<span class="text">Relatórios</span>{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+<div class="content">
+    <div class="header">
+        <h2><i class="fas fa-users me-2"></i> Comissões e Folha de Pagamento</h2>
+        <div class="buttons">
+            <button class="btn btn-primary me-2"><i class="fas fa-money-bill me-1"></i> Pagar Comissões</button>
+            <button class="btn btn-outline-secondary"><i class="fas fa-print me-1"></i> Imprimir</button>
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filter-card mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <label class="form-label">Período</label>
+                <select class="form-select">
+                    <option>Este Mês</option>
+                    <option>Mês Anterior</option>
+                    <option>Trimestre</option>
+                    <option>Personalizado</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">De</label>
+                <input type="date" class="form-control" value="2023-05-01">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Até</label>
+                <input type="date" class="form-control" value="2023-05-31">
+            </div>
+            <div class="col-md-3 d-flex align-items-center" style="align-items: flex-end;">
+                <button class="btn btn-primary w-100"><i class="fas fa-filter me-1"></i> Filtrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cards Resumo -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card card-comissao card-pendente">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 text-muted">Comissões Pendentes</h6>
+                            <h3 class="card-title text-warning">R$ 8.400,00</h3>
+                            <small class="text-muted">15 profissionais</small>
+                        </div>
+                        <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-comissao card-pago">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 text-muted">Comissões Pagas</h6>
+                            <h3 class="card-title text-success">R$ 12.600,00</h3>
+                            <small class="text-muted">25 profissionais</small>
+                        </div>
+                        <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-comissao card-total">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 text-muted">Total Folha</h6>
+                            <h3 class="card-title text-primary">R$ 21.000,00</h3>
+                            <small class="text-muted">Salários + Comissões</small>
+                        </div>
+                        <i class="fas fa-dollar-sign text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card card-comissao">
+                <div class="card-body">
+                    <h5 class="card-title">Distribuição de Comissões</h5>
+                    <div class="chart-container">
+                        <canvas id="comissoesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-comissao">
+                <div class="card-body">
+                    <h5 class="card-title">Evolução Mensal</h5>
+                    <div class="chart-container">
+                        <canvas id="evolucaoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tabela de Comissões -->
+    <div class="card card-comissao mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Comissões por Profissional</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary me-2"><i class="fas fa-download me-1"></i> Exportar</button>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-filter me-1"></i> Filtrar</button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Profissional</th>
+                            <th>Especialidade</th>
+                            <th class="text-end">Atendimentos</th>
+                            <th class="text-end">Valor Bruto</th>
+                            <th class="text-end">% Comissão</th>
+                            <th class="text-end">Valor Comissão</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Profissional 1 -->
+                        <tr class="status-pendente">
+                            <td>Dra. Ana Silva</td>
+                            <td><span class="badge bg-primary badge-especialidade">Fisioterapia</span></td>
+                            <td class="text-end">42</td>
+                            <td class="text-end">R$ 8.400,00</td>
+                            <td class="text-end">40%</td>
+                            <td class="text-end">R$ 3.360,00</td>
+                            <td><span class="badge bg-warning text-dark">Pendente</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-success me-1" title="Pagar"><i class="fas fa-money-bill"></i></button>
+                                <button class="btn btn-sm btn-outline-primary" title="Detalhes"><i class="fas fa-eye"></i></button>
+                            </td>
+                        </tr>
+                        <!-- Profissional 2 -->
+                        <tr class="status-pago">
+                            <td>Dr. Carlos Mendes</td>
+                            <td><span class="badge bg-success badge-especialidade">Nutrição</span></td>
+                            <td class="text-end">35</td>
+                            <td class="text-end">R$ 7.000,00</td>
+                            <td class="text-end">40%</td>
+                            <td class="text-end">R$ 2.800,00</td>
+                            <td><span class="badge bg-success">Pago</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" title="Recibo"><i class="fas fa-receipt"></i></button>
+                            </td>
+                        </tr>
+                        <!-- Profissional 3 -->
+                        <tr class="status-pendente">
+                            <td>Dra. Juliana Costa</td>
+                            <td><span class="badge bg-info badge-especialidade">Psicologia</span></td>
+                            <td class="text-end">28</td>
+                            <td class="text-end">R$ 5.600,00</td>
+                            <td class="text-end">40%</td>
+                            <td class="text-end">R$ 2.240,00</td>
+                            <td><span class="badge bg-warning text-dark">Pendente</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-success me-1" title="Pagar"><i class="fas fa-money-bill"></i></button>
+                                <button class="btn btn-sm btn-outline-primary" title="Detalhes"><i class="fas fa-eye"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Folha de Pagamento -->
+    <div class="card card-comissao">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Folha de Pagamento</h5>
+                <div>
+                    <button class="btn btn-sm btn-primary me-2"><i class="fas fa-money-bill me-1"></i> Processar Folha</button>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-file-pdf me-1"></i> Gerar Holerites</button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Funcionário</th>
+                            <th>Cargo</th>
+                            <th class="text-end">Salário Base</th>
+                            <th class="text-end">Comissões</th>
+                            <th class="text-end">Descontos</th>
+                            <th class="text-end">Benefícios</th>
+                            <th class="text-end">Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Funcionário 1 -->
+                        <tr>
+                            <td>Maria Souza</td>
+                            <td>Recepcionista</td>
+                            <td class="text-end">R$ 2.500,00</td>
+                            <td class="text-end">R$ 0,00</td>
+                            <td class="text-end">- R$ 200,00</td>
+                            <td class="text-end">R$ 300,00</td>
+                            <td class="text-end">R$ 2.600,00</td>
+                            <td><span class="badge bg-success">Pago</span></td>
+                        </tr>
+                        <!-- Funcionário 2 -->
+                        <tr>
+                            <td>João Oliveira</td>
+                            <td>Secretário</td>
+                            <td class="text-end">R$ 2.200,00</td>
+                            <td class="text-end">R$ 0,00</td>
+                            <td class="text-end">- R$ 180,00</td>
+                            <td class="text-end">R$ 300,00</td>
+                            <td class="text-end">R$ 2.320,00</td>
+                            <td><span class="badge bg-success">Pago</span></td>
+                        </tr>
+                        <!-- Profissional 1 -->
+                        <tr>
+                            <td>Dra. Ana Silva</td>
+                            <td>Fisioterapeuta</td>
+                            <td class="text-end">R$ 3.000,00</td>
+                            <td class="text-end">R$ 3.360,00</td>
+                            <td class="text-end">- R$ 500,00</td>
+                            <td class="text-end">R$ 500,00</td>
+                            <td class="text-end">R$ 6.360,00</td>
+                            <td><span class="badge bg-warning text-dark">Pendente</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="table-secondary">
+                        <tr>
+                            <th colspan="6">Total da Folha</th>
+                            <th class="text-end">R$ 11.280,00</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+    // Gráfico de Distribuição de Comissões
+    const comCtx = document.getElementById('comissoesChart').getContext('2d');
+    const comChart = new Chart(comCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Fisioterapia', 'Nutrição', 'Psicologia', 'Educação Física', 'Outros'],
+            datasets: [{
+                data: [3360, 2800, 2240, 1600, 1000],
+                backgroundColor: [
+                    'rgba(13, 110, 253, 0.7)',
+                    'rgba(25, 135, 84, 0.7)',
+                    'rgba(13, 202, 240, 0.7)',
+                    'rgba(255, 193, 7, 0.7)',
+                    'rgba(108, 117, 125, 0.7)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                }
+            }
+        }
+    });
+
+    // Gráfico de Evolução Mensal
+    const evoCtx = document.getElementById('evolucaoChart').getContext('2d');
+    const evoChart = new Chart(evoCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+            datasets: [
+                {
+                    label: 'Comissões',
+                    data: [8000, 8500, 9200, 10500, 11000],
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Folha de Pagamento',
+                    data: [15000, 15500, 16000, 18000, 21000],
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

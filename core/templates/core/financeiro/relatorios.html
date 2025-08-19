@@ -1,0 +1,88 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Relatórios Financeiros - Clínica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/financeiro/relatorios.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+{% endblock %}
+
+{% block topbar_title %}<span class="text">Relatórios</span>{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+<div class="content">
+ 
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+  // ==== helpers para cores do :root
+  function hexToRgba(hex, a){
+    const h = hex.replace('#','').trim();
+    const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+    const r = (n>>16)&255, g=(n>>8)&255, b=n&255;
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
+  const css = getComputedStyle(document.documentElement);
+  const roxo   = (css.getPropertyValue('--roxoPrincipal')||'#6D398E').trim();
+  const roxoH  = (css.getPropertyValue('--roxo-primary-hover')||'#9b58b4').trim();
+  const verde  = (css.getPropertyValue('--verdePrincipal')||'#92cbad').trim();
+  const cinzaM = (css.getPropertyValue('--cinza-medio')||'#888').trim();
+
+  // ==== filtros: período custom
+  const periodo = document.getElementById('periodoRelatorio');
+  const cIni = document.getElementById('dataInicioContainer');
+  const cFim = document.getElementById('dataFimContainer');
+  function toggleCustom(){ const show = periodo.value === 'custom'; cIni.style.display = show?'block':'none'; cFim.style.display = show?'block':'none'; }
+  periodo.addEventListener('change', toggleCustom);
+
+  // ==== imprimir
+  document.getElementById('btnPrint')?.addEventListener('click', ()=>window.print());
+  document.getElementById('printLocal')?.addEventListener('click', ()=>window.print());
+
+  // ==== Chart.js opções comuns
+  const common = {
+    responsive:true, maintainAspectRatio:false, animation:false, resizeDelay:200,
+    plugins:{ legend:{ position:'right', labels:{ usePointStyle:true, color:cinzaM } } },
+    scales:{ y:{ beginAtZero:true, ticks:{ color:cinzaM } }, x:{ ticks:{ color:cinzaM } } }
+  };
+
+  // Pizza: Distribuição por Especialidade
+  const pizzaCtx = document.getElementById('graficoPizza').getContext('2d');
+  new Chart(pizzaCtx, {
+    type:'pie',
+    data:{
+      labels:['Fisioterapia','Nutrição','Psicologia','Educação Física'],
+      datasets:[{
+        data:[8400,7000,5600,4000],
+        backgroundColor:[ hexToRgba(roxo, .85), hexToRgba(verde, .85), hexToRgba(roxoH, .85), 'rgba(242,183,5,.85)' ],
+        borderColor:[ hexToRgba(roxo, 1), hexToRgba(verde, 1), hexToRgba(roxoH, 1), 'rgba(242,183,5,1)' ],
+        borderWidth:1
+      }]
+    },
+    options:{ ...common, scales:undefined, plugins:{ ...common.plugins, legend:{ position:'right', labels:{ usePointStyle:true } } } }
+  });
+
+  // Barras: Comparativo Mensal
+  const barrasCtx = document.getElementById('graficoBarras').getContext('2d');
+  new Chart(barrasCtx, {
+    type:'bar',
+    data:{
+      labels:['Jan','Fev','Mar','Abr','Mai'],
+      datasets:[{
+        label:'Faturamento',
+        data:[18500,19500,22000,24000,28750],
+        backgroundColor: hexToRgba(verde,.75),
+        borderColor: hexToRgba(verde,1),
+        borderWidth:1
+      }]
+    },
+    options: common
+  });
+</script>
+{% endblock %}

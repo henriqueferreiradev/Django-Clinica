@@ -60,6 +60,11 @@ def dashboard_view(request):
     # ======== CONTAGENS PARA A VARIAÇÃO =========
     contagem_pacientes_semana_passada = Paciente.objects.filter(data_cadastro__gte=inicio_semana_passada, data_cadastro__lte=fim_semana_passada).count()
     contagem_pacientes_semana_atual = Paciente.objects.filter(data_cadastro__gte=inicio_semana, data_cadastro__lte=fim_semana).count()
+    
+    contagem_profissionais_semana_passada = Profissional.objects.filter(data_cadastro__gte=inicio_semana_passada, data_cadastro__lte=fim_semana_passada).count()
+    contagem_profissionais_semana_atual = Profissional.objects.filter(data_cadastro__gte=inicio_semana, data_cadastro__lte=fim_semana).count()
+    
+    
 
     contagem_agendamentos_semana_passada = Agendamento.objects.filter(data__gte=inicio_semana_passada, data__lte=fim_semana_passada).count()
     contagem_agendamentos_semana_atual = Agendamento.objects.filter(data__gte=inicio_semana, data__lte=fim_semana).count()
@@ -81,8 +86,17 @@ def dashboard_view(request):
             return 0
         return round((parte / total) * 100, 1)
 
+    def diferenca_semana(valor_atual, valor_anterior):
+        diferenca = valor_atual - valor_anterior
+        if diferenca > 0:
+            return f'{diferenca} a mais que semana passada.' 
+        elif diferenca > 0:
+            return f'{abs(diferenca)} a mais que semana passada.'
+        else: 
+            return "Igual a semana passada"
 
-    variacao_pacientes_ativos = variacao_percentual(contagem_pacientes_semana_atual , contagem_pacientes_semana_passada)
+    variacao_pacientes_ativos = diferenca_semana(contagem_pacientes_semana_atual , contagem_pacientes_semana_passada)
+    variacao_profissionais_ativos = diferenca_semana(contagem_profissionais_semana_atual , contagem_profissionais_semana_passada)
     variacao_agendamentos = variacao_percentual(contagem_agendamentos_semana_atual, contagem_agendamentos_semana_passada)
     variacao_sessao = variacao_percentual(agendamentos_dia_finalizados, agendamentos_dia_finalizados_ontem)
     variacao_finalizadas = percentual_diario(agendamentos_dia_finalizados, agendamentos_dia )
@@ -297,6 +311,7 @@ def dashboard_view(request):
         'grafico_status_agendamentos': grafico_status_agendamentos,
         'grafico_formas_pagamento':grafico_formas_pagamento,
         'variacao_pacientes_ativos':  variacao_pacientes_ativos,
+        'variacao_profissionais_ativos': variacao_profissionais_ativos,
         'variacao_agendamentos': variacao_agendamentos,
         'variacao_sessao':variacao_sessao,
         'variacao_finalizadas':variacao_finalizadas,

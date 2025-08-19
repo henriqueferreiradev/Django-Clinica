@@ -1,0 +1,81 @@
+/* === POSICIONAMENTO (mantido) === */
+.content { position: relative; }
+
+.content .loader-container{
+  position: absolute;
+  inset: 0;                    /* top/left/right/bottom */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  background: var(--branco);
+  z-index: 9998;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .3s ease, visibility .3s ease;
+}
+
+.content.loaded .loader-container{
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* === ESTILO DO NOVO LOADER (substitui o antigo .loader, :before, :after, @keyframes antigo) === */
+.logo-loader{
+  width: 100px;               /* ajuste se quiser */
+  height: 100px;
+  filter: drop-shadow(0 6px 18px rgba(109,57,142,.45));
+}
+
+/* Preenchimento (pulsa) */
+.fill{
+  fill: var(--roxoPrincipal, #6d398e); /* usa a variável do teu tema, com fallback */
+  transform-origin: 50% 50%;
+  animation: logo-pulse 2s ease-in-out infinite;
+}
+
+/* Linha animada */
+.stroke{
+  fill: none;
+  stroke: #b287d1;            /* ou var(--roxoSecundario) se tiver */
+  stroke-width: 6;            /* ← espessura da linha (você pediu menor) */
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-dasharray: 1400 2800;
+  stroke-dashoffset: 0;
+  animation: logo-dash 2.8s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.loader-text{
+  font-size: 18px;
+  margin-top: 6px;
+  color: var(--roxoPrincipal, #6d398e);
+  font-family: Arial, sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Animações */
+@keyframes logo-pulse{
+  0%,100%{ transform: scale(1); opacity:.99 }
+  50%    { transform: scale(1); opacity:1 }
+}
+
+@keyframes logo-dash{
+  0%   { stroke-dashoffset: 0 }
+  50%  { stroke-dashoffset: -1400 }
+  100% { stroke-dashoffset: -2800 }
+}
+
+/* Opcional: acessibilidade — reduz movimento */
+@media (prefers-reduced-motion: reduce){
+  .fill, .stroke{ animation: none; }
+}
+
+/* Opcional: se você ainda tiver essas regras antigas, pode remover.
+.loaded .loader-container { display: none; }
+.loaded .content { display: block; }
+*/

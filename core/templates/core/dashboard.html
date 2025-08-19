@@ -4,6 +4,7 @@
 {% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
  
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,11 +28,9 @@
             <div class="card-text">
                 <p>Pacientes ativos</p>
                 <h3>{{ total_pacientes_ativos }}</h3>
-                {% if variacao_pacientes_ativos <= 0 %}
-                <p class="trend trend-up"><i class="fas fa-arrow-down"></i> {{variacao_pacientes_ativos}}% a menos desde a semana passada</p>
-                {% else %}
-                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> {{variacao_pacientes_ativos}}% a mais desde a semana passada</p>
-                {% endif %}
+               
+                <p class="trend trend-up"><i class="fas fa-arrow-down"></i> {{variacao_pacientes_ativos}}</p>
+ 
             </div>
             <div class="card-icon">
                 <i class="fas fa-user-injured"></i>
@@ -45,7 +44,7 @@
             <div class="card-text">
                 <p>Profissionais ativos</p>
                 <h3>{{ total_profissionais_ativos }}</h3>
-                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> 2 novos este mês</p>
+                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> {{variacao_profissionais_ativos}}</p>
             </div>
             <div class="card-icon">
                 <i class="fas fa-user-md"></i>
@@ -192,6 +191,7 @@
     
 </div> -->
 
+  <div class="section">
   <h2>Visão Geral dos Atendimentos</h2>
 <div class="charts-row charts-row-1">
  
@@ -270,7 +270,7 @@
         </div>
     </div>
 </div>
-
+</div>
 
   <div class="section">
     <h2>Avisos</h2>

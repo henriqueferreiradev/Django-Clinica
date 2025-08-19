@@ -1,667 +1,13 @@
 {% extends 'core/base.html' %}
-
 {% load static %}
 {% block title %}Fluxo de Caixa - Clínica{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
-<link rel="stylesheet" href="{% static 'core/css/formularios/formularios_ativos.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+<link rel="stylesheet" href="{% static 'core/css/financeiro/fluxo_caixa.css' %}" />
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.css">
-<style>
-    /* Estilos Base */
-    .fluxo-caixa {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-    
-    /* Cabeçalho */
-    .fluxo-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2.5rem;
-    }
-    
-    .fluxo-title {
-        font-size: 1.8rem;
-        color: #2c3e50;
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-    }
-    
-    .fluxo-title i {
-        font-size: 1.5rem;
-        color: #3498db;
-    }
-    
-    /* Cards de Resumo */
-    .resumo-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-        margin-bottom: 2.5rem;
-    }
-    
-    .resumo-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        padding: 1.5rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .resumo-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    .resumo-card.receitas {
-        border-left: 4px solid #27ae60;
-    }
-    
-    .resumo-card.despesas {
-        border-left: 4px solid #e74c3c;
-    }
-    
-    .resumo-card.saldo {
-        background: #3498db;
-        color: white;
-    }
-    
-    .resumo-card.saldo .resumo-valor {
-        color: white;
-    }
-    
-    .resumo-titulo {
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
-        color: #7f8c8d;
-    }
-    
-    .resumo-card.saldo .resumo-titulo {
-        color: rgba(255, 255, 255, 0.8);
-    }
-    
-    .resumo-valor {
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-    
-    .resumo-card .resumo-icon {
-        font-size: 2.2rem;
-        opacity: 0.8;
-    }
-    
-    /* Filtros */
-    .filtros-container {
-        background: #f8f9fa;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    
-    .filtros-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-    }
-    
-    .filtro-group {
-        margin-bottom: 0;
-    }
-    
-    .filtro-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.85rem;
-        color: #7f8c8d;
-        font-weight: 500;
-    }
-    
-    .filtro-input, .filtro-select {
-        width: 100%;
-        padding: 0.7rem 1rem;
-        border: 1px solid #dfe6e9;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        background: white;
-    }
-    
-    .filtro-button {
-        width: 100%;
-        padding: 0.7rem;
-        background: #3498db;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        transition: background 0.2s;
-    }
-    
-    .filtro-button:hover {
-        background: #2980b9;
-    }
-    
-    /* Gráfico */
-    .grafico-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    
-    .grafico-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    
-    .grafico-titulo {
-        font-size: 1.2rem;
-        color: #2c3e50;
-        font-weight: 600;
-    }
-    
-    .grafico-canvas {
-        height: 300px;
-    }
-    
-    /* Tabela */
-    .tabela-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        padding: 1.5rem;
-    }
-    
-    .tabela-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    
-    .tabela-titulo {
-        font-size: 1.2rem;
-        color: #2c3e50;
-        font-weight: 600;
-    }
-    
-    .tabela-acoes {
-        display: flex;
-        gap: 0.8rem;
-    }
-    
-    .tabela-scroll {
-        overflow-x: auto;
-    }
-    
-    .tabela {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 800px;
-    }
-    
-    .tabela th {
-        background: #f8f9fa;
-        padding: 1rem;
-        text-align: left;
-        font-size: 0.85rem;
-        color: #7f8c8d;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .tabela td {
-        padding: 1rem;
-        border-bottom: 1px solid #ecf0f1;
-        font-size: 0.9rem;
-    }
-    
-    .tabela tr:last-child td {
-        border-bottom: none;
-    }
-    
-    .tabela tr:hover {
-        background: #f8f9fa;
-    }
-    
-    /* Linhas de saldo */
-    .linha-saldo {
-        background: #f8f9fa !important;
-        font-weight: 600;
-    }
-    
-    .linha-saldo td {
-        padding: 0.8rem 1rem;
-    }
-    
-    /* Linhas de receita/despesa */
-    .linha-receita {
-        border-left: 4px solid #27ae60;
-        background: rgba(39, 174, 96, 0.03);
-    }
-    
-    .linha-despesa {
-        border-left: 4px solid #e74c3c;
-        background: rgba(231, 76, 60, 0.03);
-    }
-    
-    /* Badges */
-    .badge {
-        display: inline-block;
-        padding: 0.3rem 0.6rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    
-    .badge-pix {
-        background: #0984e3;
-        color: white;
-    }
-    
-    .badge-credito {
-        background: #6c5ce7;
-        color: white;
-    }
-    
-    .badge-debito {
-        background: #00b894;
-        color: white;
-    }
-    
-    .badge-dinheiro {
-        background: #636e72;
-        color: white;
-    }
-    
-    .badge-pago {
-        background: #27ae60;
-        color: white;
-    }
-    
-    .badge-pendente {
-        background: #f39c12;
-        color: white;
-    }
-    
-    /* Botões */
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-        border: none;
-        gap: 0.5rem;
-    }
-    
-    .btn-primary {
-        background: #3498db;
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        background: #2980b9;
-    }
-    
-    .btn-outline {
-        background: transparent;
-        border: 1px solid #bdc3c7;
-        color: #7f8c8d;
-    }
-    
-    .btn-outline:hover {
-        background: #f8f9fa;
-    }
-    
-    .btn-sm {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-    }
-    
-    /* Paginação */
-    .paginacao {
-        display: flex;
-        justify-content: center;
-        margin-top: 2rem;
-    }
-    
-    .paginacao-list {
-        display: flex;
-        gap: 0.5rem;
-        list-style: none;
-        padding: 0;
-    }
-    
-    .paginacao-item {
-        display: flex;
-    }
-    
-    .paginacao-link {
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        border: 1px solid #dfe6e9;
-        color: #3498db;
-        text-decoration: none;
-        font-size: 0.9rem;
-    }
-    
-    .paginacao-item.active .paginacao-link {
-        background: #3498db;
-        color: white;
-        border-color: #3498db;
-    }
-    
-    .paginacao-item.disabled .paginacao-link {
-        color: #bdc3c7;
-        pointer-events: none;
-    }
-    
-    /* Valores */
-    .valor-receita {
-        color: #27ae60;
-        font-weight: 600;
-    }
-    
-    .valor-despesa {
-        color: #e74c3c;
-        font-weight: 600;
-    }
-    
-    /* Dropdown */
-    .dropdown {
-        position: relative;
-    }
-    
-    .dropdown-toggle {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .dropdown-toggle::after {
-        content: "▼";
-        font-size: 0.6rem;
-        margin-top: 0.2rem;
-    }
-    
-    .dropdown-menu {
-        position: absolute;
-        right: 0;
-        top: 100%;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        padding: 0.5rem 0;
-        min-width: 180px;
-        z-index: 100;
-        display: none;
-    }
-    
-    .dropdown-menu.show {
-        display: block;
-    }
-    
-    .dropdown-item {
-        display: block;
-        padding: 0.6rem 1.5rem;
-        color: #2c3e50;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: background 0.2s;
-    }
-    
-    .dropdown-item:hover {
-        background: #f8f9fa;
-    }
-    
-    .dropdown-divider {
-        height: 1px;
-        background: #ecf0f1;
-        margin: 0.5rem 0;
-    }
-    
-    /* Responsividade */
-    @media (max-width: 1024px) {
-        .resumo-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .filtros-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .fluxo-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-        
-        .filtros-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .tabela-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-        
-        .tabela-acoes {
-            width: 100%;
-            justify-content: flex-end;
-        }
-    }
-     /* Modal */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s;
-    }
-    
-    .modal-overlay.active {
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    .modal-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        max-width: 600px;
-        max-height: 90vh;
-        overflow-y: auto;
-        transform: translateY(20px);
-        transition: transform 0.3s;
-    }
-    
-    .modal-overlay.active .modal-container {
-        transform: translateY(0);
-    }
-    
-    .modal-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid #ecf0f1;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .modal-title {
-        font-size: 1.4rem;
-        color: #2c3e50;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-    }
-    
-    .modal-close {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #7f8c8d;
-        padding: 0.5rem;
-    }
-    
-    .modal-body {
-        padding: 1.5rem;
-    }
-    
-    .modal-footer {
-        padding: 1rem 1.5rem;
-        border-top: 1px solid #ecf0f1;
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-    }
-    
-    /* Abas do modal */
-    .tabs {
-        display: flex;
-        margin-bottom: 1.5rem;
-        border-bottom: 1px solid #ecf0f1;
-    }
-    
-    .tab {
-        padding: 0.8rem 1.5rem;
-        cursor: pointer;
-        font-weight: 500;
-        color: #7f8c8d;
-        border-bottom: 3px solid transparent;
-        transition: all 0.2s;
-    }
-    
-    .tab.active {
-        color: #3498db;
-        border-bottom-color: #3498db;
-    }
-    
-    .tab-content {
-        display: none;
-    }
-    
-    .tab-content.active {
-        display: block;
-    }
-    
-    /* Formulário */
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-        color: #2c3e50;
-        font-weight: 500;
-    }
-    
-    .form-control {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        border: 1px solid #dfe6e9;
-        border-radius: 8px;
-        font-size: 0.95rem;
-    }
-    
-    .form-select {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        border: 1px solid #dfe6e9;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        background-color: white;
-    }
-    
-    .form-row {
-        display: flex;
-        gap: 1.5rem;
-    }
-    
-    .form-col {
-        flex: 1;
-    }
-    
-    .form-radio-group {
-        display: flex;
-        gap: 1.5rem;
-        margin-top: 0.5rem;
-    }
-    
-    .form-radio {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .form-radio input {
-        margin: 0;
-    }
-    
-    /* Botão de salvar */
-    .btn-save {
-        background: #27ae60;
-        color: white;
-        padding: 0.8rem 1.5rem;
-        border-radius: 8px;
-        border: none;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-    
-    .btn-save:hover {
-        background: #219653;
-    }
-    
-    /* Mensagem de sucesso */
-    .alert-success {
-        background: rgba(39, 174, 96, 0.1);
-        border: 1px solid #27ae60;
-        color: #27ae60;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        display: none;
-    }
-</style>
+ 
 {% endblock %}
 
 {% block topbar_title %}<span class="text">Fluxo de Caixa</span>{% endblock %}
@@ -669,642 +15,541 @@
 {% block content %}
 {% include "core/partials/_confirm_modal.html" %}
 <div class="content">
-    <div class="fluxo-caixa">
-        <!-- Cabeçalho -->
-        <div class="fluxo-header">
-            <h1 class="fluxo-title">
-                <i class="fas fa-money-bill-wave"></i> Fluxo de Caixa
-            </h1>
-            <div class="fluxo-botoes">
-                <button class="btn btn-primary">
-                    <i class="fas fa-plus-circle"></i> Novo Lançamento
-                </button>
-                <button class="btn btn-outline">
-                    <i class="fas fa-print"></i> Imprimir
-                </button>
-            </div>
-        </div>
-        
-        <!-- Filtros -->
-        <div class="filtros-container">
-            <div class="filtros-grid">
-                <div class="filtro-group">
-                    <label class="filtro-label">Período</label>
-                    <select class="filtro-select">
-                        <option>Hoje</option>
-                        <option selected>Este Mês</option>
-                        <option>Mês Anterior</option>
-                        <option>Trimestre</option>
-                        <option>Semestre</option>
-                        <option>Ano</option>
-                        <option>Personalizado</option>
-                    </select>
-                </div>
-                <div class="filtro-group">
-                    <label class="filtro-label">De</label>
-                    <input type="date" class="filtro-input" value="2023-05-01">
-                </div>
-                <div class="filtro-group">
-                    <label class="filtro-label">Até</label>
-                    <input type="date" class="filtro-input" value="2023-05-31">
-                </div>
-                <div class="filtro-group">
-                    <button class="filtro-button">
-                        <i class="fas fa-filter"></i> Filtrar
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Resumo -->
-        <div class="resumo-grid">
-            <div class="resumo-card receitas">
-                <div class="resumo-content">
-                    <div class="resumo-titulo">Total Receitas</div>
-                    <div class="resumo-valor">R$ 28.750,00</div>
-                    <div class="resumo-info">+12% em relação ao mês anterior</div>
-                </div>
-                <i class="fas fa-arrow-down resumo-icon"></i>
-            </div>
-            <div class="resumo-card despesas">
-                <div class="resumo-content">
-                    <div class="resumo-titulo">Total Despesas</div>
-                    <div class="resumo-valor">R$ 15.230,00</div>
-                    <div class="resumo-info">+5% em relação ao mês anterior</div>
-                </div>
-                <i class="fas fa-arrow-up resumo-icon"></i>
-            </div>
-            <div class="resumo-card saldo">
-                <div class="resumo-content">
-                    <div class="resumo-titulo">Saldo do Período</div>
-                    <div class="resumo-valor">R$ 13.520,00</div>
-                    <div class="resumo-info">+22% em relação ao mês anterior</div>
-                </div>
-                <i class="fas fa-coins resumo-icon"></i>
-            </div>
-        </div>
-        
-        <!-- Gráfico -->
-        <div class="grafico-container">
-            <div class="grafico-header">
-                <h2 class="grafico-titulo">Fluxo de Caixa Diário</h2>
-            </div>
-            <div class="grafico-canvas">
-                <canvas id="fluxoChart"></canvas>
-            </div>
-        </div>
-        
-        <!-- Tabela -->
-        <div class="tabela-container">
-            <div class="tabela-header">
-                <h2 class="tabela-titulo">Lançamentos</h2>
-                <div class="tabela-acoes">
-                    <button class="btn btn-outline btn-sm">
-                        <i class="fas fa-download"></i> Exportar
-                    </button>
-                    <div class="dropdown">
-                        <button class="btn btn-outline btn-sm dropdown-toggle">
-                            <i class="fas fa-filter"></i> Filtrar
-                        </button>
-                        <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item">Todos</a>
-                            <a href="#" class="dropdown-item">Somente Receitas</a>
-                            <a href="#" class="dropdown-item">Somente Despesas</a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">Pagos</a>
-                            <a href="#" class="dropdown-item">Pendentes</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tabela-scroll">
-                <table class="tabela">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Descrição</th>
-                            <th>Categoria</th>
-                            <th>Paciente/Fornecedor</th>
-                            <th>Forma Pag.</th>
-                            <th>Valor</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dia 15/05 -->
-                        <tr class="linha-saldo">
-                            <td colspan="6"><strong>15/05/2023 - Segunda-feira</strong></td>
-                            <td colspan="2"><strong>Saldo do dia: R$ 2.150,00</strong></td>
-                        </tr>
-                        <tr class="linha-receita">
-                            <td>15/05 09:00</td>
-                            <td>Consulta - Dra. Ana</td>
-                            <td>Atendimento</td>
-                            <td>Maria Silva</td>
-                            <td><span class="badge badge-pix">Pix</span></td>
-                            <td class="valor-receita">R$ 350,00</td>
-                            <td><span class="badge badge-pago">Pago</span></td>
-                            <td>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="linha-receita">
-                            <td>15/05 10:30</td>
-                            <td>Pacote 10 sessões</td>
-                            <td>Pacote</td>
-                            <td>João Santos</td>
-                            <td><span class="badge badge-credito">Crédito</span></td>
-                            <td class="valor-receita">R$ 1.200,00</td>
-                            <td><span class="badge badge-pago">Pago</span></td>
-                            <td>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="linha-despesa">
-                            <td>15/05 12:00</td>
-                            <td>Material de escritório</td>
-                            <td>Suprimentos</td>
-                            <td>Papelaria Central</td>
-                            <td><span class="badge badge-dinheiro">Dinheiro</span></td>
-                            <td class="valor-despesa">R$ 420,00</td>
-                            <td><span class="badge badge-pago">Pago</span></td>
-                            <td>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        
-                        <!-- Dia 14/05 -->
-                        <tr class="linha-saldo">
-                            <td colspan="6"><strong>14/05/2023 - Domingo</strong></td>
-                            <td colspan="2"><strong>Saldo do dia: R$ 980,00</strong></td>
-                        </tr>
-                        <tr class="linha-receita">
-                            <td>14/05 08:00</td>
-                            <td>Consulta - Dr. Carlos</td>
-                            <td>Atendimento</td>
-                            <td>Ana Oliveira</td>
-                            <td><span class="badge badge-debito">Débito</span></td>
-                            <td class="valor-receita">R$ 280,00</td>
-                            <td><span class="badge badge-pago">Pago</span></td>
-                            <td>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="linha-receita">
-                            <td>14/05 10:00</td>
-                            <td>Sessão de Fisioterapia</td>
-                            <td>Atendimento</td>
-                            <td>Pedro Costa</td>
-                            <td><span class="badge badge-pix">Pix</span></td>
-                            <td class="valor-receita">R$ 150,00</td>
-                            <td><span class="badge badge-pendente">Pendente</span></td>
-                            <td>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="linha-despesa">
-                            <td>14/05 15:00</td>
-                            <td>Manutenção equipamentos</td>
-                            <td>Manutenção</td>
-                            <td>Técnicos Associados</td>
-                            <td><span class="badge badge-credito">Crédito</span></td>
-                            <td class="valor-despesa">R$ 650,00</td>
-                            <td><span class="badge badge-pago">Pago</span></td>
-                            <td>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="paginacao">
-                <ul class="paginacao-list">
-                    <li class="paginacao-item disabled">
-                        <a href="#" class="paginacao-link">Anterior</a>
-                    </li>
-                    <li class="paginacao-item active">
-                        <a href="#" class="paginacao-link">1</a>
-                    </li>
-                    <li class="paginacao-item">
-                        <a href="#" class="paginacao-link">2</a>
-                    </li>
-                    <li class="paginacao-item">
-                        <a href="#" class="paginacao-link">3</a>
-                    </li>
-                    <li class="paginacao-item">
-                        <a href="#" class="paginacao-link">Próxima</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+  <div class="fluxo-caixa">
+    <!-- Cabeçalho -->
+    <div class="fluxo-header">
+      <h1 class="fluxo-title"><i class="fas fa-money-bill-wave"></i> Fluxo de Caixa</h1>
+      <div class="fluxo-botoes">
+        <button class="btn btn-primary" id="openLancamento"><i class="fas fa-plus-circle"></i> Novo Lançamento</button>
+        <button class="btn btn-outline" id="printFx"><i class="fas fa-print"></i> Imprimir</button>
+      </div>
     </div>
+
+    <!-- Filtros -->
+    <div class="filtros-container">
+      <div class="filtros-grid">
+        <div>
+          <label class="filtro-label">Período</label>
+          <select class="filtro-select">
+            <option>Hoje</option>
+            <option selected>Este Mês</option>
+            <option>Mês Anterior</option>
+            <option>Trimestre</option>
+            <option>Semestre</option>
+            <option>Ano</option>
+            <option>Personalizado</option>
+          </select>
+        </div>
+        <div>
+          <label class="filtro-label">De</label>
+          <input type="date" class="filtro-input" value="2023-05-01">
+        </div>
+        <div>
+          <label class="filtro-label">Até</label>
+          <input type="date" class="filtro-input" value="2023-05-31">
+        </div>
+        <div>
+          <button class="filtro-button"><i class="fas fa-filter"></i> Filtrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumo -->
+    <div class="resumo-grid">
+      <div class="resumo-card receitas">
+        <div>
+          <div class="resumo-titulo">Total Receitas</div>
+          <div class="resumo-valor">R$ 28.750,00</div>
+          <div class="resumo-info">+12% em relação ao mês anterior</div>
+        </div>
+        <i class="fas fa-arrow-trend-up resumo-icon"></i>
+      </div>
+
+      <div class="resumo-card despesas">
+        <div>
+          <div class="resumo-titulo">Total Despesas</div>
+          <div class="resumo-valor">R$ 15.230,00</div>
+          <div class="resumo-info">+5% em relação ao mês anterior</div>
+        </div>
+        <i class="fas fa-arrow-trend-down resumo-icon"></i>
+      </div>
+
+      <div class="resumo-card saldo">
+        <div>
+          <div class="resumo-titulo">Saldo do Período</div>
+          <div class="resumo-valor">R$ 13.520,00</div>
+          <div class="resumo-info">+22% em relação ao mês anterior</div>
+        </div>
+        <i class="fas fa-coins resumo-icon"></i>
+      </div>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="grafico-container">
+      <h2 class="grafico-titulo">Fluxo de Caixa Diário</h2>
+      <div class="chart-box">
+        <canvas id="fluxoChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="tabela-container">
+      <div class="tabela-header">
+        <h2 class="tabela-titulo">Lançamentos</h2>
+        <div class="tabela-acoes">
+          <button class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Exportar</button>
+          <div class="dropdown">
+            <button class="btn btn-outline btn-sm dropdown-toggle"><i class="fas fa-filter"></i> Filtrar</button>
+            <div class="dropdown-menu">
+              <a href="#" class="dropdown-item">Todos</a>
+              <a href="#" class="dropdown-item">Somente Receitas</a>
+              <a href="#" class="dropdown-item">Somente Despesas</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item">Pagos</a>
+              <a href="#" class="dropdown-item">Pendentes</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabela-scroll">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th>Paciente/Fornecedor</th>
+              <th>Forma Pag.</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dia 15 -->
+            <tr class="linha-saldo">
+              <td colspan="6"><strong>15/05/2023 - Segunda-feira</strong></td>
+              <td colspan="2"><strong>Saldo do dia: R$ 2.150,00</strong></td>
+            </tr>
+            <tr class="linha-receita">
+              <td>15/05 09:00</td>
+              <td>Consulta - Dra. Ana</td>
+              <td>Atendimento</td>
+              <td>Maria Silva</td>
+              <td><span class="badge badge-pix">Pix</span></td>
+              <td class="valor-receita">R$ 350,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            <tr class="linha-receita">
+              <td>15/05 10:30</td>
+              <td>Pacote 10 sessões</td>
+              <td>Pacote</td>
+              <td>João Santos</td>
+              <td><span class="badge badge-credito">Crédito</span></td>
+              <td class="valor-receita">R$ 1.200,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            <tr class="linha-despesa">
+              <td>15/05 12:00</td>
+              <td>Material de escritório</td>
+              <td>Suprimentos</td>
+              <td>Papelaria Central</td>
+              <td><span class="badge badge-dinheiro">Dinheiro</span></td>
+              <td class="valor-despesa">R$ 420,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+
+            <!-- Dia 14 -->
+            <tr class="linha-saldo">
+              <td colspan="6"><strong>14/05/2023 - Domingo</strong></td>
+              <td colspan="2"><strong>Saldo do dia: R$ 980,00</strong></td>
+            </tr>
+            <tr class="linha-receita">
+              <td>14/05 08:00</td>
+              <td>Consulta - Dr. Carlos</td>
+              <td>Atendimento</td>
+              <td>Ana Oliveira</td>
+              <td><span class="badge badge-debito">Débito</span></td>
+              <td class="valor-receita">R$ 280,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            <tr class="linha-receita">
+              <td>14/05 10:00</td>
+              <td>Sessão de Fisioterapia</td>
+              <td>Atendimento</td>
+              <td>Pedro Costa</td>
+              <td><span class="badge badge-pix">Pix</span></td>
+              <td class="valor-receita">R$ 150,00</td>
+              <td><span class="badge badge-pendente">Pendente</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            <tr class="linha-despesa">
+              <td>14/05 15:00</td>
+              <td>Manutenção equipamentos</td>
+              <td>Manutenção</td>
+              <td>Técnicos Associados</td>
+              <td><span class="badge badge-credito">Crédito</span></td>
+              <td class="valor-despesa">R$ 650,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="paginacao">
+        <ul class="paginacao-list">
+          <li class="paginacao-item disabled"><a href="#" class="paginacao-link">Anterior</a></li>
+          <li class="paginacao-item active"><a href="#" class="paginacao-link">1</a></li>
+          <li class="paginacao-item"><a href="#" class="paginacao-link">2</a></li>
+          <li class="paginacao-item"><a href="#" class="paginacao-link">3</a></li>
+          <li class="paginacao-item"><a href="#" class="paginacao-link">Próxima</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
+
 <!-- Modal Novo Lançamento -->
-    <div class="modal-overlay" id="modalLancamento">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    <i class="fas fa-plus-circle"></i> Novo Lançamento
-                </h3>
-                <button class="modal-close" id="closeModal">&times;</button>
-            </div>
-            
-            <div class="modal-body">
-                <div class="tabs">
-                    <div class="tab active" data-tab="receita">Receita</div>
-                    <div class="tab" data-tab="despesa">Despesa</div>
-                </div>
-                
-                <div id="alertSuccess" class="alert-success">
-                    <i class="fas fa-check-circle"></i> Lançamento cadastrado com sucesso!
-                </div>
-                
-                <!-- Formulário de Receita -->
-                <div class="tab-content active" id="receita-form">
-                    <form id="formReceita">
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Data</label>
-                                    <input type="date" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Hora</label>
-                                    <input type="time" class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Descrição</label>
-                            <input type="text" class="form-control" placeholder="Ex: Consulta médica" required>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Categoria</label>
-                                    <select class="form-select" required>
-                                        <option value="">Selecione...</option>
-                                        <option>Atendimento</option>
-                                        <option>Pacote de sessões</option>
-                                        <option>Exames</option>
-                                        <option>Procedimentos</option>
-                                        <option>Outros</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Paciente</label>
-                                    <input type="text" class="form-control" placeholder="Nome do paciente" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Valor (R$)</label>
-                                    <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Forma de Pagamento</label>
-                                    <select class="form-select" required>
-                                        <option value="">Selecione...</option>
-                                        <option>Dinheiro</option>
-                                        <option>Pix</option>
-                                        <option>Cartão de Débito</option>
-                                        <option>Cartão de Crédito</option>
-                                        <option>Transferência</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Status</label>
-                            <div class="form-radio-group">
-                                <label class="form-radio">
-                                    <input type="radio" name="status-receita" value="pago" checked> Pago
-                                </label>
-                                <label class="form-radio">
-                                    <input type="radio" name="status-receita" value="pendente"> Pendente
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Observações</label>
-                            <textarea class="form-control" rows="3" placeholder="Opcional"></textarea>
-                        </div>
-                    </form>
-                </div>
-                
-                <!-- Formulário de Despesa -->
-                <div class="tab-content" id="despesa-form">
-                    <form id="formDespesa">
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Data</label>
-                                    <input type="date" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Vencimento</label>
-                                    <input type="date" class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Descrição</label>
-                            <input type="text" class="form-control" placeholder="Ex: Material de escritório" required>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Categoria</label>
-                                    <select class="form-select" required>
-                                        <option value="">Selecione...</option>
-                                        <option>Aluguel</option>
-                                        <option>Salários</option>
-                                        <option>Material</option>
-                                        <option>Manutenção</option>
-                                        <option>Contas</option>
-                                        <option>Outros</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Fornecedor</label>
-                                    <input type="text" class="form-control" placeholder="Nome do fornecedor">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Valor (R$)</label>
-                                    <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
-                                </div>
-                            </div>
-                            <div class="form-col">
-                                <div class="form-group">
-                                    <label class="form-label">Forma de Pagamento</label>
-                                    <select class="form-select" required>
-                                        <option value="">Selecione...</option>
-                                        <option>Dinheiro</option>
-                                        <option>Pix</option>
-                                        <option>Cartão de Débito</option>
-                                        <option>Cartão de Crédito</option>
-                                        <option>Transferência</option>
-                                        <option>Boleto</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Status</label>
-                            <div class="form-radio-group">
-                                <label class="form-radio">
-                                    <input type="radio" name="status-despesa" value="pago"> Pago
-                                </label>
-                                <label class="form-radio">
-                                    <input type="radio" name="status-despesa" value="pendente" checked> Pendente
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Observações</label>
-                            <textarea class="form-control" rows="3" placeholder="Opcional"></textarea>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancelModal">Cancelar</button>
-                <button class="btn-save" id="saveLancamento">
-                    <i class="fas fa-save"></i> Salvar Lançamento
-                </button>
-            </div>
-        </div>
+<div class="modal-overlay" id="modalLancamento">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fas fa-plus-circle"></i> Novo Lançamento</h3>
+      <button class="modal-close" id="closeModal">&times;</button>
     </div>
+    <div class="modal-body">
+      <div id="alertSuccess" class="alert-success"><i class="fas fa-check-circle"></i> Lançamento cadastrado com sucesso!</div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="receita">Receita</div>
+        <div class="tab" data-tab="despesa">Despesa</div>
+      </div>
+
+      <!-- Receita -->
+      <div class="tab-content active" id="receita-form">
+        <form id="formReceita">
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Data</label>
+                <input type="date" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Hora</label>
+                <input type="time" class="form-control" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <input type="text" class="form-control" placeholder="Ex: Consulta médica" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" required>
+                  <option value="">Selecione...</option>
+                  <option>Atendimento</option>
+                  <option>Pacote de sessões</option>
+                  <option>Exames</option>
+                  <option>Procedimentos</option>
+                  <option>Outros</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Paciente</label>
+                <input type="text" class="form-control" placeholder="Nome do paciente" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Valor (R$)</label>
+                <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Forma de Pagamento</label>
+                <select class="form-select" required>
+                  <option value="">Selecione...</option>
+                  <option>Dinheiro</option>
+                  <option>Pix</option>
+                  <option>Cartão de Débito</option>
+                  <option>Cartão de Crédito</option>
+                  <option>Transferência</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <div class="form-radio-group">
+              <label class="form-radio"><input type="radio" name="status-receita" value="pago" checked> Pago</label>
+              <label class="form-radio"><input type="radio" name="status-receita" value="pendente"> Pendente</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <textarea class="form-control" rows="3" placeholder="Opcional"></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Despesa -->
+      <div class="tab-content" id="despesa-form">
+        <form id="formDespesa">
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Data</label>
+                <input type="date" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Vencimento</label>
+                <input type="date" class="form-control" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <input type="text" class="form-control" placeholder="Ex: Material de escritório" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" required>
+                  <option value="">Selecione...</option>
+                  <option>Aluguel</option>
+                  <option>Salários</option>
+                  <option>Material</option>
+                  <option>Manutenção</option>
+                  <option>Contas</option>
+                  <option>Outros</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Fornecedor</label>
+                <input type="text" class="form-control" placeholder="Nome do fornecedor">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Valor (R$)</label>
+                <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Forma de Pagamento</label>
+                <select class="form-select" required>
+                  <option value="">Selecione...</option>
+                  <option>Dinheiro</option>
+                  <option>Pix</option>
+                  <option>Cartão de Débito</option>
+                  <option>Cartão de Crédito</option>
+                  <option>Transferência</option>
+                  <option>Boleto</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <div class="form-radio-group">
+              <label class="form-radio"><input type="radio" name="status-despesa" value="pago"> Pago</label>
+              <label class="form-radio"><input type="radio" name="status-despesa" value="pendente" checked> Pendente</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <textarea class="form-control" rows="3" placeholder="Opcional"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelModal">Cancelar</button>
+      <button class="btn btn-save" id="saveLancamento"><i class="fas fa-save"></i> Salvar Lançamento</button>
+    </div>
+  </div>
 </div>
+
 {% include "core/partials/alertas.html" %}
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
-    // Gráfico de Fluxo de Caixa
-    const ctx = document.getElementById('fluxoChart').getContext('2d');
-    const fluxoChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['01/05', '02/05', '03/05', '04/05', '05/05', '06/05', '07/05', '08/05', '09/05', '10/05', '11/05', '12/05', '13/05', '14/05', '15/05'],
-            datasets: [
-                {
-                    label: 'Receitas',
-                    data: [1200, 800, 950, 1100, 1300, 750, 1800, 950, 1200, 1500, 1100, 1400, 900, 980, 2150],
-                    borderColor: '#27ae60',
-                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
-                    tension: 0.3,
-                    fill: true,
-                    borderWidth: 2
-                },
-                {
-                    label: 'Despesas',
-                    data: [650, 720, 500, 800, 600, 550, 700, 850, 600, 750, 900, 650, 500, 650, 420],
-                    borderColor: '#e74c3c',
-                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                    tension: 0.3,
-                    fill: true,
-                    borderWidth: 2
-                },
-                {
-                    label: 'Saldo Diário',
-                    data: [550, 80, 450, 300, 700, 200, 1100, 100, 600, 750, 200, 750, 400, 330, 1730],
-                    borderColor: '#3498db',
-                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                    tension: 0.3,
-                    fill: true,
-                    borderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                legend: {
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        drawBorder: false
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
-            }
-        }
-    });
+  // ===== Utils
+  function hexToRgba(hex, alpha){
+    const h = hex.replace('#','').trim();
+    const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+    const r = (n>>16)&255, g=(n>>8)&255, b=n&255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  const css = getComputedStyle(document.documentElement);
+  const roxo = (css.getPropertyValue('--roxoPrincipal')||'#6D398E').trim();
+  const roxoHover = (css.getPropertyValue('--roxo-primary-hover')||'#9b58b4').trim();
+  const verde = (css.getPropertyValue('--verdePrincipal')||'#92cbad').trim();
+  const erro = (css.getPropertyValue('--erro')||'#ff0000').trim();
+  const cinzaMedio = (css.getPropertyValue('--cinza-medio')||'#888').trim();
 
-    // Dropdown
-    document.querySelector('.dropdown-toggle').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelector('.dropdown-menu').classList.toggle('show');
-    });
-
-    // Fechar dropdown ao clicar fora
-    window.addEventListener('click', function(e) {
-        if (!e.target.matches('.dropdown-toggle')) {
-            const dropdowns = document.querySelectorAll('.dropdown-menu');
-            dropdowns.forEach(function(dropdown) {
-                dropdown.classList.remove('show');
-            });
-        }
-    });
-     // Modal de Lançamento
-    const modal = document.getElementById('modalLancamento');
-    const btnOpenModal = document.querySelector('.fluxo-botoes .btn-primary');
-    const btnCloseModal = document.getElementById('closeModal');
-    const btnCancelModal = document.getElementById('cancelModal');
-    const btnSave = document.getElementById('saveLancamento');
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const alertSuccess = document.getElementById('alertSuccess');
-    
-    // Abrir modal
-    btnOpenModal.addEventListener('click', () => {
-        modal.classList.add('active');
-    });
-    
-    // Fechar modal
-    function closeModal() {
-        modal.classList.remove('active');
+  // ===== Chart.js - opções comuns
+  const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: false, // usa altura do .chart-box
+    resizeDelay: 200,
+    animation: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position:'top', labels: { usePointStyle:true, padding: 18, color: cinzaMedio } },
+      tooltip: { enabled: true }
+    },
+    scales: {
+      x: { grid: { display:false }, ticks:{ color: cinzaMedio } },
+      y: { beginAtZero:true, grid:{ drawBorder:false, color: hexToRgba(cinzaMedio, .2) }, ticks:{ color: cinzaMedio } }
     }
-    
-    btnCloseModal.addEventListener('click', closeModal);
-    btnCancelModal.addEventListener('click', closeModal);
-    
-    // Fechar ao clicar fora
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
+  };
+
+  // ===== Gráfico de Fluxo de Caixa
+  const ctx = document.getElementById('fluxoChart').getContext('2d');
+  const fluxoChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['01/05','02/05','03/05','04/05','05/05','06/05','07/05','08/05','09/05','10/05','11/05','12/05','13/05','14/05','15/05'],
+      datasets: [
+        {
+          label: 'Receitas',
+          data: [1200,800,950,1100,1300,750,1800,950,1200,1500,1100,1400,900,980,2150],
+          borderColor: hexToRgba(verde, 1),
+          backgroundColor: hexToRgba(verde, .15),
+          pointRadius: 2, tension:.3, fill:true, borderWidth:2
+        },
+        {
+          label: 'Despesas',
+          data: [650,720,500,800,600,550,700,850,600,750,900,650,500,650,420],
+          borderColor: hexToRgba(erro, 1),
+          backgroundColor: hexToRgba(erro, .12),
+          pointRadius: 2, tension:.3, fill:true, borderWidth:2
+        },
+        {
+          label: 'Saldo Diário',
+          data: [550,80,450,300,700,200,1100,100,600,750,200,750,400,330,1730],
+          borderColor: hexToRgba(roxoHover, 1),
+          backgroundColor: hexToRgba(roxo, .12),
+          pointRadius: 2, tension:.3, fill:true, borderWidth:2
         }
+      ]
+    },
+    options: commonOptions
+  });
+
+  // ===== Dropdown
+  const ddToggle = document.querySelector('.dropdown-toggle');
+  const ddMenu = document.querySelector('.dropdown-menu');
+  if(ddToggle){
+    ddToggle.addEventListener('click', (e)=>{ e.preventDefault(); ddMenu.classList.toggle('show'); });
+    window.addEventListener('click', (e)=>{ if(!e.target.closest('.dropdown')) ddMenu.classList.remove('show'); });
+  }
+
+  // ===== Modal Novo Lançamento
+  const modal = document.getElementById('modalLancamento');
+  const openBtn = document.getElementById('openLancamento');
+  const closeBtn = document.getElementById('closeModal');
+  const cancelBtn = document.getElementById('cancelModal');
+  const saveBtn = document.getElementById('saveLancamento');
+  const tabs = document.querySelectorAll('.tab');
+  const contents = document.querySelectorAll('.tab-content');
+  const alertSuccess = document.getElementById('alertSuccess');
+
+  function openModal(){ modal.classList.add('active'); }
+  function closeModal(){ modal.classList.remove('active'); }
+
+  openBtn?.addEventListener('click', openModal);
+  closeBtn?.addEventListener('click', closeModal);
+  cancelBtn?.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      tabs.forEach(t=>t.classList.remove('active'));
+      contents.forEach(c=>c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(`${tab.dataset.tab}-form`).classList.add('active');
     });
-    
-    // Trocar entre abas
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Remove active de todas as tabs
-            tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            
-            // Adiciona active na tab clicada
-            tab.classList.add('active');
-            const tabId = tab.getAttribute('data-tab');
-            document.getElementById(`${tabId}-form`).classList.add('active');
-        });
+  });
+
+  // Validação simples e simulação de sucesso
+  saveBtn?.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const activeTab = document.querySelector('.tab.active').dataset.tab; // receita | despesa
+    const form = document.getElementById(`form${activeTab.charAt(0).toUpperCase()+activeTab.slice(1)}`);
+    const reqs = form.querySelectorAll('[required]');
+    let ok = true;
+    reqs.forEach(i=>{
+      if(!i.value){ i.style.borderColor = 'var(--erro)'; ok=false; }
+      else{ i.style.borderColor = 'var(--cinzaBorda)'; }
     });
-    
-    // Salvar lançamento (simulação)
-    btnSave.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Validação dos formulários
-        const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
-        const form = document.getElementById(`form${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`);
-        const inputs = form.querySelectorAll('[required]');
-        let isValid = true;
-        
-        inputs.forEach(input => {
-            if (!input.value) {
-                input.style.borderColor = '#e74c3c';
-                isValid = false;
-            } else {
-                input.style.borderColor = '#dfe6e9';
-            }
-        });
-        
-        if (!isValid) {
-            alert('Preencha todos os campos obrigatórios!');
-            return;
-        }
-        
-        // Simulação de sucesso
-        alertSuccess.style.display = 'block';
-        
-        // Limpar formulário após 2 segundos
-        setTimeout(() => {
-            form.reset();
-            alertSuccess.style.display = 'none';
-            closeModal();
-            
-            // Aqui você adicionaria a lógica para atualizar a tabela/gráfico
-            // com os novos dados inseridos
-        }, 2000);
-    });
+    if(!ok){ alert('Preencha todos os campos obrigatórios!'); return; }
+
+    alertSuccess.style.display = 'block';
+    setTimeout(()=>{
+      form.reset();
+      alertSuccess.style.display='none';
+      closeModal();
+      // aqui você poderia atualizar tabela/gráfico com novos dados
+    }, 1500);
+  });
+
+  // Imprimir
+  document.getElementById('printFx')?.addEventListener('click', ()=>window.print());
 </script>
 {% endblock %}
 {% endblock %}
