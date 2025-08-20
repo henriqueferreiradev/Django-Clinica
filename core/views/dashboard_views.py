@@ -101,8 +101,8 @@ def dashboard_view(request):
     variacao_sessao = variacao_percentual(agendamentos_dia_finalizados, agendamentos_dia_finalizados_ontem)
     variacao_finalizadas = percentual_diario(agendamentos_dia_finalizados, agendamentos_dia )
     variacao_pendentes =  percentual_diario(faltas_dia, agendamentos_dia)
-    print( variacao_finalizadas )
-
+    print( contagem_profissionais_semana_atual, contagem_profissionais_semana_passada )
+    print( contagem_pacientes_semana_atual, contagem_pacientes_semana_passada )
     dias_labels = []
     dias_dados = []
         

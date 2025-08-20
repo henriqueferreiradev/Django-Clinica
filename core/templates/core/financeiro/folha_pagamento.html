@@ -1,432 +1,28 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Relatórios Financeiros - Clínica{% endblock %}
+{% block title %}Comissões e Folha de Pagamento - Ponto de Equilíbrio{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
-<link rel="stylesheet" href="{% static 'core/css/financeiro/relatorios.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/financeiro/folha_pagamento.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-    :root {
-        --roxoPrincipal: #6D398E;
-        --roxoPrincipal-hover: #76378f11;
-        --roxoPrincipal-hover2: #76378f;
-        --roxo-primary-hover: #9b58b4;
-        --verdePrincipal: #92cbad;
-        --branco: #FFF;
-        --bg-btn-1: #eee;
-        --preto: #000;
-        --cinzaBorda: #ccc;
-        --cinzaEscuro: #6e6e6e;
-        --fontePrincipal: 'Inter', sans-serif;
-        --bg-color: #E4E9F7;
-        --hover-dropdown: #F0F0F0;
-        --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
-        --btn-red-exclude: #ff000025;
-        --btn-red-font: #efc4c4;
-        --cinza-escuro: #555;
-        --cinza-medio: #888;
-        --cinza-claro: #eee;
-        --cinza-borda: #ddd;
-        --erro: #ff0000;
-        --titulo-perfil: #64748b;
-
-        /* Espaçamentos */
-        --espaco-xs: 0.5rem;
-        --espaco-sm: 1rem;
-        --espaco-md: 1.5rem;
-        --espaco-lg: 2rem;
-        --espaco-xl: 3rem;
-
-        /* Bordas */
-        --borda-radius: 8px;
-        --borda-radius-sm: 4px;
-
-        /* Sombras */
-        --sombra: 0 2px 10px rgba(0, 0, 0, 0.1);
-        --sombra-focus: 0 0 0 3px rgba(127, 67, 150, 0.3);
-
-        --backgroundCard: #FFF;
-        --backgroundCard-hover: #6d398e38;
-    }
-
-    .content {
-        padding: var(--espaco-md);
-    }
-
-    /* Botões */
-    .btn {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        border-radius: var(--borda-radius-sm);
-        border: none;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        font-family: var(--fontePrincipal);
-    }
-
-    .btn-primary {
-        background-color: var(--roxoPrincipal);
-        color: var(--branco);
-    }
-
-    .btn-primary:hover {
-        background-color: var(--roxo-primary-hover);
-    }
-
-    .btn-outline-secondary {
-        background-color: transparent;
-        border: 1px solid var(--cinzaBorda);
-        color: var(--cinzaEscuro);
-    }
-
-    .btn-outline-secondary:hover {
-        background-color: var(--cinzaBorda);
-    }
-
-    .btn-success {
-        background-color: #28a745;
-        color: var(--branco);
-    }
-
-    .btn-success:hover {
-        background-color: #218838;
-    }
-
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-    }
-
-    .btn-group {
-        position: relative;
-        display: inline-flex;
-    }
-
-    /* Cards */
-    .card {
-        background-color: var(--backgroundCard);
-        border-radius: var(--borda-radius);
-        box-shadow: var(--sombra);
-        margin-bottom: var(--espaco-md);
-        overflow: hidden;
-    }
-
-    .card-comissao {
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-        border: none;
-    }
-
-    .card-pendente {
-        border-left: 4px solid #ffc107;
-    }
-
-    .card-pago {
-        border-left: 4px solid #28a745;
-    }
-
-    .card-total {
-        border-left: 4px solid #007bff;
-    }
-
-    .card-body {
-        padding: var(--espaco-md);
-    }
-
-    .card-title {
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-    }
-
-    .card-subtitle {
-        color: var(--cinza-medio);
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Filtros */
-    .filter-card {
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
-    }
-
-    .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-    }
-
-    .form-select, .form-control {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid var(--cinzaBorda);
-        border-radius: var(--borda-radius-sm);
-        font-size: 1rem;
-        font-family: var(--fontePrincipal);
-    }
-
-    .form-select:focus, .form-control:focus {
-        outline: none;
-        border-color: var(--roxoPrincipal);
-        box-shadow: var(--sombra-focus);
-    }
-
-    /* Grid system */
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin: 0 -10px;
-    }
-
-    .col-md-3, .col-md-4, .col-md-6 {
-        position: relative;
-        width: 100%;
-        padding: 0 10px;
-        margin-bottom: var(--espaco-sm);
-    }
-
-    @media (min-width: 768px) {
-        .col-md-3 {
-            flex: 0 0 25%;
-            max-width: 25%;
-        }
-        .col-md-4 {
-            flex: 0 0 33.333333%;
-            max-width: 33.333333%;
-        }
-        .col-md-6 {
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
-    }
-
-    /* Status das comissões */
-    .status-pendente {
-        background-color: rgba(255, 193, 7, 0.05);
-    }
-
-    .status-pago {
-        background-color: rgba(40, 167, 69, 0.05);
-    }
-
-    /* Badges */
-    .badge {
-        display: inline-block;
-        padding: 0.35em 0.65em;
-        font-size: 0.75em;
-        font-weight: 700;
-        line-height: 1;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: baseline;
-        border-radius: 0.25rem;
-    }
-
-    .bg-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
-
-    .bg-danger {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    .bg-warning {
-        background-color: #ffc107;
-        color: black;
-    }
-
-    .bg-info {
-        background-color: #0dcaf0;
-        color: black;
-    }
-
-    .bg-success {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .bg-primary {
-        background-color: var(--roxoPrincipal);
-        color: white;
-    }
-
-    .bg-dark {
-        background-color: #343a40;
-        color: white;
-    }
-
-    .badge-especialidade {
-        font-size: 0.75rem;
-        padding: 3px 6px;
-    }
-
-    /* Tabela */
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: var(--espaco-md);
-        font-family: var(--fontePrincipal);
-    }
-
-    .table th, .table td {
-        padding: 0.75rem;
-        border-top: 1px solid var(--cinza-borda);
-    }
-
-    .table thead th {
-        background-color: #f8f9fa;
-        border-bottom: 2px solid var(--cinza-borda);
-        vertical-align: bottom;
-        font-weight: 600;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(0,0,0,0.03);
-    }
-
-    .text-end {
-        text-align: right;
-    }
-
-    .table-light {
-        background-color: #f8f9fa;
-    }
-
-    .table-secondary {
-        background-color: #e9ecef;
-    }
-
-    /* Gráficos */
-    .chart-container {
-        height: 300px;
-        position: relative;
-    }
-
-    /* Utilitários */
-    .d-flex {
-        display: flex;
-    }
-
-    .justify-content-between {
-        justify-content: space-between;
-    }
-
-    .align-items-center {
-        align-items: center;
-    }
-
-    .mb-4 {
-        margin-bottom: var(--espaco-lg);
-    }
-
-    .mb-3 {
-        margin-bottom: var(--espaco-md);
-    }
-
-    .mb-0 {
-        margin-bottom: 0;
-    }
-
-    .me-1 {
-        margin-right: 0.25rem;
-    }
-
-    .me-2 {
-        margin-right: var(--espaco-xs);
-    }
-
-    .mt-3 {
-        margin-top: var(--espaco-md);
-    }
-
-    .text-danger {
-        color: #dc3545;
-    }
-
-    .text-warning {
-        color: #fd7e14;
-    }
-
-    .text-info {
-        color: #0dcaf0;
-    }
-
-    .text-primary {
-        color: var(--roxoPrincipal);
-    }
-
-    .text-muted {
-        color: var(--cinza-medio);
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-    }
-
-    .w-100 {
-        width: 100%;
-    }
-
-    .d-none {
-        display: none;
-    }
-
-    /* Header */
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--espaco-lg);
-    }
-
-    .header h2 {
-        color: var(--roxoPrincipal);
-        font-size: 1.8rem;
-    }
-
-    .header h2 i {
-        margin-right: var(--espaco-xs);
-    }
-
-    /* Responsividade */
-    @media (max-width: 768px) {
-        .header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .header .buttons {
-            margin-top: var(--espaco-xs);
-            width: 100%;
-        }
-        
-        .header .buttons .btn {
-            width: 100%;
-            margin-bottom: var(--espaco-xs);
-        }
-    }
-</style>
+ 
 {% endblock %}
 
-{% block topbar_title %}<span class="text">Relatórios</span>{% endblock %}
+{% block topbar_title %}<span class="text">Comissões e Folha de Pagamento</span>{% endblock %}
 
 {% block content %}
 {% include "core/partials/_confirm_modal.html" %}
 <div class="content">
     <div class="header">
-        <h2><i class="fas fa-users me-2"></i> Comissões e Folha de Pagamento</h2>
+        <h2><i class="fas fa-users me-2"></i> </h2>
         <div class="buttons">
-            <button class="btn btn-primary me-2"><i class="fas fa-money-bill me-1"></i> Pagar Comissões</button>
-            <button class="btn btn-outline-secondary"><i class="fas fa-print me-1"></i> Imprimir</button>
+            <button class="btn btn-primary me-2" id="btnLancarHolerite">
+                <i class="fas fa-file-invoice me-1"></i> Lançar Holerites
+            </button>
+            <button class="btn btn-outline-secondary">
+                <i class="fas fa-print me-1"></i> Imprimir
+            </button>
         </div>
     </div>
     
@@ -672,7 +268,174 @@
     </div>
 </div>
 
+<!-- Modal de Folha de Pagamento -->
+<div class="modal" id="modalFolhaPagamento">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Lançamento de Folha - <span id="monthYear">Julho/2025</span> - <span id="employeeName">Dra. Ana Silva</span></h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- Informações Básicas -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="monthYearSelect">Mês/Ano</label>
+                    <select id="monthYearSelect" class="form-select">
+                        <option value="1/2025">Janeiro/2025</option>
+                        <option value="2/2025">Fevereiro/2025</option>
+                        <option value="3/2025">Março/2025</option>
+                        <option value="4/2025">Abril/2025</option>
+                        <option value="5/2025">Maio/2025</option>
+                        <option value="6/2025">Junho/2025</option>
+                        <option value="7/2025" selected>Julho/2025</option>
+                        <option value="8/2025">Agosto/2025</option>
+                        <option value="9/2025">Setembro/2025</option>
+                        <option value="10/2025">Outubro/2025</option>
+                        <option value="11/2025">Novembro/2025</option>
+                        <option value="12/2025">Dezembro/2025</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="employeeNameInput">Colaborador</label>
+                    <input type="text" id="employeeNameInput" class="form-control" value="Dra. Ana Silva">
+                </div>
+                <div class="form-group">
+                    <label for="hourlyRate">Valor/Hora (R$)</label>
+                    <input type="text" id="hourlyRate" class="form-control currency-input" value="R$ 150,00">
+                </div>
+            </div>
+
+            <!-- Observações -->
+            <div class="form-group">
+                <label for="observations">Observações</label>
+                <textarea id="observations" class="form-control" rows="2"></textarea>
+            </div>
+
+            <!-- Proventos -->
+            <h4 class="section-title">Proventos</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="workedHours">Horas trabalhadas</label>
+                    <input type="text" id="workedHours" class="form-control time-input" value="160:00">
+                </div>
+                <div class="form-group">
+                    <label for="workedHoursValue">Horas trabalhadas em valores (R$)</label>
+                    <input type="text" id="workedHoursValue" class="form-control currency-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="transportDays">Dias de passagens (quantidade)</label>
+                    <input type="number" id="transportDays" class="form-control" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="thirteenthFirst">13º – 1ª parcela (R$)</label>
+                    <input type="text" id="thirteenthFirst" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="thirteenthSecond">13º – 2ª parcela (R$)</label>
+                    <input type="text" id="thirteenthSecond" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="referralCommission">Comissão por indicação (R$)</label>
+                    <input type="text" id="referralCommission" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="vacationBonus">Férias + 1/3 (R$)</label>
+                    <input type="text" id="vacationBonus" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="costHelp">Ajuda de custo (R$)</label>
+                    <input type="text" id="costHelp" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="familySalary">Salário família (R$)</label>
+                    <input type="text" id="familySalary" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="bonus">Gratificação (R$)</label>
+                    <input type="text" id="bonus" class="form-control currency-input">
+                </div>
+            </div>
+            <div class="total-row">
+                <span>TOTAL PROVENTOS (R$)</span>
+                <span id="totalEarnings">R$ 0,00</span>
+            </div>
+
+            <!-- Descontos -->
+            <h4 class="section-title">Descontos</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="discount">Desconto (R$)</label>
+                    <input type="text" id="discount" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="inssDiscount">Desconto INSS (R$)</label>
+                    <input type="text" id="inssDiscount" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="irrfDiscount">IRRF folha (R$)</label>
+                    <input type="text" id="irrfDiscount" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="storeDiscount">Desconto lojinha (R$)</label>
+                    <input type="text" id="storeDiscount" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="healthPlan">Plano de saúde (R$)</label>
+                    <input type="text" id="healthPlan" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="mei">MEI (R$)</label>
+                    <input type="text" id="mei" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label for="otherDiscounts">Outros (adiantamento) (R$)</label>
+                    <input type="text" id="otherDiscounts" class="form-control currency-input">
+                </div>
+            </div>
+            <div class="total-row">
+                <span>TOTAL DESCONTOS (R$)</span>
+                <span id="totalDeductions">R$ 0,00</span>
+            </div>
+
+            <!-- Resultado Final -->
+            <div class="total-row" style="background-color: #e3f2fd; color: #0d47a1;">
+                <span>Total Salário (R$)</span>
+                <span id="netSalary">R$ 0,00</span>
+            </div>
+
+            <!-- Anexos -->
+            <h4 class="section-title">Anexos do mês</h4>
+            <div class="form-group">
+                <label>Arquivo (PDF ou imagem: JPG/PNG)</label>
+                <div class="file-upload" id="fileUploadArea">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    <p>Clique para selecionar ou arraste um arquivo</p>
+                    <input type="file" id="fileUpload" style="display: none;" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+                <div class="file-info" id="fileInfo">
+                    <div>
+                        <span id="fileName"></span>
+                        <small id="fileSize"></small>
+                    </div>
+                    <button type="button" id="removeFileBtn" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-times"></i> Remover
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline-secondary" id="cancelBtn">Cancelar</button>
+            <button class="btn btn-primary" id="saveBtn">Salvar</button>
+            <button class="btn btn-success" id="saveAndGenerateBtn">Salvar e Gerar Comprovante</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script>
     // Gráfico de Distribuição de Comissões
     const comCtx = document.getElementById('comissoesChart').getContext('2d');
@@ -744,6 +507,265 @@
                 }
             }
         }
+    });
+
+    // Controle do Modal de Folha de Pagamento
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('modalFolhaPagamento');
+        const btnAbrir = document.getElementById('btnLancarHolerite');
+        const btnFechar = document.querySelector('.modal-close');
+        const btnCancelar = document.getElementById('cancelBtn');
+        
+        // Abrir modal
+        btnAbrir.addEventListener('click', function() {
+            modal.classList.add('show');
+            calculateTotals();
+        });
+        
+        // Fechar modal
+        btnFechar.addEventListener('click', function() {
+            modal.classList.remove('show');
+        });
+        
+        btnCancelar.addEventListener('click', function() {
+            modal.classList.remove('show');
+        });
+        
+        // Fechar modal clicando fora dele
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+        
+        // Máscaras para os campos
+        $('.currency-input').mask('R$ #.##0,00', {reverse: true});
+        $('.time-input').mask('00:00');
+        
+        // Upload de arquivo
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileUpload');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const removeFileBtn = document.getElementById('removeFileBtn');
+        
+        fileUploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'flex';
+            }
+        });
+        
+        removeFileBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+        });
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Calcular valor das horas trabalhadas
+        const workedHoursInput = document.getElementById('workedHours');
+        const hourlyRateInput = document.getElementById('hourlyRate');
+        const workedHoursValueInput = document.getElementById('workedHoursValue');
+        
+        function calculateWorkedHoursValue() {
+            const hoursStr = workedHoursInput.value;
+            const rateStr = hourlyRateInput.value;
+            
+            if (hoursStr && rateStr) {
+                // Parse hours (HH:MM)
+                const [hours, minutes] = hoursStr.split(':').map(Number);
+                const totalHours = hours + (minutes / 60);
+                
+                // Parse rate (R$ X.XXX,XX)
+                const rate = parseFloat(rateStr.replace('R$ ', '').replace('.', '').replace(',', '.')) || 0;
+                
+                // Calculate value
+                const value = totalHours * rate;
+                
+                // Format and display
+                workedHoursValueInput.value = 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
+        }
+        
+        workedHoursInput.addEventListener('input', calculateWorkedHoursValue);
+        hourlyRateInput.addEventListener('input', calculateWorkedHoursValue);
+        
+        // Calcular totais
+        function calculateTotals() {
+            let totalEarnings = 0;
+            let totalDeductions = 0;
+            
+            // Sum all earnings
+            document.querySelectorAll('.currency-input').forEach(input => {
+                const id = input.id;
+                if (id && ['workedHoursValue', 'thirteenthFirst', 'thirteenthSecond', 'referralCommission', 
+                          'vacationBonus', 'costHelp', 'familySalary', 'bonus'].includes(id)) {
+                    const value = parseFloat(input.value.replace('R$ ', '').replace('.', '').replace(',', '.')) || 0;
+                    totalEarnings += value;
+                }
+            });
+            
+            // Sum all deductions
+            document.querySelectorAll('.currency-input').forEach(input => {
+                const id = input.id;
+                if (id && ['discount', 'inssDiscount', 'irrfDiscount', 'storeDiscount', 
+                          'healthPlan', 'mei', 'otherDiscounts'].includes(id)) {
+                    const value = parseFloat(input.value.replace('R$ ', '').replace('.', '').replace(',', '.')) || 0;
+                    totalDeductions += value;
+                }
+            });
+            
+            // Update totals
+            document.getElementById('totalEarnings').textContent = 'R$ ' + totalEarnings.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('totalDeductions').textContent = 'R$ ' + totalDeductions.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('netSalary').textContent = 'R$ ' + (totalEarnings - totalDeductions).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+        
+        // Recalcular totais quando os valores mudam
+        document.querySelectorAll('.currency-input').forEach(input => {
+            if (input.id !== 'workedHoursValue') {
+                input.addEventListener('input', calculateTotals);
+            }
+        });
+        
+        // Atualizar título quando mês/ano ou nome do colaborador mudar
+        const monthYearSelect = document.getElementById('monthYearSelect');
+        const employeeNameInput = document.getElementById('employeeNameInput');
+        const monthYearSpan = document.getElementById('monthYear');
+        const employeeNameSpan = document.getElementById('employeeName');
+        
+        function updateTitle() {
+            monthYearSpan.textContent = monthYearSelect.options[monthYearSelect.selectedIndex].text;
+            employeeNameSpan.textContent = employeeNameInput.value;
+        }
+        
+        monthYearSelect.addEventListener('change', updateTitle);
+        employeeNameInput.addEventListener('input', updateTitle);
+        
+        // Botões de salvar
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            savePayrollData(false);
+        });
+        
+        document.getElementById('saveAndGenerateBtn').addEventListener('click', function() {
+            savePayrollData(true);
+        });
+        
+        function savePayrollData(generatePDF) {
+            // Validação básica
+            if (!monthYearSelect.value || !employeeNameInput.value || !hourlyRateInput.value) {
+                alert('Por favor, preencha todos os campos obrigatórios (Mês/Ano, Colaborador e Valor/Hora).');
+                return;
+            }
+            
+            // Aqui você normalmente enviaria os dados para o servidor
+            if (generatePDF) {
+                generatePayrollPDF();
+            }
+            
+            alert(`Dados ${generatePDF ? 'salvos e comprovante gerado' : 'salvos'} com sucesso!`);
+            modal.classList.remove('show');
+        }
+        
+        function generatePayrollPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Título
+            doc.setFontSize(18);
+            doc.text('COMPROVANTE DE FOLHA DE PAGAMENTO', 105, 15, { align: 'center' });
+            
+            // Informações do cabeçalho
+            doc.setFontSize(12);
+            doc.text(`Colaborador: ${employeeNameInput.value}`, 15, 25);
+            doc.text(`Mês/Ano: ${monthYearSelect.options[monthYearSelect.selectedIndex].text}`, 15, 30);
+            doc.text(`Valor/Hora: ${hourlyRateInput.value}`, 15, 35);
+            
+            // Observações
+            const observations = document.getElementById('observations').value;
+            if (observations) {
+                doc.text(`Observações: ${observations}`, 15, 45);
+            }
+            
+            // Tabela de Proventos
+            doc.setFontSize(14);
+            doc.text('PROVENTOS', 15, 55);
+            
+            const earningsData = [
+                ['Horas trabalhadas', document.getElementById('workedHours').value || '00:00', document.getElementById('workedHoursValue').value || 'R$ 0,00'],
+                ['13º - 1ª parcela', '', document.getElementById('thirteenthFirst').value || 'R$ 0,00'],
+                ['13º - 2ª parcela', '', document.getElementById('thirteenthSecond').value || 'R$ 0,00'],
+                ['Comissão por indicação', '', document.getElementById('referralCommission').value || 'R$ 0,00'],
+                ['Férias + 1/3', '', document.getElementById('vacationBonus').value || 'R$ 0,00'],
+                ['Ajuda de custo', '', document.getElementById('costHelp').value || 'R$ 0,00'],
+                ['Salário família', '', document.getElementById('familySalary').value || 'R$ 0,00'],
+                ['Gratificação', '', document.getElementById('bonus').value || 'R$ 0,00'],
+                ['TOTAL PROVENTOS', '', document.getElementById('totalEarnings').textContent]
+            ];
+            
+            doc.autoTable({
+                startY: 60,
+                head: [['Descrição', 'Horas/Dias', 'Valor (R$)']],
+                body: earningsData,
+                theme: 'grid',
+                headStyles: { fillColor: [41, 128, 185] },
+                margin: { left: 15 }
+            });
+            
+            // Tabela de Descontos
+            doc.setFontSize(14);
+            doc.text('DESCONTOS', 15, doc.autoTable.previous.finalY + 15);
+            
+            const deductionsData = [
+                ['Desconto', document.getElementById('discount').value || 'R$ 0,00'],
+                ['INSS', document.getElementById('inssDiscount').value || 'R$ 0,00'],
+                ['IRRF', document.getElementById('irrfDiscount').value || 'R$ 0,00'],
+                ['Lojinha', document.getElementById('storeDiscount').value || 'R$ 0,00'],
+                ['Plano de saúde', document.getElementById('healthPlan').value || 'R$ 0,00'],
+                ['MEI', document.getElementById('mei').value || 'R$ 0,00'],
+                ['Outros', document.getElementById('otherDiscounts').value || 'R$ 0,00'],
+                ['TOTAL DESCONTOS', document.getElementById('totalDeductions').textContent]
+            ];
+            
+            doc.autoTable({
+                startY: doc.autoTable.previous.finalY + 20,
+                head: [['Descrição', 'Valor (R$)']],
+                body: deductionsData,
+                theme: 'grid',
+                headStyles: { fillColor: [41, 128, 185] },
+                margin: { left: 15 }
+            });
+            
+            // Resultado final
+            doc.setFontSize(16);
+            doc.text(`TOTAL LÍQUIDO: ${document.getElementById('netSalary').textContent}`, 15, doc.autoTable.previous.finalY + 20);
+            
+            // Rodapé
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text('Gerado em: ' + new Date().toLocaleString('pt-BR'), 15, 285);
+            
+            // Salvar o PDF
+            doc.save(`Folha_${employeeNameInput.value}_${monthYearSelect.options[monthYearSelect.selectedIndex].text}.pdf`);
+        }
+        
+        // Cálculos iniciais
+        calculateWorkedHoursValue();
+        calculateTotals();
     });
 </script>
 {% endblock %}

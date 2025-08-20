@@ -23,8 +23,9 @@ def cadastrar_profissionais_view(request):
                 objeto_id=profissional.id,
                 descricao=f'Profissional {profissional.nome} inativado.')
             return redirect('profissionals')
-
-        # Criação de novo profissional
+        rg = request.POST.get('rg')
+        cpf = request.POST.get('cpf')
+        cnpj = request.POST.get('cnpj')
         nome = request.POST.get('nome')
         sobrenome = request.POST.get('sobrenome')
         nomeSocial = request.POST.get('nomeSocial')
@@ -36,9 +37,8 @@ def cadastrar_profissionais_view(request):
             messages.error(request, "Já existe um profissional com este CNPJ.")
             return redirect('cadastrar_profissional') 
         
-        rg = request.POST.get('rg')
-        cpf = request.POST.get('cpf')
-        cnpj = request.POST.get('cnpj')
+       
+
         nascimento = request.POST.get('nascimento')
         try:
             nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
