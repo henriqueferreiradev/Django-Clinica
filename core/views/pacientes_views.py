@@ -127,20 +127,16 @@ def pacientes_view(request):
     
     
 @login_required(login_url='login')
-
-
-
 def cadastrar_pacientes_view(request):
-    mostrar_todos = request.GET.get('mostrar_todos') == 'on'
-    filtra_inativo = request.GET.get('filtra_inativo') == 'on'
-    situacao = request.GET.get('situacao') == True
-    
-
-
-
     if request.method == 'POST':
- 
-        # Edição ou criação
+        consent_trat = request.POST.get('consentimento_tratamento')
+        consent_mark = bool(request.POST.get('consentimento_marketing'))
+        politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
+        
+        if consent_trat:
+            messages.error(request, 'Você precisa aceitar o termo de consentimento (LGPD) para continuar')
+            return redirect('')
+        
         paciente_id = request.POST.get('paciente_id')
         nome = request.POST.get('nome')
         cpf = request.POST.get('cpf')
@@ -188,12 +184,19 @@ def cadastrar_pacientes_view(request):
                 telEmergencia=request.POST.get('telEmergencia'),
                 email=request.POST.get('email'),
                 observacao=request.POST.get('observacao'),
-                ativo=True
+                consentimento_lgpd=True,
+                consentimento_marketing=consent_mark,
+                politica_privacidade_versao=politica_ver,
+                data_consentimento=timezone.now(),
+                ip_consentimento=request.META.get('REMOTE_ADDR'),
+                pre_cadastro=False,         
+                conferido=True,
+                ativo=True,
             )
             print(request.POST.get("cor_raca"))
             if foto:
                 paciente.foto = foto
-                paciente.save()
+                paciente.save() 
                 messages.info(request, 'Foto do paciente atualizada')
             messages.success(request, f'✅ Paciente {paciente.nome} cadastrado com sucesso!')
             registrar_log(usuario=request.user,
@@ -204,36 +207,12 @@ def cadastrar_pacientes_view(request):
             return redirect('cadastrar_paciente')
 
 
-    query = request.GET.get('q', '').strip()
-
-    if mostrar_todos:
-        pacientes = Paciente.objects.all().order_by('-id')
-    elif filtra_inativo:
-        pacientes = Paciente.objects.filter(ativo=False)
-    else:
-        pacientes = Paciente.objects.filter(ativo=True).order_by('-id')
-
-    total_ativos = Paciente.objects.filter(ativo=True).count()
     
-
-    if query:
-        pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf__icontains=query))
-
-    paginator = Paginator(pacientes, 12)
-    page_number = request.GET.get("page")
-    try:
-        page_obj = paginator.get_page(page_number)
-    except PageNotAnInteger:
-        page_obj = paginator.page(1)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+   
 
     return render(request, 'core/pacientes/cadastrar_paciente.html', {
-        'page_obj': page_obj,
-        'query': query,
-        'total_ativos': total_ativos,
-        'mostrar_todos': mostrar_todos,
-        'filtra_inativo': filtra_inativo,
+  
+ 
         'estado_civil_choices': ESTADO_CIVIL,
         'midia_choices': MIDIA_ESCOLHA,
         'sexo_choices': SEXO_ESCOLHA,
@@ -328,8 +307,6 @@ def ficha_paciente(request, id):
  
     return render(request, 'core/pacientes/ficha_paciente.html', {'paciente': paciente})
 
-
-
 @require_GET
 def buscar_pacientes(request):
     termo = request.GET.get('q','').strip()
@@ -394,6 +371,14 @@ def dados_paciente(request, paciente_id):
  
 def pre_cadastro(request):
     if request.method == 'POST':
+        
+        consent_trat = request.POST.get('consentimento_tratamento')
+        consent_mark = bool(request.POST.get('consentimento_marketing'))
+        politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
+        
+        if consent_trat:
+            messages.error(request, 'Você precisa aceitar o termo de consentimento (LGPD) para continuar')
+            
         nome = request.POST.get('nome')
         cpf = request.POST.get('cpf')
         nascimento = request.POST.get('nascimento')
@@ -438,6 +423,11 @@ def pre_cadastro(request):
             telEmergencia=request.POST.get('telEmergencia'),
             email=request.POST.get('email'),
             observacao=request.POST.get('observacao'),
+            consentimento_lgpd=True,
+            consentimento_marketing=consent_mark,
+            politica_privacidade_versao=politica_ver,
+            data_consentimento=timezone.now(),
+            ip_consentimento=request.META.get('REMOTE_ADDR'),
             ativo=True,
             pre_cadastro=True,         
             conferido=False            
@@ -447,7 +437,7 @@ def pre_cadastro(request):
             paciente.foto = foto
             paciente.save()
 
-        # ✅ Criar pendência para profissional responsável
+       
         Pendencia.objects.create(
             tipo='Pré-cadastro',
             descricao=f"Conferir pré-cadastro de {paciente.nome}",
@@ -455,7 +445,7 @@ def pre_cadastro(request):
             resolvido=False
         )
     
-        messages.success(request, "✅ Pré-cadastro enviado com sucesso! Entraremos em contato.")
+        
         return render(request, 'core/pacientes/pre_cadastro_confirmacao.html')
 
     return render(request, 'core/pacientes/pre_cadastro.html', {
@@ -704,3 +694,6 @@ def visualizar_respostas_formulario(request, resposta_id):
     }
     
     return render(request, 'core/pacientes/respostas_formulario.html', context)
+
+def politica_privacidade(request):
+    return render(request, 'core/juridico/politica_privacidade.html')

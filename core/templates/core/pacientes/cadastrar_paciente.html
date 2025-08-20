@@ -1,26 +1,16 @@
 {% extends 'core/base.html' %} {% load static %} {% block title %}Cadastrar
 Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
-<link
-  rel="stylesheet"
-  href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}"
-/>
- 
+
+
+<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}"/>
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+
 {% endblock %}
 
-<div class="topbar">
-  <span class="text"
-    >{% block topbar_title %} Cadastrar Pacientes {% endblock %}</span
-  >
-</div>
+{% block topbar_title %} Cadastrar Pacientes {% endblock %}
 
 {% block content %}
+
 <main id="form-section" class="form-section">
    
     <div class="content">
@@ -543,6 +533,80 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                 />
               </div>
             </div>
+                          <!-- LGPD: Aviso + Consentimentos -->
+              <section class="lgpd-section" style="margin-top: 1.5rem">
+                <div class="lgpd-box" style="
+                      background: #faf7fd;
+                      border: 1px solid #e9d9f5;
+                      border-radius: 12px;
+                      padding: 16px;
+                    ">
+                  <p class="lgpd-title" style="
+                        margin: 0 0 0.5rem 0;
+                        font-weight: 600;
+                        color: #5b2b75;
+                      ">
+                    Proteção de Dados e Imagem (LGPD)
+                  </p>
+                  <p class="lgpd-text" style="
+                        margin: 0 0 0.75rem 0;
+                        color: #4a4a4a;
+                        font-size: 0.95rem;
+                        line-height: 1.5;
+                      ">
+                    As informações deste formulário serão utilizadas
+                    exclusivamente para cadastro, contato e organização do seu
+                    atendimento nesta clínica. Seus dados são tratados
+                    conforme a Lei nº 13.709/2018 (LGPD), com medidas de
+                    segurança e acesso restrito. Não compartilhamos com
+                    terceiros sem sua autorização, salvo nas hipóteses
+                    previstas em lei.
+                    <a href="/politica-de-privacidade" target="_blank" rel="noopener"
+                      style="color: #7f4396; text-decoration: underline">Leia a Política de Privacidade</a>.
+                  </p>
+
+                  <!-- Consentimento obrigatório para tratamento -->
+                  <label class="consent">
+                    <input type="checkbox" name="consentimento_tratamento" required aria-required="true" />
+                    <span>
+                      Declaro que <strong>li</strong> e
+                      <strong>concordo</strong> com o tratamento dos meus
+                      dados <em>pessoais e sensíveis</em> para as finalidades
+                      informadas acima.
+                    </span>
+                  </label>
+
+                  <!-- Consentimento opcional para uso de imagem -->
+                  <label class="consent">
+                    <input type="checkbox" name="consentimento_imagem" value="on" />
+                    <span>
+                      Autorizo, de forma livre e opcional, o uso da minha
+                      imagem (fotos/vídeos) pela clínica, inclusive em
+                      materiais de divulgação, redes sociais e campanhas
+                      institucionais. Estou ciente de que posso revogar esta
+                      autorização a qualquer momento.
+                    </span>
+                  </label>
+
+                  <!-- Consentimento opcional para comunicações -->
+                  <label class="consent">
+                    <input type="checkbox" name="consentimento_marketing" value="on" />
+                    <span>
+                      Aceito receber comunicações sobre orientações, conteúdos
+                      e novidades da clínica por e-mail/WhatsApp. (Opcional)
+                    </span>
+                  </label>
+
+                  <!-- Campo oculto para versionamento do termo -->
+                  <input type="hidden" name="politica_privacidade_versao" value="v1.0-2025-08-20" />
+                </div>
+
+                <small style="display: block; margin-top: 0.5rem; color: #666">
+                  Você pode solicitar acesso, correção ou exclusão de dados,
+                  bem como revogar o uso de imagem ou marketing, pelos canais
+                  informados na Política de Privacidade.
+                </small>
+              </section>
           </div>
 
           <div class="form-navigation">

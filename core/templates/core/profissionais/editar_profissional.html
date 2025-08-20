@@ -1,22 +1,20 @@
 {% extends 'core/base.html' %}
 
 {% load static %}
-{% block title %}Cadastrar Profissional - Ponto de Equilíbrio{% endblock %}
+{% block title %}Editar Profissional - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/profissionais/cadastrar_profissional.css' %}">
- 
-<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}"/>
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 {% endblock %}
+{% block topbar_title %} Editar profissional {% endblock %}
+
 
 {% block content %}
 
 
 <main id="form-section" class="form-section">
-  <div class="container">
+  
     <div id='form-content' class="content">
       <!-- Progress Steps -->
       <div class="form-progress">
@@ -694,7 +692,7 @@
         </div>
       </form>
     </div>
-  </div>
+  
 </main>
  
 {% endblock %}

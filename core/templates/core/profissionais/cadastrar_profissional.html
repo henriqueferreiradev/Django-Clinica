@@ -3,15 +3,12 @@
 {% load static %}
 {% block title %}Cadastrar Profissional - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/profissionais/cadastrar_profissional.css' %}">
- 
-<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}"/>
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+ 
 {% endblock %}
-
+{% block topbar_title %} Cadastrar profisisonal{% endblock %}
 {% block content %}
 
 
@@ -661,7 +658,7 @@
   
 </main>
 {% include "core/partials/alertas.html" %}
- {% endblock %}
+{% endblock %}
 
 {% block scripts %}
 <script type="module" src="{% static 'core/js/pacientes/main.js' %}"></script>

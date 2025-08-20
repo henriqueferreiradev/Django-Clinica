@@ -85,5 +85,12 @@ urlpatterns = [
     path('form-builder/obter/<int:form_id>/', form_builder_views.obter_formulario, name='obter_formulario'),
     
  
+ 
+    path('politica-de-privacidade/', pacientes_views.politica_privacidade, name='politica-de-privacidade'),
+ 
+ 
+ 
+ 
+    
 
 ]

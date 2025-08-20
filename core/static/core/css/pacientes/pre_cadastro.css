@@ -718,3 +718,18 @@ img {
 input.error {
     border-color: red;
 }
+
+.consent{
+    display:flex;
+    align-items:flex-start;
+    gap:.6rem;
+    margin:.25rem 0;
+    color:#333;
+    font-size:.95rem;
+  }
+  .consent span{
+    line-height:1.2;            
+    transform: translateY(-2px); 
+  
+  }
+  

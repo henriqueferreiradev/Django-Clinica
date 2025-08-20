@@ -9,6 +9,7 @@ from django.utils.text import slugify
 import os
 from dateutil.relativedelta import relativedelta
 import uuid
+ 
 
 def caminho_foto_paciente(instance, filename):
     nome = slugify(instance.nome)
@@ -209,8 +210,16 @@ class Paciente(models.Model):
     nomeEmergencia = models.CharField(max_length=100)
     vinculo = models.CharField(max_length=100, choices=VINCULO)
     telEmergencia = models.CharField(max_length=20, blank=True, null=True)
-     
+    
+    consentimento_lgpd = models.BooleanField(default=False)
+    consentimento_marketing = models.BooleanField(default=False)
+    politica_privacidade_versao = models.CharField(max_length=32, blank=True, default='')
+    data_consentimento = models.DateField(null=True, blank=True)
+    ip_consentimento = models.GenericIPAddressField(null=True, blank=True)
+    
+    
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
+
     ativo = models.BooleanField(default=True)
     pre_cadastro = models.BooleanField(default=False)
     conferido = models.BooleanField(default=False)
@@ -495,9 +504,7 @@ class Pendencia(models.Model):
 
 
 
-from django.db import models
-from core.models import Paciente  # ou de onde estiver importado
-import uuid
+ 
 
 TIPO_PERGUNTA = (
     ('short-text', 'Texto Curto'),
