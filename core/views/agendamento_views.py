@@ -188,14 +188,16 @@ def criar_agendamento(request):
                 tipo_reposicao=tipo_reposicao,
                 eh_reposicao=True
             )
+            '''
             registrar_log(usuario=request.user,
                         acao='Criação',
                         modelo='Pacote Paciente',
-                        objeto_id=pacote_codigo.id,
+                        # objeto_id=pacote_codigo.id,
                         descricao=f'Nova reposição registrada para o {paciente.nome}.')
+        '''
             pacote.codigo = f'REP{uuid.uuid4().hex[:8].upper()}'
             pacote.save()
-            
+        
             # Passo 3: Marcar o agendamento de origem como reposto (se existir)
             if agendamento_origem:
                 agendamento_origem.foi_reposto = True
