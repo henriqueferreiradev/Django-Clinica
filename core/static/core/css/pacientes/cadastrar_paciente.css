@@ -130,8 +130,6 @@ img {
 }
 
 
-
-/* Progress Steps */
 .form-progress {
   display: flex;
   margin-bottom: var(--espaco-lg);

@@ -603,7 +603,7 @@ def editar_agendamento(request, agendamento_id):
 
             hora_fim_aux = data.get('hora_fim_aux')
             agendamento.hora_fim_aux = datetime.strptime(hora_fim_aux, '%H:%M').time() if hora_fim_aux else None
-
+            observacoes = data.get('observacoes')
 
             agendamento.save()
             registrar_log(
