@@ -10,6 +10,7 @@ from core.views import (
     logs_views,
     api_views,
     form_builder_views,
+    equipamentos_views,
 )
  
 
@@ -87,6 +88,7 @@ urlpatterns = [
  
  
     path('politica-de-privacidade/', pacientes_views.politica_privacidade, name='politica-de-privacidade'),
+    path('gestao-equipamentos/', equipamentos_views.gestao_equipamentos, name='politica-de-privacidade'),
  
  
  

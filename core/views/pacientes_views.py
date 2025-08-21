@@ -194,11 +194,14 @@ def cadastrar_pacientes_view(request):
                 ativo=True,
             )
             print(request.POST.get("cor_raca"))
+            
+            
             if foto:
                 paciente.foto = foto
                 paciente.save() 
                 messages.info(request, 'Foto do paciente atualizada')
             messages.success(request, f'✅ Paciente {paciente.nome} cadastrado com sucesso!')
+            
             registrar_log(usuario=request.user,
                         acao='Criação',
                         modelo='Paciente',

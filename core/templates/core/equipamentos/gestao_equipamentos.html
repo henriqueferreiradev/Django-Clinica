@@ -1,0 +1,567 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Pacientes - Ponto de Equilíbrio{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/equipamentos/gestao_equipamentos.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+{% endblock %}
+{% block topbar_title %}Pacientes{% endblock %}
+
+{% block content %}
+
+{% include "core/partials/_confirm_modal.html" %}
+
+<div class="content">
+    <div class="container">
+        <div class="header">
+            <h2><i class="fas fa-x-ray me-2"></i> Gestão de Equipamentos Médicos</h2>
+            <div class="buttons">
+                <button class="btn btn-primary me-2" id="btnCadastrarEquipamento">
+                    <i class="fas fa-plus-circle me-1"></i> Cadastrar Equipamento
+                </button>
+                <button class="btn btn-outline-secondary">
+                    <i class="fas fa-print me-1"></i> Imprimir Relatório
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="filter-card mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="filtroStatus">
+                        <option value="">Todos</option>
+                        <option value="disponivel">Disponível</option>
+                        <option value="manutencao">Em Manutenção</option>
+                        <option value="indisponivel">Indisponível</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Categoria</label>
+                    <select class="form-select" id="filtroCategoria">
+                        <option value="">Todas</option>
+                        <option value="diagnostico">Diagnóstico</option>
+                        <option value="monitoramento">Monitoramento</option>
+                        <option value="tratamento">Tratamento</option>
+                        <option value="cirurgia">Cirurgia</option>
+                        <option value="suporte">Suporte Vital</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Localização</label>
+                    <select class="form-select" id="filtroLocalizacao">
+                        <option value="">Todas</option>
+                        <option value="centrocirurgico">Centro Cirúrgico</option>
+                        <option value="uti">UTI</option>
+                        <option value="emergencia">Emergência</option>
+                        <option value="laboratorio">Laboratório</option>
+                        <option value="radiologia">Radiologia</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-center" style="align-items: flex-end;">
+                    <button class="btn btn-primary w-100" id="btnFiltrar">
+                        <i class="fas fa-filter me-1"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cards de Estatísticas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card status-disponivel">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">Disponíveis</h6>
+                                <h3 class="card-title text-success">28</h3>
+                                <small class="text-muted">Equipamentos em uso</small>
+                            </div>
+                            <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card status-manutencao">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">Manutenção</h6>
+                                <h3 class="card-title text-warning">5</h3>
+                                <small class="text-muted">Equipamentos ausentes</small>
+                            </div>
+                            <i class="fas fa-tools text-warning" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card status-indisponivel">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">Indisponíveis</h6>
+                                <h3 class="card-title text-danger">3</h3>
+                                <small class="text-muted">Equipamentos inativos</small>
+                            </div>
+                            <i class="fas fa-times-circle text-danger" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">Total</h6>
+                                <h3 class="card-title text-primary">36</h3>
+                                <small class="text-muted">Equipamentos cadastrados</small>
+                            </div>
+                            <i class="fas fa-boxes text-primary" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lista de Equipamentos -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Equipamentos Cadastrados</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2"><i class="fas fa-download me-1"></i> Exportar</button>
+                        <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-filter me-1"></i> Filtros Avançados</button>
+                    </div>
+                </div>
+                
+                <div class="equipment-grid">
+                    <!-- Equipamento 1 -->
+                    <div class="equipment-card">
+                        <div class="equipment-status status-disponivel-bg"></div>
+                        <div class="equipment-content">
+                            <h3 class="equipment-title">Monitor Multiparamétrico</h3>
+                            <div class="equipment-details">
+                                <p><strong>Modelo:</strong> Philips MX500</p>
+                                <p><strong>Nº Série:</strong> MP-2023-001</p>
+                                <p><strong>Local:</strong> UTI Adulto - Leito 05</p>
+                                <p><strong>Fornecedor:</strong> MedTech Solutions</p>
+                            </div>
+                            <div class="equipment-actions">
+                                <button class="btn btn-sm btn-info" title="Detalhes"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm btn-warning btn-manutencao" title="Registrar Manutenção" data-id="1">
+                                    <i class="fas fa-tools"></i>
+                                </button>
+                                <button class="btn btn-sm btn-primary" title="Editar"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Equipamento 2 -->
+                    <div class="equipment-card">
+                        <div class="equipment-status status-manutencao-bg"></div>
+                        <div class="equipment-content">
+                            <h3 class="equipment-title">Ventilador Pulmonar</h3>
+                            <div class="equipment-details">
+                                <p><strong>Modelo:</strong> Dräger Evita V300</p>
+                                <p><strong>Nº Série:</strong> VP-2022-045</p>
+                                <p><strong>Local:</strong> Centro Cirúrgico - Sala 2</p>
+                                <p><strong>Fornecedor:</strong> Hospitalar Equipamentos</p>
+                            </div>
+                            <div class="equipment-actions">
+                                <button class="btn btn-sm btn-info" title="Detalhes"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm btn-warning btn-manutencao" title="Ver Manutenção" data-id="2">
+                                    <i class="fas fa-tools"></i>
+                                </button>
+                                <button class="btn btn-sm btn-primary" title="Editar"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Equipamento 3 -->
+                    <div class="equipment-card">
+                        <div class="equipment-status status-indisponivel-bg"></div>
+                        <div class="equipment-content">
+                            <h3 class="equipment-title">Bombas de Infusão</h3>
+                            <div class="equipment-details">
+                                <p><strong>Modelo:</strong> Braun Space</p>
+                                <p><strong>Nº Série:</strong> BI-2021-128</p>
+                                <p><strong>Local:</strong> Almoxarifado</p>
+                                <p><strong>Fornecedor:</strong> Medical Supplies</p>
+                            </div>
+                            <div class="equipment-actions">
+                                <button class="btn btn-sm btn-info" title="Detalhes"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm btn-warning btn-manutencao" title="Registrar Manutenção" data-id="3">
+                                    <i class="fas fa-tools"></i>
+                                </button>
+                                <button class="btn btn-sm btn-primary" title="Editar"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Cadastro de Equipamento -->
+    <div class="modal" id="modalCadastroEquipamento">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle me-2"></i> Cadastrar Novo Equipamento</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formEquipamento">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="equipamentoNome">Nome do Equipamento *</label>
+                            <input type="text" id="equipamentoNome" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoModelo">Modelo *</label>
+                            <input type="text" id="equipamentoModelo" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoSerie">Número de Série *</label>
+                            <input type="text" id="equipamentoSerie" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoFabricante">Fabricante *</label>
+                            <input type="text" id="equipamentoFabricante" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoFornecedor">Fornecedor</label>
+                            <input type="text" id="equipamentoFornecedor" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoCategoria">Categoria *</label>
+                            <select id="equipamentoCategoria" class="form-select" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="diagnostico">Diagnóstico</option>
+                                <option value="monitoramento">Monitoramento</option>
+                                <option value="tratamento">Tratamento</option>
+                                <option value="cirurgia">Cirurgia</option>
+                                <option value="suporte">Suporte Vital</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoLocalizacao">Localização *</label>
+                            <select id="equipamentoLocalizacao" class="form-select" required>
+                                <option value="">Selecione uma localização</option>
+                                <option value="centrocirurgico">Centro Cirúrgico</option>
+                                <option value="uti">UTI</option>
+                                <option value="emergencia">Emergência</option>
+                                <option value="laboratorio">Laboratório</option>
+                                <option value="radiologia">Radiologia</option>
+                                <option value="almoxarifado">Almoxarifado</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoStatus">Status *</label>
+                            <select id="equipamentoStatus" class="form-select" required>
+                                <option value="disponivel">Disponível</option>
+                                <option value="manutencao">Em Manutenção</option>
+                                <option value="indisponivel">Indisponível</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoDataAquisicao">Data de Aquisição *</label>
+                            <input type="date" id="equipamentoDataAquisicao" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipamentoValor">Valor (R$)</label>
+                            <input type="number" id="equipamentoValor" class="form-control" step="0.01">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="equipamentoDescricao">Descrição / Observações</label>
+                            <textarea id="equipamentoDescricao" class="form-textarea"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" id="cancelCadastro">Cancelar</button>
+                <button class="btn btn-primary" id="saveEquipamento">Salvar Equipamento</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Manutenção -->
+    <div class="modal" id="modalManutencao">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-tools me-2"></i> Registro de Manutenção</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="equipamentoInfo">Equipamento</label>
+                    <input type="text" id="equipamentoInfo" class="form-control" readonly>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="manutencaoTipo">Tipo de Manutenção *</label>
+                        <select id="manutencaoTipo" class="form-select" required>
+                            <option value="">Selecione o tipo</option>
+                            <option value="preventiva">Preventiva</option>
+                            <option value="corretiva">Corretiva</option>
+                            <option value="preditiva">Preditiva</option>
+                            <option value="calibracao">Calibração</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencaoDataSaida">Data de Saída *</label>
+                        <input type="date" id="manutencaoDataSaida" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencaoPrevisaoRetorno">Previsão de Retorno *</label>
+                        <input type="date" id="manutencaoPrevisaoRetorno" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencaoFornecedor">Fornecedor/Responsável</label>
+                        <input type="text" id="manutencaoFornecedor" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencaoCusto">Custo Estimado (R$)</label>
+                        <input type="number" id="manutencaoCusto" class="form-control" step="0.01">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="manutencaoProblema">Problema Relatado *</label>
+                        <textarea id="manutencaoProblema" class="form-textarea" required></textarea>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="manutencaoSolucao">Solução Aplicada</label>
+                        <textarea id="manutencaoSolucao" class="form-textarea"></textarea>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="manutencaoObservacoes">Observações</label>
+                        <textarea id="manutencaoObservacoes" class="form-textarea"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Histórico de Manutenções -->
+                <div class="mt-4">
+                    <h4 class="section-title">Histórico de Manutenções</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Tipo</th>
+                                    <th>Problema</th>
+                                    <th>Duração</th>
+                                    <th>Custo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historicoManutencao">
+                                <tr>
+                                    <td>15/03/2023</td>
+                                    <td><span class="badge bg-info">Preventiva</span></td>
+                                    <td>Manutenção periódica</td>
+                                    <td>3 dias</td>
+                                    <td>R$ 850,00</td>
+                                </tr>
+                                <tr>
+                                    <td>22/10/2022</td>
+                                    <td><span class="badge bg-warning">Corretiva</span></td>
+                                    <td>Troca de sensor</td>
+                                    <td>5 dias</td>
+                                    <td>R$ 1.200,00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" id="cancelManutencao">Cancelar</button>
+                <button class="btn btn-primary" id="saveManutencao">Salvar Registro</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "core/partials/alertas.html" %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Controle dos modais
+            const modalCadastro = document.getElementById('modalCadastroEquipamento');
+            const modalManutencao = document.getElementById('modalManutencao');
+            const btnCadastrar = document.getElementById('btnCadastrarEquipamento');
+            const btnCancelCadastro = document.getElementById('cancelCadastro');
+            const btnCancelManutencao = document.getElementById('cancelManutencao');
+            const btnSaveEquipamento = document.getElementById('saveEquipamento');
+            const btnSaveManutencao = document.getElementById('saveManutencao');
+            
+            // Abrir modal de cadastro
+            btnCadastrar.addEventListener('click', function() {
+                modalCadastro.classList.add('show');
+            });
+            
+            // Fechar modais
+            btnCancelCadastro.addEventListener('click', function() {
+                modalCadastro.classList.remove('show');
+            });
+            
+            btnCancelManutencao.addEventListener('click', function() {
+                modalManutencao.classList.remove('show');
+            });
+            
+            // Fechar modais clicando fora
+            window.addEventListener('click', function(event) {
+                if (event.target === modalCadastro) {
+                    modalCadastro.classList.remove('show');
+                }
+                if (event.target === modalManutencao) {
+                    modalManutencao.classList.remove('show');
+                }
+            });
+            
+            // Fechar modais com botão X
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.modal').classList.remove('show');
+                });
+            });
+            
+            // Salvar equipamento
+            btnSaveEquipamento.addEventListener('click', function() {
+                const form = document.getElementById('formEquipamento');
+                if (form.checkValidity()) {
+                    // Aqui você enviaria os dados para o servidor
+                    alert('Equipamento cadastrado com sucesso!');
+                    modalCadastro.classList.remove('show');
+                    form.reset();
+                } else {
+                    alert('Por favor, preencha todos os campos obrigatórios.');
+                }
+            });
+            // --- Metadados dos equipamentos (para filtros e modal) ---
+            const equipmentMeta = {
+                1: { nome: 'Monitor Multiparamétrico', serie: 'MP-2023-001', status: 'disponivel',  categoria: 'monitoramento', localizacao: 'uti' },
+                2: { nome: 'Ventilador Pulmonar',      serie: 'VP-2022-045', status: 'manutencao', categoria: 'tratamento',   localizacao: 'centrocirurgico' },
+                3: { nome: 'Bombas de Infusão',         serie: 'BI-2021-128', status: 'indisponivel', categoria: 'suporte',     localizacao: 'almoxarifado' }
+            };
+
+            // Atribui data-attributes aos cards para os filtros funcionarem
+            document.querySelectorAll('.equipment-card').forEach((card) => {
+                const btn = card.querySelector('.btn-manutencao');
+                if (!btn) return;
+                const id = btn.dataset.id;
+                const meta = equipmentMeta[id];
+                if (!meta) return;
+                card.dataset.status = meta.status;
+                card.dataset.categoria = meta.categoria;
+                card.dataset.localizacao = meta.localizacao;
+            });
+
+            // Abrir modal de manutenção preenchendo o equipamento
+            document.querySelectorAll('.btn-manutencao').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    const meta = equipmentMeta[id];
+                    if (meta) {
+                        document.getElementById('equipamentoInfo').value =
+                            `${meta.nome} — Série ${meta.serie}`;
+                    } else {
+                        document.getElementById('equipamentoInfo').value = '';
+                    }
+                    // sugestões de datas
+                    const hoje = new Date().toISOString().slice(0,10);
+                    document.getElementById('manutencaoDataSaida').value = hoje;
+                    document.getElementById('manutencaoPrevisaoRetorno').value = hoje;
+
+                    modalManutencao.classList.add('show');
+                });
+            });
+
+            // Utilitários
+            function formatBRL(val) {
+                const n = Number(val || 0);
+                return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            }
+            function diffDias(inicio, fim) {
+                const s = new Date(inicio);
+                const e = new Date(fim);
+                if (isNaN(s) || isNaN(e)) return '-';
+                const ms = Math.abs(e - s);
+                const dias = Math.ceil(ms / (1000 * 60 * 60 * 24));
+                return dias === 1 ? '1 dia' : `${dias} dias`;
+            }
+
+            // Salvar manutenção
+            btnSaveManutencao.addEventListener('click', function() {
+                const tipo        = document.getElementById('manutencaoTipo').value;
+                const saida       = document.getElementById('manutencaoDataSaida').value;
+                const retornoPrev = document.getElementById('manutencaoPrevisaoRetorno').value;
+                const problema    = document.getElementById('manutencaoProblema').value.trim();
+                const custo       = document.getElementById('manutencaoCusto').value;
+
+                // Validação básica
+                if (!tipo || !saida || !retornoPrev || !problema) {
+                    alert('Preencha os campos obrigatórios: Tipo, Data de Saída, Previsão de Retorno e Problema.');
+                    return;
+                }
+
+                // Aqui você enviaria os dados para o servidor (fetch/POST)
+                // Exemplo: fetch('/manutencoes/criar/', { method:'POST', body: formData })
+
+                // Para a demo, adiciona ao histórico da tabela
+                const tbody = document.getElementById('historicoManutencao');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${saida.split('-').reverse().join('/')}</td>
+                    <td><span class="badge ${tipo === 'corretiva' ? 'bg-warning' : 'bg-info'}">
+                        ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}
+                    </span></td>
+                    <td>${problema}</td>
+                    <td>${diffDias(saida, retornoPrev)}</td>
+                    <td>${formatBRL(custo)}</td>
+                `;
+                tbody.prepend(tr);
+
+                alert('Manutenção salva com sucesso!');
+                modalManutencao.classList.remove('show');
+
+                // Limpa campos não fixos
+                document.getElementById('manutencaoFornecedor').value = '';
+                document.getElementById('manutencaoCusto').value = '';
+                document.getElementById('manutencaoSolucao').value = '';
+                document.getElementById('manutencaoObservacoes').value = '';
+            });
+
+            // Filtros
+            document.getElementById('btnFiltrar').addEventListener('click', () => {
+                const s = document.getElementById('filtroStatus').value;
+                const c = document.getElementById('filtroCategoria').value;
+                const l = document.getElementById('filtroLocalizacao').value;
+
+                document.querySelectorAll('.equipment-card').forEach((card) => {
+                    const okS = !s || card.dataset.status === s;
+                    const okC = !c || card.dataset.categoria === c;
+                    const okL = !l || card.dataset.localizacao === l;
+                    card.style.display = (okS && okC && okL) ? '' : 'none';
+                });
+            });
+
+            // Fechar com ESC
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    modalCadastro.classList.remove('show');
+                    modalManutencao.classList.remove('show');
+                }
+            });
+        });
+    </script>
+ 
+{% endblock %}
