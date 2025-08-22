@@ -73,6 +73,34 @@
   padding: 0;
 }
 
+/* Afeta todas as scrollbars do site */
+* {
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #6d398e #f1f1f1;
+  /* Firefox (cor barra, cor trilho) */
+}
+
+/* Chrome, Safari e Edge */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #6d398e;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #4a2563;
+}
+
 body {
   background-color: var(--bg-color);
   /* antes era --bg-color */

@@ -318,7 +318,7 @@ def verificar_pacotes_ativos(request, paciente_id):
         
     return JsonResponse({
         "tem_pacote_ativo": pacotes.exists(),
-        "pacotes": pacotes_data,
+        "pacotes": pacotes_data, 
         "saldos_desmarcacoes": saldos_desmarcacoes,
     })
 
@@ -352,7 +352,8 @@ def listar_agendamentos(filtros=None, query=None):
         )
 
     dados_agrupados = {}
-    dias_semana_pt = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
+    dias_semana_pt = ['Segunda-feira', 'Terça-feira', 'Quarta-feira',
+                      'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
 
     for ag in agendamentos:
         data_formatada = ag.data.strftime("%d/%m/%Y")
@@ -365,15 +366,36 @@ def listar_agendamentos(filtros=None, query=None):
         especialidade = getattr(ag.profissional_1.especialidade, 'nome', '')
         cor_especialidade = getattr(ag.profissional_1.especialidade, 'cor', '#ccc')
 
-        pacote = ag.pacote
-        codigo = ag.pacote.codigo if ag.pacote else 'Reposição'
-        sessao_atual = pacote.get_sessao_atual(ag) if pacote else None
-        sessoes_total = pacote.qtd_sessoes if pacote else None
-        sessoes_restantes = max(sessoes_total - sessao_atual, 0)
+        pacote = getattr(ag, 'pacote', None)
+
+        # Código / flags
+        codigo = pacote.codigo if pacote else 'Reposição'
+        is_reposicao = bool(pacote and getattr(pacote, 'tipo_reposicao', False))
+        is_pacote = bool(pacote and not getattr(pacote, 'tipo_reposicao', False))
+
+        # Sessões (com guardas para None)
+        sessao_atual = None
+        sessoes_total = None
+        sessoes_restantes = None
+
+        if pacote:
+            # get_sessao_atual pode retornar None; qtd_sessoes pode ser None
+            sessao_atual_val = pacote.get_sessao_atual(ag)
+            sessoes_total_val = getattr(pacote, 'qtd_sessoes', None)
+
+            if isinstance(sessao_atual_val, int) and isinstance(sessoes_total_val, int):
+                sessao_atual = sessao_atual_val
+                sessoes_total = sessoes_total_val
+                sessoes_restantes = max(sessoes_total - sessao_atual, 0)
+            else:
+                # mantém como None se não houver dados suficientes
+                sessao_atual = None
+                sessoes_total = sessoes_total_val if isinstance(sessoes_total_val, int) else None
+                sessoes_restantes = None
 
         dados_agrupados[chave_data].append({
             'id': ag.id,
-            'hora_inicio': ag.hora_inicio.strftime('%H:%M'),
+            'hora_inicio': ag.hora_inicio.strftime('%H:%M') if ag.hora_inicio else '',
             'hora_fim': ag.hora_fim.strftime('%H:%M') if ag.hora_fim else '',
             'paciente': f"{ag.paciente.nome} {ag.paciente.sobrenome}",
             'profissional': f"{ag.profissional_1.nome} {ag.profissional_1.sobrenome}",
@@ -382,13 +404,14 @@ def listar_agendamentos(filtros=None, query=None):
             'status': ag.status,
             'sessao_atual': sessao_atual,
             'sessoes_total': sessoes_total,
-            'sessoes_restantes':sessoes_restantes,
-            'codigo':codigo,
-            'is_reposicao': bool(ag.pacote and ag.pacote.tipo_reposicao),
-            'is_pacote': bool(ag.pacote and not ag.pacote.tipo_reposicao),
+            'sessoes_restantes': sessoes_restantes,
+            'codigo': codigo,
+            'is_reposicao': is_reposicao,
+            'is_pacote': is_pacote,
         })
 
     return dados_agrupados
+
 
 def confirmacao_agendamento(request, agendamento_id):
     agendamento = get_object_or_404(Agendamento, id=agendamento_id)

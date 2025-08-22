@@ -1,0 +1,260 @@
+/* ===== EDITAR AGENDA — MODAL PREMIUM ===== */
+
+/* Overlay */
+.modal-att-agenda {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .38);
+    z-index: 9998;
+    display: none;
+    
+}
+.modal-att-agenda.active {
+    display: flex;
+}
+ 
+.modal-att-agenda .modal-conteudo {
+    position: fixed;
+    left: 50%;
+    top: 40px;
+ 
+    transform: translateX(-50%);
+    width: 40%;
+    max-width: 1100px;
+    max-height: calc(100vh - 80px);
+ 
+    background: var(--branco);
+    border-radius: var(--borda-arredondada);
+    box-shadow: var(--shadowRoxo);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    /* header fixo, form rola */
+    overflow: hidden;
+    animation: fadeInScale .25s ease;
+}
+
+/* Barrinha topo dourado/roxo (igual sidebar) */
+.modal-att-agenda .modal-conteudo::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: linear-gradient(to right, var(--dourado), var(--roxoPrincipal));
+}
+
+/* Header reaproveita o mesmo estilo da sidebar */
+.modal-att-agenda .header-sidebar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--espaco-md);
+    border-bottom: 1px solid var(--cinza-borda);
+    background: var(--cinza-claro);
+}
+
+.modal-att-agenda .header-sidebar h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--roxoPrincipal);
+    font-weight: 600;
+}
+
+#closeBtnEdit {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--cinza-medio);
+    transition: var(--transicao);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+#closeBtnEdit:hover {
+    color: var(--roxoPrincipal);
+    background: var(--roxoPrincipal-hover);
+}
+
+/* FORM: vira a área rolável */
+#form-edicao {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--espaco-md);
+}
+
+#form-edicao::-webkit-scrollbar {
+    width: 6px;
+}
+
+#form-edicao::-webkit-scrollbar-thumb {
+    background: var(--roxoPrincipal);
+    border-radius: 10px;
+}
+
+/* Subtítulo premium */
+.modal_subtitulo {
+    margin: 10px 0 var(--espaco-sm);
+    font-weight: 700;
+    color: var(--cinza-escuro);
+    font-size: 1rem;
+    padding: 10px 12px;
+    border-radius: var(--borda-radius);
+    background: linear-gradient(to right, #f8f9fc, #f1f5f9);
+    border: 1px solid var(--cinza-borda);
+}
+
+/* Grid automático para as linhas (sem precisar cols-2/3) */
+#form-edicao .formRow {
+    --gap: var(--espaco-md);
+    --col-min: 300px;
+    /* ajuste fino do mínimo por campo */
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: repeat(auto-fit, minmax(var(--col-min), 1fr));
+    align-items: start;
+    margin-bottom: var(--espaco-md);
+}
+
+#form-edicao .formRow .formField {
+    min-width: 0;
+}
+
+/* evita overflow */
+
+/* Inputs com o mesmo look do Agendamento */
+#form-edicao .input-s,
+#form-edicao .textarea-large {
+    width: 100%;
+    padding: 0.5em;
+    border: 2px solid var(--cinza-borda);
+    border-radius: var(--borda-radius);
+    font-size: 1rem;
+    transition: var(--transicao);
+    background: var(--branco);
+    color: var(--cinza-escuro);
+    height: 40px;
+    font-family: var(--fontePrincipal), sans-serif;
+}
+
+#form-edicao select.input-s {
+    padding-right: 30px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236D398E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+
+#form-edicao .input-s:focus,
+#form-edicao .textarea-large:focus {
+    outline: none;
+    border-color: var(--roxoPrincipal);
+    box-shadow: var(--sombra-focus);
+}
+
+#form-edicao .formField label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: var(--espaco-xs);
+    font-weight: 600;
+    color: var(--cinza-escuro);
+    font-size: .95rem;
+}
+
+/* Fallback: se algum input/select não tiver classe, aplica base igual */
+#form-edicao .formField input:not([type="checkbox"]):not(.input-s),
+#form-edicao .formField select:not(.input-s),
+#form-edicao .formField textarea:not(.textarea-large) {
+    width: 100%;
+    padding: 0.5em;
+    border: 2px solid var(--cinza-borda);
+    border-radius: var(--borda-radius);
+    font-size: 1rem;
+    transition: var(--transicao);
+    background: var(--branco);
+    color: var(--cinza-escuro);
+    height: 40px;
+    font-family: var(--fontePrincipal), sans-serif;
+}
+
+/* Textarea altura */
+#form-edicao .textarea-large {
+    min-height: 120px;
+    height: auto;
+    padding: .8em;
+}
+
+/* Lista de pagamentos anterior em cards */
+#lista-pagamentos {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+#lista-pagamentos .pag-card {
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--borda-radius);
+    padding: 12px;
+    background: var(--backgroundCard);
+    box-shadow: var(--sombra);
+}
+
+/* Footer com botões fixos ao fim do form */
+#form-edicao .buttons_div {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: var(--espaco-sm);
+    padding-top: var(--espaco-md);
+    margin-top: var(--espaco-md);
+    border-top: 1px solid var(--cinza-borda);
+    background: linear-gradient(to top, #ffffff, rgba(255, 255, 255, .7));
+}
+
+/* Botões premium */
+#form-edicao .buttons_div button {
+    flex: 1;
+    padding: var(--espaco-sm);
+    border: none;
+    border-radius: var(--borda-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transicao);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#form-edicao #btn_gerar_cupom {
+    background: var(--bg-btn-1);
+    color: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+}
+
+#form-edicao #btn_gerar_cupom:hover {
+    background: var(--cinza-claro);
+}
+
+#form-edicao .buttons_div button[type="submit"],
+#form-edicao .buttons_div button:not(#btn_gerar_cupom) {
+    background: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
+    color: var(--branco);
+    box-shadow: var(--sombra-destaque);
+}
+
+#form-edicao .buttons_div button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(109, 57, 142, .18);
+}
+
+/* Responsivo: força 1 por linha no mobile */
+@media (max-width: 680px) {
+    #form-edicao .formRow {
+        --col-min: 100%;
+    }
+}
