@@ -7,22 +7,23 @@
     background: rgba(0, 0, 0, .38);
     z-index: 9998;
     display: none;
-    
+
 }
+
 .modal-att-agenda.active {
     display: flex;
 }
- 
+
 .modal-att-agenda .modal-conteudo {
     position: fixed;
     left: 50%;
     top: 40px;
- 
+
     transform: translateX(-50%);
     width: 40%;
     max-width: 1100px;
     max-height: calc(100vh - 80px);
- 
+
     background: var(--branco);
     border-radius: var(--borda-arredondada);
     box-shadow: var(--shadowRoxo);
@@ -74,6 +75,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    box-shadow: none;
 }
 
 #closeBtnEdit:hover {
@@ -257,4 +259,14 @@
     #form-edicao .formRow {
         --col-min: 100%;
     }
+}
+
+
+/* Linha de edição da sessão com proporções fixas */
+#form-edicao .formRow.sessao-grid {
+    display: grid;
+    grid-template-columns: 4fr 2fr 1fr 1fr;
+
+    gap: var(--espaco-md);
+    align-items: start;
 }

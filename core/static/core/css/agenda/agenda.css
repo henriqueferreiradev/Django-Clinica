@@ -457,7 +457,11 @@ body {
     height: 6px;
     background: linear-gradient(to right, var(--dourado), var(--roxoPrincipal));
 }
-#sidebar.active{ display: flex; } 
+
+#sidebar.active {
+    display: flex;
+}
+
 @keyframes fadeInScale {
     from {
         opacity: 0;
@@ -606,18 +610,6 @@ body {
     background-color: var(--roxoPrincipal-hover);
 }
 
-.badge-premium {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: var(--dourado);
-    color: var(--preto);
-    font-weight: 600;
-    font-size: 0.8rem;
-    padding: 5px 12px;
-    border-radius: 20px;
-    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-}
 
 /* Avisos e alertas */
 .aviso-premium {
