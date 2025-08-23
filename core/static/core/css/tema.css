@@ -100,12 +100,24 @@
 *::-webkit-scrollbar-thumb:hover {
   background-color: #4a2563;
 }
+ 
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+input[type="time"]::-webkit-inner-spin-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+input[type="time"] {
+  -moz-appearance: textfield;  
+}
 
 body {
   background-color: var(--bg-color);
-  /* antes era --bg-color */
   color: var(--preto);
-  /* antes era --text-color */
   font-family: var(--fontePrincipal);
 }
 
@@ -113,9 +125,7 @@ input,
 textarea,
 select {
   background-color: var(--branco);
-
   color: var(--preto);
-
   border: 1px solid var(--cinzaBorda);
 }
 
@@ -130,7 +140,6 @@ th {
 
 .content {
   background-color: var(--branco);
-
   padding: 1rem;
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -206,7 +215,6 @@ th {
   background-color: var(--hover-dropdown);
 }
 
-/* Hover mostra o menu */
 .dropdown:hover .dropdown-content {
   display: block;
 }
