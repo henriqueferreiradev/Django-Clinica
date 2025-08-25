@@ -363,15 +363,6 @@ button:hover {
   gap: 15px;
 }
 
-.search-form input[type="text"] {
-  border: none;
-  border-bottom: 1px solid var(--roxoPrincipal);
-  background: transparent;
-  outline: none;
-  width: 400px;
-  padding: .7em;
-}
-
 
 .search-form {
   margin-left: 20px;
@@ -607,13 +598,17 @@ button:hover {
 
 
 .content::-webkit-scrollbar {
-  width: 4px; /* mais fino */
-  background: transparent; /* ou var(--branco) */
+  width: 4px;
+  /* mais fino */
+  background: transparent;
+  /* ou var(--branco) */
 }
 
 .content::-webkit-scrollbar-thumb {
   background: var(--roxo-primary-hover);
   border-radius: 50px;
-  margin: 2px; /* não funciona em todos browsers, mas border sim */
-  border: 1px solid transparent; /* afasta do canto */
+  margin: 2px;
+  /* não funciona em todos browsers, mas border sim */
+  border: 1px solid transparent;
+  /* afasta do canto */
 }

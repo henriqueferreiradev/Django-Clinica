@@ -1,7 +1,7 @@
 let modoPercentual = true;
 
 document.addEventListener("DOMContentLoaded", function () {
-    // --- Referências
+    // --- Referências (muitas podem ser opcionais, então validamos antes de usar)
     const pacotesInput = document.getElementById('pacotesInput');
     const valorInput = document.getElementById('valor_pacote');
     const descontoInput = document.getElementById('desconto');
@@ -21,76 +21,76 @@ document.addEventListener("DOMContentLoaded", function () {
     const usarPacoteBtn = document.getElementById('usar-pacote-btn');
     const campoPacote = document.getElementById('pacote_codigo');
 
-    // --- Funções
+    // Funções globais usadas no HTML
     window.calcularDesconto = function () {
+        if (!valorInput || !descontoInput || !valorFinalInput) return;
         const valorPacote = parseFloat(valorInput.value) || 0;
         const desconto = parseFloat(descontoInput.value) || 0;
-        let valorFinal = 0;
-
-        if (modoPercentual) {
-            valorFinal = valorPacote - (valorPacote * (desconto / 100));
-        } else {
-            valorFinal = valorPacote - desconto;
-        }
-
+        const valorFinal = modoPercentual ? (valorPacote - (valorPacote * (desconto / 100)))
+            : (valorPacote - desconto);
         valorFinalInput.value = valorFinal.toFixed(2);
     };
 
     window.alternarModoDesconto = function () {
         modoPercentual = !modoPercentual;
-        descontoLabel.textContent = modoPercentual ? 'Desconto (%)' : 'Desconto (R$)';
-        descontoButton.textContent = modoPercentual ? 'R$' : '%';
-        calcularDesconto();
+        if (descontoLabel) descontoLabel.textContent = modoPercentual ? 'Desconto (%)' : 'Desconto (R$)';
+        if (descontoButton) descontoButton.textContent = modoPercentual ? 'R$' : '%';
+        window.calcularDesconto();
     };
 
     window.alterarDesconto = function () {
+        if (!valorInput || !valorFinalInput || !descontoInput) return;
         const valorPacote = parseFloat(valorInput.value) || 0;
         const valorFinal = parseFloat(valorFinalInput.value) || 0;
-
         let descontoCalculado = 0;
-
         if (modoPercentual && valorPacote !== 0) {
             descontoCalculado = ((valorPacote - valorFinal) / valorPacote) * 100;
         } else {
             descontoCalculado = valorPacote - valorFinal;
         }
-
         descontoInput.value = descontoCalculado.toFixed(2);
     };
 
     async function verificarPacoteAtivo() {
+        if (!pacienteIdInput) return;
         const pacienteId = pacienteIdInput.value;
+
         const servicoSelect = document.getElementById('pacotesInput');
         const formValor = document.getElementById('formValor');
         const infoPacote = document.getElementById('info_pacote');
         const pacoteAtual = document.getElementById('pacote_atual');
         const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
         const mensagemDesmarcacoes = document.getElementById('mensagem-desmarcacoes');
+
         const radioButtons = document.querySelectorAll('input[name="tipo_agendamento"]');
         const servicosBanco = document.querySelectorAll('.servico-banco');
         const servicosReposicao = document.querySelectorAll('.servico-reposicao');
-        const usarRemarcacaoBtn = document.getElementById('usar-reposicao-btn')
-        const avisoRepo = document.getElementById('aviso-desmarcacoes')
-        const tipoSessaoLabel = document.getElementById('tipo_sessao')
-        const infoReposicao = document.getElementById('info_reposicao')
+        const usarRemarcacaoBtn = document.getElementById('usar-reposicao-btn');
+        const avisoRepo = document.getElementById('aviso-desmarcacoes');
+        const tipoSessaoLabel = document.getElementById('tipo_sessao');
+        const infoReposicao = document.getElementById('info_reposicao');
+
+        // Toggle de opções por tipo de agendamento
         radioButtons.forEach(radio => {
             radio.addEventListener('change', function () {
+                if (!servicoSelect) return;
                 if (this.value === 'reposicao') {
                     servicosBanco.forEach(opt => opt.hidden = true);
                     servicosReposicao.forEach(opt => opt.hidden = false);
-                    select.value = "";
+                    servicoSelect.value = ""; // <-- corrigido (antes "select")
                 } else {
                     servicosBanco.forEach(opt => opt.hidden = false);
                     servicosReposicao.forEach(opt => opt.hidden = true);
-                    select.value = "";
+                    servicoSelect.value = ""; // <-- corrigido
                 }
             });
         });
-        avisoDiv.style.display = 'none';
-        avisoDesmarcacoes.style.display = 'none';
-        servicoSelect.disabled = false;
-        formValor.classList.remove('hidden');
-        infoPacote.classList.add('hidden');
+
+        if (avisoDiv) avisoDiv.style.display = 'none';
+        if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+        if (servicoSelect) servicoSelect.disabled = false;
+        if (formValor) formValor.classList.remove('hidden');
+        if (infoPacote) infoPacote.classList.add('hidden');
         limparOpcaoPacoteServico();
 
         if (!pacienteId) return;
@@ -99,173 +99,187 @@ document.addEventListener("DOMContentLoaded", function () {
             const response = await fetch(`/api/verificar_pacotes_ativos/${pacienteId}`);
             const data = await response.json();
 
-            // Mostra pacote se existir
-            if (data.tem_pacote_ativo) {
+            // Pacote ativo
+            if (data.tem_pacote_ativo && servicoSelect) {
                 const pacote = data.pacotes[0];
-                const sessaoAtual = pacote.quantidade_usadas + 1;
+                const sessaoAtual = (pacote.quantidade_usadas || 0) + 1;
 
-                mensagemPacote.textContent = `Este paciente possui um pacote ativo (Código: ${pacote.codigo}) — Sessão ${sessaoAtual} de ${pacote.quantidade_total}. Deseja usá-lo?`;
-                avisoDiv.style.display = 'block';
+                if (mensagemPacote) {
+                    mensagemPacote.textContent =
+                        `Este paciente possui um pacote ativo (Código: ${pacote.codigo}) — Sessão ${sessaoAtual} de ${pacote.quantidade_total}. Deseja usá-lo?`;
+                }
+                if (avisoDiv) avisoDiv.style.display = 'block';
 
-                usarPacoteBtn.onclick = () => {
-                    const option = document.createElement('option');
-                    option.value = pacote.servico_id.toString();
-                    option.textContent = `Sessão ${sessaoAtual} de ${pacote.quantidade_total} (pacote ativo)`;
-                    option.hidden = true;
-                    option.disabled = false;
-                    option.setAttribute("data-pacote", "true");
+                if (usarPacoteBtn) {
+                    usarPacoteBtn.onclick = () => {
+                        const option = document.createElement('option');
+                        option.value = pacote.servico_id.toString();
+                        option.textContent = `Sessão ${sessaoAtual} de ${pacote.quantidade_total} (pacote ativo)`;
+                        option.hidden = true;
+                        option.disabled = false;
+                        option.setAttribute("data-pacote", "true");
 
-                    servicoSelect.prepend(option);
-                    servicoSelect.value = option.value;
-                    document.getElementById('servico_id_hidden').value = pacote.servico_id;
-                    servicoSelect.disabled = true;
-                    servicoSelect.readOnly = true;
+                        servicoSelect.prepend(option);
+                        servicoSelect.value = option.value;
 
-                    document.getElementById('codigo_pacote_display').textContent = pacote.codigo;
-                    document.getElementById('valor_pago_display').textContent = pacote.valor_pago.toFixed(2);
-                    document.getElementById('valor_restante_display').textContent = (pacote.valor_total - pacote.valor_pago).toFixed(2);
-                    document.getElementById('sessao_atual_display').textContent = sessaoAtual;
-                    document.getElementById('total_sessoes_display').textContent = pacote.quantidade_total;
+                        const servicoHidden = document.getElementById('servico_id_hidden');
+                        if (servicoHidden) servicoHidden.value = pacote.servico_id;
 
-                    formValor.classList.add('hidden');
-                    infoPacote.classList.remove('hidden');
-                    valorFinalInput.value = (pacote.valor_total - pacote.valor_pago).toFixed(2);
+                        servicoSelect.disabled = true;
+                        servicoSelect.readOnly = true;
 
-                    campoPacote.value = pacote.codigo;
-                    pacoteAtual.innerHTML = `<strong>Pacote ativo:</strong> Código <strong>${pacote.codigo}</strong> — Sessão ${sessaoAtual} de ${pacote.quantidade_total}`;
-                    pacoteAtual.style.display = 'block';
+                        const codigoDisp = document.getElementById('codigo_pacote_display');
+                        const valorPagoDisp = document.getElementById('valor_pago_display');
+                        const valorRestanteDisp = document.getElementById('valor_restante_display');
+                        const sessaoAtualDisp = document.getElementById('sessao_atual_display');
+                        const totalSessoesDisp = document.getElementById('total_sessoes_display');
 
-                    document.querySelector('input[value="existente"]').checked = true;
-                    avisoDiv.style.display = 'none';
-                    avisoRepo.style.display = 'none';
+                        if (codigoDisp) codigoDisp.textContent = pacote.codigo;
+                        if (valorPagoDisp) valorPagoDisp.textContent = Number(pacote.valor_pago).toFixed(2);
+                        if (valorRestanteDisp) valorRestanteDisp.textContent = (pacote.valor_total - pacote.valor_pago).toFixed(2);
+                        if (sessaoAtualDisp) sessaoAtualDisp.textContent = sessaoAtual;
+                        if (totalSessoesDisp) totalSessoesDisp.textContent = pacote.quantidade_total;
+
+                        if (formValor) formValor.classList.add('hidden');
+                        if (infoPacote) infoPacote.classList.remove('hidden');
+                        if (valorFinalInput) valorFinalInput.value = (pacote.valor_total - pacote.valor_pago).toFixed(2);
+
+                        if (campoPacote) campoPacote.value = pacote.codigo;
+                        if (pacoteAtual) {
+                            pacoteAtual.innerHTML = `<strong>Pacote ativo:</strong> Código <strong>${pacote.codigo}</strong> — Sessão ${sessaoAtual} de ${pacote.quantidade_total}`;
+                            pacoteAtual.style.display = 'block';
+                        }
+
+                        const radioExistente = document.querySelector('input[name="tipo_agendamento"][value="existente"]');
+                        if (radioExistente) radioExistente.checked = true;
+
+                        if (avisoDiv) avisoDiv.style.display = 'none';
+                        if (avisoRepo) avisoRepo.style.display = 'none';
+                    };
+                }
+            }
+
+            // Saldos de desmarcações
+            const sd = data.saldos_desmarcacoes || {};
+            const mensagens = [];
+            if ((sd.desistencia || 0) > 0) mensagens.push(`❌ D: ${sd.desistencia}`);
+            if ((sd.desistencia_remarcacao || 0) > 0) mensagens.push(`⚠ DCR: ${sd.desistencia_remarcacao}`);
+            if ((sd.falta_remarcacao || 0) > 0) mensagens.push(`⚠ FCR: ${sd.falta_remarcacao}`);
+            if ((sd.falta_cobrada || 0) > 0) mensagens.push(`❌ FC: ${sd.falta_cobrada}`);
+
+            if (mensagens.length > 0) {
+                if (mensagemDesmarcacoes) mensagemDesmarcacoes.textContent =
+                    `Este paciente possui sessões desmarcadas registradas: ${mensagens.join(' | ')}`;
+                if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'block';
+            } else {
+                if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+            }
+
+            // Esconde reposição por padrão
+            servicosReposicao.forEach(opt => opt.hidden = true);
+
+            if (usarRemarcacaoBtn) {
+                usarRemarcacaoBtn.onclick = () => {
+                    const radioReposicao = document.querySelector('input[name="tipo_agendamento"][value="reposicao"]');
+                    if (radioReposicao) {
+                        radioReposicao.checked = true;
+                        radioReposicao.dispatchEvent(new Event('change'));
+                    }
+
+                    if (infoReposicao) {
+                        infoReposicao.innerHTML = `<strong>Reposição de sessão</strong>`;
+                        infoReposicao.style.display = 'block';
+                    }
+
+                    if (avisoDiv) avisoDiv.style.display = 'none';
+                    if (avisoRepo) avisoRepo.style.display = 'none';
+                    if (tipoSessaoLabel) tipoSessaoLabel.textContent = 'Tipo de reposição';
                 };
             }
 
-            // Mostra saldos de desmarcações
-            const sd = data.saldos_desmarcacoes;
-            const mensagens = [];
-
-            if (sd.desistencia > 0) mensagens.push(`❌ D: ${sd.desistencia}`);
-            if (sd.desistencia_remarcacao > 0) mensagens.push(`⚠ DCR: ${sd.desistencia_remarcacao}`);
-            if (sd.falta_remarcacao > 0) mensagens.push(`⚠ FCR: ${sd.falta_remarcacao}`);
-            if (sd.falta_cobrada > 0) mensagens.push(`❌ FC: ${sd.falta_cobrada}`);
-
-            if (mensagens.length > 0) {
-                mensagemDesmarcacoes.textContent = `Este paciente possui sessões desmarcadas registradas: ${mensagens.join(' | ')}`;
-                avisoDesmarcacoes.style.display = 'block';
-            } else {
-                avisoDesmarcacoes.style.display = 'none';
-            }
-
-
-            servicosReposicao.forEach(opt => opt.hidden = true);
-
-            usarRemarcacaoBtn.onclick = () => {
-                document.querySelector('input[value="reposicao"]').checked = true;
-                const event = new Event('change');
-                document.querySelector('input[value="reposicao"]').dispatchEvent(event);
-
-                infoReposicao.innerHTML = `<strong>Reposição de sessão</strong>`;
-                infoReposicao.style.display = 'block';
-
-                avisoDiv.style.display = 'none';
-                avisoRepo.style.display = 'none';
-                tipoSessaoLabel.textContent = 'Tipo de reposição'
-            }
-
-
-
         } catch (error) {
             console.error('Erro ao verificar pacote:', error);
-            formValor.classList.remove('hidden');
-            infoPacote.classList.add('hidden');
-            avisoDesmarcacoes.style.display = 'none';
+            if (formValor) formValor.classList.remove('hidden');
+            if (infoPacote) infoPacote.classList.add('hidden');
+            if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
         }
-
     }
 
     function limparOpcaoPacoteServico() {
         const servicoSelect = document.getElementById('pacotesInput');
-        const opcoes = servicoSelect.querySelectorAll('option[data-pacote="true"]');
-        opcoes.forEach(opt => opt.remove());
+        if (!servicoSelect) return;
+        servicoSelect.querySelectorAll('option[data-pacote="true"]').forEach(opt => opt.remove());
         servicoSelect.disabled = false;
         servicoSelect.readOnly = false;
         servicoSelect.value = '';
 
-        // Resetar exibição para o formulário normal
-        document.getElementById('formValor').classList.remove('hidden');
-        document.getElementById('info_pacote').classList.add('hidden');
-
+        const formValor = document.getElementById('formValor');
+        const infoPacote = document.getElementById('info_pacote');
+        if (formValor) formValor.classList.remove('hidden');
+        if (infoPacote) infoPacote.classList.add('hidden');
     }
 
-    document.querySelector('input[name="tipo_agendamento"][value="novo"]').addEventListener('click', () => {
-        const servicoSelect = document.getElementById('pacotesInput')
-        servicoSelect.disabled = false
-        servicoSelect.readOnly = false
+    // tipo_agendamento = novo
+    const radioNovo = document.querySelector('input[name="tipo_agendamento"][value="novo"]');
+    if (radioNovo) {
+        radioNovo.addEventListener('click', () => {
+            const servicoSelect = document.getElementById('pacotesInput');
+            if (servicoSelect) {
+                servicoSelect.disabled = false;
+                servicoSelect.readOnly = false;
+                servicoSelect.querySelectorAll('option[data-pacote="true"]').forEach(op => op.remove());
+                servicoSelect.value = '';
+            }
 
-        const opcoesPacote = servicoSelect.querySelectorAll('option[data-pacote="true"]')
-        opcoesPacote.forEach(op => op.remove())
+            const servicoHidden = document.getElementById('servico_id_hidden');
+            if (servicoHidden) servicoHidden.value = "";
 
-        servicoSelect.value = '';
-        document.getElementById('servico_id_hidden').value = ""
-
-        const formValor = document.getElementById('formValor')
-        const infoPacote = document.getElementById('info_pacote')
-        formValor.classList.remove('hidden')
-        infoPacote.classList.add('hidden')
-
-        document.getElementById('codigo_pacote_display').textContent = "";
-        document.getElementById('valor_pago_display').textContent = "";
-        document.getElementById('valor_restante_display').textContent = "";
-        document.getElementById('sessao_atual_display').textContent = "";
-        document.getElementById('total_sessoes_display').textContent = "";
-
-        if (valorFinalInput) valorFinalInput.value = ""
-
-        const pacoteAtual = document.getElementById('pacote_atual')
-        pacoteAtual.textContent = ""
-        pacoteAtual.style.display = 'none'
-
-        const campoPacote = document.getElementById('pacote_codigo')
-        if (campoPacote) campoPacote.value = ''
-
-        avisoDiv.style.display = 'none'
-
-    })
-
-
-    document.querySelectorAll('input[name="tipo_agendamento"]').forEach(radio => {
-        radio.addEventListener('change', function () {
             const formValor = document.getElementById('formValor');
             const infoPacote = document.getElementById('info_pacote');
+            if (formValor) formValor.classList.remove('hidden');
+            if (infoPacote) infoPacote.classList.add('hidden');
 
-            if (this.value === 'existente') {
-                // Se selecionou "pacote existente", mostrar info_pacote
-                formValor.classList.add('hidden');
-                infoPacote.classList.remove('hidden');
-            } else {
-                // Se selecionou outra opção, mostrar formValor
-                formValor.classList.remove('hidden');
-                infoPacote.classList.add('hidden');
-            }
+            const campos = ['codigo_pacote_display', 'valor_pago_display', 'valor_restante_display', 'sessao_atual_display', 'total_sessoes_display'];
+            campos.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = ""; });
+
+            if (valorFinalInput) valorFinalInput.value = "";
+
+            const pacoteAtual = document.getElementById('pacote_atual');
+            if (pacoteAtual) { pacoteAtual.textContent = ""; pacoteAtual.style.display = 'none'; }
+
+            if (campoPacote) campoPacote.value = '';
+
+            if (avisoDiv) avisoDiv.style.display = 'none';
         });
-    });
-    if (pacotesInput) {
+    }
+
+    // Mostrar valor do serviço selecionado
+    if (pacotesInput && valorInput) {
         pacotesInput.addEventListener('change', function () {
             const selectedOption = this.options[this.selectedIndex];
-            const valor = parseFloat(selectedOption.getAttribute('data-valor')) || 0;
+            const valor = parseFloat(selectedOption?.getAttribute('data-valor')) || 0;
             valorInput.value = valor.toFixed(2);
-            calcularDesconto();
+            window.calcularDesconto();
         });
     }
 
-    if (openBtn && closeBtn && sidebar) {
-        openBtn.addEventListener('click', () => sidebar.classList.add('active'));
-        closeBtn.addEventListener('click', () => sidebar.classList.remove('active'));
+    // Sidebar open/close (com hidden para evitar FOUC)
+    if (openBtn && sidebar) {
+        openBtn.addEventListener('click', () => {
+            sidebar.removeAttribute('hidden');
+            sidebar.classList.add('active');
+            document.body.classList.add('modal-open');
+        });
+    }
+    if (closeBtn && sidebar) {
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebar.setAttribute('hidden', '');
+            document.body.classList.remove('modal-open');
+        });
     }
 
-
-
+    // Submenus (opcional)
     document.querySelectorAll('.submenu-header').forEach(header => {
         header.addEventListener('click', function () {
             const submenu = this.parentElement;
@@ -273,38 +287,36 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    if (input) {
+    // Autocomplete paciente
+    if (input && sugestoes && pacienteIdInput) {
         input.addEventListener('input', async () => {
             const query = input.value.trim();
             if (query.length === 0) {
                 sugestoes.innerHTML = '';
+                sugestoes.style.display = 'none';
                 pacienteIdInput.value = '';
-                avisoDiv.style.display = 'none';
+                if (avisoDiv) avisoDiv.style.display = 'none';
                 return;
             }
-
             try {
                 const res = await fetch(`/api/buscar-pacientes/?q=${encodeURIComponent(query)}`);
                 if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
                 const data = await res.json();
 
                 sugestoes.innerHTML = '';
-                sugestoes.style.display = 'block'
-                data.resultados.forEach(paciente => {
+                sugestoes.style.display = 'block';
+                (data.resultados || []).forEach(paciente => {
                     const div = document.createElement('div');
                     div.textContent = `${paciente.nome} ${paciente.sobrenome}`;
-
                     div.style.padding = '5px';
                     div.style.cursor = 'pointer';
-
                     div.addEventListener('click', () => {
                         input.value = `${paciente.nome} ${paciente.sobrenome}`;
                         pacienteIdInput.value = paciente.id;
                         sugestoes.innerHTML = '';
-                        sugestoes.style.display = 'none'
+                        sugestoes.style.display = 'none';
                         verificarPacoteAtivo();
                     });
-
                     sugestoes.appendChild(div);
                 });
             } catch (error) {
@@ -312,71 +324,55 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-    document.querySelectorAll(".btn-editar-agendamento").forEach(botao => {
+
+    // Abrir modal de edição (event delegation já está ok)
+    document.querySelectorAll('.btn-editar-agendamento').forEach(botao => {
         botao.addEventListener("click", function () {
             const agendamentoId = this.dataset.id;
             window.currentAgendamentoId = agendamentoId;
-            const dados = fetch(`/agendamento/json/${agendamentoId}/`)
-
+            fetch(`/agendamento/json/${agendamentoId}/`)
                 .then(response => response.json())
                 .then(data => {
+                    const setVal = (sel, val) => { const el = document.querySelector(sel); if (el) el.value = val ?? ''; };
 
-
-                    document.querySelector("#profissional1InputEdicao").value = data.profissional1_id;
-                    document.querySelector("#dataInputEdicao").value = data.data;
-                    document.querySelector("#horaInicioPrincipal").value = data.hora_inicio;
-                    document.querySelector("#horaFimPrincipal").value = data.hora_fim;
-                    document.querySelector("#profissional2InputEdicao").value = data.profissional2_id || '';
-                    document.querySelector("#horaInicioAjuda").value = data.hora_inicio_aux;
-                    document.querySelector("#horaFimAjuda").value = data.hora_fim_aux;
-
+                    setVal("#profissional1InputEdicao", data.profissional1_id);
+                    setVal("#dataInputEdicao", data.data);
+                    setVal("#horaInicioPrincipal", data.hora_inicio);
+                    setVal("#horaFimPrincipal", data.hora_fim);
+                    setVal("#profissional2InputEdicao", data.profissional2_id);
+                    setVal("#horaInicioAjuda", data.hora_inicio_aux);
+                    setVal("#horaFimAjuda", data.hora_fim_aux);
 
                     const lista = document.querySelector("#lista-pagamentos");
-                    lista.innerHTML = ""; // Limpa o conteúdo anterior
+                    if (lista) {
+                        const pagamentos = (data.pagamentos || []).map(pag => `
+              <tr>
+                <td>${pag.data}</td>
+                <td>R$ ${Number(pag.valor).toFixed(2)}</td>
+                <td>${pag.forma_pagamento_display}</td>
+              </tr>`).join('');
 
-                    // Monta a estrutura da tabela dentro de uma div.formField
-                    const htmlTabela = `
-                        <div class="formField">
-                            <table class="tabela-pagamentos">
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th>Valor</th>
-                                        <th>Forma de Pagamento</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${data.pagamentos && data.pagamentos.length > 0
-                            ? data.pagamentos.map(pag => `
-                                            <tr>
-                                                <td>${pag.data}</td>
-                                                <td>R$ ${parseFloat(pag.valor).toFixed(2)}</td>
-                                                <td>${pag.forma_pagamento_display}</td>
-                                            </tr>
-                                        `).join('')
-                            : `
-                                            <tr>
-                                                <td colspan="3" style="text-align: center;">Nenhum pagamento registrado.</td>
-                                            </tr>
-                                        `
-                        }
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
+                        lista.innerHTML = `
+              <div class="formField">
+                <table class="tabela-pagamentos">
+                  <thead>
+                    <tr><th>Data</th><th>Valor</th><th>Forma de Pagamento</th></tr>
+                  </thead>
+                  <tbody>
+                    ${pagamentos || `<tr><td colspan="3" style="text-align:center;">Nenhum pagamento registrado.</td></tr>`}
+                  </tbody>
+                </table>
+              </div>`;
+                    }
 
-                    lista.innerHTML = htmlTabela;
-
-
-                    // abrir o modal
-                    document.querySelector("#modalEditAgenda").classList.add("active");
+                    const modal = document.querySelector("#modalEditAgenda");
+                    if (modal) modal.classList.add("active");
                 });
         });
     });
-
-
 });
 
+// Funções auxiliares fora do DOMContentLoaded
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -391,21 +387,22 @@ function getCookie(name) {
     return cookieValue;
 }
 
+// Editar horário (protege quando não existem esses botões na página)
 document.querySelectorAll('.editar-horario-btn').forEach(button => {
     button.addEventListener('click', function () {
         const container = this.closest('.agenda-hora');
+        if (!container) return;
         const spanHora = container.querySelector('.hora-text');
         const inputInicio = container.querySelector('.hora-inicio-input');
         const inputFim = container.querySelector('.hora-fim-input');
 
-        // Alterna entre visualização e edição
-        spanHora.classList.add('hidden');
-        inputInicio.classList.remove('hidden');
-        inputFim.classList.remove('hidden');
-
-        // Muda o ícone do botão para "salvar"
-        this.innerHTML = "<i class='bx bx-check'></i>";
-        this.classList.add('salvar-mode');
+        if (spanHora && inputInicio && inputFim) {
+            spanHora.classList.add('hidden');
+            inputInicio.classList.remove('hidden');
+            inputFim.classList.remove('hidden');
+            this.innerHTML = "<i class='bx bx-check'></i>";
+            this.classList.add('salvar-mode');
+        }
     });
 });
 
@@ -414,13 +411,13 @@ document.querySelectorAll('.editar-horario-btn').forEach(button => {
         if (!this.classList.contains('salvar-mode')) return;
 
         const container = this.closest('.agenda-hora');
+        if (!container) return;
         const spanHora = container.querySelector('.hora-text');
         const inputInicio = container.querySelector('.hora-inicio-input');
         const inputFim = container.querySelector('.hora-fim-input');
+        const agendamentoId = container?.dataset?.agendamentoId;
 
-        const horaInicio = inputInicio.value;
-        const horaFim = inputFim.value;
-        const agendamentoId = container.dataset.agendamentoId; // certifique-se de setar isso no HTML
+        if (!inputInicio || !inputFim || !spanHora || !agendamentoId) return;
 
         try {
             const response = await fetch('/agendamento/editar-horario/', {
@@ -431,14 +428,13 @@ document.querySelectorAll('.editar-horario-btn').forEach(button => {
                 },
                 body: JSON.stringify({
                     agendamento_id: agendamentoId,
-                    hora_inicio: horaInicio,
-                    hora_fim: horaFim
+                    hora_inicio: inputInicio.value,
+                    hora_fim: inputFim.value
                 })
             });
 
             if (response.ok) {
-                // Atualiza visualmente
-                spanHora.textContent = `${horaInicio} – ${horaFim}`;
+                spanHora.textContent = `${inputInicio.value} – ${inputFim.value}`;
                 spanHora.classList.remove('hidden');
                 inputInicio.classList.add('hidden');
                 inputFim.classList.add('hidden');
@@ -453,45 +449,24 @@ document.querySelectorAll('.editar-horario-btn').forEach(button => {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+// Form de edição (existe só quando o modal é renderizado)
+const formEdicao = document.getElementById('form-edicao');
+if (formEdicao) {
+    formEdicao.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const agendamentoId = window.currentAgendamentoId;
+        if (!agendamentoId) return;
 
-    const openBtnEdit = document.getElementById('openBtnEdit')
-    const closeBtnEdit = document.getElementById('closeBtnEdit')
-    const modalEditAgenda = document.getElementById('modalEditAgenda')
-
-
-
-    // Fecha o modal
-    if (closeBtnEdit) {
-        closeBtnEdit.addEventListener("click", function () {
-            modalEditAgenda.classList.remove("active");
-        });
-    }
-});
-
-document.getElementById('form-edicao').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const formData = new FormData(this);
-    const agendamentoId = window.currentAgendamentoId;
-    try {
-        const response = await fetch(`/agendamento/editar/${agendamentoId}/`, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        });
-
-        const data = await response.json();
-
-        if (data.status === 'ok') {
-
-            location.reload();
-        } else {
-
+        try {
+            const response = await fetch(`/agendamento/editar/${agendamentoId}/`, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            const data = await response.json();
+            if (data.status === 'ok') location.reload();
+        } catch (error) {
+            console.error(error);
         }
-    } catch (error) {
-
-    }
-});
+    });
+}

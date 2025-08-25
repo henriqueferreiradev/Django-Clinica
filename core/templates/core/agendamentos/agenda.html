@@ -17,23 +17,95 @@
 
 {% block content %}
 <div class="content">
-
-
-
-    <div class="content-header">
-        <h2>Todas as consultas</h2>
+    <div class="filtro-universal">
+        <div class="filtro-header">
+          <h2><i class='bx bx-filter-alt'></i> Filtros</h2>
+          <!-- NÃO enviar o form ao clicar -->
+          <button type="button" class="filtro-toggle">
+            <i class='bx bx-chevron-down'></i>
+          </button>
+        </div>
+      
+        <!-- FORM de filtros -->
         <form method="get" class="search-form">
-            <div class="buttons_header" >
-                <input type="text" name="q" value="{{ query }}" placeholder="Buscar por paciente ou profissional aqui">
-                <input type="date" name="data_inicio" value="{{ data_inicio }}">
-                <input type="date" name="data_fim" value="{{ data_fim }}">
-                <button class="btn-add" name="filtrar" value="1">Filtrar</button>
-             
+          <div class="filtro-body">
+            <div class="filtro-campo">
+              <label for="filtro-nome">Nome</label>
+              <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                id="filtro-nome"
+                class="filtro-input"
+                placeholder="Digite um nome..."
+              />
+            </div>
+      
+            <div class="filtro-campo">
+              <label for="filtro-categoria">Categoria</label>
+              <select id="filtro-categoria" name="categoria" class="filtro-select">
+                <option value="">Todas as categorias</option>
+                <option value="1">Categoria 1</option>
+                <option value="2">Categoria 2</option>
+                <option value="3">Categoria 3</option>
+              </select>
+            </div>
+      
+            <div class="filtro-campo">
+              <label for="filtro-status">Status</label>
+              <select id="filtro-status" name="status" class="filtro-select">
+                <option value="">Todos os status</option>
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+                <option value="pendente">Pendente</option>
+              </select>
+            </div>
+      
+            <div class="filtro-campo">
+              <label for="filtro-data-inicio">Data Início</label>
+              <div class="filtro-data-wrapper">
+                <input
+                  type="date"
+                  name="data_inicio"
+                  id="filtro-data-inicio"
+                  value="{{ data_inicio }}"
+                  class="filtro-input"
+                />
+              </div>
+            </div>
+      
+            <div class="filtro-campo">
+              <label for="filtro-data-fim">Data Fim</label>
+              <div class="filtro-data-wrapper">
+                <input
+                  type="date"
+                  name="data_fim"
+                  id="filtro-data-fim"
+                  value="{{ data_fim }}"
+                  class="filtro-input"
+                />
+              </div>
+            </div>
+          </div>
+      
+          <div class="filtro-acoes">
+            <!-- reset limpa campos do form; se quiser limpar querystring, use link -->
+            <button type="reset" class="btn btn-secondary">
+              <i class='bx bx-reset'></i> Limpar
+            </button>
+      
+            <button type="submit" name="filtrar" value="1" class="btn btn-primary">
+              <i class='bx bx-filter'></i> Aplicar Filtros
+            </button>
+          </div>
         </form>
-    </div>
+      </div>
+      
+
+ 
     <button type='button' id="openBtn" class="btn-add"> Novo Agendamento</button>
 
-</div>
+ 
 
 <div id="lista-agendamentos">
     
@@ -103,247 +175,364 @@
 </div>
 
 
-    <div class="sidebar" hidden id="sidebar">
-        <div class="header-sidebar">
-            <h2>Agendamento</h2>
-            <button id="closeBtn">&times;</button>
-        </div>
-        
-        <div class="agendamento_div">
- 
-            <form id="agendamentoForm" method="post" action="{% url 'criar_agendamento' %}">
-                {% csrf_token %}
+<div class="sidebar" hidden id="sidebar">
+    <div class="header-sidebar">
+        <h2>Agendamento</h2>
+        <button id="closeBtn">&times;</button>
+    </div>
+    
+    <div class="agendamento_div">
 
-                <div id="aviso-pacote" class="aviso-premium" style="display: none;">
-                    <i class="fas fa-check-circle aviso-icon"></i>
-                    <div class="aviso-content">
-                        <strong>Pacote ativo detectado!</strong>
-                        <span id="mensagem-pacote"></span>
-                        <button type="button" id="usar-pacote-btn" class="btn-premium">
-                            <i class="fas fa-tag"></i> Usar este pacote
-                        </button>
-                    </div>
+        <form id="agendamentoForm" method="post" action="{% url 'criar_agendamento' %}">
+            {% csrf_token %}
+
+            <div id="aviso-pacote" class="aviso-premium" style="display: none;">
+                <i class="fas fa-check-circle aviso-icon"></i>
+                <div class="aviso-content">
+                    <strong>Pacote ativo detectado!</strong>
+                    <span id="mensagem-pacote"></span>
+                    <button type="button" id="usar-pacote-btn" class="btn-premium">
+                        <i class="fas fa-tag"></i> Usar este pacote
+                    </button>
                 </div>
-                
-                <div id="pacote_atual"></div>
-                <div id="info_reposicao"></div>
-                
-                <div id="aviso-desmarcacoes" class="aviso-premium" style="display: none;">
-                    <i class="fas fa-exclamation-circle aviso-icon"></i>
-                    <div class="aviso-content">
-                        <strong>Saldos de sessões desmarcadas detectados!</strong>
-                        <span id="mensagem-desmarcacoes"></span>
-                        <button type="button" id="usar-reposicao-btn" class="btn-premium">
-                            <i class="fas fa-calendar-plus"></i> Remarcar sessão
-                        </button>
-                    </div>
+            </div>
+            
+            <div id="pacote_atual"></div>
+            <div id="info_reposicao"></div>
+            
+            <div id="aviso-desmarcacoes" class="aviso-premium" style="display: none;">
+                <i class="fas fa-exclamation-circle aviso-icon"></i>
+                <div class="aviso-content">
+                    <strong>Saldos de sessões desmarcadas detectados!</strong>
+                    <span id="mensagem-desmarcacoes"></span>
+                    <button type="button" id="usar-reposicao-btn" class="btn-premium">
+                        <i class="fas fa-calendar-plus"></i> Remarcar sessão
+                    </button>
+                </div>
+            </div>
+
+            <div class="formField input-wrapper">
+                <label for="busca"><i class="fas fa-user"></i> Paciente</label>
+                <input class="capitalize-input input-s" type="text" id="busca" placeholder="Buscar paciente por nome..." autocomplete="off">
+                <input type="hidden" id="paciente_id" name="paciente_id">
+                <div id="sugestoes"></div>
+            </div>
+            
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" name="tipo_agendamento" value="novo" id="tipo-novo" checked>
+                    <label for="tipo-novo">Nova Sessão / Novo Pacote</label>
+                </div>
+                <div class="radio-option" hidden>
+                    <input type="radio" name="tipo_agendamento" value="existente" id="tipo-existente">
+                    <label for="tipo-existente">Sessão de Pacote Já Assinado</label>
+                    <input type="text" id="pacote_codigo" name="pacote_codigo" class="input-s" placeholder="Digite o código do pacote">
+                </div>
+                <div class="radio-option">
+                    <input type="radio" name="tipo_agendamento" value="reposicao" id="tipo-reposicao">
+                    <label for="tipo-reposicao">Reposição de Sessão</label>
+                </div>
+            </div>
+
+            <div class="formField">
+                <label for="pacotesInput" id="tipo_sessao"><i class="fas fa-concierge-bell"></i> Tipo de sessão</label>
+                <input type="hidden" id="servico_id_hidden" name="servico_id">
+                <select name="servico_id" id="pacotesInput" class="input-s" required>
+                    <option value="" disabled selected>Selecione um serviço</option>
+                    {% for servico in servicos %}
+                    <option value="{{ servico.id }}" data-valor="{{ servico.valor }}" class="servico-banco">
+                        {{ servico.nome }} - R$ {{ servico.valor }}
+                    </option>
+                    {% endfor %}
+                    <option value="d" class="servico-reposicao" data-valor="0.00">Reposição - D</option>
+                    <option value="dcr" class="servico-reposicao" data-valor="0.00">Reposição - DCR</option>
+                    <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
+                </select>
+            </div>
+
+            <div class="formRow cols-2">
+                <div class="formField">
+                    <label for="especialidadeInput"><i class="fas fa-stethoscope"></i> Especialidade</label>
+                    <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
+                        <option value="" disabled selected>Selecione uma especialidade</option>
+                        {% for esp in especialidades %}
+                        <option value="{{ esp.id }}">
+                            {{ esp.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="formField">
+                    <label for="profissional1Input"><i class="fas fa-user-md"></i> Profissional 1</label>
+                    <select name="profissional1_id" id="profissional1Input" class="input-s" required>
+                        <option value="" disabled selected>Selecione um profissional</option>
+                        {% for profissional in profissionais %}
+                        <option value="{{ profissional.id }}">
+                            {{ profissional.nome }} {{ profissional.sobrenome }} - {{ profissional.especialidade }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="formRow cols-3">
+                <div class="formField">
+                    <label for="dataInput"><i class="fas fa-calendar"></i> Data</label>
+                    <input type="date" name="data" id="dataInput" class="input-s">
+                </div>
+                <div class="formField">
+                    <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
+                    <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
+                </div>
+                <div class="formField">
+                    <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
+                    <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
+                </div>
+            </div>
+            
+            <div class="formRow cols-2">
+                <div class="formField">
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="recorrente" id="recorrente">
+                        <span><i class="fas fa-sync-alt"></i> Agendamento Recorrente</span>
+                    </label>
+                </div>
+                <div class="formField">
+                    <label for="recorrencia_dia"><i class="fas fa-calendar-week"></i> Recorrência</label>
+                    <select name="recorrencia_dia" id="recorrencia_dia" class="input-s">
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="0">Todas segundas</option>
+                        <option value="1">Todas terças</option>
+                        <option value="2">Todas quartas</option>
+                        <option value="3">Todas quintas</option>
+                        <option value="4">Todas sextas</option>
+                        <option value="5">Todos sábados</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="formValor" class="formRow cols-3">
+                <div class="formField">
+                    <label for="valor_pacote"><i class="fas fa-tag"></i> Valor Pacote</label>
+                    <input id="valor_pacote" name="valor_pacote" type="number" step="0.01" class="input-s" readonly>
                 </div>
 
                 <div class="formField input-wrapper">
-                    <label for="busca"><i class="fas fa-user"></i> Paciente</label>
-                    <input class="capitalize-input input-s" type="text" id="busca" placeholder="Buscar paciente por nome..." autocomplete="off">
-                    <input type="hidden" id="paciente_id" name="paciente_id">
-                    <div id="sugestoes"></div>
-                </div>
-                
-                <div class="radio-group">
-                    <div class="radio-option">
-                        <input type="radio" name="tipo_agendamento" value="novo" id="tipo-novo" checked>
-                        <label for="tipo-novo">Nova Sessão / Novo Pacote</label>
-                    </div>
-                    <div class="radio-option" hidden>
-                        <input type="radio" name="tipo_agendamento" value="existente" id="tipo-existente">
-                        <label for="tipo-existente">Sessão de Pacote Já Assinado</label>
-                        <input type="text" id="pacote_codigo" name="pacote_codigo" class="input-s" placeholder="Digite o código do pacote">
-                    </div>
-                    <div class="radio-option">
-                        <input type="radio" name="tipo_agendamento" value="reposicao" id="tipo-reposicao">
-                        <label for="tipo-reposicao">Reposição de Sessão</label>
-                    </div>
+                    <label for="desconto"><i class="fas fa-percent"></i> <span id="desconto_label">Desconto (%)</span></label>
+                    <input id="desconto" name="desconto" type="number" step="0.01" class="input-s">
+                    <input type="hidden" id="modo_desconto" name="modo_desconto" value="%">
+                    <button type="button" id="desconto_button" class="modo_desconto" onclick="alternarModoDesconto()">R$</button>
                 </div>
 
                 <div class="formField">
-                    <label for="pacotesInput" id="tipo_sessao"><i class="fas fa-concierge-bell"></i> Tipo de sessão</label>
-                    <input type="hidden" id="servico_id_hidden" name="servico_id">
-                    <select name="servico_id" id="pacotesInput" class="input-s" required>
-                        <option value="" disabled selected>Selecione um serviço</option>
-                        {% for servico in servicos %}
-                        <option value="{{ servico.id }}" data-valor="{{ servico.valor }}" class="servico-banco">
-                            {{ servico.nome }} - R$ {{ servico.valor }}
-                        </option>
-                        {% endfor %}
-                        <option value="d" class="servico-reposicao" data-valor="0.00">Reposição - D</option>
-                        <option value="dcr" class="servico-reposicao" data-valor="0.00">Reposição - DCR</option>
-                        <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
-                    </select>
+                    <label for="valor_final"><i class="fas fa-dollar-sign"></i> Valor final</label>
+                    <input id="valor_final" name="valor_final" type="number" step="0.01" class="input-s" required>
+                    <input type="hidden" id="valor_pago_atual" name="valor_pago_atual" value="0.00">
                 </div>
+            </div>
 
-                <div class="formRow cols-2">
-                    <div class="formField">
-                        <label for="especialidadeInput"><i class="fas fa-stethoscope"></i> Especialidade</label>
-                        <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
-                            <option value="" disabled selected>Selecione uma especialidade</option>
-                            {% for esp in especialidades %}
-                            <option value="{{ esp.id }}">
-                                {{ esp.nome }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="formField">
-                        <label for="profissional1Input"><i class="fas fa-user-md"></i> Profissional 1</label>
-                        <select name="profissional1_id" id="profissional1Input" class="input-s" required>
-                            <option value="" disabled selected>Selecione um profissional</option>
-                            {% for profissional in profissionais %}
-                            <option value="{{ profissional.id }}">
-                                {{ profissional.nome }} {{ profissional.sobrenome }} - {{ profissional.especialidade }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-                <div class="formRow cols-3">
-                    <div class="formField">
-                        <label for="dataInput"><i class="fas fa-calendar"></i> Data</label>
-                        <input type="date" name="data" id="dataInput" class="input-s">
-                    </div>
-                    <div class="formField">
-                        <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
-                        <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
-                    </div>
-                    <div class="formField">
-                        <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
-                        <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
-                    </div>
-                </div>
-                
-                <div class="formRow cols-2">
-                    <div class="formField">
-                        <label class="checkbox-option">
-                            <input type="checkbox" name="recorrente" id="recorrente">
-                            <span><i class="fas fa-sync-alt"></i> Agendamento Recorrente</span>
-                        </label>
-                    </div>
-                    <div class="formField">
-                        <label for="recorrencia_dia"><i class="fas fa-calendar-week"></i> Recorrência</label>
-                        <select name="recorrencia_dia" id="recorrencia_dia" class="input-s">
-                            <option value="" disabled selected>Selecione...</option>
-                            <option value="0">Todas segundas</option>
-                            <option value="1">Todas terças</option>
-                            <option value="2">Todas quartas</option>
-                            <option value="3">Todas quintas</option>
-                            <option value="4">Todas sextas</option>
-                            <option value="5">Todos sábados</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div id="formValor" class="formRow cols-3">
-                    <div class="formField">
-                        <label for="valor_pacote"><i class="fas fa-tag"></i> Valor Pacote</label>
-                        <input id="valor_pacote" name="valor_pacote" type="number" step="0.01" class="input-s" readonly>
-                    </div>
-
-                    <div class="formField input-wrapper">
-                        <label for="desconto"><i class="fas fa-percent"></i> <span id="desconto_label">Desconto (%)</span></label>
-                        <input id="desconto" name="desconto" type="number" step="0.01" class="input-s">
-                        <input type="hidden" id="modo_desconto" name="modo_desconto" value="%">
-                        <button type="button" id="desconto_button" class="modo_desconto" onclick="alternarModoDesconto()">R$</button>
-                    </div>
-
-                    <div class="formField">
-                        <label for="valor_final"><i class="fas fa-dollar-sign"></i> Valor final</label>
-                        <input id="valor_final" name="valor_final" type="number" step="0.01" class="input-s" required>
-                        <input type="hidden" id="valor_pago_atual" name="valor_pago_atual" value="0.00">
-                    </div>
-                </div>
-
-                <div class="formRow cols-2">
-                    <div class="formField">
-                        <label for="valor_pago_input"><i class="fas fa-money-bill-wave"></i> Valor pago</label>
-                        <input type="number" name="valor_pago" id="valor_pago_input" placeholder="Valor pago" step="0.01" class="input-s">
-                    </div>
-                    <div class="formField">
-                        <label for="forma_pagamento_select"><i class="fas fa-credit-card"></i> Forma de pagamento</label>
-                        <select name="forma_pagamento" id="forma_pagamento_select" class="input-s">
-                            <option value="" disabled selected>Selecione...</option>
-                            <option value="pix">Pix</option>
-                            <option value="credito">Cartão de Crédito</option>
-                            <option value="debito">Cartão de Débito</option>
-                            <option value="dinheiro">Dinheiro</option>
-                            <option value="outro">Outro</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div id="info_pacote" class="hidden">
-                    <table class="tabela-premium">
-                        <tbody>
-                            <tr>
-                                <th>Código do Pacote</th>
-                                <td id="codigo_pacote_display"></td>
-                            </tr>
-                            <tr>
-                                <th>Valor Pago</th>
-                                <td>R$ <span id="valor_pago_display"></span></td>
-                            </tr>
-                            <tr>
-                                <th>Valor Restante</th>
-                                <td>R$ <span id="valor_restante_display"></span></td>
-                            </tr>
-                            <tr>
-                                <th>Sessão Atual</th>
-                                <td><span id="sessao_atual_display"></span> de <span id="total_sessoes_display"></span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
+            <div class="formRow cols-2">
                 <div class="formField">
-                    <label for="ambiente_select"><i class="fas fa-door-open"></i> Ambiente / Sala</label>
-                    <select name="ambiente" id="ambiente_select" class="input-s">
-                        <option value="">Selecione...</option>
-                        <option value="Andar 1 - Sala 1">Andar 1 - Sala 1</option>
-                        <option value="Andar 1 - Sala 2">Andar 1 - Sala 2</option>
-                        <option value="Andar 1 - Sala 3">Andar 1 - Sala 3</option>
-                        <option value="Andar 1 - Sala externa">Andar 1 - Sala externa</option>
-                        <option value="Andar 1 - Personal">Andar 1 - Personal</option>
-                        <option value="Andar 2 - Sala 1">Andar 2 - Sala 1</option>
-                        <option value="Andar 2 - Sala 2">Andar 2 - Sala 2</option>
-                        <option value="Andar 2 - Sala 3">Andar 2 - Sala 3</option>
-                    </select>
+                    <label for="valor_pago_input"><i class="fas fa-money-bill-wave"></i> Valor pago</label>
+                    <input type="number" name="valor_pago" id="valor_pago_input" placeholder="Valor pago" step="0.01" class="input-s">
                 </div>
-
                 <div class="formField">
-                    <label for="status_select"><i class="fas fa-clipboard-check"></i> Status de agendamento</label>
-                    <select name="status" id="status_select" class="input-s">
+                    <label for="forma_pagamento_select"><i class="fas fa-credit-card"></i> Forma de pagamento</label>
+                    <select name="forma_pagamento" id="forma_pagamento_select" class="input-s">
                         <option value="" disabled selected>Selecione...</option>
-                        <option value="agendado">✅ Agendado</option>
-                        <option value="pre">✅ Pré-Agendado</option>
+                        <option value="pix">Pix</option>
+                        <option value="credito">Cartão de Crédito</option>
+                        <option value="debito">Cartão de Débito</option>
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="outro">Outro</option>
                     </select>
                 </div>
+            </div>
+            
+            <div id="info_pacote" class="hidden">
+                <table class="tabela-premium">
+                    <tbody>
+                        <tr>
+                            <th>Código do Pacote</th>
+                            <td id="codigo_pacote_display"></td>
+                        </tr>
+                        <tr>
+                            <th>Valor Pago</th>
+                            <td>R$ <span id="valor_pago_display"></span></td>
+                        </tr>
+                        <tr>
+                            <th>Valor Restante</th>
+                            <td>R$ <span id="valor_restante_display"></span></td>
+                        </tr>
+                        <tr>
+                            <th>Sessão Atual</th>
+                            <td><span id="sessao_atual_display"></span> de <span id="total_sessoes_display"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="formField">
-                    <label for="observacoes_textarea"><i class="fas fa-sticky-note"></i> OBSERVAÇÕES / NOTAS INTERNAS</label>
-                    <textarea class="textarea-large input-s" name="observacoes" id="observacoes_textarea"></textarea>
-                </div>
+            <div class="formField">
+                <label for="ambiente_select"><i class="fas fa-door-open"></i> Ambiente / Sala</label>
+                <select name="ambiente" id="ambiente_select" class="input-s">
+                    <option value="">Selecione...</option>
+                    <option value="Andar 1 - Sala 1">Andar 1 - Sala 1</option>
+                    <option value="Andar 1 - Sala 2">Andar 1 - Sala 2</option>
+                    <option value="Andar 1 - Sala 3">Andar 1 - Sala 3</option>
+                    <option value="Andar 1 - Sala externa">Andar 1 - Sala externa</option>
+                    <option value="Andar 1 - Personal">Andar 1 - Personal</option>
+                    <option value="Andar 2 - Sala 1">Andar 2 - Sala 1</option>
+                    <option value="Andar 2 - Sala 2">Andar 2 - Sala 2</option>
+                    <option value="Andar 2 - Sala 3">Andar 2 - Sala 3</option>
+                </select>
+            </div>
 
-                <div class="footer">
-                    <button class="btn-footer" type="submit">Agendar</button>
-                    <button class="btn-footer" type="button" id="gerar-recibo-btn">Gerar recibo</button>
-                </div>
-            </form>
-        </div>
+            <div class="formField">
+                <label for="status_select"><i class="fas fa-clipboard-check"></i> Status de agendamento</label>
+                <select name="status" id="status_select" class="input-s">
+                    <option value="" disabled selected>Selecione...</option>
+                    <option value="agendado">✅ Agendado</option>
+                    <option value="pre">✅ Pré-Agendado</option>
+                </select>
+            </div>
+
+            <div class="formField">
+                <label for="observacoes_textarea"><i class="fas fa-sticky-note"></i> OBSERVAÇÕES / NOTAS INTERNAS</label>
+                <textarea class="textarea-large input-s" name="observacoes" id="observacoes_textarea"></textarea>
+            </div>
+
+            <div class="footer">
+                <button class="btn-footer" type="submit">Agendar</button>
+                <button class="btn-footer" type="button" id="gerar-recibo-btn">Gerar recibo</button>
+            </div>
+        </form>
     </div>
+</div>
 {% include "core/partials/_modal_agendamento.html" %}
-
 {% include "core/partials/modal_edit_agenda.html" %}
 {% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle do filtro
+        const filtroToggle = document.querySelector('.filtro-toggle');
+        const filtroBody = document.querySelector('.filtro-body');
+        const filtroAcoes = document.querySelector('.filtro-acoes');
+        
+        if (filtroToggle) {
+            filtroToggle.addEventListener('click', function() {
+                const isVisible = filtroBody.style.display !== 'none';
+                
+                if (isVisible) {
+                    filtroBody.style.display = 'none';
+                    filtroAcoes.style.display = 'none';
+                    filtroToggle.innerHTML = '<i class="bx bx-chevron-up"></i>';
+                } else {
+                    filtroBody.style.display = 'grid';
+                    filtroAcoes.style.display = 'flex';
+                    filtroToggle.innerHTML = '<i class="bx bx-chevron-down"></i>';
+                }
+            });
+        }
+        
+        // Toggle dos filtros avançados
+        const filtroAvancadoToggler = document.querySelector('.filtro-avancado-toggler');
+        const filtroAvancadoConteudo = document.querySelector('.filtro-avancado-conteudo');
+        
+        if (filtroAvancadoToggler) {
+            filtroAvancadoConteudo.style.display = 'none';
+            
+            filtroAvancadoToggler.addEventListener('click', function() {
+                const isVisible = filtroAvancadoConteudo.style.display !== 'none';
+                
+                if (isVisible) {
+                    filtroAvancadoConteudo.style.display = 'none';
+                    filtroAvancadoToggler.innerHTML = '<i class="bx bx-chevron-down"></i> Filtros Avançados';
+                } else {
+                    filtroAvancadoConteudo.style.display = 'grid';
+                    filtroAvancadoToggler.innerHTML = '<i class="bx bx-chevron-up"></i> Filtros Avançados';
+                }
+            });
+        }
+        
+        // Exemplo de aplicação de filtros
+        const aplicarFiltrosBtn = document.querySelector('.filtro-acoes .btn-primary');
+        const limparFiltrosBtn = document.querySelector('.filtro-acoes .btn-secondary');
+        const filtrosAtivos = document.querySelector('.filtros-ativos');
+        
+        if (aplicarFiltrosBtn) {
+            aplicarFiltrosBtn.addEventListener('click', function() {
+                // Simulação de aplicação de filtros
+                const categoria = document.getElementById('filtro-categoria').value;
+                const status = document.getElementById('filtro-status').value;
+                
+                // Limpar filtros ativos
+                filtrosAtivos.innerHTML = '';
+                
+                // Adicionar chips de filtros ativos
+                if (categoria) {
+                    const chip = document.createElement('div');
+                    chip.className = 'filtro-chip';
+                    chip.innerHTML = `
+                        <span>Categoria: ${document.getElementById('filtro-categoria').options[document.getElementById('filtro-categoria').selectedIndex].text}</span>
+                        <button><i class='bx bx-x'></i></button>
+                    `;
+                    filtrosAtivos.appendChild(chip);
+                }
+                
+                if (status) {
+                    const chip = document.createElement('div');
+                    chip.className = 'filtro-chip';
+                    chip.innerHTML = `
+                        <span>Status: ${document.getElementById('filtro-status').options[document.getElementById('filtro-status').selectedIndex].text}</span>
+                        <button><i class='bx bx-x'></i></button>
+                    `;
+                    filtrosAtivos.appendChild(chip);
+                }
+                
+                // Aqui você aplicaria os filtros de verdade aos dados
+                console.log('Filtros aplicados');
+            });
+        }
+        
+        if (limparFiltrosBtn) {
+            limparFiltrosBtn.addEventListener('click', function() {
+                // Limpar todos os campos de filtro
+                document.getElementById('filtro-nome').value = '';
+                document.getElementById('filtro-categoria').value = '';
+                document.getElementById('filtro-status').value = '';
+                document.getElementById('filtro-data').value = '';
+                document.getElementById('filtro-valor-min').value = '';
+                document.getElementById('filtro-valor-max').value = '';
+                
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Limpar filtros ativos
+                filtrosAtivos.innerHTML = '';
+                
+                // Aqui você removeria os filtros dos dados
+                console.log('Filtros limpos');
+            });
+        }
+        
+        // Remover filtros individualmente pelos chips
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.filtro-chip button')) {
+                const chip = e.target.closest('.filtro-chip');
+                chip.remove();
+                
+                // Aqui você atualizaria os filtros
+                console.log('Filtro removido');
+            }
+        });
+    });
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/imask"></script>
