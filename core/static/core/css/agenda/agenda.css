@@ -196,7 +196,7 @@ body {
     background: var(--roxoPrincipal);
     color: white;
     padding: 12px 20px;
-    border-radius: var(--borda-radius);
+    border-radius: 0  0 16px 16px;
     margin: 30px 0 20px;
     font-weight: 600;
     font-size: 18px;
@@ -613,8 +613,9 @@ body {
 }
 
 
-/* Avisos e alertas */
-.aviso-premium {
+.aviso-premium,
+#pacote_atual,
+#info_reposicao {
     padding: var(--espaco-md);
     border-radius: var(--borda-radius);
     margin-bottom: var(--espaco-md);
@@ -625,17 +626,24 @@ body {
     transition: var(--transicao);
 }
 
+#pacote_atual,
+#info_reposicao {
+    display: none;
+}
+
 .aviso-premium:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
 }
 
-#aviso-pacote {
+#aviso-pacote,
+#pacote_atual {
     background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
     border-left: 4px solid var(--verde-sucesso);
 }
 
-#aviso-desmarcacoes {
+#aviso-desmarcacoes,
+#info_reposicao {
     background: linear-gradient(to right, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
     border-left: 4px solid var(--vermelho-alerta);
 }
@@ -736,7 +744,7 @@ body {
 .textarea-large {
     width: 100%;
     padding: 0.5em;
-    border: 2px solid var(--cinza-borda);
+    border: 1px solid var(--cinza-borda);
     border-radius: var(--borda-radius);
     font-size: 1rem;
     transition: var(--transicao);
@@ -774,7 +782,7 @@ select.input-s {
 
 /* Grupo de radio buttons */
 .radio-group {
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: var(--espaco-xs);
     margin-bottom: var(--espaco-md);
@@ -1239,7 +1247,7 @@ select.input-s {
     gap: 15px;
     padding: 15px 20px;
     border-top: 1px solid var(--cinzaBorda);
-    background: var(--cinzaClaro);
+    background: var(--branco);
 }
 
 /* Campos do Filtro */
@@ -1446,3 +1454,22 @@ select.input-s {
 .filtro-chip {
     animation: fadeIn 0.3s ease-out;
 }
+
+.btn-new-ag {
+    background-color: white;
+    color: var(--roxoPrincipal);
+}
+
+.btn-new-ag:hover {
+    background-color: rgb(252, 238, 255);
+}
+
+.filtro-header div {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
+input.error, select.error, textarea.error { border: 1px solid #e53935; }
+.erro-msg { color:#e53935; font-size:.85rem; margin-top:4px; display:none; }
+.erro-msg.ativo { display:block; }

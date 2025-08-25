@@ -149,13 +149,7 @@ th {
 
   color: var(--preto);
 }
-
-.input-s {
-  border: 1px solid var(--verdePrincipal);
-}
-
-
-
+ 
 .dropdown {
   position: relative;
   display: inline-block;
