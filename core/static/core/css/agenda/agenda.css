@@ -1128,7 +1128,10 @@ select.input-s {
     border: 1px solid #F70000;
     background-color: rgba(247, 0, 0, 0.15);
 }
-
+.status-select.status-falta {
+    border: 1px solid #F70000;
+     
+}
 .agenda-item.status-pre::before {
     background-color: #5a5753;
 }
