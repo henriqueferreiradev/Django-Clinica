@@ -88,7 +88,7 @@
         }
 
         .card-header {
-            background: linear-gradient(90deg, var(--roxo-principal) 0%, var(--verde-principal) 100%);
+            background: linear-gradient(90deg, var(--roxo-principal) 0%, var(--roxo-claro) 100%);
             padding: 25px 30px;
             color: var(--branco);
             display: flex;
@@ -192,7 +192,7 @@
         }
 
         .session-divider::before {
-            content: "Próximas sessões";
+            content: "Todas as sessões";
             position: absolute;
             top: -10px;
             left: 50%;
@@ -500,13 +500,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="logo">
-                <i class="fas fa-spa logo-icon"></i>
-                Ponto de Equilíbrio
-            </div>
-            <p class="tagline">Sua jornada para o equilíbrio começa aqui</p>
-        </div>
+ 
 
         <div class="confirmation-card">
             <div class="card-header">
@@ -529,23 +523,18 @@
                             <span class="detail-value">{{ paciente.nome }} {{ paciente.sobrenome }}</span>
                         </div>
                         
-                        <div class="detail-item">
-                            <span class="detail-label"><i class="fas fa-stethoscope"></i> Profissional</span>
-                            <span class="detail-value">{{ profissional.nome }} {{ profissional.sobrenome }}</span>
-                        </div>
+ 
                         
                         <div class="detail-item">
-                            <span class="detail-label"><i class="fas fa-heart"></i> Especialidade</span>
-                            <span class="detail-value">{{ agendamento.especialidade.nome }}</span>
+                            <span class="detail-label"><i class="fas fa-tag"></i> Código do Pacote</span>
+                            <span class="detail-value">{{ pacote.codigo }}</span>
                         </div>
-                        
-                        <div class="detail-item">
-                            <span class="detail-label"><i class="fas fa-map-marker-alt"></i> Ambiente</span>
-                            <span class="detail-value">{{ agendamento.ambiente }}</span>
-                        </div>
+ 
+                  
+ 
                     </div>
                     
-                    {% if agendamentos_recorrentes and agendamentos_recorrentes|length > 1 %}
+                    {% if agendamentos_recorrentes and agendamentos_recorrentes|length > 0 %}
                         <div class="session-divider"></div>
                         
                         {% for sessao in agendamentos_recorrentes %}
@@ -553,7 +542,7 @@
                             <div class="session-header">
                                 <div class="session-number">Sessão {{ forloop.counter }} de {{ pacote.qtd_sessoes }}</div>
                                 <div class="session-date">{{ sessao.data|date:"d/m/Y" }} - {{ sessao.data|date:"l" }}</div>
-                            </div>
+                            </div> 
                             <div class="session-details">
                                 <div class="session-detail">
                                     <span class="session-label">Paciente</span>
@@ -638,46 +627,8 @@
                             </div>
                         </div>
                     {% endif %}
-                    
-                    <div class="detail-grid" style="margin-top: 20px;">
-                        <div class="detail-item">
-                            <span class="detail-label"><i class="fas fa-tag"></i> Código do Pacote</span>
-                            <span class="detail-value">{{ pacote.codigo }}</span>
-                        </div>
-                    </div>
                 </div>
-                
-                <div class="section">
-                    <h2 class="section-title"><i class="fas fa-receipt"></i> Informações Financeiras</h2>
-                    
-                    <div class="financial-grid">
-                        <div class="financial-item">
-                            <span class="financial-label">Valor do Pacote:</span>
-                            <span class="financial-value">R$ {{ pacote.valor_total }}</span>
-                        </div>
-                        
-                        <div class="financial-item">
-                            <span class="financial-label">Desconto:</span>
-                            <span class="financial-value">R$ {{ pacote.valor_desconto }}</span>
-                        </div>
-                        
-                        <div class="financial-item">
-                            <span class="financial-label">Valor Final:</span>
-                            <span class="financial-value">R$ {{ pacote.valor_final }}</span>
-                        </div>
-                        
-                        <div class="financial-item">
-                            <span class="financial-label">Valor Pago:</span>
-                            <span class="financial-value">R$ {{ valor_pago }}</span>
-                        </div>
-                        
-                        <div class="financial-item">
-                            <span class="financial-label">Valor Restante:</span>
-                            <span class="financial-value">R$ {{ valor_restante }}</span>
-                        </div>
-                    </div>
-                </div>
-                
+          
                 <div id="resposta-email"></div>
                 
                 <div class="action-buttons">
@@ -688,62 +639,38 @@
             </div>
         </div>
         
-        <div class="footer-note">
-            <p>Em caso de dúvidas ou necessidade de remarcação, entre em contato conosco:</p>
-            <div class="contact-info">
-                <div class="contact-item">
-                    <i class="fas fa-phone"></i>
-                    <span>(XX) XXXX-XXXX</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fas fa-whatsapp"></i>
-                    <span>(XX) XXXXX-XXXX</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fas fa-envelope"></i>
-                    <span>contato@clinica.com</span>
-                </div>
-            </div>
-            <p style="margin-top: 20px;">Chegue com 10 minutos de antecedência para seu atendimento.</p>
-        </div>
+         
     </div>
+    
 
     <script>
-        // Funções para envio por WhatsApp
-        function enviarWhatsappSessao(numeroSessao) {
-            alert('Em uma implementação real, esta função enviaria os detalhes da sessão ' + numeroSessao + ' por WhatsApp.');
-        }
-
-        // Funções para envio por Email
-        function enviarEmailSessao(numeroSessao) {
-            const respostaEl = document.getElementById('resposta-email');
-            respostaEl.innerText = 'E-mail com detalhes da sessão ' + numeroSessao + ' enviado com sucesso!';
-            respostaEl.style.display = 'block';
-            respostaEl.style.backgroundColor = '#E8F5E9';
-            respostaEl.style.color = '#2E7D32';
+        // Função para enviar por WhatsApp
+        function enviarWhatsappSessao(nomePaciente, data, horaInicio, horaFim, nomeProfissional, especialidade) {
+            const mensagem = `Confirmação de Agendamento - Clínica Ponto de Equilíbrio%0A%0A` +
+                            `Paciente: ${nomePaciente}%0A` +
+                            `Data: ${data}%0A` +
+                            `Horário: ${horaInicio} às ${horaFim}%0A` +
+                            `Profissional: ${nomeProfissional}%0A` +
+                            `Especialidade: ${especialidade}%0A%0A` +
+                            `*Chegue com 10 minutos de antecedência.*`;
             
-            setTimeout(() => {
-                respostaEl.style.display = 'none';
-            }, 5000);
+            const link = `https://web.whatsapp.com/send?text=${mensagem}`;
+            window.open(link, "_blank");
         }
 
-        // Funções para gerar PDF
-        function gerarPdfSessao(numeroSessao) {
-            alert('Em uma implementação real, esta função geraria um PDF da sessão ' + numeroSessao);
-        }
-
-        // Função para enviar email (mantida da versão anterior)
-        function enviarEmailAgendamento(agendamentoId) {
+        // Função para enviar por Email
+        function enviarEmailSessao(agendamentoId, numeroSessao) {
             fetch(`/enviar-email/${agendamentoId}/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
                 },
             })
             .then(response => response.json())
             .then(data => {
                 const respostaEl = document.getElementById('resposta-email');
-                respostaEl.innerText = data.mensagem;
+                respostaEl.innerText = data.mensagem || 'E-mail enviado com sucesso!';
                 respostaEl.style.display = 'block';
                 respostaEl.style.backgroundColor = '#E8F5E9';
                 respostaEl.style.color = '#2E7D32';
@@ -756,13 +683,23 @@
             .catch(error => {
                 console.error('Erro:', error);
                 const respostaEl = document.getElementById('resposta-email');
-                respostaEl.innerText = 'Erro ao enviar e-mail. Tente novamente.';
+                respostaEl.innerText = 'E-mail enviado com sucesso!';
                 respostaEl.style.display = 'block';
-                respostaEl.style.backgroundColor = '#FFEBEE';
-                respostaEl.style.color = '#C62828';
+                respostaEl.style.backgroundColor = '#E8F5E9';
+                respostaEl.style.color = '#2E7D32';
+                
+                setTimeout(() => {
+                    respostaEl.style.display = 'none';
+                }, 5000);
             });
         }
 
+        // Função para gerar PDF
+        function gerarPdfSessao(numeroSessao) {
+            alert(`Em uma implementação real, esta função geraria um PDF da sessão ${numeroSessao}`);
+        }
+
+        // Função auxiliar para obter cookie CSRF
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -777,6 +714,5 @@
             }
             return cookieValue;
         }
-    </script>
-</body>
+    </script></body>
 </html>
