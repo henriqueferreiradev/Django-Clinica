@@ -11,6 +11,7 @@ from core.views import (
     api_views,
     form_builder_views,
     equipamentos_views,
+    administrativo_views,
 )
  
 
@@ -90,7 +91,7 @@ urlpatterns = [
  
  
  
- 
+    path('dashboard-adm/', administrativo_views.dashboard, name="dashboard_adm")
     
 
 ]

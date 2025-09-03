@@ -9,6 +9,20 @@
 <span class="text">{% block topbar_title %}Log de ações{% endblock %}</span>
 {% block content %}
 <div class="content">
+
+          <div class="filtro-acoes">
+           
+            <button type="reset" class="btn btn-secondary">
+              <i class='bx bx-reset'></i> Limpar
+            </button>
+      
+            <button type="submit" name="filtrar" value="1" class="btn btn-primary">
+              <i class='bx bx-filter'></i> Aplicar Filtros
+            </button>
+          </div>
+        </form>
+      </div>
+      
     <form method="get" class="filtros-form">
              <select name="acao">
                 <option value="">Todas</option>
@@ -36,7 +50,7 @@
     </form>
     
 
-<table>
+    <table>
     <thead>
         <tr>
             <th>Data/Hora</th>
@@ -61,16 +75,17 @@
         <tr><td colspan="6">Nenhuma ação registrada.</td></tr>
         {% endfor %}
     </tbody>
-</table>
-        {% endblock %}
+    </table>
+</div>
+{% endblock %}
 
-        {% block scripts %}
+{% block scripts %}
 
-        <script src="https://unpkg.com/imask"></script>
-        <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
-        <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
-        <script src="{% static '/core/js/base/cep.js' %}"></script>
-        <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
-        {% endblock %}
+<script src="https://unpkg.com/imask"></script>
+<script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
+<script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
+<script src="{% static '/core/js/base/cep.js' %}"></script>
+<script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
+{% endblock %}
 
  
