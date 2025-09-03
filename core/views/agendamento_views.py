@@ -338,8 +338,8 @@ def listar_agendamentos(filtros=None, query=None):
 
     data_inicio = filtros.get('data_inicio')
     data_fim = filtros.get('data_fim')
-    especialidade = filtros.GET.get('especialidade_id')
-    status = filtros.GET.get('status')
+    especialidade = filtros.get('especialidade_id')
+    status = filtros.get('status')
 
     
     qs_filtros = {}
@@ -354,7 +354,8 @@ def listar_agendamentos(filtros=None, query=None):
     if status: 
         qs_filtros['status'] = status
 
-    if especialidade: qs_filtros['especialidade'] = especialidade
+    if especialidade:
+         qs_filtros['especialidade'] = especialidade
 
 
     agendamentos = Agendamento.objects.select_related(
