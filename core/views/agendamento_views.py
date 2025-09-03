@@ -20,10 +20,18 @@ def agenda_view(request):
     # Recupera filtros se houverem
     data_inicio = request.GET.get('data_inicio')
     data_fim = request.GET.get('data_fim')
+    especialidade = request.GET.get('especialidade_id')
+    status=request.GET.get('status')
+
+
 
     filtros = {
         'data_inicio': data_inicio,
         'data_fim': data_fim,
+        'especialidade':especialidade,
+        'status': status,
+         
+
     }
 
     dados_agrupados = listar_agendamentos(filtros=filtros, query=query)
@@ -31,6 +39,9 @@ def agenda_view(request):
     especialidades = Especialidade.objects.all()
     profissionais = Profissional.objects.all()
     servicos = Servico.objects.all()
+
+
+
     status_remarcaveis = ['d','dcr', 'fcr']
     context = {
         'especialidades': especialidades,
@@ -327,7 +338,10 @@ def listar_agendamentos(filtros=None, query=None):
 
     data_inicio = filtros.get('data_inicio')
     data_fim = filtros.get('data_fim')
+    especialidade = filtros.GET.get('especialidade_id')
+    status = filtros.GET.get('status')
 
+    
     qs_filtros = {}
 
     if data_inicio:
@@ -336,6 +350,12 @@ def listar_agendamentos(filtros=None, query=None):
         qs_filtros["data__lte"] = data_fim
     if not data_inicio and not data_fim:
         qs_filtros['data__gte'] = date.today()
+
+    if status: 
+        qs_filtros['status'] = status
+
+    if especialidade: qs_filtros['especialidade'] = especialidade
+
 
     agendamentos = Agendamento.objects.select_related(
         'paciente', 'profissional_1', 'profissional_1__especialidade'

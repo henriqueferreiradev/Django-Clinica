@@ -45,22 +45,32 @@
       
             <div class="filtro-campo">
               <label for="filtro-categoria">Categoria</label>
-              <select id="filtro-categoria" name="categoria" class="filtro-select">
-                <option value="">Todas as categorias</option>
-                <option value="1">Categoria 1</option>
-                <option value="2">Categoria 2</option>
-                <option value="3">Categoria 3</option>
-              </select>
+              <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
+                <option value="" disabled selected>Selecione uma especialidade</option>
+                <option value="" disabled selected>Todas os serviços</option>
+                
+                {% for esp in especialidades %}
+                <option value="{{ esp.id }}">
+                    {{ esp.nome }}
+                </option>
+                {% endfor %}
+            </select>
             </div>
       
             <div class="filtro-campo">
               <label for="filtro-status">Status</label>
-              <select id="filtro-status" name="status" class="filtro-select">
-                <option value="">Todos os status</option>
-                <option value="ativo">Ativo</option>
-                <option value="inativo">Inativo</option>
-                <option value="pendente">Pendente</option>
-              </select>
+              <div class="status-col">
+                    <select name="status" class="status-select">
+                        <option value="" disabled selected>Selecione um serviço</option>
+                        <option value="pre">✅ Pré-Agendado</option>
+                        <option value="agendado">✅ Agendado</option>
+                        <option value="finalizado">✅ Consulta finalizada!</option>
+                        <option value="desistencia">❌ D - Desmarcação</option>
+                        <option value="desistencia_remarcacao">⚠️ DCR - Desmarcação com reposição</option>
+                        <option value="falta_remarcacao">⚠️ FCR - Falta com reposição</option>
+                        <option value="falta_cobrada">❌ FC - Falta cobrada</option>
+                    </select>
+                </div>       
             </div>
       
             <div class="filtro-campo">
