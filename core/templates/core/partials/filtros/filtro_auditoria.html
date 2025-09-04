@@ -1,0 +1,63 @@
+{% load static %}
+ 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/partials/filtros/filtro_auditoria.css' %}">
+ 
+{% endblock %}
+
+<div class="filtro-universal">
+    <div class="filtro-header">
+        <h2><i class='bx bx-filter-alt'></i> Filtros</h2>
+        <div>
+            <button type="button" class="filtro-toggle">
+                <i class='bx bx-chevron-up'></i>
+            </button>
+        </div>
+    </div>
+    <form method="get">
+        <div class="filtro-body">
+            <div class="filtro-campo">
+                <label for="filtro-acao">Ação</label>
+                <select name="acao" class="filtro-select">
+                    <option value="">Todas</option>
+                    {% for opcao in acoes_disponiveis %}
+                    <option value="{{ opcao }}" {% if filtros.acao == opcao %}selected{% endif %}>
+                        {{ opcao|title }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filtro-campo">
+                <label for="filtro-modelo">Módulo</label>
+                <select name="modelo" class="filtro-select">
+                    <option value="">Todos</option>
+                    {% for opcao in modelos_disponiveis %}
+                    <option value="{{ opcao }}" {% if filtros.modelo == opcao %}selected{% endif %}>
+                        {{ opcao }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filtro-campo">
+                <label>Data Início</label>
+                <input type="date" name="data_inicio" value="{{ filtros.data_inicio }}" class="filtro-input">
+            </div>
+
+            <div class="filtro-campo">
+                <label>Data Fim</label>
+                <input type="date" name="data_fim" value="{{ filtros.data_fim }}" class="filtro-input">
+            </div>
+
+        </div>
+        <div class="filtro-acoes">
+         
+            <a href="{% url 'auditoria_logs' %}" class="btn btn-secondary"><i class='bx bx-reset'></i> Limpar</a>
+            
+            <button type="submit" name="filtrar" value="1" class="btn btn-primary">
+            <i class='bx bx-filter'></i> Aplicar Filtros
+            </button>
+      </div>
+    </form>
+</div>

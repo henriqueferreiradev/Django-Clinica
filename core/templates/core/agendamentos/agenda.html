@@ -18,173 +18,73 @@
 
 {% block content %}
 <div class="content">
-    <div class="filtro-universal">
-        <div class="filtro-header">
-            <h2><i class='bx bx-filter-alt'></i> Filtros</h2>
-            <div>
-            <button type='button' id="openBtn" class="btn btn-new-ag"><i class="fas fa-plus mr-2"></i> Novo Agendamento</button>
-            <button type="button" class="filtro-toggle">
-            <i class='bx bx-chevron-down'></i>
-            </button>
-            </div>
-        </div>
-                <!-- FORM de filtros -->
-        <form method="get">
-            <div class="filtro-body">
-            <div class="filtro-campo">
-                <label for="filtro-nome">Nome</label>
-                <input
-                type="text"
-                name="q"
-                value="{{ query }}"
-                id="filtro-nome"
-                class="filtro-input"
-                placeholder="Digite um nome..."
-              />
-            </div>
-      
-            <div class="filtro-campo">
-              <label for="filtro-categoria">Categoria</label>
-              <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
-                <option value="" disabled selected>Selecione uma especialidade</option>
-                <option value="" disabled selected>Todas os serviços</option>
-                
-                {% for esp in especialidades %}
-                <option value="{{ esp.id }}">
-                    {{ esp.nome }}
-                </option>
-                {% endfor %}
-            </select>
-            </div>
-      
-            <div class="filtro-campo">
-              <label for="filtro-status">Status</label>
-              <div class="status-col">
-                    <select name="status" class="status-select">
-                        <option value="" disabled selected>Selecione um serviço</option>
-                        <option value="pre">✅ Pré-Agendado</option>
-                        <option value="agendado">✅ Agendado</option>
-                        <option value="finalizado">✅ Consulta finalizada!</option>
-                        <option value="desistencia">❌ D - Desmarcação</option>
-                        <option value="desistencia_remarcacao">⚠️ DCR - Desmarcação com reposição</option>
-                        <option value="falta_remarcacao">⚠️ FCR - Falta com reposição</option>
-                        <option value="falta_cobrada">❌ FC - Falta cobrada</option>
-                    </select>
-                </div>       
-            </div>
-      
-            <div class="filtro-campo">
-              <label for="filtro-data-inicio">Data Início</label>
-              <div class="filtro-data-wrapper">
-                <input
-                  type="date"
-                  name="data_inicio"
-                  id="filtro-data-inicio"
-                  value="{{ data_inicio }}"
-                  class="filtro-input"
-                />
-              </div>
-            </div>
-      
-            <div class="filtro-campo">
-              <label for="filtro-data-fim">Data Fim</label>
-              <div class="filtro-data-wrapper">
-                <input
-                  type="date"
-                  name="data_fim"
-                  id="filtro-data-fim"
-                  value="{{ data_fim }}"
-                  class="filtro-input"
-                />
-              </div>
-            </div>
-          </div>
-      
-          <div class="filtro-acoes">
-           
-            <button type="reset" class="btn btn-secondary">
-              <i class='bx bx-reset'></i> Limpar
-            </button>
-      
-            <button type="submit" name="filtrar" value="1" class="btn btn-primary">
-              <i class='bx bx-filter'></i> Aplicar Filtros
-            </button>
-          </div>
-        </form>
-      </div>
-      
+    {% include "core/partials/filtros/filtro_agenda.html" %}
+    <div id="lista-agendamentos">
+        
+        {% for data, agendamentos in agendamentos_agrupados.items %}
+        <div class="agenda-data-group">{{ data }}</div>
 
- 
-  
+        {% for ag in agendamentos %}
+        <div class="agenda-item
+                            {% if ag.status == 'pre' %} status-pre
+                            {% elif ag.status == 'agendado' %} status-agendado
+                            {% elif ag.status == 'finalizado' %} status-finalizado
+                            {% elif ag.status == 'desistencia' %} status-desistencia
+                            {% elif ag.status == 'desistencia_remarcacao' %} status-dcr
+                            {% elif ag.status == 'falta_remarcacao' %} status-fcr
+                            {% elif ag.status == 'falta_cobrada' %} status-falta
+                            {% endif %}">
+            <div class="time-col">
+                <div class="agenda-hora"> 
+                    <div style="background-color: {{ ag.cor_especialidade }};" class="bolinha"></div>
+                    <span>{{ ag.hora_inicio }} – {{ ag.hora_fim }} </span>
 
- 
-
-<div id="lista-agendamentos">
-    
-    {% for data, agendamentos in agendamentos_agrupados.items %}
-    <div class="agenda-data-group">{{ data }}</div>
-
-    {% for ag in agendamentos %}
-    <div class="agenda-item
-                        {% if ag.status == 'pre' %} status-pre
-                        {% elif ag.status == 'agendado' %} status-agendado
-                        {% elif ag.status == 'finalizado' %} status-finalizado
-                        {% elif ag.status == 'desistencia' %} status-desistencia
-                        {% elif ag.status == 'desistencia_remarcacao' %} status-dcr
-                        {% elif ag.status == 'falta_remarcacao' %} status-fcr
-                        {% elif ag.status == 'falta_cobrada' %} status-falta
-                        {% endif %}">
-        <div class="time-col">
-            <div class="agenda-hora"> 
-                <div style="background-color: {{ ag.cor_especialidade }};" class="bolinha"></div>
-                <span>{{ ag.hora_inicio }} – {{ ag.hora_fim }} </span>
-
+                </div>
             </div>
-        </div>
 
 
-        <div class="info-col">
-            <span class="paciente">{{ ag.paciente }}</span>
-            <span class="profissional">{{ ag.especialidade }} com {{ ag.profissional }} </span>
-            {% if ag.sessao_atual %}
-            {% if ag.codigo|slice:":3" == "REP" %}
-                <span class="sessao vermelho">Sessão de Reposição | {{ ag.codigo }}</span>
-                {% else %}
-            <span class="sessao verde">
-                Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
-            </span>
+            <div class="info-col">
+                <span class="paciente">{{ ag.paciente }}</span>
+                <span class="profissional">{{ ag.especialidade }} com {{ ag.profissional }} </span>
+                {% if ag.sessao_atual %}
+                {% if ag.codigo|slice:":3" == "REP" %}
+                    <span class="sessao vermelho">Sessão de Reposição | {{ ag.codigo }}</span>
+                    {% else %}
+                <span class="sessao verde">
+                    Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
+                </span>
+                {% endif %}
             {% endif %}
-        {% endif %}
-        </div>
+            </div>
 
-        <div class="status-col">
-            <form method="post" action="{% url 'alterar_status_agendamento' ag.id %}">
-                {% csrf_token %}
-                <select name="status" class="status-select">
-                    <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
-                    <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
-                    <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
-                    <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
-                    <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
-                    <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
-                    <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
-            </select>
-        </div>
-        <div class="actions-col">
-            <button type="submit"  class="action-btn tooltip" ><i class='bx  bx-save'  ></i><span class="tooltiptext">Salvar Status</span> </button>
-            <a href="{% url 'confirmacao_agendamento' ag.id %}">
-                <button type="button" class="action-btn tooltip"><i class='bx  bx-send'  ></i><span class="tooltiptext">Ver detalhes</span>  </button>
-            </a>
-            <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
-                class="btn-editar-agendamento action-btn tooltip" ><i class='bx  bxs-edit'  ></i><span class="tooltiptext">Editar agendamento</span>  </button>
-              
-        </div>
-        </form>
+            <div class="status-col">
+                <form method="post" action="{% url 'alterar_status_agendamento' ag.id %}">
+                    {% csrf_token %}
+                    <select name="status" class="status-select">
+                        <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
+                        <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
+                        <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
+                        <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
+                        <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
+                        <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
+                        <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
+                </select>
+            </div>
+            <div class="actions-col">
+                <button type="submit"  class="action-btn tooltip" ><i class='bx  bx-save'  ></i><span class="tooltiptext">Salvar Status</span> </button>
+                <a href="{% url 'confirmacao_agendamento' ag.id %}">
+                    <button type="button" class="action-btn tooltip"><i class='bx  bx-send'  ></i><span class="tooltiptext">Ver detalhes</span>  </button>
+                </a>
+                <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
+                    class="btn-editar-agendamento action-btn tooltip" ><i class='bx  bxs-edit'  ></i><span class="tooltiptext">Editar agendamento</span>  </button>
+                
+            </div>
+            </form>
 
+        </div>
+        {% endfor %}
+        {% endfor %}
     </div>
-    {% endfor %}
-    {% endfor %}
-</div>
 
 
 <div class="sidebar" hidden id="sidebar">
@@ -427,128 +327,12 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Toggle do filtro
-        const filtroToggle = document.querySelector('.filtro-toggle');
-        const filtroBody = document.querySelector('.filtro-body');
-        const filtroAcoes = document.querySelector('.filtro-acoes');
-        
-        if (filtroToggle) {
-            filtroToggle.addEventListener('click', function() {
-                const isVisible = filtroBody.style.display !== 'none';
-                
-                if (isVisible) {
-                    filtroBody.style.display = 'none';
-                    filtroAcoes.style.display = 'none';
-                    filtroToggle.innerHTML = '<i class="bx bx-chevron-up"></i>';
-                } else {
-                    filtroBody.style.display = 'grid';
-                    filtroAcoes.style.display = 'flex';
-                    filtroToggle.innerHTML = '<i class="bx bx-chevron-down"></i>';
-                }
-            });
-        }
-        
-        // Toggle dos filtros avançados
-        const filtroAvancadoToggler = document.querySelector('.filtro-avancado-toggler');
-        const filtroAvancadoConteudo = document.querySelector('.filtro-avancado-conteudo');
-        
-        if (filtroAvancadoToggler) {
-            filtroAvancadoConteudo.style.display = 'none';
-            
-            filtroAvancadoToggler.addEventListener('click', function() {
-                const isVisible = filtroAvancadoConteudo.style.display !== 'none';
-                
-                if (isVisible) {
-                    filtroAvancadoConteudo.style.display = 'none';
-                    filtroAvancadoToggler.innerHTML = '<i class="bx bx-chevron-down"></i> Filtros Avançados';
-                } else {
-                    filtroAvancadoConteudo.style.display = 'grid';
-                    filtroAvancadoToggler.innerHTML = '<i class="bx bx-chevron-up"></i> Filtros Avançados';
-                }
-            });
-        }
-        
-        // Exemplo de aplicação de filtros
-        const aplicarFiltrosBtn = document.querySelector('.filtro-acoes .btn-primary');
-        const limparFiltrosBtn = document.querySelector('.filtro-acoes .btn-secondary');
-        const filtrosAtivos = document.querySelector('.filtros-ativos');
-        
-        if (aplicarFiltrosBtn) {
-            aplicarFiltrosBtn.addEventListener('click', function() {
-                // Simulação de aplicação de filtros
-                const categoria = document.getElementById('filtro-categoria').value;
-                const status = document.getElementById('filtro-status').value;
-                
-                // Limpar filtros ativos
-                filtrosAtivos.innerHTML = '';
-                
-                // Adicionar chips de filtros ativos
-                if (categoria) {
-                    const chip = document.createElement('div');
-                    chip.className = 'filtro-chip';
-                    chip.innerHTML = `
-                        <span>Categoria: ${document.getElementById('filtro-categoria').options[document.getElementById('filtro-categoria').selectedIndex].text}</span>
-                        <button><i class='bx bx-x'></i></button>
-                    `;
-                    filtrosAtivos.appendChild(chip);
-                }
-                
-                if (status) {
-                    const chip = document.createElement('div');
-                    chip.className = 'filtro-chip';
-                    chip.innerHTML = `
-                        <span>Status: ${document.getElementById('filtro-status').options[document.getElementById('filtro-status').selectedIndex].text}</span>
-                        <button><i class='bx bx-x'></i></button>
-                    `;
-                    filtrosAtivos.appendChild(chip);
-                }
-                
-                // Aqui você aplicaria os filtros de verdade aos dados
-                console.log('Filtros aplicados');
-            });
-        }
-        
-        if (limparFiltrosBtn) {
-            limparFiltrosBtn.addEventListener('click', function() {
-                // Limpar todos os campos de filtro
-                document.getElementById('filtro-nome').value = '';
-                document.getElementById('filtro-categoria').value = '';
-                document.getElementById('filtro-status').value = '';
-                document.getElementById('filtro-data').value = '';
-                document.getElementById('filtro-valor-min').value = '';
-                document.getElementById('filtro-valor-max').value = '';
-                
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-                
-                // Limpar filtros ativos
-                filtrosAtivos.innerHTML = '';
-                
-                // Aqui você removeria os filtros dos dados
-                console.log('Filtros limpos');
-            });
-        }
-        
-        // Remover filtros individualmente pelos chips
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.filtro-chip button')) {
-                const chip = e.target.closest('.filtro-chip');
-                chip.remove();
-                
-                // Aqui você atualizaria os filtros
-                console.log('Filtro removido');
-            }
-        });
-    });
-</script>
+
  
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static 'core/js/base/campoObrigatorio.js' %}"></script>
+<script src="{% static 'core/js/base/abrirFiltro.js' %}"></script>
 <script src="{% static 'core/js/agenda/baseAgenda.js' %}"></script>
  
 {% endblock %}

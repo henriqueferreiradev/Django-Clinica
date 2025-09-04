@@ -14,7 +14,7 @@
 
 <div class="content">
 {% include "core/partials/_loader.html" %}
- 
+{% include "core/partials/filtros/filtro_propac.html" %}
   <div class="content-header">
     <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
       <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
@@ -126,7 +126,7 @@
  
  
 <script src="https://unpkg.com/imask"></script>
-
+<script src="{% static 'core/js/base/abrirFiltro.js' %}"></script>
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>
 <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
 {% endblock %}

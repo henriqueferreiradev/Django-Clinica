@@ -350,12 +350,12 @@ def listar_agendamentos(filtros=None, query=None):
         qs_filtros["data__lte"] = data_fim
     if not data_inicio and not data_fim:
         qs_filtros['data__gte'] = date.today()
-
+    if especialidade:
+         qs_filtros['especialidade'] = especialidade
     if status: 
         qs_filtros['status'] = status
 
-    if especialidade:
-         qs_filtros['especialidade'] = especialidade
+
 
 
     agendamentos = Agendamento.objects.select_related(

@@ -32,54 +32,7 @@ def pacientes_view(request):
     hoje = timezone.now().date()
 
     # Processa submissão de formulário (POST)
-    if request.method == 'POST':
-        if 'delete_id' in request.POST:
-            paciente = Paciente.objects.get(id=request.POST['delete_id'])
-            paciente.ativo = False
-            paciente.save()
-            messages.warning(request, f'Paciente {paciente.nome} inativado') 
-            registrar_log(usuario=request.user,
-                acao='Inativação',
-                modelo='Paciente',
-                objeto_id=paciente.id,
-                descricao=f'Paciente {paciente.nome} inativado.')
-            return redirect('pacientes')
-
-        paciente_id = request.POST.get('paciente_id')
-        dados = {
-            'nome': request.POST.get('nome'),
-            'cpf': request.POST.get('cpf'),
-            'telefone': request.POST.get('telefone'),
-            'rg': request.POST.get('rg'),
-            'data_nascimento': request.POST.get('nascimento'),
-            'cor_raca': request.POST.get('cor'),
-            'sexo': request.POST.get('sexo'),
-            'naturalidade': request.POST.get('naturalidade'),
-            'uf': request.POST.get('uf'),
-            'nomeSocial': request.POST.get('nomeSocial'),
-            'estado_civil': request.POST.get('estado_civil'),
-            'midia': request.POST.get('midia'),
-            'cep': request.POST.get('cep'),
-            'rua': request.POST.get('rua'),
-            'numero': request.POST.get('numero'),
-            'bairro': request.POST.get('bairro'),
-            'cidade': request.POST.get('cidade'),
-            'estado': request.POST.get('estado'),
-            'celular': request.POST.get('celular'),
-            'telEmergencia': request.POST.get('telEmergencia'),
-            'email': request.POST.get('email'),
-            'observacao': request.POST.get('observacao'),
-            'ativo': True,
-        }
-
-        if paciente_id:
-            Paciente.objects.filter(id=paciente_id).update(**dados)
-            messages.success(request, 'Paciente atualizado com sucesso!')
-        elif dados['nome']:
-            Paciente.objects.create(**dados)
-            messages.success(request, 'Paciente cadastrado com sucesso!')
-        return redirect('pacientes')
-
+ 
     # Inicia o queryset
     if mostrar_todos:
         pacientes = Paciente.objects.all()
