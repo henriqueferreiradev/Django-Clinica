@@ -15,26 +15,7 @@
 <div class="content">
 {% include "core/partials/_loader.html" %}
 {% include "core/partials/filtros/filtro_propac.html" %}
-  <div class="content-header">
-    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-      <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-    </form>
-    <div class='header_buttons'>
-    <form method="get">
-      <select class='select-s' name="periodo" id="periodo">
-        <option value="semana">Última semana</option>
-        <option value="mes">Este mês</option>
-        <option value="semestre">Este semestre</option>
-        <option value="ano">Este ano</option>
-      </select>
-      <button type="submit">Filtrar</button>
-    </form>
-    <form action="{% url 'gerar_link_publico_precadastro' %}" method="get" style="display:inline;">
-  <button type="submit" class="btn btn-primary">🔗 Gerar Link de Pré-Cadastro</button>
-</form>
-    <button  onclick="window.location.href='{% url 'cadastrar_paciente' %}'"><i class="fas fa-plus mr-2"></i>Novo Paciente</button>
-  </div>
-  </div>
+ 
   <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
     <table>
 

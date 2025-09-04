@@ -5,7 +5,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    
+
 }
 
 body {
@@ -196,7 +196,7 @@ body {
     margin: 0;
 }
 
- 
+
 /*==========TABELA============================TABELA===========================TABELA==========*/
 .tabela-container {
     background: var(--branco);
@@ -209,6 +209,7 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 1em;
 }
 
 thead {
@@ -218,7 +219,7 @@ thead {
 
 th,
 td {
-    padding: .05em 1em;
+    padding: .5em 1em;
     text-align: left;
     font-size: 14px;
     border-bottom: 1px solid var(--cinzaBorda);
@@ -284,10 +285,10 @@ thead tr th:last-child {
 
 }
 
- 
 
 
- 
+
+
 
 .input-style {
     width: 100%;
@@ -299,8 +300,8 @@ thead tr th:last-child {
     height: 40px;
 }
 
- 
- 
+
+
 
 @media (max-width: 768px) {
     .content-header {
@@ -439,7 +440,7 @@ thead tr th:last-child {
     }
 }
 
- 
+
 .linha-pendente {
     background-color: #fff3cd6f !important;
     font-weight: 600;
@@ -455,7 +456,7 @@ thead tr th:last-child {
     font-weight: 600;
 }
 
-.status-conferido{
+.status-conferido {
     background-color: #4CAF50;
     /* Laranja */
     padding: .4em .8em;

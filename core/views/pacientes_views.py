@@ -22,60 +22,54 @@ from io import BytesIO
 
 
 
+ 
 def pacientes_view(request):
-    
-    # Opções de filtro
-    mostrar_todos = request.GET.get('mostrar_todos') == 'on'
-    filtra_inativo = request.GET.get('filtra_inativo') == 'on'
     query = request.GET.get('q', '').strip()
-    periodo = request.GET.get('periodo', '')
+    status = request.GET.get('status', '').strip()
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
+    filtrar = request.GET.get('filtrar')
+
     hoje = timezone.now().date()
 
-    # Processa submissão de formulário (POST)
- 
-    # Inicia o queryset
-    if mostrar_todos:
-        pacientes = Paciente.objects.all()
-    elif filtra_inativo:
-        pacientes = Paciente.objects.filter(ativo=False)
-    else:
-        pacientes = Paciente.objects.filter(ativo=True)
+    # Inicia o queryset base (sem filtro de mostrar_todos/filtra_inativo, pois agora usa `status`)
+    pacientes = Paciente.objects.all()
 
-    # Filtro por texto (nome ou CPF)
+    # Filtro por status
+    if status == 'ativo':
+        pacientes = pacientes.filter(ativo=True)
+    elif status == 'inativo':
+        pacientes = pacientes.filter(ativo=False)
+    elif status == 'pendente':
+        pacientes = pacientes.filter(pre_cadastro=True)   
+
+    # Filtro por nome ou CPF
     if query:
-        pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf__icontains=query))
+        pacientes = pacientes.filter(
+            Q(nome__icontains=query) | Q(cpf__icontains=query)
+        )
 
-    # Filtro por período de data de cadastro
-    if periodo:
-        dias = {
-            'semana': 7,
-            'mes': 30,
-            'semestre': 180,
-            'ano': 365
-        }.get(periodo)
-        if dias:
-            data_inicio = hoje - timedelta(days=dias)
-            pacientes = pacientes.filter(data_cadastro__gte=data_inicio)
+    # Filtro por período de datas
+    if data_inicio:
+        pacientes = pacientes.filter(data_cadastro__gte=data_inicio)
+    if data_fim:
+        pacientes = pacientes.filter(data_cadastro__lte=data_fim)
 
     # Ordenação final
     pacientes = pacientes.order_by('-id')
 
-    # Total de pacientes ativos (independente do filtro atual)
+    # Totais
     total_ativos = Paciente.objects.filter(ativo=True).count()
     total_filtrados = pacientes.count()
 
     return render(request, 'core/pacientes/pacientes.html', {
         'pacientes': pacientes,
         'query': query,
+        'status': status,
+        'data_inicio': data_inicio,
+        'data_fim': data_fim,
         'total_ativos': total_ativos,
-         'total_filtrados': total_filtrados,
-        'mostrar_todos': mostrar_todos,
-        'filtra_inativo': filtra_inativo,
-        'estado_civil_choices': ESTADO_CIVIL,
-        'midia_choices': MIDIA_ESCOLHA,
-        'sexo_choices': SEXO_ESCOLHA,
-        'uf_choices': UF_ESCOLHA,
-        'cor_choices': COR_RACA,
+        'total_filtrados': total_filtrados,
     })
     
     

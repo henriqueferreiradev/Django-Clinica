@@ -7,7 +7,8 @@
     <div class="filtro-header">
         <h2><i class='bx bx-filter-alt'></i> Filtros</h2>
         <div>
-        <button type='button' id="openBtn" class="btn btn-new-ag"><i class="fas fa-plus mr-2"></i> Novo Agendamento</button>
+            <button class="btn btn-new-ag" onclick="window.location.href='{% url 'cadastrar_paciente' %}'"><i class="fas fa-plus mr-2"></i>Novo Paciente</button>
+        
         <button type="button" class="filtro-toggle">
         <i class='bx bx-chevron-down'></i>
         </button>
@@ -21,27 +22,26 @@
             <input
             type="text"
             name="q"
-            value="{{ query }}"
+            value="{{ query|default:'' }}"
             id="filtro-nome"
             class="filtro-input"
             placeholder="Digite um nome..."
           />
         </div>
         <div class="filtro-campo">
-            <label for="filtro-status">Situação</label>
+            <label for="filtro-status">Status</label>
             <div class="status-col">
                   <select name="status" class="filtro-select">
                       <option value="" disabled selected>Em breve</option>
                   </select>
               </div>       
           </div>
-
           
         <div class="filtro-campo">
           <label for="filtro-status">Situação</label>
           <div class="status-col">
                 <select name="status" class="filtro-select">
-                    <option value="" disabled selected>Selecione um serviço</option>
+                    <option value="" disabled selected>Selecione a Situação</option>
                     <option value="ativo">Ativos</option>
                     <option value="inativo">Inativos</option>
                     <option value="pendente">Pendentes</option>
