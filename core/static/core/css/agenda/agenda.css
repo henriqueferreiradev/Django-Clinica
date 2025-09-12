@@ -845,7 +845,7 @@ select.input-s {
     transform: translateY(-50%) scale(1.05);
 }
 
-/* Tabela de informações do pacote */
+ 
 .hidden {
     display: none;
 }
@@ -869,7 +869,7 @@ select.input-s {
 }
 
 .tabela-premium th {
-    background: linear-gradient(to right, #f8f9fc, #f1f5f9);
+     
     font-weight: 600;
     color: var(--cinza-escuro);
 }
@@ -882,18 +882,15 @@ select.input-s {
     background-color: var(--hover-dropdown);
 }
 
-/* Linha genérica de campos */
 .formRow {
     display: flex;
     flex-wrap: wrap;
-    /* pode quebrar só quando realmente não couber */
     gap: var(--espaco-md);
     --gap: var(--espaco-md);
     --cols: 3;
-    /* default: 3 colunas (ex.: Data/Início/Fim) */
+
 }
 
-/* Utilitários para controlar quantas colunas a linha deve ter */
 .formRow.cols-1 {
     --cols: 1;
 }
