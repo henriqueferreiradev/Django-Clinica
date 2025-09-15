@@ -254,6 +254,27 @@
 
                     </div>
                 </section>
+
+                 <section class="section">
+                
+                    <h2 class="section-title">Histórico de Status</h2>
+                    <div class="data-grid">
+                    {% if mais_contratados %}
+                        {% for especialidade in mais_contratados %}
+                        <div class="note-card">
+                            
+                            <div class="package-header">
+                                <h3 class="package-title text-sm"> {{especialidade.nome}}</h3>
+                                <span class="badge badge-info" style= ' color:white; background:{{especialidade.cor}}'>{% if especialidade.total == 1 %}{{especialidade.total}} sessão {% else %} {{especialidade.total}} sessões {% endif %}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <h4 class="package-title text-sm">Não há informações no momento.</h4>    
+                    {% endif %}
+
+                    </div>
+                </section>
                 <section class="section">
                     <h2 class="section-title">Formulários Respondidos</h2>
                     <div class="data-grid">
