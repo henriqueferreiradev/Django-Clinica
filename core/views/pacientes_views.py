@@ -426,8 +426,10 @@ def perfil_paciente(request,paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
     pacotes = PacotePaciente.objects.filter(paciente__id=paciente_id,).order_by('-data_inicio')
  
- 
+    
     frequencia_semanal = Agendamento.objects.filter(paciente=paciente, data__range=[inicio_semana, fim_semana]).count()
+    
+    
     quantidade_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).count()
     quantidade_faltas = Agendamento.objects.filter(paciente__id=paciente_id, status__in=FINALIZADOS).count()
     quantidade_repostas = PacotePaciente.objects.filter(paciente__id=paciente_id, eh_reposicao=True).count()
@@ -647,3 +649,12 @@ def visualizar_respostas_formulario(request, resposta_id):
 
 def politica_privacidade(request):
     return render(request, 'core/juridico/politica_privacidade.html')
+
+def paciente_status(request):
+    pacientes = Paciente.objects.all()
+
+    
+    context = {
+        'pacientes':pacientes
+    }
+    return render(request, 'core/pacientes/status_mensal.html', context)

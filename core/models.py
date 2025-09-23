@@ -612,3 +612,87 @@ class RespostaPergunta(models.Model):
 
     def __str__(self):
         return f"{self.pergunta.texto[:40]}...: {self.valor[:40]}"
+
+
+
+
+STATUS_PACIENTES_CHOICES = [
+    ('primeiro_mes', '1º Mês'),
+    ('premium', 'Premium'),
+    ('vip', 'VIP'),
+    ('plus', 'Plus'),
+    ('indefinido', 'Indefinido'),
+]
+
+class FrequenciaMensal(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='frequencias')
+    mes = models.PositiveIntegerField()
+    ano = models.PositiveIntegerField()
+
+    freq_sistema = models.PositiveIntegerField(default=0)
+
+    freq_programada = models.PositiveIntegerField(default=0)
+    
+    programada_set_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='freq_programada_por')
+    programada_set_em = models.DateTimeField(null=True, blank=True)
+
+    percentual = models.DecimalField(max_digits=6, decimal_places=2,default=0)
+    status = models.CharField(max_length=20, choices=STATUS_PACIENTES_CHOICES, default='indefinido')
+
+    observacao = models.TextField(blank=True, null=True)
+    fechado = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('paciente', 'mes', 'ano')
+        indexes = [
+            models.Index(fields=['ano', 'mes']),
+            models.Index(fields=['paciente', 'ano', 'mes'])
+        ]
+
+    def calcular_status(self):
+        # 1 mes
+        if self.paciente.data_cadastro and self.paciente.data_cadastro.year == self.ano and self.paciente.data_cadastro.month == self.mes:
+            return 'primeiro_mes'
+        
+        if self.freq_programada > 0:
+            perc = (self.freq_sistema / self.freq_programada) *100
+
+            if perc >= 100:
+                return 'premium'
+            elif perc > 60:
+                return 'vip'
+            return 'plus'
+        return 'indefinido'
+    def atualizar_percentual_e_status(self):
+            self.percentual = round((self.freq_sistema / self.freq_programada) * 100, 2) if self.freq_programada > 0 else 0
+            self.status = self.calcular_status()
+
+    def save(self, *args, **kwargs):
+        self.atualizar_percentual_e_status()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status} ({self.freq_sistema}/{self.freq_programada})"
+
+class HistoricoStatus(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="historico_status")
+    mes = models.PositiveIntegerField()
+    ano = models.PositiveIntegerField()
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    percentual = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    freq_sistema = models.PositiveIntegerField(default=0)
+    freq_programada = models.PositiveIntegerField(default=0)
+
+    ganhou_beneficio = models.BooleanField(default=False)  # se ganhou no mês
+    data_registro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('paciente', 'mes', 'ano')
+        ordering = ["ano", "mes"]
+
+    def __str__(self):
+        return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status}"
+
+    
+            
+            

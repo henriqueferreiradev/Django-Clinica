@@ -212,3 +212,43 @@ th {
 .dropdown:hover .dropdown-content {
   display: block;
 }
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+thead {
+  background-color: var(--roxoPrincipal);
+  color: var(--branco);
+}
+
+th,
+td {
+  padding: 1em;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid var(--cinzaBorda);
+}
+
+th {
+  padding: 1em;
+}
+
+.badge {
+  padding: .4em .8em;
+  border-radius: 20px;
+  color: white !important;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+thead tr th:first-child {
+  border-top-left-radius: 12px;
+}
+
+thead tr th:last-child {
+  border-top-right-radius: 12px;
+}

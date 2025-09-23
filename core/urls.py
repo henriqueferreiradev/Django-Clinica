@@ -12,6 +12,7 @@ from core.views import (
     form_builder_views,
     equipamentos_views,
     administrativo_views,
+    frequencia_views,
 )
  
 
@@ -26,6 +27,7 @@ urlpatterns = [
 
     path('pacientes/', pacientes_views.pacientes_view, name='pacientes'),
     path('pacientes/cadastrar', pacientes_views.cadastrar_pacientes_view, name='cadastrar_paciente'),
+    path('pacientes/status_mensal', pacientes_views.paciente_status, name='status_pacientes'),
     path('pacientes/editar/<int:id>/', pacientes_views.editar_paciente_view, name='editar_paciente'),
     path('paciente/<int:id>/ficha/', pacientes_views.ficha_paciente, name='ficha_paciente'),
     path('api/paciente/<int:paciente_id>/', pacientes_views.dados_paciente, name='dados_paciente'),
@@ -91,7 +93,8 @@ urlpatterns = [
  
  
  
-    path('dashboard-adm/', administrativo_views.dashboard, name="dashboard_adm")
+    path('dashboard-adm/', administrativo_views.dashboard, name="dashboard_adm"),
     
-
+    path("frequencias", frequencia_views.frequencias_get, name="frequencias_get"),
+    path("frequencias/salvar", frequencia_views.frequencias_post, name="frequencias_post"),
 ]
