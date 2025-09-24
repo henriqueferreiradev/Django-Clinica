@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 
 {% load static %}
-{% block title %}Editar Paciente - Ponto de Equilíbrio{% endblock %}
+{% block title %}Status mensal - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
     <style>
@@ -19,8 +19,9 @@
         .badge-premium { background-color: #10B981; }
         .badge-vip { background-color: #F59E0B; }
         .badge-plus { background-color: #EF4444; }
-        .badge-first { background-color: #3B82F6; }
-        .badge-indef {background-color: #ccc; }
+        .badge-primeiro_mes  { background-color: #3B82F6; }
+        .badge-indefinido {background-color: #ccc; }
+        {}
         /* Estilos para células editáveis */
         .editable-cell:hover { 
             background-color: #F3F4F6; 
@@ -105,6 +106,11 @@
             background-color: #4338CA;
         }
         
+        .fp-input {
+            padding: 0.5rem;
+            border: 1px solid gray;
+            border-radius: 10px
+        }
      
         .patient-info {
             display: flex;
@@ -309,32 +315,41 @@
     </style>
 {% endblock %}
 
-{% block topbar_title %}<span class="text">Editar pacientes</span> {%endblock%}
+{% block topbar_title %}<span class="text">Status mensal</span> {%endblock%}
 
 {% block content %}
 
   <div class="content">
  
-        <button onclick=getFrequencias()>botaozinho</button>
-     
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Paciente</th>
-                            <th>Freq. Sistema</th>
-                            <th>Freq. Programada</th>
-                            <th>%</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
 
-                    </tbody>
-                </table>
-            </div>
-        
+  <button onclick=getFrequencias()>botaozinho</button>
+
+  <form id="formFreq" method="post" action="/frequencias/salvar">
+    {% csrf_token %}
+    <!-- se já tiver controles de mês/ano, use-os; senão, deixe hidden -->
+    <input type="hidden" id="mes" name="mes" value="{{ mes|default:9 }}">
+    <input type="hidden" id="ano" name="ano" value="{{ ano|default:2025 }}">
+
+    <button type="submit" class="btn btn-primary" id="salvarTudo">Salvar tudo</button>
+
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Freq. Sistema</th>
+            <th>Freq. Programada</th>
+            <th>%</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+         
+        </tbody>
+      </table>
+    </div>
+  </form>
     </div>
 
     <!-- Modal Benefícios -->
@@ -449,21 +464,7 @@
     <script src="{% static '/core/js/pacientes/statusMensal.js' %}"></script>
     <script>
  
-        // Funções
-        function makeEditable(element) {
-            const value = element.textContent.trim();
-            element.innerHTML = `<input type="number" style="width: 4rem; padding: 0.25rem 0.5rem; border: 1px solid #D1D5DB; border-radius: 0.25rem;" value="${value}" onblur="saveValue(this)">`;
-            element.querySelector('input').focus();
-        }
-        
-        function saveValue(input) {
-            const value = input.value;
-            const parent = input.parentElement;
-            parent.textContent = value;
-            parent.onclick = function() { makeEditable(this); };
-            
-            console.log('Valor salvo:', value);
-        }
+ 
         
         function openBenefits() {
             document.getElementById('benefitsModal').classList.remove('hidden');

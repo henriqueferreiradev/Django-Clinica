@@ -657,4 +657,4 @@ def paciente_status(request):
     context = {
         'pacientes':pacientes
     }
-    return render(request, 'core/pacientes/status_mensal.html', context)
+    return render(request, 'core/pacientes/status-mensal/status_mensal.html', context)
