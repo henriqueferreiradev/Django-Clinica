@@ -1,8 +1,27 @@
-async function pegarFrequencias() {
-    const res = await fetch('/frequencias');
+async function pegarFrequencias(opts = {}) {
+    // tenta pegar dos hiddens; se não existir, usa opts ou data atual
+    const mes =
+      opts.mes ??
+      document.getElementById('mes')?.value ??
+      (new Date().getMonth() + 1);
+    const ano =
+      opts.ano ??
+      document.getElementById('ano')?.value ??
+      (new Date()).getFullYear();
+  
+   
+    const BASE_PATH = '/frequencias';  
+    const url = new URL(BASE_PATH, window.location.origin);
+    url.searchParams.set('mes', mes);
+    url.searchParams.set('ano', ano);
+  
+    const res = await fetch(url.toString(), {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
-}
+  }
 
 function statusBadgeClass(status) {
     const s = String(status || '').toLowerCase();
@@ -59,27 +78,39 @@ function clearBadgeClasses(el) {
     known.forEach(c => el.classList.remove(c));
     el.classList.add('badge');
 }
-
 function linhaHTML(item) {
     const nome = [item.nome, item.sobrenome].filter(Boolean).join(' ') || '—';
-    const cpf = item.cpf || '';
-    const fs = item.freq_sistema ?? item.freq ?? 0;
-    const fp = item.freq_programada ?? item.programada ?? '';
+    const cpf  = item.cpf || '';
+    const fs   = item.freq_sistema ?? item.freq ?? 0;
+    const fp   = item.freq_programada ?? item.programada ?? '';
 
-    // percentual: usa o do JSON se vier, senão calcula
-    const pNum = (typeof item.percentual === 'number')
+    // %: usa o do JSON se vier, senão calcula
+    const pNum  = (typeof item.percentual === 'number')
         ? item.percentual
         : (Number(fp) > 0 ? (Number(fs) / Number(fp)) * 100 : NaN);
     const pText = formatPercent(pNum);
 
-    // status: normaliza o que vier do JSON; se não vier, deriva do % calculado
+    // status normalizado (ou derivado do %)
     const statusKey = item.status ? normalizeStatus(item.status) : statusKeyFromPercent(pNum);
-    const stClass = badgeClass(statusKey);
-    const stLabel = statusLabel(statusKey);
+    const stClass   = badgeClass(statusKey);
+    const stLabel   = statusLabel(statusKey);
+
+    // 🔒 Regras de bloqueio do input
+    const lockByStatus = (statusKey === 'primeiro_mes');  // sua regra
+    const lockByJSON   = (item.finalizado === true || item.bloqueado === true); // opcional
+    const isLocked     = lockByStatus || lockByJSON;
+
+    // Monta atributos dinamicamente
+    const lockAttrs = isLocked
+        ? 'readonly aria-disabled="true" data-locked="1" title="Edição bloqueada neste status"'
+        : '';
+
+    // Classe visual opcional p/ estilizar input travado (ex: cursor not-allowed)
+    const lockClass = isLocked ? ' fp-locked' : '';
 
     return `
-<tr class="table-row" data-paciente-id="${item.paciente_id}">
-  <td>
+<tr class="table-row" data-paciente-id="${item.paciente_id}" data-status="${statusKey}">
+  <td >
     <div class="patient-info">
       <div>
         <div class="patient-name">${nome}</div>
@@ -89,37 +120,41 @@ function linhaHTML(item) {
     <input type="hidden" name="paciente_id[]" value="${item.paciente_id}">
   </td>
 
-  <td class="sys-freq">${fs}</td>
+  <td class="col-center sys-freq">${fs}</td>
 
-  <td>
+  <td class="col-center">
     <input
-      type="number" min="0" class="fp-input"
+      type="number" min="0"
+      class="fp-input${lockClass}"
       name="freq_programada[]" placeholder="0"
-      value="${fp}" style="width:6rem">
+      value="${fp}" style="width:6rem"
+      ${lockAttrs}>
   </td>
 
-  <td class="perc col-percentual">${pText}</td>
+  <td class="col-center perc col-percentual">${pText}</td>
 
-  <td class="col-status"><span class="${stClass}">${stLabel}</span></td>
+  <td class="col-center col-status"><span class="${stClass}">${stLabel}</span></td>
 
-  <td>
+  <td class='col-center'>
     <button class="action-btn btn-history" type="button" onclick="openHistory('${nome.replace(/'/g, "\\'")}')">
-      <i data-feather="clock"></i>Histórico
+        <i class='bx  bx-book'  ></i> 
     </button>
     <button class="action-btn btn-benefits" type="button" onclick="openBenefits()">
-      <i data-feather="gift"></i>Benefícios
+      <i class='bx  bx-gift'  ></i> 
     </button>
   </td>
 </tr>`;
 }
 
-
-
+ 
 // deixa disponível pro onclick inline
 window.getFrequencias = async function () {
     try {
-        const data = await pegarFrequencias();
-        // >>> AQUI o ajuste principal:
+        const mes = document.getElementById('mes')?.value;
+        const ano = document.getElementById('ano')?.value;
+        const data = await pegarFrequencias({ mes, ano });
+
+       
         const items = Array.isArray(data) ? data : (data.items ?? data.results ?? []);
 
         const tbody = document.querySelector('table tbody');
@@ -166,11 +201,7 @@ function classForStatus(status) {
         default: return 'badge';
     }
 }
-function clearBadgeClasses(el) {
-    const known = ['badge', 'badge-premium', 'badge-vip', 'badge-plus'];
-    el.classList.forEach(c => { if (known.includes(c)) el.classList.remove(c); });
-    el.classList.add('badge');
-}
+ 
 
 // ----- cálculo para uma linha
 function recalcRow(tr, fpRaw) {
@@ -216,3 +247,46 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+(function () {
+    const hiddenMes = document.getElementById('mes');
+    const hiddenAno = document.getElementById('ano');
+    const filtroMes = document.getElementById('filtroMes');
+    const filtroAno = document.getElementById('filtroAno');
+    const aplicarBtn = document.getElementById('aplicarFiltro');
+  
+    // Preencher anos dinamicamente (atual ± 5)
+    const anoAtual = (new Date()).getFullYear();
+    for (let y = anoAtual - 5; y <= anoAtual + 5; y++) {
+      const opt = document.createElement('option');
+      opt.value = String(y);
+      opt.textContent = String(y);
+      filtroAno.appendChild(opt);
+    }
+  
+    // Selecionar valores atuais vindos do hidden (template)
+    const mesInicial = parseInt(hiddenMes.value || '{{ mes|default:9 }}', 10);
+    const anoInicial = parseInt(hiddenAno.value || '{{ ano|default:2025 }}', 10);
+    filtroMes.value = String(mesInicial);
+    filtroAno.value = String(anoInicial);
+  
+    function syncFiltroParaHidden() {
+      hiddenMes.value = filtroMes.value;
+      hiddenAno.value = filtroAno.value;
+    }
+  
+    function aplicarFiltro() {
+      syncFiltroParaHidden();
+      // Se sua função de busca já existir, chama com os novos filtros
+      if (typeof getFrequencias === 'function') {
+        // Ideal: ela ler os hiddens ou aceitar querystring / params
+        // Ex.: getFrequencias({ mes: hiddenMes.value, ano: hiddenAno.value });
+        getFrequencias();
+      }
+    }
+  
+    aplicarBtn.addEventListener('click', aplicarFiltro);
+  
+    // (Opcional) Atualizar automaticamente ao trocar mês/ano:
+    filtroMes.addEventListener('change', aplicarFiltro);
+    filtroAno.addEventListener('change', aplicarFiltro);
+  })();

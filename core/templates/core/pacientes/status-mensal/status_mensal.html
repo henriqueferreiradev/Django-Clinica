@@ -1,482 +1,753 @@
-{% extends 'core/base.html' %}
+{% extends 'core/base.html' %} {% load static %} {% block title %}Status mensal
+- Ponto de Equilíbrio{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+<style>
+  /* Estilos para os badges */
+  .chip{
+  padding:.35rem .6rem; border:1px solid #343746; border-radius:999px;
+  background:transparent; color:#e5e7eb; cursor:pointer; font-size:.8rem;
+}
+.chip.active{ background:#4338ca; border-color:#4338ca; color:#fff; }
 
-{% load static %}
-{% block title %}Status mensal - Ponto de Equilíbrio{% endblock %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
-    <style>
-        /* Estilos para os badges */
-        .badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .badge-premium { background-color: #10B981; }
-        .badge-vip { background-color: #F59E0B; }
-        .badge-plus { background-color: #EF4444; }
-        .badge-primeiro_mes  { background-color: #3B82F6; }
-        .badge-indefinido {background-color: #ccc; }
-        {}
-        /* Estilos para células editáveis */
-        .editable-cell:hover { 
-            background-color: #F3F4F6; 
-            cursor: pointer; 
-        }
-        
+tr.table-row.dirty { outline: 1px dashed #6366f1; outline-offset: -2px; }
+
+  .badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .badge-premium {
+    background-color: #10b981;
+  }
+  .badge-vip {
+    background-color: #f59e0b;
+  }
+  .badge-plus {
+    background-color: #ef4444;
+  }
+  .badge-primeiro_mes {
+    background-color: #3b82f6;
+  }
+  .badge-indefinido {
+    background-color: #ccc;
+  }
  
-        
-        .card {
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #1F2937;
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            gap: 1rem;
-        }
-        
-        @media (min-width: 768px) {
-            .form-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.25rem;
-        }
-        
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #D1D5DB;
-            border-radius: 0.375rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            font-size: 1rem;
-        }
-        
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: #6366F1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .btn-primary {
-            background-color: #4F46E5;
-            color: white;
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background-color: #4338CA;
-        }
-        
-        .fp-input {
-            padding: 0.5rem;
-            border: 1px solid gray;
-            border-radius: 10px
-        }
-     
-        .patient-info {
-            display: flex;
-            align-items: center;
-        }
-        
-        .patient-avatar {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 9999px;
-            margin-right: 1rem;
-        }
-        
-        .patient-name {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: white;
-        }
-        
-        .patient-detail {
-            font-size: 0.875rem;
-            color: #6B7280;
-        }
-        
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.875rem;
-            margin-right: 0.75rem;
-        }
-        
-        .action-btn:hover {
-            opacity: 0.7;
-        }
-        
-        .btn-history {
-            color: #4F46E5;
-        }
-        
-        .btn-benefits {
-            color: #10B981;
-        }
-        
-        /* Estilos do modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            padding: 1rem;
-        }
-        
-        .modal-container {
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 32rem;
-            overflow: hidden;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #E5E7EB;
-        }
-        
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #111827;
-            margin: 0;
-        }
-        
-        .modal-body {
-            padding: 1.5rem;
-        }
-        
-        .benefit-item {
-            background-color: #F9FAFB;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        .benefit-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .benefit-name {
-            font-weight: 500;
-            color: #111827;
-        }
-        
-        .benefit-date {
-            font-size: 0.875rem;
-            color: #6B7280;
-        }
-        
-        .benefit-used {
-            opacity: 0.75;
-        }
-        
-        .benefit-status {
-            padding: 0.125rem 0.5rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background-color: #E5E7EB;
-            color: #374151;
-        }
-        
-        .modal-footer {
-            background-color: #F9FAFB;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: flex-end;
-            border-top: 1px solid #E5E7EB;
-        }
-        
-        .btn-close {
-            padding: 0.5rem 1rem;
-            border: 1px solid #D1D5DB;
-            border-radius: 0.375rem;
-            background-color: white;
-            color: #374151;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        
-        .btn-close:hover {
-            background-color: #F9FAFB;
-        }
-        
-        /* Estilos específicos para o modal de histórico */
-        .history-item {
-            padding: 1rem;
-            border-bottom: 1px solid #E5E7EB;
-        }
-        
-        .history-item:last-child {
-            border-bottom: none;
-        }
-        
-        .history-date {
-            font-weight: 600;
-            color: #4F46E5;
-            margin-bottom: 0.25rem;
-        }
-        
-        .history-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-        
-        .history-type {
-            font-weight: 500;
-        }
-        
-        .history-status {
-            padding: 0.125rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-        
-        .status-completed {
-            background-color: #D1FAE5;
-            color: #065F46;
-        }
-        
-        .status-missed {
-            background-color: #FEE2E2;
-            color: #991B1B;
-        }
-        
-        .status-scheduled {
-            background-color: #DBEAFE;
-            color: #1E40AF;
-        }
-        
-        .history-time {
-            font-size: 0.875rem;
-            color: #6B7280;
-        }
-        
-        .hidden {
-            display: none;
-        }
-    </style>
-{% endblock %}
+  /* Estilos para células editáveis */
+  .editable-cell:hover {
+    background-color: #f3f4f6;
+    cursor: pointer;
+  }
 
-{% block topbar_title %}<span class="text">Status mensal</span> {%endblock%}
+  .card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
 
-{% block content %}
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+  }
 
-  <div class="content">
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .form-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    font-size: 1rem;
+  }
+
+  .form-input:focus,
+  .form-select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .btn-primary {
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #4338ca;
+  }
+
+  .fp-input {
+    padding: 0.5rem;
+    border: 1px solid gray;
+    border-radius: 10px;
+  }
+
+  .patient-info {
+    display: flex;
+    align-items: center;
+  }
+
+  .patient-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    margin-right: 1rem;
+  }
+
+  .patient-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+  }
+
+  .patient-detail {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    margin-right: 0.75rem;
+  }
+
+  .action-btn:hover {
+    opacity: 0.7;
+  }
+
+  .btn-history {
+    color: #4f46e5;
+  }
+
+  .btn-benefits {
+    color: #10b981;
+  }
+
+  /* Estilos do modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1rem;
+  }
+
+  .modal-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 32rem;
+    overflow: hidden;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .benefit-item {
+    background-color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .benefit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .benefit-name {
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .benefit-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .benefit-used {
+    opacity: 0.75;
+  }
+
+  .benefit-status {
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: #e5e7eb;
+    color: #374151;
+  }
+
+  .modal-footer {
+    background-color: #f9fafb;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .btn-close {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .btn-close:hover {
+    background-color: #f9fafb;
+  }
+
+  /* Estilos específicos para o modal de histórico */
+  .history-item {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .history-item:last-child {
+    border-bottom: none;
+  }
+
+  .history-date {
+    font-weight: 600;
+    color: #4f46e5;
+    margin-bottom: 0.25rem;
+  }
+
+  .history-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .history-type {
+    font-weight: 500;
+  }
+
+  .history-status {
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .status-completed {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+
+  .status-missed {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+
+  .status-scheduled {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+
+  .history-time {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .hidden {
+    display: none;
+  }
+  .fp-input.fp-locked { background: var(--branco); cursor: not-allowed; }
+  thead th, tbody td {
+  border-right: 1px solid #e5e7eb; /* cinza claro */
+}
+.col-lg {
+    width: 250px;
+}
+.col-md {
+    width: 100px;
+
+}
+.col-sm{
+    width: 60px;
+
+}
+
+.filtros_div {
+    display: flex;
+    
+    justify-content: space-between;
+   
+}
+.col-center {
+    text-align: center;
+}
+</style>
+{% endblock %} {% block topbar_title %}<span class="text">Status mensal</span>
+{%endblock%} {% block content %}
+
+<div class="content">
+    <!-- KPIs -->
  
+  
+ <div class="filtros_div">
+    <div id="filtro-bar" >
+        <label>
+          Mês
+          <select class="fp-input" id="filtroMes">
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+          </select>
+        </label>
+    
+        <label>
+          Ano
+          <select class="fp-input" id="filtroAno"></select>
+        </label>
+    
+        <button class="btn btn-primary"type="button" id="aplicarFiltro">Filtrar</button>
+      </div>
+  <div style="display:flex;gap:.5rem;align-items:center;margin:.25rem 0 1rem;">
+    <input id="filtroBusca" class="fp-input" type="text" placeholder="Buscar por nome/CPF…" style="max-width:280px;">
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button type="button" class="chip" data-chip="todos">Todos</button>
+      <button type="button" class="chip" data-chip="premium">Premium</button>
+      <button type="button" class="chip" data-chip="vip">VIP</button>
+      <button type="button" class="chip" data-chip="plus">Plus</button>
+      <button type="button" class="chip" data-chip="indefinido">Indefinido</button>
+      <button type="button" class="chip" data-chip="primeiro_mes">Primeiro Mês</button>
+    </div>
+  </div>
+  
 
-  <button onclick=getFrequencias()>botaozinho</button>
-
+ 
+</div>
   <form id="formFreq" method="post" action="/frequencias/salvar">
     {% csrf_token %}
-    <!-- se já tiver controles de mês/ano, use-os; senão, deixe hidden -->
-    <input type="hidden" id="mes" name="mes" value="{{ mes|default:9 }}">
-    <input type="hidden" id="ano" name="ano" value="{{ ano|default:2025 }}">
+    <!-- Hidden que o backend já usa -->
+    <input type="hidden" id="mes" name="mes" value="{{ mes|default:9 }}" />
+    <input type="hidden" id="ano" name="ano" value="{{ ano|default:2025 }}" />
+ 
 
-    <button type="submit" class="btn btn-primary" id="salvarTudo">Salvar tudo</button>
-
-    <div style="overflow-x: auto;">
+    <div style="overflow-x: auto">
       <table>
         <thead>
           <tr>
-            <th>Paciente</th>
-            <th>Freq. Sistema</th>
-            <th>Freq. Programada</th>
-            <th>%</th>
-            <th>Status</th>
-            <th>Ações</th>
+            <th class=" col-lg">Paciente</th>
+            <th class="col-center col-md">Freq. Sistema</th>
+            <th class="col-center col-md">Freq. Programada</th>
+            <th class="col-center col-sm">%</th>
+            <th class="col-center col-md">Status</th>
+            <th class="col-center col-md">Ações</th>
+             
           </tr>
         </thead>
-        <tbody>
-         
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
   </form>
-    </div>
+<!-- Rodapé sticky com ação de salvar -->
+<div id="saveBar" class="hidden" style="
+  position: sticky; bottom: 0; background: rgba(10,11,17,.9);
+  backdrop-filter: blur(6px); border-top: 1px solid #272a3a; padding: .75rem 1rem;
+  display:flex; align-items:center; justify-content:space-between; gap:.75rem; z-index:40; margin-top:1rem;">
+  <div style="display:flex; gap:1rem; align-items:center; font-size:.9rem;">
+    <span id="dirtyBadge" style="display:none; padding:.25rem .5rem; border-radius:999px; background:#4338ca;color:#fff;font-weight:600;">
+      0 alteração pendente
+    </span>
+    <span id="listInfo" style="opacity:.7;">Tabela carregada.</span>
+  </div>
+  <div style="display:flex;gap:.5rem;">
+    <button id="btnScrollTop" type="button" class="btn" style="border:1px solid #343746;background:transparent;color:#e5e7eb;">Topo</button>
+    <button id="btnSalvarTudo" type="button" class="btn btn-primary">Salvar tudo</button>
+  </div>
+</div>
 
-    <!-- Modal Benefícios -->
-    <div id="benefitsModal" class="modal-overlay hidden">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 class="modal-title">Benefícios do Paciente</h3>
+  <!-- Modal Benefícios -->
+  <div id="benefitsModal" class="modal-overlay hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">Benefícios do Paciente</h3>
+      </div>
+      <div class="modal-body">
+        <div class="benefit-item">
+          <div class="benefit-header">
+            <div>
+              <h4 class="benefit-name">Desconto de 20%</h4>
+              <p class="benefit-date">Válido até 30/04/2023</p>
             </div>
-            <div class="modal-body">
-                <div class="benefit-item">
-                    <div class="benefit-header">
-                        <div>
-                            <h4 class="benefit-name">Desconto de 20%</h4>
-                            <p class="benefit-date">Válido até 30/04/2023</p>
-                        </div>
-                        <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
-                            Usar Desconto
-                        </button>
-                    </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="benefit-header">
-                        <div>
-                            <h4 class="benefit-name">Sessão Extra</h4>
-                            <p class="benefit-date">Válido até 15/05/2023</p>
-                        </div>
-                        <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
-                            Agendar Sessão
-                        </button>
-                    </div>
-                </div>
-                <div class="benefit-item benefit-used">
-                    <div class="benefit-header">
-                        <div>
-                            <h4 class="benefit-name">Massagem Relaxante</h4>
-                            <p class="benefit-date">Utilizado em 12/03/2023</p>
-                        </div>
-                        <span class="benefit-status">
-                            Utilizado
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-close" onclick="closeModal('benefitsModal')">
-                    Fechar
-                </button>
-            </div>
+            <button
+              class="btn btn-primary"
+              style="padding: 0.25rem 0.5rem; font-size: 0.875rem"
+            >
+              Usar Desconto
+            </button>
+          </div>
         </div>
-    </div>
-
-    <!-- Modal Histórico -->
-    <div id="historyModal" class="modal-overlay hidden">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 class="modal-title" id="historyPatientName">Histórico de Sessões</h3>
+        <div class="benefit-item">
+          <div class="benefit-header">
+            <div>
+              <h4 class="benefit-name">Sessão Extra</h4>
+              <p class="benefit-date">Válido até 15/05/2023</p>
             </div>
-            <div class="modal-body">
-                <div class="history-item">
-                    <div class="history-date">15 de Março, 2023</div>
-                    <div class="history-details">
-                        <span class="history-type">Fisioterapia</span>
-                        <span class="history-status status-completed">Realizada</span>
-                    </div>
-                    <div class="history-time">14:00 - 15:00</div>
-                </div>
-                <div class="history-item">
-                    <div class="history-date">12 de Março, 2023</div>
-                    <div class="history-details">
-                        <span class="history-type">Pilates</span>
-                        <span class="history-status status-completed">Realizada</span>
-                    </div>
-                    <div class="history-time">10:30 - 11:30</div>
-                </div>
-                <div class="history-item">
-                    <div class="history-date">08 de Março, 2023</div>
-                    <div class="history-details">
-                        <span class="history-type">Fisioterapia</span>
-                        <span class="history-status status-missed">Não compareceu</span>
-                    </div>
-                    <div class="history-time">09:00 - 10:00</div>
-                </div>
-                <div class="history-item">
-                    <div class="history-date">05 de Março, 2023</div>
-                    <div class="history-details">
-                        <span class="history-type">Pilates</span>
-                        <span class="history-status status-completed">Realizada</span>
-                    </div>
-                    <div class="history-time">16:00 - 17:00</div>
-                </div>
-                <div class="history-item">
-                    <div class="history-date">01 de Março, 2023</div>
-                    <div class="history-details">
-                        <span class="history-type">Fisioterapia</span>
-                        <span class="history-status status-scheduled">Agendada</span>
-                    </div>
-                    <div class="history-time">11:00 - 12:00</div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-close" onclick="closeModal('historyModal')">
-                    Fechar
-                </button>
-            </div>
+            <button
+              class="btn btn-primary"
+              style="padding: 0.25rem 0.5rem; font-size: 0.875rem"
+            >
+              Agendar Sessão
+            </button>
+          </div>
         </div>
+        <div class="benefit-item benefit-used">
+          <div class="benefit-header">
+            <div>
+              <h4 class="benefit-name">Massagem Relaxante</h4>
+              <p class="benefit-date">Utilizado em 12/03/2023</p>
+            </div>
+            <span class="benefit-status"> Utilizado </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close" onclick="closeModal('benefitsModal')">
+          Fechar
+        </button>
+      </div>
     </div>
   </div>
- 
-{% endblock %}
 
-{% block scripts %}
-    <script src="{% static '/core/js/pacientes/statusMensal.js' %}"></script>
-    <script>
- 
- 
-        
-        function openBenefits() {
-            document.getElementById('benefitsModal').classList.remove('hidden');
-        }
-        
-        function openHistory(patientName) {
-            document.getElementById('historyPatientName').textContent = `Histórico de Sessões - ${patientName}`;
-            document.getElementById('historyModal').classList.remove('hidden');
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
+  <!-- Modal Histórico -->
+  <div id="historyModal" class="modal-overlay hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title" id="historyPatientName">
+          Histórico de Sessões
+        </h3>
+      </div>
+      <div class="modal-body">
+        <div class="history-item">
+          <div class="history-date">15 de Março, 2023</div>
+          <div class="history-details">
+            <span class="history-type">Fisioterapia</span>
+            <span class="history-status status-completed">Realizada</span>
+          </div>
+          <div class="history-time">14:00 - 15:00</div>
+        </div>
+        <div class="history-item">
+          <div class="history-date">12 de Março, 2023</div>
+          <div class="history-details">
+            <span class="history-type">Pilates</span>
+            <span class="history-status status-completed">Realizada</span>
+          </div>
+          <div class="history-time">10:30 - 11:30</div>
+        </div>
+        <div class="history-item">
+          <div class="history-date">08 de Março, 2023</div>
+          <div class="history-details">
+            <span class="history-type">Fisioterapia</span>
+            <span class="history-status status-missed">Não compareceu</span>
+          </div>
+          <div class="history-time">09:00 - 10:00</div>
+        </div>
+        <div class="history-item">
+          <div class="history-date">05 de Março, 2023</div>
+          <div class="history-details">
+            <span class="history-type">Pilates</span>
+            <span class="history-status status-completed">Realizada</span>
+          </div>
+          <div class="history-time">16:00 - 17:00</div>
+        </div>
+        <div class="history-item">
+          <div class="history-date">01 de Março, 2023</div>
+          <div class="history-details">
+            <span class="history-type">Fisioterapia</span>
+            <span class="history-status status-scheduled">Agendada</span>
+          </div>
+          <div class="history-time">11:00 - 12:00</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close" onclick="closeModal('historyModal')">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Confirmar Salvar -->
+<div id="confirmSaveModal" class="modal-overlay hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirmar salvamento</h3>
+      </div>
+      <div class="modal-body">
+        <p>Você está prestes a salvar <strong id="confirmDirtyCount">0</strong> alteração(ões) para <span id="confirmMesAno">este mês/ano</span>.</p>
+        <p style="opacity:.8;margin-top:.5rem;">Deseja continuar?</p>
+      </div>
+      <div class="modal-footer" style="justify-content:space-between;">
+        <button class="btn-close" id="cancelConfirmSave">Cancelar</button>
+        <button class="btn btn-primary" id="confirmSave">Salvar agora</button>
+      </div>
+    </div>
+  </div>
+  
+{% endblock %} {% block scripts %}
+<script src="{% static '/core/js/pacientes/statusMensal.js' %}"></script>
+
+<script>
+  function openBenefits() {
+    document.getElementById("benefitsModal").classList.remove("hidden");
+  }
+
+  function openHistory(patientName) {
+    document.getElementById(
+      "historyPatientName"
+    ).textContent = `Histórico de Sessões - ${patientName}`;
+    document.getElementById("historyModal").classList.remove("hidden");
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.add("hidden");
+  }
+</script>
+<script>
+    let DATA_ATUAL = [];            // último payload renderizado
+    let DIRTY_SET = new Set();      // ids de linhas alteradas
+    let STATUS_FILTRO = 'todos';    // filtro ativo
+    
+    // === Helpers de filtro ===
+    function matchBusca(nome, cpf, termo){
+      if(!termo) return true;
+      const t = termo.toLowerCase();
+      return (String(nome||'').toLowerCase().includes(t) || String(cpf||'').toLowerCase().includes(t));
+    }
+    function matchStatus(chave, filtro){
+      if(!filtro || filtro==='todos') return true;
+      return (String(chave||'').toLowerCase() === filtro);
+    }
+    function statusKeyFromLabel(label){
+      const s = String(label||'').toLowerCase();
+      if(s.includes('premium')) return 'premium';
+      if(s.includes('vip')) return 'vip';
+      if(s.includes('plus')) return 'plus';
+      if(s.includes('primeiro')) return 'primeiro_mes';
+      if(s.includes('indef')) return 'indefinido';
+      return '';
+    }
+    
+    // === KPIs ===
+    function calcularKPIs(items){
+      const n = items.length;
+      let soma = 0, count = 0;
+      let premium=0,vip=0,plus=0,indef=0;
+      for(const it of items){
+        const p = (typeof it.percentual==='number') ? it.percentual
+                : (Number(it.freq_programada)>0 ? (Number(it.freq_sistema)/Number(it.freq_programada))*100 : NaN);
+        if(isFinite(p)){ soma += p; count++; }
+        const key = it.status ? statusKeyFromLabel(it.status) : (isFinite(p)? (p>=100?'premium': (p>60?'vip':'plus')) : 'indefinido');
+        if(key==='premium') premium++;
+        else if(key==='vip') vip++;
+        else if(key==='plus') plus++;
+        else indef++;
+      }
+      const media = count? (Math.round((soma/count)*10)/10) : 0;
+      document.getElementById('kpiPacientes').textContent = n;
+      document.getElementById('kpiMedia').textContent = (Number.isInteger(media)? media.toFixed(0) : media.toFixed(1)) + '%';
+      document.getElementById('kpiPremium').textContent = premium;
+      document.getElementById('kpiVip').textContent = vip;
+      document.getElementById('kpiPlus').textContent = plus;
+      document.getElementById('kpiIndef').textContent = indef;
+    }
+    
+    // === Salvar bar ===
+    function updateSaveBar(){
+      const bar = document.getElementById('saveBar');
+      bar.classList.remove('hidden');
+      const q = DIRTY_SET.size;
+      const badge = document.getElementById('dirtyBadge');
+      if(q>0){
+         badge.style.display='inline-flex';
+         badge.textContent = q===1? '1 alteração pendente' : `${q} alterações pendentes`;
+      } else {
+         badge.style.display='none';
+      }
+      const tbody = document.querySelector('table tbody');
+      document.getElementById('listInfo').textContent = `${tbody?.children.length||0} linhas exibidas`;
+    }
+    
+    // Marca linha como alterada
+    function markDirty(tr, pacienteId){
+      if(!pacienteId) return;
+      DIRTY_SET.add(String(pacienteId));
+      tr.classList.add('dirty');
+      updateSaveBar();
+    }
+    
+    // === Integra com sua renderização existente ===
+    const _renderOriginal = window.getFrequencias;
+    window.getFrequencias = async function(){
+      DIRTY_SET.clear();
+      const data = await pegarFrequencias(); // já com ?mes=&ano=
+      const items = Array.isArray(data)? data : (data.items ?? []);
+      DATA_ATUAL = items;
+    
+      // render normal
+      const tbody = document.querySelector('table tbody');
+      tbody.innerHTML = items.map(linhaHTML).join('');
+    
+      // feathers
+      if (window.feather?.replace) feather.replace();
+    
+      // KPIs + savebar
+      calcularKPIs(items);
+      updateSaveBar();
+    
+      // listeners para cálculo/dirty (você já recalcula %; aqui só marcamos dirty)
+      tbody.querySelectorAll('.fp-input').forEach(inp=>{
+        inp.addEventListener('input', (e)=>{
+          const tr = e.target.closest('tr.table-row');
+          const pid = tr?.dataset?.pacienteId || tr?.getAttribute('data-paciente-id');
+          markDirty(tr, pid);
+        });
+      });
+    
+      // aplica filtro inicial (se algo estiver setado)
+      aplicarFiltroBuscaEChips();
+    };
+    
+    // === Busca + chips ===
+    function aplicarFiltroBuscaEChips(){
+      const busca = document.getElementById('filtroBusca')?.value?.trim().toLowerCase();
+      const rows = document.querySelectorAll('tbody tr.table-row');
+      let visiveis = 0;
+      rows.forEach(tr=>{
+        const nome = tr.querySelector('.patient-name')?.textContent || '';
+        const cpf  = tr.querySelector('.patient-detail')?.textContent || '';
+        const key = statusKeyFromLabel(tr.querySelector('.col-status span')?.textContent);
+        const show = matchBusca(nome, cpf, busca) && matchStatus(key, STATUS_FILTRO);
+        tr.style.display = show? '' : 'none';
+        if(show) visiveis++;
+      });
+      document.getElementById('listInfo').textContent = `${visiveis} linhas exibidas`;
+    }
+    
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // chips
+      document.querySelectorAll('.chip').forEach(ch=>{
+        ch.addEventListener('click', ()=>{
+          document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+          ch.classList.add('active');
+          STATUS_FILTRO = ch.dataset.chip || 'todos';
+          aplicarFiltroBuscaEChips();
+        });
+      });
+      // busca
+      document.getElementById('filtroBusca')?.addEventListener('input', aplicarFiltroBuscaEChips);
+    
+      // rodapé: topo e salvar
+      document.getElementById('btnScrollTop')?.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+      document.getElementById('btnSalvarTudo')?.addEventListener('click', (e)=>{
+        e.preventDefault();
+        abrirConfirmacaoSalvar();
+      });
+    
+      // modal confirmação
+      document.getElementById('cancelConfirmSave')?.addEventListener('click', ()=> closeModal('confirmSaveModal'));
+      document.getElementById('confirmSave')?.addEventListener('click', ()=>{
+        // submete o form real
+        document.getElementById('formFreq').submit();
+      });
+    });
+    
+    // abre modal de confirmação
+    function abrirConfirmacaoSalvar(){
+      const mes = document.getElementById('mes')?.value;
+      const ano = document.getElementById('ano')?.value;
+      document.getElementById('confirmDirtyCount').textContent = DIRTY_SET.size;
+      document.getElementById('confirmMesAno').textContent = `${mes}/${ano}`;
+      document.getElementById('confirmSaveModal').classList.remove('hidden');
+    }
+    
+    // util dos seus modais
+    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
     </script>
+    
 {% endblock %}
