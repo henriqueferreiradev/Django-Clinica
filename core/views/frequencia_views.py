@@ -48,10 +48,10 @@ def frequencias_get(request):
         return JsonResponse({"detail": "Parâmetros inválidos"}, status=400)
 
     # sincroniza freq_sistema
-    pacientes_ids = sync_frequencias_mes(mes, ano)
+    sync_frequencias_mes(mes, ano)
 
     fms = (FrequenciaMensal.objects
-           .filter(paciente_id__in=pacientes_ids, mes=mes, ano=ano)
+           .filter(mes=mes, ano=ano)
            .select_related("paciente"))
 
     items = []

@@ -9,7 +9,7 @@
 }
 .chip.active{ background:#4338ca; border-color:#4338ca; color:#fff; }
 
-tr.table-row.dirty { outline: 1px dashed #6366f1; outline-offset: -2px; }
+tr.table-row.dirty { outline: 1px dashed #63f16aff; outline-offset: -2px; }
 
   .badge {
     padding: 0.25rem 0.5rem;
@@ -22,19 +22,19 @@ tr.table-row.dirty { outline: 1px dashed #6366f1; outline-offset: -2px; }
   }
 
   .badge-premium {
-    background-color: #10b981;
-  }
-  .badge-vip {
     background-color: #f59e0b;
   }
+  .badge-vip {
+    background-color: #4338CA;
+  }
   .badge-plus {
-    background-color: #ef4444;
+    background-color: #2AC4CF;
   }
   .badge-primeiro_mes {
-    background-color: #3b82f6;
+    background-color: #31BA7A;
   }
   .badge-indefinido {
-    background-color: #ccc;
+    background-color: #797979ff;
   }
  
   /* Estilos para células editáveis */
@@ -197,6 +197,7 @@ tr.table-row.dirty { outline: 1px dashed #6366f1; outline-offset: -2px; }
   .modal-header {
     padding: 1.5rem;
     border-bottom: 1px solid #e5e7eb;
+    background: var(--branco);
   }
 
   .modal-title {
@@ -208,6 +209,7 @@ tr.table-row.dirty { outline: 1px dashed #6366f1; outline-offset: -2px; }
 
   .modal-body {
     padding: 1.5rem;
+    background:  var(--branco);
   }
 
   .benefit-item {
@@ -400,7 +402,7 @@ tr.table-row.dirty { outline: 1px dashed #6366f1; outline-offset: -2px; }
 
  
 </div>
-  <form id="formFreq" method="post" action="/frequencias/salvar">
+  <form d id="formFreq" method="post" action="/frequencias/salvar">
     {% csrf_token %}
     <!-- Hidden que o backend já usa -->
     <input type="hidden" id="mes" name="mes" value="{{ mes|default:9 }}" />
