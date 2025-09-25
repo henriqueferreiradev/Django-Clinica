@@ -33,7 +33,7 @@ def normalize_cpf(cpf_raw: object) -> str:
     digits = re.sub(r"\D", "", str(cpf_raw))
     if len(digits) == 11:
         return f"{digits[:3]}.{digits[3:6]}.{digits[6:9]}-{digits[9:]}"
-    return digits  # devolve cru se não tiver 11 dígitos
+    return digits
 
 def parse_bool(v) -> bool:
     key = safe_str(v).lower()
@@ -84,7 +84,7 @@ class Command(BaseCommand):
                 "sobrenome": safe_str(row.get("Sobrenome")),
                 "nomeSocial": safe_str(row.get("Nome Social"), "Não informado"),
                 "rg": safe_str(row.get("RG")),
-                "cpf": cpf,  # também entra em defaults para update
+                "cpf": cpf,
                 "data_nascimento": parse_date(row.get("Nascimento")),
 
                 "cor_raca": safe_str(row.get("Cor/Raça"), "Não informado"),
@@ -119,9 +119,12 @@ class Command(BaseCommand):
                 "consentimento_marketing": parse_bool(row.get("Consentimento Marketing")),
                 "politica_privacidade_versao": safe_str(row.get("Política de Privacidade")),
                 "data_consentimento": parse_date(row.get("Data Consentimento")),
+
+                # novos campos
+                "ativo": parse_bool(row.get("Ativo")),
+                "conferido": parse_bool(row.get("Conferido")),
             }
 
-            # create/update por CPF
             paciente, created = Paciente.objects.update_or_create(
                 cpf=cpf,
                 defaults=defaults,

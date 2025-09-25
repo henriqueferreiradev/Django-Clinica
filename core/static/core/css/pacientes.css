@@ -229,13 +229,7 @@ th {
     padding: 1em;
 }
 
-.badge {
-    padding: .4em .8em;
-    border-radius: 20px;
-    color: white !important;
-    font-size: 12px;
-    font-weight: 600;
-}
+ 
 
 thead tr th:first-child {
     border-top-left-radius: 12px;
@@ -245,20 +239,7 @@ thead tr th:last-child {
     border-top-right-radius: 12px;
 }
 
-.grade-simples {
-    background-color: #f26666;
-    ;
-}
-
-.grade-plus {
-    background: #f2c94c;
-    color: black;
-}
-
-.grade-premium {
-    background: #7f56d9;
-}
-
+ 
 .action-btn {
     cursor: pointer;
     background: transparent;
@@ -286,6 +267,33 @@ thead tr th:last-child {
 }
 
 
+
+.badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    min-width: 90px;
+  }
+
+  .badge-premium {
+    background-color: #f59e0b;
+  }
+  .badge-vip {
+    background-color: #4338CA;
+  }
+  .badge-plus {
+    background-color: #2AC4CF;
+  }
+  .badge-primeiro_mes {
+    background-color: #31BA7A;
+  }
+  .badge-indefinido {
+    background-color: #797979ff;
+  }
+ 
 
 
 
@@ -458,6 +466,16 @@ thead tr th:last-child {
 
 .status-conferido {
     background-color: #4CAF50;
+    /* Laranja */
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: black !important;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-inativo {
+    background-color: #af4c4c;
     /* Laranja */
     padding: .4em .8em;
     border-radius: 20px;

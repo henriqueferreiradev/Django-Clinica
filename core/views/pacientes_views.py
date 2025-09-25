@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -16,12 +16,7 @@ from core.tokens import gerar_token_acesso_unico, verificar_token_acesso
 import qrcode
 import base64
 from io import BytesIO
-
-
-
-
-
-
+from core.views.frequencia_views import sync_frequencias_mes
  
 def pacientes_view(request):
     query = request.GET.get('q', '').strip()
@@ -31,9 +26,14 @@ def pacientes_view(request):
     filtrar = request.GET.get('filtrar')
 
     hoje = timezone.now().date()
+    mes, ano = hoje.month, hoje.year
+    sync_frequencias_mes(mes, ano)
 
-    # Inicia o queryset base (sem filtro de mostrar_todos/filtra_inativo, pois agora usa `status`)
     pacientes = Paciente.objects.all()
+
+    for p in pacientes:
+        p.status_mes = p.get_status_mes(mes, ano)
+        print(f"[VIEW] {p.nome} => {p.status_mes}")
 
     # Filtro por status
     if status == 'ativo':

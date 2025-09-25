@@ -60,18 +60,33 @@
           <td>{{ paciente.celular }}</td>
           <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
           <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
-          <td><span class="badge grade-simples">Premium</span></td>
+<td>
+  {% if paciente.status_atual == "primeiro_mes" %}
+    <span class="badge badge-primeiro_mes">1º Mês</span>
+  {% elif paciente.status_atual == "premium" %}
+    <span class="badge badge-premium">Premium</span>
+  {% elif paciente.status_atual == "vip" %}
+    <span class="badge badge-vip">VIP</span>
+  {% elif paciente.status_atual == "plus" %}
+    <span class="badge badge-plus">Plus</span>
+  {% else %}
+    <span class="badge badge-indefinido">Indefinido</span>
+  {% endif %}
+</td>
+
+
+
           <td>
-            {% if paciente.pre_cadastro or paciente.conferido or paciente.ativo %}
-              <span class="{% if paciente.conferido %}status-conferido{% else %}status-pendente{% endif %}">
-                {% if paciente.conferido %}
-                  Ativo
-                {% else %}
-                  Pendente
-                {% endif %}
-              </span>
-            {% endif %}
+          {% if paciente.ativo and paciente.conferido %}
+            <span class="badge status-conferido">Ativo</span>
+          {% elif paciente.ativo and not paciente.conferido %}
+            <span class="badge status-pendente">Pendente</span>
+          {% else %}
+            <span class="badge status-inativo">Inativo</span>
+          {% endif %}
+
           </td>
+ 
           <td>{% include "core/partials/_paciente_dropdown.html" %}</td>
 
         </tr>

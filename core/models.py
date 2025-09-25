@@ -226,6 +226,39 @@ class Paciente(models.Model):
     
     def __str__(self):
         return self.nome
+    def get_status_mes(self, mes=None, ano=None):
+        from datetime import date
+
+        if not mes or not ano:
+            hoje = date.today()
+            mes, ano = hoje.month, hoje.year
+
+        # tenta pegar do mês atual
+        fm = self.frequencias.filter(mes=mes, ano=ano).order_by('-id').first()
+
+        # se não tiver do mês, pega o último registrado
+        if not fm:
+            fm = self.frequencias.order_by('-ano', '-mes', '-id').first()
+
+        if fm:
+            return fm.status
+
+        # fallback
+        elif self.data_cadastro and self.data_cadastro.month == mes and self.data_cadastro.year == ano:
+            return "primeiro_mes"
+
+        return "Indefinido"
+
+    @property
+    def status_atual(self):
+        hoje = date.today()
+        fm = self.frequencias.filter(mes=hoje.month, ano=hoje.year).first()
+        if fm:
+            return fm.status
+        if self.data_cadastro and self.data_cadastro.month == hoje.month and self.data_cadastro.year == hoje.year:
+            return "primeiro_mes"
+        return "indefinido"
+ 
 
     @property
     def idade_formatada(self):
