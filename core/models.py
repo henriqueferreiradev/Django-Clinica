@@ -9,7 +9,8 @@ from django.utils.text import slugify
 import os
 from dateutil.relativedelta import relativedelta
 import uuid
- 
+from django.db.models import Q
+from core.services.status_beneficios import calcular_beneficio
 
 def caminho_foto_paciente(instance, filename):
     nome = slugify(instance.nome)
@@ -703,6 +704,19 @@ class FrequenciaMensal(models.Model):
     def save(self, *args, **kwargs):
         self.atualizar_percentual_e_status()
         super().save(*args, **kwargs)
+        
+        ganhou = calcular_beneficio(self.paciente, self.mes, self.ano, self.status)
+        HistoricoStatus.objects.update_or_create(
+            paciente=self.paciente, mes=self.mes, ano=self.ano,
+            defaults={
+                'status': self.status,
+                'percentual': self.percentual,
+                'freq_sistema': self.freq_sistema,
+                'freq_programada': self.freq_programada,
+                'ganhou_beneficio': ganhou,
+            }
+        )
+
 
     def __str__(self):
         return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status} ({self.freq_sistema}/{self.freq_programada})"
@@ -711,7 +725,7 @@ class HistoricoStatus(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="historico_status")
     mes = models.PositiveIntegerField()
     ano = models.PositiveIntegerField()
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=50, choices=STATUS_PACIENTES_CHOICES)
     percentual = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     freq_sistema = models.PositiveIntegerField(default=0)
     freq_programada = models.PositiveIntegerField(default=0)
@@ -725,7 +739,4 @@ class HistoricoStatus(models.Model):
 
     def __str__(self):
         return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status}"
-
-    
-            
-            
+ 

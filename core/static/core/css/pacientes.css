@@ -456,7 +456,6 @@ thead tr th:last-child {
 
 .status-pendente {
     background-color: #f39c12;
-    /* Laranja */
     padding: .4em .8em;
     border-radius: 20px;
     color: black !important;
@@ -466,7 +465,6 @@ thead tr th:last-child {
 
 .status-conferido {
     background-color: #4CAF50;
-    /* Laranja */
     padding: .4em .8em;
     border-radius: 20px;
     color: black !important;
@@ -476,7 +474,6 @@ thead tr th:last-child {
 
 .status-inativo {
     background-color: #af4c4c;
-    /* Laranja */
     padding: .4em .8em;
     border-radius: 20px;
     color: black !important;
