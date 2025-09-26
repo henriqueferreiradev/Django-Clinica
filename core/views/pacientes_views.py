@@ -19,6 +19,31 @@ from io import BytesIO
 from core.views.frequencia_views import sync_frequencias_mes
  
 def pacientes_view(request):
+    if request.method == 'POST':
+        pac_id = request.POST.get('delete_id') or request.POST.get('inativar_id')
+        if pac_id:
+            paciente = get_object_or_404(Paciente, id=pac_id)
+
+            if paciente.ativo:
+                paciente.ativo = False
+                # opcional se tiver esse campo no model:
+                # paciente.data_inativacao = timezone.now()
+                paciente.save(update_fields=['ativo'])  # inclua 'data_inativacao' se usar
+                messages.success(request, f'Paciente {paciente.nome} inativado.')
+                try:
+                    registrar_log(
+                        usuario=request.user,
+                        acao='Inativação',
+                        modelo='Paciente',
+                        objeto_id=paciente.id,
+                        descricao=f'Paciente {paciente.nome} inativado.'
+                    )
+                except Exception:
+                    pass
+            else:
+                messages.info(request, f'{paciente.nome} já está inativo.')
+
+        return redirect('pacientes')
     query = request.GET.get('q', '').strip()
     status = request.GET.get('status', '').strip()
     data_inicio = request.GET.get('data_inicio')
@@ -502,8 +527,11 @@ def perfil_paciente(request,paciente_id):
 
     for item in prof2:
         item['tempo_sessao'] = formatar_duracao(item['total_horas'])
-        
-        
+    
+    
+    historico_status = FrequenciaMensal.objects.filter(paciente__id=paciente_id)
+    for h in historico_status:
+        print(h)
     pacotes_dados = []
 
     for pacote in pacotes:
@@ -529,6 +557,7 @@ def perfil_paciente(request,paciente_id):
             'sessoes_realizadas': sessoes_realizadas,
             'qtd_total': qtd_total,
             'status': status,
+            
         })
     
     #PAGAMENTOS
@@ -561,9 +590,9 @@ def perfil_paciente(request,paciente_id):
 
         messages.success(request, 'Observação salva com sucesso.')
         return redirect(request.path)
-    print('')
+     
 
-    print(todos_agendamentos)
+     
  
     tres_ultimos_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).order_by('-data')[:3]
         
@@ -595,7 +624,8 @@ def perfil_paciente(request,paciente_id):
                 'ultimos_agendamentos':agendamentos_select,
                 'todos_agendamentos':todos_agendamentos,
                 'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
-                'respostas_formularios':respostas_formularios
+                'respostas_formularios':respostas_formularios,
+                'historico_status':historico_status,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
 

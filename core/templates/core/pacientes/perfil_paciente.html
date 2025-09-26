@@ -259,13 +259,27 @@
                 
                     <h2 class="section-title">Histórico de Status</h2>
                     <div class="data-grid">
-                    {% if mais_contratados %}
-                        {% for especialidade in mais_contratados %}
+                    {% if historico_status %}
+                        {% for status in historico_status %}
                         <div class="note-card">
                             
                             <div class="package-header">
-                                <h3 class="package-title text-sm"> {{especialidade.nome}}</h3>
-                                <span class="badge badge-info" style= ' color:white; background:{{especialidade.cor}}'>{% if especialidade.total == 1 %}{{especialidade.total}} sessão {% else %} {{especialidade.total}} sessões {% endif %}</span>
+                                <h3 class="package-title text-sm"> {{status.mes}}/{{status.ano}}</h3>
+                                <h3 class="package-title text-sm"> </h3>
+                                <td>
+                                    {% if status.status == "primeiro_mes" %}
+                                        <span class="badge badge-primeiro_mes">1º Mês</span>
+                                    {% elif status.status == "premium" %}
+                                        <span class="badge badge-premium">Premium</span>
+                                    {% elif status.status == "vip" %}
+                                        <span class="badge badge-vip">VIP</span>
+                                    {% elif status.status == "plus" %}
+                                        <span class="badge badge-plus">Plus</span>
+                                    {% else %}
+                                        <span class="badge badge-indefinido">Indefinido</span>
+                                    {% endif %}
+                                </td>
+
                             </div>
                         </div>
                         {% endfor %}

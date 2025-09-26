@@ -352,6 +352,18 @@ tr.table-row.dirty { outline: 1px dashed #63f16aff; outline-offset: -2px; }
 .col-center {
     text-align: center;
 }
+
+.filtro-chip {
+  display:flex;gap:.5rem;align-items:center; 
+}
+.filtro-chip-btn{
+display:flex;gap:.5rem;flex-wrap:wrap
+}
+
+.chip {
+  
+}
+
 </style>
 {% endblock %} {% block topbar_title %}<span class="text">Status mensal</span>
 {%endblock%} {% block content %}
@@ -362,8 +374,7 @@ tr.table-row.dirty { outline: 1px dashed #63f16aff; outline-offset: -2px; }
   
  <div class="filtros_div">
     <div id="filtro-bar" >
-        <label>
-          Mês
+
           <select class="fp-input" id="filtroMes">
             <option value="1">Janeiro</option>
             <option value="2">Fevereiro</option>
@@ -378,18 +389,16 @@ tr.table-row.dirty { outline: 1px dashed #63f16aff; outline-offset: -2px; }
             <option value="11">Novembro</option>
             <option value="12">Dezembro</option>
           </select>
-        </label>
-    
-        <label>
-          Ano
+
+
           <select class="fp-input" id="filtroAno"></select>
-        </label>
+
     
         <button class="btn btn-primary"type="button" id="aplicarFiltro">Filtrar</button>
       </div>
-  <div style="display:flex;gap:.5rem;align-items:center;margin:.25rem 0 1rem;">
+  <div class='filtro-chip'>
     <input id="filtroBusca" class="fp-input" type="text" placeholder="Buscar por nome/CPF…" style="max-width:280px;">
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <div class='filtro-chip-btn'>
       <button type="button" class="chip" data-chip="todos">Todos</button>
       <button type="button" class="chip" data-chip="premium">Premium</button>
       <button type="button" class="chip" data-chip="vip">VIP</button>

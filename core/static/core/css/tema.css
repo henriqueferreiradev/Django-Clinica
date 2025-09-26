@@ -252,3 +252,33 @@ thead tr th:first-child {
 thead tr th:last-child {
   border-top-right-radius: 12px;
 }
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+}
+
+.badge-premium {
+  background-color: #f59e0b;
+}
+
+.badge-vip {
+  background-color: #4338CA;
+}
+
+.badge-plus {
+  background-color: #2AC4CF;
+}
+
+.badge-primeiro_mes {
+  background-color: #31BA7A;
+}
+
+.badge-indefinido {
+  background-color: #797979ff;
+}
