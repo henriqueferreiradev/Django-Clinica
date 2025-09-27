@@ -99,18 +99,21 @@
             {% csrf_token %}
 
             <div id="aviso-pacote" class="aviso-premium" style="display: none;">
+                <div style='display: flex; gap:.5em; align-items:center;'>
                 <i class="fas fa-check-circle aviso-icon"></i>
+                <strong>Pacote ativo detectado!</strong>
+                </div>
                 <div class="aviso-content">
-                    <strong>Pacote ativo detectado!</strong>
+                    
                     <span id="mensagem-pacote"></span>
                     <button type="button" id="usar-pacote-btn" class="btn-premium">
                         <i class="fas fa-tag"></i> Usar este pacote
                     </button>
                 </div>
             </div>
-            <div id="aviso-beneficio" class="callout callout-info" style="display:none; margin-top:12px;">
+            <div id="aviso-beneficio" class="aviso-premium callout callout-info" style="display:none;">
                 <div id="mensagem-beneficio" style="font-weight:600;"></div>
-                <div id="beneficio-botoes" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+                <div id="beneficio-botoes" class='btn-premium '></div>
                 </div>
 
             <div  id="pacote_atual"></div>

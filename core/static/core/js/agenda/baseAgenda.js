@@ -289,8 +289,10 @@ function configurarSidebar() {
 
     if (closeBtn && sidebar) {
         closeBtn.addEventListener('click', () => {
+ 
             sidebar.classList.remove('active');
             sidebar.setAttribute('hidden', '');
+
             document.body.classList.remove('modal-open');
         });
     }
@@ -337,7 +339,7 @@ function configurarAutocompletePacientes() {
             (data.resultados || []).forEach(paciente => {
                 const div = document.createElement('div');
                 div.textContent = `${paciente.nome} ${paciente.sobrenome}`;
-                div.style.padding = '.5em';
+                div.style.padding = '.7em';
                 div.style.cursor = 'pointer';
 
                 div.addEventListener('click', () => {
@@ -603,7 +605,7 @@ async function verificarBeneficiosAtivos(pacienteId) {
         const btns = document.getElementById('beneficio-botoes');
         if (!box || !msg || !btns) return;
 
-        msg.textContent = `Benefícios de ${data.status.toUpperCase()} disponíveis este mês:`;
+        msg.innerHTML = `Benefícios de <strong>${data.status.toUpperCase()}</strong> disponíveis este mês:`; 
         btns.innerHTML = '';
 
         data.beneficios.forEach(b => {
@@ -612,24 +614,38 @@ async function verificarBeneficiosAtivos(pacienteId) {
             btn.className = 'btn btn-sm';
             btn.disabled = !!b.usado;
 
+            let iconClass = '';
+            let label = '';
+            let onClickAction = null;
+
             if (b.tipo === 'relaxante') {
-                btn.textContent = b.usado ? 'Relaxante (usado)' : 'Usar sessão relaxante';
-                btn.onclick = () => selecionarServicoRelaxanteETravarsValor();
+                iconClass = 'fa-solid fa-spa'; // ícone relaxante (FA)
+                label = b.usado ? 'Relaxante (usado)' : 'Usar sessão relaxante';
+                onClickAction = () => selecionarServicoRelaxanteETravarsValor();
             }
             if (b.tipo === 'sessao_livre') {
-                btn.textContent = b.usado ? 'Sessão livre (usada)' : 'Usar sessão livre';
-                btn.onclick = () => marcarSessaoLivre();
+                iconClass = 'fa-solid fa-wind'; // ícone livre (FA)
+                label = b.usado ? 'Sessão livre (usada)' : 'Usar sessão livre';
+                onClickAction = () => marcarSessaoLivre();
             }
             if (b.tipo === 'desconto') {
-                btn.textContent = b.usado ? `Desconto ${b.percentual}% (usado)` : `Aplicar ${b.percentual}% de desconto`;
-                btn.onclick = () => aplicarDescontoBloqueado(b.percentual);
+                iconClass = 'fa-solid fa-tag'; // ícone desconto (FA)
+                label = b.usado ? `Desconto ${b.percentual}% (usado)` : `Aplicar ${b.percentual}% de desconto`;
+                onClickAction = () => aplicarDescontoBloqueado(b.percentual);
             }
             if (b.tipo === 'brinde') {
-                btn.textContent = b.usado ? 'Brinde (registrado)' : 'Registrar brinde';
-                btn.onclick = () => registrarBrinde();
+                iconClass = 'fa-solid fa-gift'; // ícone brinde (FA)
+                label = b.usado ? 'Brinde (registrado)' : 'Registrar brinde';
+                onClickAction = () => registrarBrinde();
             }
+            
+
+            btn.innerHTML = `<i class='${iconClass}'></i> ${label}`;
+            if (onClickAction) btn.onclick = onClickAction;
+
             btns.appendChild(btn);
-        });
+});
+
 
         box.style.display = 'block';
     } catch (e) {

@@ -37,6 +37,7 @@
     --dourado: #D4AF37;
     --verde-sucesso: #10B981;
     --vermelho-alerta: #EF4444;
+    --roxo-alerta: #9c44ef;
     --sombra-suave: 0 10px 40px rgba(0, 0, 0, .08);
     --sombra-destaque: 0 15px 35px rgba(109, 57, 142, .15);
     --borda-arredondada: 16px;
@@ -648,6 +649,12 @@ body {
     border-left: 4px solid var(--vermelho-alerta);
 }
 
+#mensagem-beneficio strong { display: inline; } 
+#aviso-beneficio,
+#info_beneficio {
+    background: linear-gradient(to right, rgba(131, 68, 239, 0.1), rgba(142, 68, 239, 0.05));
+    border-left: 4px solid var(--roxo-alerta);
+}
 .aviso-icon {
     font-size: 1.8rem;
     flex-shrink: 0;
