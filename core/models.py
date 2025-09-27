@@ -739,4 +739,28 @@ class HistoricoStatus(models.Model):
 
     def __str__(self):
         return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status}"
- 
+
+# core/models.py
+BENEFICIO_TIPO = [
+    ('relaxante', 'Sessão Relaxante'),     # VIP
+    ('desconto', 'Desconto em Pagamento'), # VIP/PREMIUM
+    ('brinde', 'Brinde'),                  # VIP/PREMIUM
+    ('sessao_livre', 'Sessão Livre'),      # PREMIUM
+]
+
+class UsoBeneficio(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='usos_beneficio')
+    mes = models.PositiveIntegerField()
+    ano = models.PositiveIntegerField()
+    status_no_mes = models.CharField(max_length=20, choices=STATUS_PACIENTES_CHOICES)
+    tipo = models.CharField(max_length=20, choices=BENEFICIO_TIPO)
+
+    agendamento = models.ForeignKey(Agendamento, null=True, blank=True, on_delete=models.SET_NULL)
+    valor_desconto_aplicado = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+
+    usado_em = models.DateTimeField(auto_now_add=True)
+    usado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        unique_together = ('paciente', 'mes', 'ano', 'tipo')
+        indexes = [models.Index(fields=['paciente', 'ano', 'mes', 'tipo'])]

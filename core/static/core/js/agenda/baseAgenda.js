@@ -10,12 +10,10 @@ window.calcularDesconto = function () {
     const valorInput = document.getElementById('valor_pacote');
     const descontoInput = document.getElementById('desconto');
     const valorFinalInput = document.getElementById('valor_final');
-
     if (!valorInput || !descontoInput || !valorFinalInput) return;
 
     const valorPacote = parseFloat(valorInput.value) || 0;
     const desconto = parseFloat(descontoInput.value) || 0;
-
     const valorFinal = modoPercentual
         ? (valorPacote - (valorPacote * (desconto / 100)))
         : (valorPacote - desconto);
@@ -39,20 +37,16 @@ window.alterarDesconto = function () {
     const valorInput = document.getElementById('valor_pacote');
     const valorFinalInput = document.getElementById('valor_final');
     const descontoInput = document.getElementById('desconto');
-
     if (!valorInput || !valorFinalInput || !descontoInput) return;
 
     const valorPacote = parseFloat(valorInput.value) || 0;
     const valorFinal = parseFloat(valorFinalInput.value) || 0;
-    let descontoCalculado = 0;
 
-    if (modoPercentual && valorPacote !== 0) {
-        descontoCalculado = ((valorPacote - valorFinal) / valorPacote) * 100;
-    } else {
-        descontoCalculado = valorPacote - valorFinal;
-    }
+    const descontoCalculado = (modoPercentual && valorPacote !== 0)
+        ? ((valorPacote - valorFinal) / valorPacote) * 100
+        : (valorPacote - valorFinal);
 
-    descontoInput.value = descontoCalculado.toFixed(2);
+    descontoInput.value = (descontoCalculado || 0).toFixed(2);
 };
 
 // =============================================
@@ -98,11 +92,10 @@ async function verificarPacoteAtivo() {
     const tipoSessaoLabel = document.getElementById('tipo_sessao');
     const valorFinalInput = document.getElementById('valor_final');
 
-    // Configurar toggle de opções por tipo de agendamento
+    // Toggle de opções por tipo de agendamento
     radioButtons.forEach(radio => {
         radio.addEventListener('change', function () {
             if (!servicoSelect) return;
-
             if (this.value === 'reposicao') {
                 servicosBanco.forEach(opt => opt.hidden = true);
                 servicosReposicao.forEach(opt => opt.hidden = false);
@@ -115,7 +108,7 @@ async function verificarPacoteAtivo() {
         });
     });
 
-    // Resetar estado inicial
+    // Reset inicial
     if (avisoDiv) avisoDiv.style.display = 'none';
     if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
     if (servicoSelect) servicoSelect.disabled = false;
@@ -129,7 +122,7 @@ async function verificarPacoteAtivo() {
         const response = await fetch(`/api/verificar_pacotes_ativos/${pacienteId}`);
         const data = await response.json();
 
-        // Verificar pacote ativo
+        // Pacote ativo
         if (data.tem_pacote_ativo && servicoSelect) {
             const pacote = data.pacotes[0];
             const sessaoAtual = (pacote.quantidade_usadas || 0) + 1;
@@ -140,23 +133,18 @@ async function verificarPacoteAtivo() {
             }
 
             if (avisoDiv) avisoDiv.style.display = 'block';
-
-            if (usarPacoteBtn) {
-                usarPacoteBtn.onclick = () => usarPacoteAtivo(pacote, sessaoAtual);
-            }
+            if (usarPacoteBtn) usarPacoteBtn.onclick = () => usarPacoteAtivo(pacote, sessaoAtual);
         }
 
-        // Verificar saldos de desmarcações
+        // Saldos de desmarcações
         verificarSaldosDesmarcacoes(data.saldos_desmarcacoes || {});
 
-        // Esconder reposição por padrão
+        // Reposição por padrão escondida
         servicosReposicao.forEach(opt => opt.hidden = true);
 
-        // Configurar botão de usar remarcação
         if (usarRemarcacaoBtn) {
             usarRemarcacaoBtn.onclick = () => configurarReposicao();
         }
-
     } catch (error) {
         console.error('Erro ao verificar pacote:', error);
         if (formValor) formValor.classList.remove('hidden');
@@ -176,9 +164,8 @@ function usarPacoteAtivo(pacote, sessaoAtual) {
     const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
     const servicoHidden = document.getElementById('servico_id_hidden');
 
-    // Criar opção para o pacote
     const option = document.createElement('option');
-    option.value = pacote.servico_id.toString();
+    option.value = String(pacote.servico_id);
     option.textContent = `Sessão ${sessaoAtual} de ${pacote.quantidade_total} (pacote ativo)`;
     option.hidden = true;
     option.disabled = false;
@@ -191,7 +178,6 @@ function usarPacoteAtivo(pacote, sessaoAtual) {
     servicoSelect.disabled = true;
     servicoSelect.readOnly = true;
 
-    // Atualizar informações de exibição
     atualizarInfoPacote(pacote, sessaoAtual);
 
     if (formValor) formValor.classList.add('hidden');
@@ -204,11 +190,9 @@ function usarPacoteAtivo(pacote, sessaoAtual) {
         pacoteAtual.style.display = 'block';
     }
 
-    // Marcar como agendamento existente
     const radioExistente = document.querySelector('input[name="tipo_agendamento"][value="existente"]');
     if (radioExistente) radioExistente.checked = true;
 
-    // Esconder avisos
     if (avisoDiv) avisoDiv.style.display = 'none';
     if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
 }
@@ -276,7 +260,6 @@ function limparOpcaoPacoteServico() {
     const servicoSelect = document.getElementById('pacotesInput');
     const formValor = document.getElementById('formValor');
     const infoPacote = document.getElementById('info_pacote');
-
     if (!servicoSelect) return;
 
     servicoSelect.querySelectorAll('option[data-pacote="true"]').forEach(opt => opt.remove());
@@ -363,6 +346,7 @@ function configurarAutocompletePacientes() {
                     sugestoes.innerHTML = '';
                     sugestoes.style.display = 'none';
                     verificarPacoteAtivo();
+                    verificarBeneficiosAtivos(pacienteIdInput.value); // <-- chama aqui também
                 });
 
                 sugestoes.appendChild(div);
@@ -389,7 +373,6 @@ function configurarSelecaoServico() {
 
 function configurarTipoAgendamentoNovo() {
     const radioNovo = document.querySelector('input[name="tipo_agendamento"][value="novo"]');
-
     if (!radioNovo) return;
 
     radioNovo.addEventListener('click', () => {
@@ -413,13 +396,11 @@ function configurarTipoAgendamentoNovo() {
         if (formValor) formValor.classList.remove('hidden');
         if (infoPacote) infoPacote.classList.add('hidden');
 
-        // Limpar campos de exibição
-        const campos = ['codigo_pacote_display', 'valor_pago_display', 'valor_restante_display',
-            'sessao_atual_display', 'total_sessoes_display'];
-        campos.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = "";
-        });
+        ['codigo_pacote_display', 'valor_pago_display', 'valor_restante_display',
+            'sessao_atual_display', 'total_sessoes_display'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = "";
+            });
 
         if (valorFinalInput) valorFinalInput.value = "";
         if (pacoteAtual) {
@@ -435,7 +416,6 @@ function configurarTipoAgendamentoNovo() {
 // FUNÇÕES DE EDIÇÃO DE AGENDAMENTOS
 // =============================================
 function configurarEdicaoAgendamentos() {
-    // Abrir modal de edição
     document.querySelectorAll('.btn-editar-agendamento').forEach(botao => {
         botao.addEventListener("click", function () {
             const agendamentoId = this.dataset.id;
@@ -448,10 +428,7 @@ function configurarEdicaoAgendamentos() {
         });
     });
 
-    // Configurar botões de edição de horário
     configurarBotoesEditarHorario();
-
-    // Configurar formulário de edição
     configurarFormularioEdicao();
 }
 
@@ -472,23 +449,23 @@ function preencherModalEdicao(data) {
     const lista = document.querySelector("#lista-pagamentos");
     if (lista) {
         const pagamentos = (data.pagamentos || []).map(pag => `
-            <tr>
-                <td>${pag.data}</td>
-                <td>R$ ${Number(pag.valor).toFixed(2)}</td>
-                <td>${pag.forma_pagamento_display}</td>
-            </tr>`).join('');
+      <tr>
+        <td>${pag.data}</td>
+        <td>R$ ${Number(pag.valor).toFixed(2)}</td>
+        <td>${pag.forma_pagamento_display}</td>
+      </tr>`).join('');
 
         lista.innerHTML = `
-            <div class="formField">
-                <table class="tabela-pagamentos">
-                    <thead>
-                        <tr><th>Data</th><th>Valor</th><th>Forma de Pagamento</th></tr>
-                    </thead>
-                    <tbody>
-                        ${pagamentos || `<tr><td colspan="3" style="text-align:center;">Nenhum pagamento registrado.</td></tr>`}
-                    </tbody>
-                </table>
-            </div>`;
+      <div class="formField">
+        <table class="tabela-pagamentos">
+          <thead>
+            <tr><th>Data</th><th>Valor</th><th>Forma de Pagamento</th></tr>
+          </thead>
+          <tbody>
+            ${pagamentos || `<tr><td colspan="3" style="text-align:center;">Nenhum pagamento registrado.</td></tr>`}
+          </tbody>
+        </table>
+      </div>`;
     }
 
     const modal = document.querySelector("#modalEditAgenda");
@@ -497,7 +474,7 @@ function preencherModalEdicao(data) {
 
 function configurarBotoesEditarHorario() {
     document.querySelectorAll('.editar-horario-btn').forEach(button => {
-        // Modo edição
+
         button.addEventListener('click', function () {
             const container = this.closest('.agenda-hora');
             if (!container) return;
@@ -508,19 +485,16 @@ function configurarBotoesEditarHorario() {
 
             if (spanHora && inputInicio && inputFim) {
                 if (!this.classList.contains('salvar-mode')) {
-                    // Entrar no modo edição
                     spanHora.classList.add('hidden');
                     inputInicio.classList.remove('hidden');
                     inputFim.classList.remove('hidden');
                     this.innerHTML = "<i class='bx bx-check'></i>";
                     this.classList.add('salvar-mode');
-                } else {
-                    // Está no modo salvar - tratar no evento separado abaixo
                 }
             }
         });
 
-        // Modo salvar (separado para melhor organização)
+        // Salvar
         button.addEventListener('click', async function () {
             if (!this.classList.contains('salvar-mode')) return;
 
@@ -531,7 +505,6 @@ function configurarBotoesEditarHorario() {
             const inputInicio = container.querySelector('.hora-inicio-input');
             const inputFim = container.querySelector('.hora-fim-input');
             const agendamentoId = container?.dataset?.agendamentoId;
-
             if (!inputInicio || !inputFim || !spanHora || !agendamentoId) return;
 
             try {
@@ -567,13 +540,11 @@ function configurarBotoesEditarHorario() {
 
 function configurarFormularioEdicao() {
     const formEdicao = document.getElementById('form-edicao');
-
     if (!formEdicao) return;
 
     formEdicao.addEventListener('submit', async function (e) {
         e.preventDefault();
         const agendamentoId = window.currentAgendamentoId;
-
         if (!agendamentoId) return;
 
         try {
@@ -598,8 +569,7 @@ function configurarFormularioEdicao() {
 // =============================================
 // INICIALIZAÇÃO PRINCIPAL
 // =============================================
-document.addEventListener("DOMContentLoaded", function () {
-    // Configurar todos os componentes
+document.addEventListener("DOMContentLoaded", async function () {
     configurarSidebar();
     configurarSubmenus();
     configurarAutocompletePacientes();
@@ -607,9 +577,129 @@ document.addEventListener("DOMContentLoaded", function () {
     configurarTipoAgendamentoNovo();
     configurarEdicaoAgendamentos();
 
-    // Inicializar verificação de pacotes se já houver um paciente selecionado
+    // Se já tiver paciente selecionado ao abrir o modal
     const pacienteIdInput = document.getElementById('paciente_id');
     if (pacienteIdInput && pacienteIdInput.value) {
-        verificarPacoteAtivo();
+        await verificarPacoteAtivo();
+        await verificarBeneficiosAtivos(pacienteIdInput.value); // <-- corrige aqui
     }
 });
+
+// =============================================
+// BENEFÍCIOS
+// =============================================
+async function verificarBeneficiosAtivos(pacienteId) {
+    if (!pacienteId) return;
+
+    try {
+        const resp = await fetch(`/api/verificar_beneficios_mes/${pacienteId}`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+
+        if (!data.tem_beneficio) return;
+
+        const box = document.getElementById('aviso-beneficio');
+        const msg = document.getElementById('mensagem-beneficio');
+        const btns = document.getElementById('beneficio-botoes');
+        if (!box || !msg || !btns) return;
+
+        msg.textContent = `Benefícios de ${data.status.toUpperCase()} disponíveis este mês:`;
+        btns.innerHTML = '';
+
+        data.beneficios.forEach(b => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-sm';
+            btn.disabled = !!b.usado;
+
+            if (b.tipo === 'relaxante') {
+                btn.textContent = b.usado ? 'Relaxante (usado)' : 'Usar sessão relaxante';
+                btn.onclick = () => selecionarServicoRelaxanteETravarsValor();
+            }
+            if (b.tipo === 'sessao_livre') {
+                btn.textContent = b.usado ? 'Sessão livre (usada)' : 'Usar sessão livre';
+                btn.onclick = () => marcarSessaoLivre();
+            }
+            if (b.tipo === 'desconto') {
+                btn.textContent = b.usado ? `Desconto ${b.percentual}% (usado)` : `Aplicar ${b.percentual}% de desconto`;
+                btn.onclick = () => aplicarDescontoBloqueado(b.percentual);
+            }
+            if (b.tipo === 'brinde') {
+                btn.textContent = b.usado ? 'Brinde (registrado)' : 'Registrar brinde';
+                btn.onclick = () => registrarBrinde();
+            }
+            btns.appendChild(btn);
+        });
+
+        box.style.display = 'block';
+    } catch (e) {
+        console.error('Erro ao verificar benefícios:', e);
+    }
+}
+
+function selecionarServicoRelaxanteETravarsValor() {
+    const servicoSelect = document.getElementById('pacotesInput');
+    const servicoHidden = document.getElementById('servico_id_hidden');
+    if (!servicoSelect) return;
+
+    const RELAXANTE_ID = 'X'; // TODO: ajuste para o ID real
+    const opt = [...servicoSelect.options].find(o => Number(o.value) === Number(RELAXANTE_ID));
+    if (!opt) { alert('Serviço relaxante não encontrado'); return; }
+    servicoSelect.value = opt.value;
+    if (servicoHidden) servicoHidden.value = opt.value;
+}
+
+function marcarSessaoLivre() {
+    document.getElementById('valor_final').value = '0.00';
+    document.getElementById('beneficio_tipo').value = 'sessao_livre';
+}
+
+function aplicarDescontoBloqueado(percent) {
+    const descontoInput = document.getElementById('desconto');
+    descontoInput.value = Number(percent).toFixed(2);
+    window.modoPercentual = true;
+    window.calcularDesconto();
+    document.getElementById('beneficio_tipo').value = 'desconto';
+    document.getElementById('beneficio_percentual').value = percent;
+}
+
+async function registrarBrinde() {
+    document.getElementById('beneficio_tipo').value = 'brinde';
+    alert('Brinde marcado para este agendamento. Será registrado ao salvar.');
+}
+
+function revelarBeneficioOption(value) {
+    const sel = document.getElementById('pacotesInput');
+    const opt = sel.querySelector(`option[value="${value}"]`);
+    if (!opt) return;
+    opt.hidden = false;
+    sel.value = value;
+    sel.disabled = true;
+    sel.readOnly = true;
+}
+
+function limparBeneficioSelecionado() {
+    const sel = document.getElementById('pacotesInput');
+    document.querySelectorAll('.servico-beneficio').forEach(o => { o.hidden = true; });
+    sel.disabled = false;
+    sel.readOnly = false;
+    document.getElementById('beneficio_tipo').value = '';
+    document.getElementById('beneficio_percentual').value = '';
+}
+
+function marcarSessaoLivre() {
+    revelarBeneficioOption('beneficio_sessao_livre');
+    document.getElementById('beneficio_tipo').value = 'sessao_livre';
+    document.getElementById('valor_pacote').value = '0.00';
+    document.getElementById('valor_final').value = '0.00';
+}
+
+function selecionarServicoRelaxanteETravarsValor() {
+    revelarBeneficioOption('beneficio_relaxante');
+    document.getElementById('beneficio_tipo').value = 'relaxante';
+    document.getElementById('valor_pacote').value = '0.00';
+    document.getElementById('valor_final').value = '0.00';
+}
+
+// quando o usuário muda para “Nova Sessão”, “Reposição” etc., limpar
+// (você já tem algo parecido em configurarTipoAgendamentoNovo)

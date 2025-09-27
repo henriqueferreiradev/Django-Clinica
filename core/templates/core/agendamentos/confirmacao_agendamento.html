@@ -569,16 +569,18 @@
                                     <span class="session-value">60 minutos</span>
                                 </div>
                             </div>
+                            <textarea id="whatsapp-msg-{{ forloop.counter }}" hidden>{{ sessao.msg_whatsapp }}</textarea>
+
                             <div class="session-actions">
-                                <button class="session-btn btn-whatsapp" onclick="enviarWhatsappSessao({{ forloop.counter }})">
-                                    <i class="fab fa-whatsapp"></i> WhatsApp
-                                </button>
-                                <button class="session-btn btn-email" onclick="enviarEmailSessao({{ forloop.counter }})">
-                                    <i class="fas fa-envelope"></i> E-mail
-                                </button>
-                                <button class="session-btn btn-pdf" onclick="gerarPdfSessao({{ forloop.counter }})">
-                                    <i class="fas fa-file-pdf"></i> PDF
-                                </button>
+                            <button class="session-btn btn-whatsapp" onclick="enviarWhatsappSessao({{ forloop.counter }})">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </button>
+                            <button class="session-btn btn-email" onclick="enviarEmailSessao({{ forloop.counter }})">
+                                <i class="fas fa-envelope"></i> E-mail
+                            </button>
+                            <button class="session-btn btn-pdf" onclick="gerarPdfSessao({{ forloop.counter }})">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
                             </div>
                         </div>
                         {% endfor %}
@@ -614,16 +616,19 @@
                                     <span class="session-value">60 minutos</span>
                                 </div>
                             </div>
+                             
+                            <textarea id="whatsapp-msg-1" hidden>{{ mensagem_confirmacao }}</textarea>
+
                             <div class="session-actions">
-                                <button class="session-btn btn-whatsapp" onclick="enviarWhatsappSessao(1)">
-                                    <i class="fab fa-whatsapp"></i> WhatsApp
-                                </button>
-                                <button class="session-btn btn-email" onclick="enviarEmailSessao(1)">
-                                    <i class="fas fa-envelope"></i> E-mail
-                                </button>
-                                <button class="session-btn btn-pdf" onclick="gerarPdfSessao(1)">
-                                    <i class="fas fa-file-pdf"></i> PDF
-                                </button>
+                            <button class="session-btn btn-whatsapp" onclick="enviarWhatsappSessao(1)">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </button>
+                            <button class="session-btn btn-email" onclick="enviarEmailSessao(1)">
+                                <i class="fas fa-envelope"></i> E-mail
+                            </button>
+                            <button class="session-btn btn-pdf" onclick="gerarPdfSessao(1)">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
                             </div>
                         </div>
                     {% endif %}
@@ -639,24 +644,37 @@
             </div>
         </div>
         
-         
+      
     </div>
     
 
     <script>
         // Função para enviar por WhatsApp
-        function enviarWhatsappSessao(nomePaciente, data, horaInicio, horaFim, nomeProfissional, especialidade) {
-            const mensagem = `Confirmação de Agendamento - Clínica Ponto de Equilíbrio%0A%0A` +
-                            `Paciente: ${nomePaciente}%0A` +
-                            `Data: ${data}%0A` +
-                            `Horário: ${horaInicio} às ${horaFim}%0A` +
-                            `Profissional: ${nomeProfissional}%0A` +
-                            `Especialidade: ${especialidade}%0A%0A` +
-                            `*Chegue com 10 minutos de antecedência.*`;
-            
-            const link = `https://web.whatsapp.com/send?text=${mensagem}`;
-            window.open(link, "_blank");
+        
+function enviarWhatsappSessao(idx) {
+  const el = document.getElementById(`whatsapp-msg-${idx}`);
+  const texto = (el?.value || el?.textContent || '').trim();
+  if (!texto) { alert('Mensagem não disponível.'); return; }
+
+  const isMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+  const base = isMobile ? 'https://api.whatsapp.com/send?text='
+                        : 'https://web.whatsapp.com/send?text=';
+  window.open(base + encodeURIComponent(texto), '_blank');
+}
+
+
+        // (opcional) copiar pro clipboard pra conferência
+        async function copiarMensagemWhatsapp() {
+        try {
+            const el = document.getElementById('whatsapp-msg');
+            const texto = (el?.value || el?.textContent || '').trim();
+            await navigator.clipboard.writeText(texto);
+            alert('Mensagem copiada!');
+        } catch (e) {
+            alert('Não foi possível copiar a mensagem.');
         }
+        }
+       
 
         // Função para enviar por Email
         function enviarEmailSessao(agendamentoId, numeroSessao) {

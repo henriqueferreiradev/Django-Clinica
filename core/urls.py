@@ -97,4 +97,18 @@ urlpatterns = [
     
     path("frequencias", frequencia_views.frequencias_get, name="frequencias_get"),
     path("frequencias/salvar", frequencia_views.frequencias_post, name="frequencias_post"),
+        # 1) Retorna os benefícios disponíveis no mês para o paciente
+    path(
+        'api/verificar_beneficios_mes/<int:paciente_id>',
+        agendamento_views.verificar_beneficios_mes,
+        name='verificar_beneficios_mes'
+    ),
+
+    # 2) (Opcional) Registrar consumo do benefício via AJAX
+    #    — só use se você não registrar no salvar do agendamento
+    path(
+        'api/beneficios/usar',
+        agendamento_views.usar_beneficio,   # POST
+        name='usar_beneficio'
+    ),
 ]

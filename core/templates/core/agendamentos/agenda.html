@@ -108,7 +108,11 @@
                     </button>
                 </div>
             </div>
-            
+            <div id="aviso-beneficio" class="callout callout-info" style="display:none; margin-top:12px;">
+                <div id="mensagem-beneficio" style="font-weight:600;"></div>
+                <div id="beneficio-botoes" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+                </div>
+
             <div  id="pacote_atual"></div>
             <div  id="info_reposicao"></div>
             
@@ -122,7 +126,7 @@
                     </button>
                 </div>
             </div>
-
+ 
             <div class="formField input-wrapper">
                 <label for="busca"><i class="fas fa-user"></i> Paciente</label>
                 <input required class="capitalize-input input-s" type="text" id="busca" placeholder="Buscar paciente por nome..." autocomplete="off">
@@ -149,17 +153,29 @@
             <div class="formField">
                 <label for="pacotesInput" id="tipo_sessao"><i class="fas fa-concierge-bell"></i> Tipo de sessão</label>
                 <input type="hidden" id="servico_id_hidden" name="servico_id">
+                <input type="hidden" id="beneficio_tipo" name="beneficio_tipo">
+                <input type="hidden" id="beneficio_percentual" name="beneficio_percentual">
                 <select name="servico_id" id="pacotesInput" class="input-s" required>
-                    <option value="" disabled selected>Selecione um serviço</option>
-                    {% for servico in servicos %}
+                <option value="" disabled selected>Selecione um serviço</option>
+
+                {% for servico in servicos %}
                     <option value="{{ servico.id }}" data-valor="{{ servico.valor }}" class="servico-banco">
-                        {{ servico.nome }} - R$ {{ servico.valor }}
+                    {{ servico.nome }} - R$ {{ servico.valor }}
                     </option>
-                    {% endfor %}
-                    <option value="d" class="servico-reposicao" data-valor="0.00">Reposição - D</option>
-                    <option value="dcr" class="servico-reposicao" data-valor="0.00">Reposição - DCR</option>
-                    <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
+                {% endfor %}
+
+                <!-- Reposição (já tinha) -->
+                <option value="d"   class="servico-reposicao" data-valor="0.00">Reposição - D</option>
+                <option value="dcr" class="servico-reposicao" data-valor="0.00">Reposição - DCR</option>
+                <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
+
+                <!-- Benefícios (aparecem só quando o usuário clica no botão) -->
+                <option value="beneficio_sessao_livre"   class="servico-beneficio" data-valor="0.00" hidden>Sessão Livre (benefício)</option>
+                <option value="beneficio_relaxante"      class="servico-beneficio" data-valor="0.00" hidden>Sessão Relaxante (benefício)</option>
                 </select>
+
+
+
             </div>
 
             <div class="formRow cols-2">

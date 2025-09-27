@@ -11,7 +11,8 @@ from collections import defaultdict
 from django.contrib import messages
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-
+from decimal import Decimal
+from django.db import transaction
 import uuid
 @login_required(login_url='login')
 def agenda_view(request):
@@ -72,229 +73,292 @@ def proxima_data_semana(data_inicial, dia_semana_index):
 
 @login_required(login_url='login')
 def criar_agendamento(request):
-    
-    if request.method == 'POST':
-        data = request.POST
-        
-        tipo_agendamento = data.get('tipo_agendamento')
-        paciente_id = data.get('paciente_id')
-        servico_id = data.get('servico_id')
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
 
-        if servico_id in ['d', 'dcr', 'fcr']:
-            servico = None
-            tipo_reposicao = servico_id
-            servico_id_int = None
-        else:
-            try:
-                servico_id_int = int(servico_id)
-            except (ValueError, TypeError):
-                return JsonResponse({'error': 'Serviço inválido'}, status=400)
-            servico = get_object_or_404(Servico, id=servico_id_int)
-            tipo_reposicao = None
-        especialidade_id = data.get('especialidade_id')
-        profissional1_id = data.get('profissional1_id')
-        profissional2_id = data.get('profissional2_id')
-        data_sessao = parse_date(data.get('data'))
-        hora_inicio = data.get('hora_inicio')
-        hora_fim = data.get('hora_fim')
+    data = request.POST
 
-        def parse_float(value, default=0.0):
-            try:
-                return float(value)
-            except (ValueError, TypeError):
-                return default
+    # ---------------------------------------------------------------------
+    # 1) Campos do form
+    # ---------------------------------------------------------------------
+    tipo_agendamento = data.get('tipo_agendamento')               # 'novo' | 'existente' | 'reposicao'
+    paciente_id = data.get('paciente_id')
+    servico_id = data.get('servico_id')                            # id do serviço (ou 'd'/'dcr'/'fcr' p/ reposição)
 
-        valor_pacote = parse_float(data.get('valor_pacote'))
-        print("VALOR DO PACOTE:", data.get('valor_pacote'))
-        desconto = parse_float(data.get('desconto'))
-        valor_final = parse_float(data.get('valor_final'))
-        modo_desconto = data.get('modo_desconto')
-        ambiente = data.get('ambiente')
-        status = data.get('status')
-        observacoes = data.get('observacoes', '')
-        pacote_codigo = data.get('pacote_codigo')
+    especialidade_id = data.get('especialidade_id')
+    profissional1_id = data.get('profissional1_id')
+    profissional2_id = data.get('profissional2_id')
+    data_sessao = parse_date(data.get('data'))
+    hora_inicio = data.get('hora_inicio')
+    hora_fim = data.get('hora_fim')
+    ambiente = data.get('ambiente')
+    status_ag = data.get('status') or 'agendado'
+    observacoes = data.get('observacoes', '')
+    pacote_codigo = data.get('pacote_codigo')
 
-        # Pagamento
-        valor_pago = data.get('valor_pago')
-        forma_pagamento = data.get('forma_pagamento')
-        
-
-        # Recorrência
-        agendamento_recorrente = data.get('recorrente') == 'on'
-        recorrencia_dia_index = data.get('recorrencia_dia')
+    # Pagamento
+    def parse_float(v, default=0.0):
         try:
-            recorrencia_dia_index = int(recorrencia_dia_index)
-        except (ValueError, TypeError):
-            recorrencia_dia_index = None
+            return float(v)
+        except (TypeError, ValueError):
+            return default
 
-        def id_valido(value):
-            try:
-                return int(value)
-            except (ValueError, TypeError):
-                return None
+    valor_pacote = parse_float(data.get('valor_pacote'))
+    desconto = parse_float(data.get('desconto'))
+    valor_final = parse_float(data.get('valor_final'))
+    modo_desconto = data.get('modo_desconto')  # '%' ou 'R$'
+    valor_pago = parse_float(data.get('valor_pago'))
+    forma_pagamento = data.get('forma_pagamento')
 
-        paciente_id_int = id_valido(paciente_id)
+    # Recorrência
+    agendamento_recorrente = data.get('recorrente') == 'on'
+    try:
+        recorrencia_dia_index = int(data.get('recorrencia_dia')) if data.get('recorrencia_dia') else None
+    except (ValueError, TypeError):
+        recorrencia_dia_index = None
+
+    # Benefícios
+    beneficio_tipo = data.get('beneficio_tipo')                     # '', 'sessao_livre', 'relaxante', 'desconto', 'brinde'
+    beneficio_percentual = Decimal(data.get('beneficio_percentual') or 0)
+
+    # ---------------------------------------------------------------------
+    # 2) Resoluções de IDs/objetos
+    # ---------------------------------------------------------------------
+    def id_valido(v):
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return None
+
+    paciente_id_int = id_valido(paciente_id)
+    especialidade_id_int = id_valido(especialidade_id)
+    profissional1_id_int = id_valido(profissional1_id)
+    profissional2_id_int = id_valido(profissional2_id)
+
+    if not paciente_id_int:
+        return JsonResponse({'error': 'Paciente inválido'}, status=400)
+    if not especialidade_id_int:
+        return JsonResponse({'error': 'Especialidade inválida'}, status=400)
+    if not profissional1_id_int:
+        return JsonResponse({'error': 'Profissional principal inválido'}, status=400)
+
+    paciente = get_object_or_404(Paciente, id=paciente_id_int)
+    especialidade = get_object_or_404(Especialidade, id=especialidade_id_int)
+    profissional1 = get_object_or_404(Profissional, id=profissional1_id_int)
+    profissional2 = Profissional.objects.filter(id=profissional2_id_int).first() if profissional2_id_int else None
+
+    # ---------------------------------------------------------------------
+    # 3) Determinar cenário (benefício pode alterar o fluxo)
+    #    - Para 'sessao_livre' ou 'relaxante': NÃO criar PacotePaciente, servico=None, valor=0
+    #    - Para 'desconto' e 'brinde': segue fluxo normal (novo/existente/reposição)
+    # ---------------------------------------------------------------------
+    pacote = None
+    servico = None
+    tipo_reposicao = None
+    tags_extra = ''
+
+    # Reposição via seletor (d/dcr/fcr) continua igual
+    if servico_id in ['d', 'dcr', 'fcr']:
+        tipo_reposicao = servico_id
+        # usa um serviço "Sessão de Reposição" padrão (0,00)
+        servico_reposicao, _ = Servico.objects.get_or_create(
+            nome='Sessão de Reposição',
+            defaults={'valor': 0.00, 'qtd_sessoes': 1, 'ativo': True}
+        )
+        servico = servico_reposicao
+
+    # Se NÃO for reposição e NÃO for sessão-livre/relaxante,
+    # resolvemos o serviço normalmente
+    elif beneficio_tipo not in ('sessao_livre', 'relaxante'):
         servico_id_int = id_valido(servico_id)
-        especialidade_id_int = id_valido(especialidade_id)
-        profissional1_id_int = id_valido(profissional1_id)
-        profissional2_id_int = id_valido(profissional2_id)
+        if not servico_id_int:
+            return JsonResponse({'error': 'Serviço inválido'}, status=400)
+        servico = get_object_or_404(Servico, id=servico_id_int)
 
-        if not paciente_id_int:
-            return JsonResponse({'error': 'Paciente inválido'}, status=400)
- 
-        if not especialidade_id_int:
-            return JsonResponse({'error': 'Especialidade inválida'}, status=400)
-        if not profissional1_id_int:
-            return JsonResponse({'error': 'Profissional principal inválido'}, status=400)
+    # ---------------------------------------------------------------------
+    # 4) Criar pacote (somente quando fizer sentido)
+    #    - 'novo' sem benefício de sessão: cria pacote
+    #    - 'existente': pega pacote pelo código
+    #    - 'reposicao': cria pacote de 1 sessão e código REP...
+    #    - benefício 'sessao_livre' / 'relaxante': NÃO cria pacote
+    # ---------------------------------------------------------------------
+    if tipo_agendamento == 'novo' and beneficio_tipo not in ('sessao_livre', 'relaxante'):
+        pacote = PacotePaciente.objects.create(
+            paciente=paciente,
+            servico=servico,
+            valor_original=valor_pacote,
+            desconto_reais=desconto if modo_desconto == 'R$' else None,
+            desconto_percentual=desconto if modo_desconto == '%' else None,
+            valor_final=valor_final,
+            valor_total=valor_pacote,
+            ativo=True,
+        )
+        registrar_log(
+            usuario=request.user,
+            acao='Criação',
+            modelo='Pacote Paciente',
+            objeto_id=pacote.id,
+            descricao=f'Novo pacote registrado para o {paciente.nome}.'
+        )
 
-        paciente = get_object_or_404(Paciente, id=paciente_id_int)
-        especialidade = get_object_or_404(Especialidade, id=especialidade_id_int)
-        profissional1 = get_object_or_404(Profissional, id=profissional1_id_int)
-        profissional2 = Profissional.objects.filter(id=profissional2_id_int).first() if profissional2_id_int else None
+    elif tipo_agendamento == 'existente':
+        pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
+
+    elif tipo_agendamento == 'reposicao':
+        pacote = PacotePaciente.objects.create(
+            paciente=paciente,
+            servico=servico,         # Sessão de Reposição
+            qtd_sessoes=1,
+            valor_original=0,
+            valor_final=0,
+            ativo=True,
+            tipo_reposicao=tipo_reposicao,
+            eh_reposicao=True
+        )
+        pacote.codigo = f'REP{uuid.uuid4().hex[:8].upper()}'
+        pacote.save()
+        # marcar origem como reposta (se desejar; exemplo simplificado)
+        ag_origem = Agendamento.objects.filter(
+            paciente_id=paciente_id_int,
+            status="desistencia_remarcacao",
+            foi_reposto=False
+        ).order_by('-data').first()
+        if ag_origem:
+            ag_origem.foi_reposto = True
+            ag_origem.save()
+
+    # ---------------------------------------------------------------------
+    # 5) Montar lista de datas (recorrência só se houver pacote normal)
+    #    Sessão-livre/relaxante: sempre 1 agendamento (benefício é mensal)
+    # ---------------------------------------------------------------------
+    if agendamento_recorrente and pacote and beneficio_tipo not in ('sessao_livre', 'relaxante'):
+        def proxima_data_semana(data_inicial, dia_semana_index):
+            delta_dias = (dia_semana_index - data_inicial.weekday() + 7) % 7
+            return data_inicial + timedelta(days=delta_dias)
+
+        primeira_data = proxima_data_semana(data_sessao, recorrencia_dia_index) if recorrencia_dia_index is not None else data_sessao
+        sessoes_restantes = pacote.qtd_sessoes - pacote.sessoes_realizadas
+        num_sessoes = max(sessoes_restantes, 1)
+        datas_agendamentos = [primeira_data + timedelta(weeks=i) for i in range(num_sessoes)]
+    else:
+        datas_agendamentos = [data_sessao]
+
+    # ---------------------------------------------------------------------
+    # 6) Ajustes por benefício ANTES de criar agendamento(s)
+    # ---------------------------------------------------------------------
+    if beneficio_tipo in ('sessao_livre', 'relaxante'):
+        # força 0, sem pacote e marca tag
+        servico = None
         pacote = None
+        valor_pacote = 0.0
+        valor_final = 0.0
+        valor_pago = 0.0
+        tags_extra = f'beneficio:{beneficio_tipo}'
 
-        if tipo_agendamento == 'novo':
-            pacote = PacotePaciente.objects.create(
+    elif beneficio_tipo == 'desconto':
+        tags_extra = f'beneficio:desconto:{beneficio_percentual}'
+        # valor_final já deve ter vindo calculado do form,
+        # mas se quiser forçar: valor_final = valor_pacote * (1 - (float(beneficio_percentual)/100.0))
+
+    elif beneficio_tipo == 'brinde':
+        tags_extra = 'beneficio:brinde'
+
+    # ---------------------------------------------------------------------
+    # 7) Criar agendamento(s)
+    # ---------------------------------------------------------------------
+    agendamentos_criados = []
+    for data_agendamento in datas_agendamentos:
+        ag = Agendamento.objects.create(
+            paciente=paciente,
+            servico=servico,                 # pode ser None (sessão livre/relaxante)
+            especialidade=especialidade,
+            profissional_1=profissional1,
+            profissional_2=profissional2,
+            data=data_agendamento,
+            hora_inicio=hora_inicio,
+            hora_fim=hora_fim,
+            pacote=pacote,                   # pode ser None
+            status=status_ag,
+            ambiente=ambiente,
+            observacoes=(observacoes or '') + (f' [BENEFÍCIO {beneficio_tipo.upper()}]' if beneficio_tipo else ''),
+            tags=tags_extra
+        )
+        agendamentos_criados.append(ag)
+
+    # logs de criação
+    for ag in agendamentos_criados:
+        registrar_log(
+            usuario=request.user,
+            acao='Criação',
+            modelo='Agendamento',
+            objeto_id=ag.id,
+            descricao=f'Novo agendamento criado para {paciente.nome} na data {ag.data.strftime("%d/%m/%Y")}.'
+        )
+
+    # ---------------------------------------------------------------------
+    # 8) Pagamento (apenas quando fizer sentido)
+    #    - Pacote normal (novo/existente): aceita pagamento
+    #    - Sessão-livre/relaxante: ignora pagamento (valor 0)
+    # ---------------------------------------------------------------------
+    if beneficio_tipo not in ('sessao_livre', 'relaxante') and valor_pago > 0 and pacote:
+        Pagamento.objects.create(
+            paciente=paciente,
+            pacote=pacote,
+            valor=valor_pago,
+            forma_pagamento=forma_pagamento,
+            agendamento=agendamentos_criados[0],
+        )
+        registrar_log(
+            usuario=request.user,
+            acao='Criação',
+            modelo='Pagamento',
+            objeto_id=agendamentos_criados[0].id,
+            descricao=f'Pagamento de R${valor_pago:.2f} registrado para {paciente.nome}.'
+        )
+
+    # ---------------------------------------------------------------------
+    # 9) Registrar CONSUMO do benefício (se houver)
+    #    - Para sessão-livre/relaxante: vincula agendamento (grátis)
+    #    - Para desconto/brinde: registra consumo sem vínculo obrigatório
+    # ---------------------------------------------------------------------
+    if beneficio_tipo:
+        try:
+            hoje = date.today()
+            ag_ref = agendamentos_criados[0] if beneficio_tipo in ('sessao_livre', 'relaxante') else None
+            valor_desc = None
+            if beneficio_tipo == 'desconto':
+                try:
+                    val_original = Decimal(str(valor_pacote))
+                    val_final = Decimal(str(valor_final))
+                    valor_desc = (val_original - val_final).quantize(Decimal('0.01'))
+                except Exception:
+                    valor_desc = None
+
+            usar_beneficio(
                 paciente=paciente,
-                servico=servico,
-                valor_original=valor_pacote,
-                desconto_reais=desconto if modo_desconto == 'R$' else None,
-                desconto_percentual=desconto if modo_desconto == '%' else None,
-                valor_final=valor_final,
-                valor_total=valor_pacote,
-                ativo=True,
-            )
-            registrar_log(usuario=request.user,
-                        acao='Criação',
-                        modelo='Pacote Paciente',
-                        objeto_id=pacote.id,
-                        descricao=f'Novo pacote registrado para o {paciente.nome}.') 
-        elif tipo_agendamento == 'existente':
-            pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
-
-        elif tipo_agendamento == 'reposicao':
-            # Passo 1: Identificar qual agendamento gerou o crédito (ex: o mais recente)
-            agendamento_origem = Agendamento.objects.filter(
-                paciente_id=paciente_id,
-                status="desistencia_remarcacao",
-                foi_reposto=False
-            ).order_by('-data').first()  # Pega o último agendamento que gerou crédito
-
-            # Passo 2: Criar a reposição
-            servico_reposicao, _ = Servico.objects.get_or_create(
-                nome='Sessão de Reposição',
-                defaults={
-                    'valor': 0.00,
-                    'qtd_sessoes': 1,
-                    'ativo': True,
-    })
-            
-            pacote = PacotePaciente.objects.create(
-                paciente=paciente,
-                servico=servico_reposicao,
-                qtd_sessoes=1,
-                valor_original=valor_pacote or 0,
-                valor_final=valor_final or 0,
-                ativo=True,
-                tipo_reposicao=tipo_reposicao,
-                eh_reposicao=True
-            )
-            '''
-            registrar_log(usuario=request.user,
-                        acao='Criação',
-                        modelo='Pacote Paciente',
-                        # objeto_id=pacote_codigo.id,
-                        descricao=f'Nova reposição registrada para o {paciente.nome}.')
-        '''
-            pacote.codigo = f'REP{uuid.uuid4().hex[:8].upper()}'
-            pacote.save()
-        
-            # Passo 3: Marcar o agendamento de origem como reposto (se existir)
-            if agendamento_origem:
-                agendamento_origem.foi_reposto = True
-                agendamento_origem.save()
-
-
-
-
-
-
-        
-        if agendamento_recorrente and pacote and recorrencia_dia_index is not None:
-            primeira_data = proxima_data_semana(data_sessao, recorrencia_dia_index)
-            sessoes_restantes = pacote.qtd_sessoes - pacote.sessoes_realizadas
-            num_sessoes = sessoes_restantes
-            datas_agendamentos = [primeira_data + timedelta(weeks=i) for i in range(num_sessoes)]
-
- 
-        else:
-            datas_agendamentos = [data_sessao]
-
-        agendamentos_criados = []
-
-        for data_agendamento in datas_agendamentos:
-            agendamento = Agendamento.objects.create(
-                paciente=paciente,
-                servico=servico,
-                especialidade=especialidade,
-                profissional_1=profissional1,
-                profissional_2=profissional2,
-                data=data_agendamento,
-                hora_inicio=hora_inicio,
-                hora_fim=hora_fim,
-                pacote=pacote,
-                status=status,
-                ambiente=ambiente,
-                observacoes=observacoes
-            )
-            agendamentos_criados.append(agendamento)
-            for agendamento in agendamentos_criados:
-                registrar_log(
-                    usuario=request.user,
-                    acao='Criação',
-                    modelo='Agendamento',
-                    objeto_id=agendamento.id,
-                    descricao=f'Novo agendamento criado para {paciente.nome} na data {agendamento.data.strftime("%d/%m/%Y")}.'
-                )
-        if valor_pago and float(valor_pago) > 0:
-            Pagamento.objects.create(
-                paciente=paciente,
-                pacote=pacote,
-                valor=float(valor_pago),
-                forma_pagamento=forma_pagamento,
-                agendamento=agendamentos_criados[0],
-            )
-            registrar_log(
+                mes=hoje.month,
+                ano=hoje.year,
+                tipo=beneficio_tipo,
                 usuario=request.user,
-                acao='Criação',
-                modelo='Pagamento',
-                objeto_id=pacote.id,
-                descricao=f'Pagamento de R${valor_pago} registrado para {paciente.nome}.'
+                agendamento=ag_ref,
+                valor_desconto=valor_desc
             )
-        
-        if pacote:
-            pacote.refresh_from_db()
-            total_pago = pacote.pagamento_set.aggregate(total=Sum('valor'))['total'] or 0
-            valor_restante = float(pacote.valor_final) - float(total_pago)
+        except Exception as e:
+            messages.warning(request, f'Não foi possível registrar o benefício: {e}')
 
-            sessoes_realizadas = pacote.sessoes_realizadas
-            sessao_atual = pacote.get_sessao_atual(agendamentos_criados[-1])  # última sessão criada
-            sessoes_restantes = pacote.qtd_sessoes - sessoes_realizadas
+    # ---------------------------------------------------------------------
+    # 10) Pós-processamento do pacote (fechamento, etc) e redirect
+    # ---------------------------------------------------------------------
+    if pacote:
+        pacote.refresh_from_db()
+        total_pago = pacote.pagamento_set.aggregate(total=Sum('valor'))['total'] or 0
+        # fecha pacote se já atingiu limite de sessões
+        if pacote.sessoes_realizadas >= pacote.qtd_sessoes:
+            pacote.ativo = False
+            pacote.save()
 
-            if sessoes_realizadas >= pacote.qtd_sessoes:
-                pacote.ativo = False
-                pacote.save()
-            
-        else:
-            sessao_atual = None
-            sessoes_restantes = None
-            valor_restante = None
-            total_pago = 0
-
-        # Redirecionar para o último agendamento criado
-        return redirect('confirmacao_agendamento', agendamento_id=agendamentos_criados[-1].id)
-
-    return JsonResponse({'error': 'Método não permitido'}, status=405)
+    # Redirecionar para o último agendamento criado
+    return redirect('confirmacao_agendamento', agendamento_id=agendamentos_criados[-1].id)
 
 def verificar_pacotes_ativos(request, paciente_id):
     pacotes = PacotePaciente.objects.filter(paciente_id=paciente_id, ativo=True)
@@ -441,46 +505,60 @@ def confirmacao_agendamento(request, agendamento_id):
     servico = agendamento.servico
     pacote = agendamento.pacote
 
-    agendamentos_recorrentes = Agendamento.objects.filter(pacote=agendamento.pacote).order_by('data', 'hora_inicio')
-    codigo_pacote = agendamento.pacote.codigo if agendamento.pacote else None
-    print(codigo_pacote, agendamentos_recorrentes)
+    agendamentos_recorrentes = list(
+        Agendamento.objects.filter(pacote=agendamento.pacote)
+        .order_by('data', 'hora_inicio')
+    )
+
+    # Mensagem para cada sessão recorrente
+    for s in agendamentos_recorrentes:
+        s.msg_whatsapp = gerar_mensagem_confirmacao(s)
+
+    # Mensagem “single” (quando não há recorrência)
+    mensagem = gerar_mensagem_confirmacao(agendamento)
 
     total_pago = pacote.total_pago if pacote else 0
     valor_restante = pacote.valor_restante if pacote else 0
     sessao_atual = pacote.sessoes_realizadas if pacote else None
     sessoes_restantes = pacote.sessoes_restantes if pacote else None
+
     try:
         validate_email(paciente.email)
     except ValidationError:
         messages.error(request, 'O e-mail do paciente é inválido.')
         return redirect('agenda')
-    mensagem = gerar_mensagem_confirmacao(agendamento)
-    
+
     context = {
         'agendamento': agendamento,
         'paciente': paciente,
         'profissional': profissional,
-        'servico': servico, 
+        'servico': servico,
         'pacote': pacote,
         'forma_pagamento': None,
         'valor_pago': total_pago,
         'valor_restante': valor_restante,
         'sessao_atual': sessao_atual,
         'sessoes_restantes': sessoes_restantes,
+
+        # para recorrentes:
+        'agendamentos_recorrentes': agendamentos_recorrentes,
+
+        # para não recorrente:
         'mensagem_confirmacao': mensagem,
-        'agendamentos_recorrentes':agendamentos_recorrentes,
     }
+
     registrar_log(
-            usuario=request.user,
-            acao='Visualização',
-            modelo='Agendamento',
-            objeto_id=agendamento.id,
-            descricao=f'Página de confirmação visualizada para o agendamento de {paciente.nome}.'
-        )
+        usuario=request.user,
+        acao='Visualização',
+        modelo='Agendamento',
+        objeto_id=agendamento.id,
+        descricao=f'Página de confirmação visualizada para o agendamento de {paciente.nome}.'
+    )
     response = render(request, 'core/agendamentos/confirmacao_agendamento.html', context)
     response['Content-Type'] = 'text/html; charset=utf-8'
     return response
 
+    
 def enviar_email_agendamento(request, agendamento_id):
     if request.method == "POST":
         agendamento = get_object_or_404(Agendamento, id=agendamento_id)
@@ -688,3 +766,42 @@ def editar_agendamento(request, agendamento_id):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Método não permitido'}, status=405)
+
+
+# core/views.py
+from datetime import date
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from core.models import Paciente, Agendamento
+from core.services.beneficios import beneficios_disponiveis, usar_beneficio
+
+@login_required
+def verificar_beneficios_mes(request, paciente_id):
+    pac = Paciente.objects.get(pk=paciente_id)
+    hoje = date.today()
+    data = beneficios_disponiveis(pac, mes=hoje.month, ano=hoje.year)
+    return JsonResponse(data)
+
+@login_required
+def api_usar_beneficio(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método inválido'}, status=405)
+    try:
+        payload = request.POST or request.JSON  # conforme seu parser
+        paciente_id = int(payload.get('paciente_id'))
+        tipo = payload.get('tipo')  # 'relaxante' | 'desconto' | 'sessao_livre' | 'brinde'
+        agendamento_id = payload.get('agendamento_id')
+        valor_desconto = payload.get('valor_desconto')
+
+        pac = Paciente.objects.get(pk=paciente_id)
+        ag = Agendamento.objects.filter(pk=agendamento_id).first() if agendamento_id else None
+        hoje = date.today()
+
+        uso = usar_beneficio(
+            paciente=pac, mes=hoje.month, ano=hoje.year, tipo=tipo,
+            usuario=request.user, agendamento=ag,
+            valor_desconto=valor_desconto
+        )
+        return JsonResponse({'ok': True, 'id': uso.id})
+    except Exception as e:
+        return JsonResponse({'ok': False, 'error': str(e)}, status=400)

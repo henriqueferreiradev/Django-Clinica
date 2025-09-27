@@ -253,3 +253,62 @@ thead tr th:last-child {
   border-top-right-radius: 12px;
 }
 
+/* RESET GLOBAL OPCIONAL */
+input,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none;
+  border: 1px solid #ccc;
+  /* seu estilo */
+  border-radius: 8px;
+  padding: .6rem .9rem;
+  outline: none;
+}
+
+/* 1) NUMBER: remover setas (spinners) */
+input[type="number"] {
+  -moz-appearance: textfield;
+  /* Firefox */
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  /* Chrome, Edge, Safari */
+  margin: 0;
+}
+
+/* 2) DATE: esconder ícone/“calendário” */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  /* Chrome, Edge, Safari */
+}
+
+input[type="date"] {
+  /* Firefox não expõe o indicador via CSS.
+     appearance:none já remove boa parte do visual, mas o “picker” ainda abre ao clicar no campo.
+     Se quiser eliminar o picker por completo, use type="text" + máscara/validação. */
+}
+
+/* 3) TIME: remover relógio/ícones */
+input[type="time"]::-webkit-clear-button,
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  /* Chrome, Edge, Safari */
+}
+
+/* 4) SELECT: remover setinha e usar sua própria */
+select {
+  padding-right: 2rem;
+  /* espaço para sua setinha custom */
+  background-image: none;
+  /* garante sem ícone nativo */
+}
+
+/* Remover o ícone no IE/Edge antigo */
+select::-ms-expand {
+  display: none;
+}
