@@ -286,22 +286,30 @@ body {
 .sessao {
     font-size: 14px;
     padding: 4px 8px;
-    border-radius: 20px;
+    border-radius: 5px;
     display: inline-block;
     width: fit-content;
     font-weight: 500;
 }
-
-.sessao.verde {
-    background-color: var(--verdeClaro);
+.sessao i {
+    margin-right: .5em;
+}
+.sessao.normal {
+    background-color: white;
+    border: 2px solid #2e7d32;
     color: #2e7d32;
 }
 
-.sessao.vermelho {
-    background-color: var(--vermelhoClaro);
+.sessao.reposicao {
+    background-color: white;
+    border: 2px solid #c62828;
     color: #c62828;
 }
-
+.sessao.beneficio {
+    background-color: white;
+    border: 2px solid #9c44ef;
+    color: #9c44ef;
+}
 .status-col {
     display: flex;
     align-items: center;
@@ -347,18 +355,18 @@ body {
     justify-content: center;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+     
     border: none;
-    background: var(--cinzaClaro);
-    color: var(--roxoPrincipal);
+    background: transparent;
+    color: var(--preto);
     font-size: 18px;
     cursor: pointer;
     transition: var(--transicao);
 }
 
 .action-btn:hover {
-    background: var(--roxoPrincipal);
-    color: var(--branco);
+    
+    color: white;
     transform: translateY(-2px);
 }
 
@@ -376,7 +384,7 @@ body {
     position: absolute;
     z-index: 1;
     bottom: 125%;
-    left: 50%;
+    left: 80%;
     transform: translateX(-50%);
     opacity: 0;
     transition: opacity .3s;
@@ -1200,6 +1208,8 @@ select.input-s {
     --verdeClaro: #e8f5e9;
     --vermelho: #f44336;
     --vermelhoClaro: #ffebee;
+    --amareloClaro: #feffeb;
+    --amarelo: #eef436;
     --laranja: #ff9800;
     --laranjaClaro: #fff3e0;
     --azul: #2196f3;

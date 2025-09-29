@@ -48,10 +48,12 @@
                 <span class="profissional">{{ ag.especialidade }} com {{ ag.profissional }} </span>
                 {% if ag.sessao_atual %}
                 {% if ag.codigo|slice:":3" == "REP" %}
-                    <span class="sessao vermelho">Sessão de Reposição | {{ ag.codigo }}</span>
+                    <span class="sessao reposicao"><i class="fa-solid fa-rotate-left"></i>Sessão de Reposição | {{ ag.codigo }}</span>
+                {% elif ag.codigo|slice:":3" == "BEN" %}
+                    <span class="sessao beneficio"><i class="fa-solid fa-gift"></i>Sessão de Benefício | {{ ag.codigo }}</span>
                     {% else %}
-                <span class="sessao verde">
-                    Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
+                <span class="sessao normal">
+                    <i class="fa-solid fa-calendar-check"></i>Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
                 </span>
                 {% endif %}
             {% endif %}
@@ -71,12 +73,13 @@
                 </select>
             </div>
             <div class="actions-col">
-                <button type="submit"  class="action-btn tooltip" ><i class='bx  bx-save'  ></i><span class="tooltiptext">Salvar Status</span> </button>
+                <button type="submit"  class="action-btn tooltip" ><i class="fa-solid fa-cloud-arrow-up"></i><span class="tooltiptext">Salvar Status</span> </button>
                 <a href="{% url 'confirmacao_agendamento' ag.id %}">
-                    <button type="button" class="action-btn tooltip"><i class='bx  bx-send'  ></i><span class="tooltiptext">Ver detalhes</span>  </button>
+                    <button type="button" class="action-btn tooltip"><i class="fa-solid fa-eye"></i>
+<span class="tooltiptext">Ver detalhes</span>  </button>
                 </a>
                 <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
-                    class="btn-editar-agendamento action-btn tooltip" ><i class='bx  bxs-edit'  ></i><span class="tooltiptext">Editar agendamento</span>  </button>
+                    class="btn-editar-agendamento action-btn tooltip" ><i class="fa-solid fa-pen-to-square"></i><span class="tooltiptext">Editar agendamento</span>  </button>
                 
             </div>
             </form>
@@ -160,12 +163,14 @@
                 <input type="hidden" id="beneficio_percentual" name="beneficio_percentual">
                 <select name="servico_id" id="pacotesInput" class="input-s" required>
                 <option value="" disabled selected>Selecione um serviço</option>
-
-                {% for servico in servicos %}
+                <optgroup label="Pacotes">
+                    {% for servico in servicos %}
                     <option value="{{ servico.id }}" data-valor="{{ servico.valor }}" class="servico-banco">
                     {{ servico.nome }} - R$ {{ servico.valor }}
                     </option>
                 {% endfor %}
+                </optgroup>
+
 
                 <!-- Reposição (já tinha) -->
                 <option value="d"   class="servico-reposicao" data-valor="0.00">Reposição - D</option>
@@ -173,8 +178,8 @@
                 <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
 
                 <!-- Benefícios (aparecem só quando o usuário clica no botão) -->
-                <option value="beneficio_sessao_livre"   class="servico-beneficio" data-valor="0.00" hidden>Sessão Livre (benefício)</option>
-                <option value="beneficio_relaxante"      class="servico-beneficio" data-valor="0.00" hidden>Sessão Relaxante (benefício)</option>
+                <option value="beneficio_sessao_livre"   class="servico-beneficio" data-valor="0.00" hidden>Sessão Livre (Benefício)</option>
+                <option value="beneficio_relaxante"      class="servico-beneficio" data-valor="0.00" hidden>Sessão Relaxante (Benefício)</option>
                 </select>
 
 
@@ -210,7 +215,7 @@
             <div class="formRow cols-3">
                 <div class="formField">
                     <label for="dataInput"><i class="fas fa-calendar"></i> Data</label>
-                    <input type="date" name="data" id="dataInput" class="input-s">
+                    <input type="date" name="data"  required id="dataInput" class="input-s">
                 </div>
                 <div class="formField">
                     <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
@@ -306,7 +311,7 @@
 
             <div class="formField">
                 <label for="ambiente_select"><i class="fas fa-door-open"></i> Ambiente / Sala</label>
-                <select name="ambiente" id="ambiente_select" class="input-s">
+                <select required name="ambiente" id="ambiente_select" class="input-s">
                     <option value="">Selecione...</option>
                     <option value="Andar 1 - Sala 1">Andar 1 - Sala 1</option>
                     <option value="Andar 1 - Sala 2">Andar 1 - Sala 2</option>
@@ -321,7 +326,7 @@
 
             <div class="formField">
                 <label for="status_select"><i class="fas fa-clipboard-check"></i> Status de agendamento</label>
-                <select name="status" id="status_select" class="input-s">
+                <select required name="status" id="status_select" class="input-s">
                     <option value="" disabled selected>Selecione...</option>
                     <option value="agendado">✅ Agendado</option>
                     <option value="pre">✅ Pré-Agendado</option>

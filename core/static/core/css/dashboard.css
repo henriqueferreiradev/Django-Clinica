@@ -384,26 +384,30 @@ thead tr th:last-child {
 }
 
 
-.status-select {
-    padding: 6px;
-    border-radius: 15px;
-    border: 1px solid var(--roxoPrincipal);
-    font-size: 13px;
-}
-
-.sessao.verde {
-    color: green;
+.sessao {
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    display: inline-block;
+    width: fit-content;
     font-weight: 500;
 }
-
-.sessao.vermelho {
-    color: red;
-    font-weight: 500;
+.sessao i {
+    margin-right: .5em;
+}
+.sessao.normal {
+    background-color: white;
+    border: 2px solid #2e7d32;
+    color: #2e7d32;
 }
 
-.linha-vazia {
-    text-align: center;
-    color: var(--cinzaEscuro);
-    padding: 1em;
-
+.sessao.reposicao {
+    background-color: white;
+    border: 2px solid #c62828;
+    color: #c62828;
+}
+.sessao.beneficio {
+    background-color: white;
+    border: 2px solid #01D4D6;
+    color: #01D4D6;
 }

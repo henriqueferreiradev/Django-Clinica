@@ -142,9 +142,11 @@
               <td>
                 {% if agendamento.sessao_atual %}
                   {% if agendamento.codigo|slice:":3" == "REP" %}
-                    <span class="sessao vermelho">Sessão de Reposição | {{ agendamento.codigo }}</span>
+                    <span class="sessao reposicao">Sessão de Reposição | {{ agendamento.codigo }}</span>
+                  {% elif agendamento.codigo|slice:":3" == "BEN" %}
+                    <span class="sessao beneficio">Sessão de Benefício | {{ agendamento.codigo }}</span>
                   {% else %}
-                    <span class="sessao verde">
+                    <span class="sessao normal">
                       Sessão {{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} | {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}
                     </span>
                   {% endif %}
