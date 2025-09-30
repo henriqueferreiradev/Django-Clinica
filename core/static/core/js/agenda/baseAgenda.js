@@ -724,8 +724,9 @@ function openRecorrente() {
     const checkRecorrente = document.getElementById('recorrente')
     const divRecorrente = document.getElementById('week-recorrente')
 
-    if (checkRecorrente === true) {
-        divRecorrente.classList.add('active')
-    }
-}
+    if (!checkRecorrente || !divRecorrente) return;
+        divRecorrente.classList.toggle('active', checkRecorrente.checked)
+        }
+ 
 
+        

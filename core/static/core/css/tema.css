@@ -113,6 +113,7 @@ input[type="time"]::-webkit-inner-spin-button {
 
 input[type="time"] {
   -moz-appearance: textfield;
+  text-align: center
 }
 
 body {

@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
-from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, STATUS_CHOICES,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse
 from django.db.models import Sum, Q, Count
@@ -229,42 +229,92 @@ def criar_agendamento(request):
                 valor_original=valor_pacote, valor_final=valor_final, valor_total=valor_pacote, ativo=True
             )
 
+        # ===================================================================
+    # DATAS (recorrência x única) — considerando sessões já feitas/marcadas
     # ===================================================================
-    # DATAS (recorrência x única)
-    # ===================================================================
-    if agendamento_recorrente and pacote and recorrencia_dia_index is not None and recorrencia_dia_index >= 0:
-        def proxima_data_semana(data_inicial, dia_idx):
-            delta = (dia_idx - data_inicial.weekday() + 7) % 7
-            return data_inicial + timedelta(days=delta)
+    DIAS_SEMANA = {
+        "segunda": 0, "terca": 1, "quarta": 2, "quinta": 3, "sexta": 4, "sabado": 5,
+    }
 
-        primeira_data = proxima_data_semana(data_sessao, recorrencia_dia_index)
-        sessoes_restantes = (pacote.qtd_sessoes or 1)
-        datas_agendamentos = [primeira_data + timedelta(weeks=i) for i in range(sessoes_restantes)]
-    else:
-        datas_agendamentos = [data_sessao]
+    def proxima_data_semana(data_inicial, dia_idx):
+        delta = (dia_idx - data_inicial.weekday() + 7) % 7
+        return data_inicial + timedelta(days=delta)
+
+    agendamentos_criados = []
+
+    # todos os status consomem sessão do pacote
+    STATUS_CONSUME = [s[0] for s in STATUS_CHOICES]
+
+    # já existentes (finalizados, agendados, pré, faltas, desistências etc.)
+    ja_existentes = Agendamento.objects.filter(pacote=pacote, status__in=STATUS_CONSUME).count()
+
+    qtd_total = pacote.qtd_sessoes or 1
+    faltam = max(0, qtd_total - ja_existentes)
+
+    # identifica os dias ativos de recorrência
+    dias_ativos = []
+    for dia_nome, dia_idx in DIAS_SEMANA.items():
+        if data.get(f"recorrente[{dia_nome}][ativo]"):
+            hi = data.get(f"recorrente[{dia_nome}][inicio]")
+            hf = data.get(f"recorrente[{dia_nome}][fim]")
+            if hi and hf:
+                dias_ativos.append((dia_nome, dia_idx, hi, hf))
+
+    tem_recorrencia = len(dias_ativos) > 0
+
+    if tem_recorrencia and faltam > 0:
+        # distribui os faltantes entre os dias ativos
+        base = max(date.today(), data_sessao)  # âncora temporal segura
+        q, r = divmod(faltam, len(dias_ativos))
+        for i, (dia_nome, dia_idx, hora_inicio_dia, hora_fim_dia) in enumerate(dias_ativos):
+            qtd_para_dia = q + (1 if i < r else 0)
+            if qtd_para_dia <= 0:
+                continue
+            primeira = proxima_data_semana(base, dia_idx)
+            for j in range(qtd_para_dia):
+                d = primeira + timedelta(weeks=j)
+                ag = Agendamento.objects.create(
+                    paciente=paciente,
+                    servico=servico,
+                    especialidade=especialidade,
+                    profissional_1=profissional1,
+                    profissional_2=profissional2,
+                    data=d,
+                    hora_inicio=hora_inicio_dia,
+                    hora_fim=hora_fim_dia,
+                    pacote=pacote,
+                    status=status_ag,
+                    ambiente=ambiente,
+                    observacoes=observacoes or '',
+                    tags=tags_extra,
+                )
+                agendamentos_criados.append(ag)
+
+    elif not tem_recorrencia and faltam > 0:
+        # sem recorrência: cria apenas 1 sessão com o horário normal
+        ag = Agendamento.objects.create(
+            paciente=paciente,
+            servico=servico,
+            especialidade=especialidade,
+            profissional_1=profissional1,
+            profissional_2=profissional2,
+            data=data_sessao,
+            hora_inicio=hora_inicio,
+            hora_fim=hora_fim,
+            pacote=pacote,
+            status=status_ag,
+            ambiente=ambiente,
+            observacoes=observacoes or '',
+            tags=tags_extra,
+        )
+        agendamentos_criados.append(ag)
 
     # ===================================================================
     # CRIA OS AGENDAMENTOS (sempre com servico e pacote definidos)
     # ===================================================================
-    agendamentos_criados = []
+    
 
-    for data_agendamento in datas_agendamentos:
-        ag = Agendamento.objects.create(
-            paciente=paciente,
-            servico=servico,                 # << NUNCA None
-            especialidade=especialidade,
-            profissional_1=profissional1,
-            profissional_2=profissional2,
-            data=data_agendamento,
-            hora_inicio=hora_inicio,
-            hora_fim=hora_fim,
-            pacote=pacote,                   # << NUNCA None (BENEF..., REP..., ou normal)
-            status=status_ag,
-            ambiente=ambiente,
-            observacoes=(observacoes or '') + (f' [BENEFÍCIO {beneficio_tipo.upper()}]' if beneficio_tipo else ''),
-            tags=tags_extra,
-        )
-        agendamentos_criados.append(ag)
+    
 
     # logs
     for ag in agendamentos_criados:

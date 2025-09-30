@@ -515,23 +515,25 @@
 
             <div class="card-content">
                 <div class="section">
+
                     <h2 class="section-title"><i class="fas fa-calendar-check"></i> Detalhes do Agendamento</h2>
-                    
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label"><i class="fas fa-user"></i> Paciente</span>
-                            <span class="detail-value">{{ paciente.nome }} {{ paciente.sobrenome }}</span>
+                    <div class="detail-section">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-user"></i> Paciente</span>
+                                <span class="detail-value">{{ paciente.nome }} {{ paciente.sobrenome }}</span>
+                            </div>
+                            
+    
+                            
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-tag"></i> Código do Pacote</span>
+                                <span class="detail-value">{{ pacote.codigo }}</span>
+                            </div>
+
                         </div>
-                        
- 
-                        
-                        <div class="detail-item">
-                            <span class="detail-label"><i class="fas fa-tag"></i> Código do Pacote</span>
-                            <span class="detail-value">{{ pacote.codigo }}</span>
-                        </div>
- 
-                  
- 
+
+
                     </div>
                     
                     {% if agendamentos_recorrentes and agendamentos_recorrentes|length > 0 %}
@@ -568,6 +570,7 @@
                                     <span class="session-label">Duração</span>
                                     <span class="session-value">60 minutos</span>
                                 </div>
+ 
                             </div>
                             <textarea id="whatsapp-msg-{{ forloop.counter }}" hidden>{{ sessao.msg_whatsapp }}</textarea>
 
@@ -642,8 +645,34 @@
                     </a>
                 </div>
             </div>
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-wallet"></i> Situação Financeira</h2>
+                
+                <div class="financial-grid">
+                    <div class="financial-item">
+                        <span class="financial-label">Valor do Pacote</span>
+                        <span class="financial-value">{{ pacote.valor_total|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="financial-item">
+                        <span class="financial-label">Desconto Aplicado</span>
+                        <span class="financial-value">- {{ pacote.valor_desconto|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="financial-item">
+                        <span class="financial-label">Total Pago</span>
+                        <span class="financial-value">{{ pacote.total_pago|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="financial-item">
+                        <span class="financial-label">Restante a Pagar</span>
+                        <span class="financial-value">{{ pacote.valor_restante|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        
+
+
       
     </div>
     

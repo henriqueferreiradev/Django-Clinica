@@ -248,7 +248,7 @@
             <div class="formRow cols-2">
                 <div class="formField">
                     <label class="checkbox-option">
-                        <input type="checkbox" name="recorrente" id="recorrente">
+                        <input type="checkbox" name="recorrente" onchange="openRecorrente()" id="recorrente">
                         <span><i class="fas fa-sync-alt"></i> Agendamento Recorrente</span>
                     </label>
                 </div>
@@ -269,99 +269,110 @@
             </div>
 
             <div>
-                <div id='week-recorrente'class="formField-week">
-                   <div class='week-div'>
-                        <div class='week-day'>
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="recorrente" id="recorrente">
-                                <span>Segunda</span>
-                            </label>
-                            <div class="formField ffweek">
-                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
-                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
-                            <div class="formField ffweek">
-                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
-                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
+                <div id="week-recorrente" class="formField-week">
+                    <div class="week-div">
+                      <!-- Segunda -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[segunda][ativo]" id="recorrente-segunda">
+                          <span>Segunda</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-segunda"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[segunda][inicio]" id="horaInicio-segunda" min="06:00" max="23:59" class="input-s">
                         </div>
-                        <div class='week-day'>
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="recorrente" id="recorrente">
-                                <span>Terça</span>
-                            </label>
-                            <div class="formField ffweek">
-                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
-                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
-                            <div class="formField ffweek">
-                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
-                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-segunda"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[segunda][fim]" id="horaFim-segunda" min="06:00" max="23:59" class="input-s">
                         </div>
+                      </div>
+                  
+                      <!-- Terça -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[terca][ativo]" id="recorrente-terca">
+                          <span>Terça</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-terca"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[terca][inicio]" id="horaInicio-terca" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-terca"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[terca][fim]" id="horaFim-terca" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
                     </div>
-                    <div class='week-div'>
-                        <div class='week-day'>
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="recorrente" id="recorrente">
-                                <span>Quarta</span>
-                            </label>
-                            <div class="formField ffweek">
-                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
-                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
-                            <div class="formField ffweek">
-                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
-                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
+                  
+                    <div class="week-div">
+                      <!-- Quarta -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[quarta][ativo]" id="recorrente-quarta">
+                          <span>Quarta</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-quarta"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[quarta][inicio]" id="horaInicio-quarta" min="06:00" max="23:59" class="input-s">
                         </div>
-                        <div class='week-day'>
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="recorrente" id="recorrente">
-                                <span>Quinta</span>
-                            </label>
-                            <div class="formField ffweek">
-                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
-                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
-                            <div class="formField ffweek">
-                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
-                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-quarta"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[quarta][fim]" id="horaFim-quarta" min="06:00" max="23:59" class="input-s">
                         </div>
+                      </div>
+                  
+                      <!-- Quinta -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[quinta][ativo]" id="recorrente-quinta">
+                          <span>Quinta</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-quinta"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[quinta][inicio]" id="horaInicio-quinta" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-quinta"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[quinta][fim]" id="horaFim-quinta" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
                     </div>
-                    <div class='week-div'>
-                        <div class='week-day'>
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="recorrente" id="recorrente">
-                                <span>Sexta</span>
-                            </label>
-                            <div class="formField ffweek">
-                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
-                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
-                            <div class="formField ffweek">
-                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
-                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
+                  
+                    <div class="week-div">
+                      <!-- Sexta -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[sexta][ativo]" id="recorrente-sexta">
+                          <span>Sexta</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-sexta"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[sexta][inicio]" id="horaInicio-sexta" min="06:00" max="23:59" class="input-s">
                         </div>
-                        <div class='week-day'>
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="recorrente" id="recorrente">
-                                <span>Sábado</span>
-                            </label>
-                            <div class="formField ffweek">
-                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
-                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
-                            <div class="formField ffweek">
-                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
-                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
-                            </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-sexta"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[sexta][fim]" id="horaFim-sexta" min="06:00" max="23:59" class="input-s">
                         </div>
+                      </div>
+                  
+                      <!-- Sábado -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[sabado][ativo]" id="recorrente-sabado">
+                          <span>Sábado</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-sabado"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[sabado][inicio]" id="horaInicio-sabado" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-sabado"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[sabado][fim]" id="horaFim-sabado" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
                     </div>
-                </div>
- 
+                  </div>
+                  
             </div>
             
             <div id="formValor" class="formRow cols-3">

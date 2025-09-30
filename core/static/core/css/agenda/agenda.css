@@ -1303,7 +1303,7 @@ textarea.error {
 }
 
 .formField-week.active {
-    display: flex;
+    display: grid;
 }
 
 .week-div {
