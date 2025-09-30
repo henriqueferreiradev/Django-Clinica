@@ -163,14 +163,32 @@
                 <input type="hidden" id="beneficio_percentual" name="beneficio_percentual">
                 <select name="servico_id" id="pacotesInput" class="input-s" required>
                 <option value="" disabled selected>Selecione um serviço</option>
-                <optgroup label="Pacotes">
-                    {% for servico in servicos %}
-                    <option value="{{ servico.id }}" data-valor="{{ servico.valor }}" class="servico-banco">
-                    {{ servico.nome }} - R$ {{ servico.valor }}
-                    </option>
-                {% endfor %}
-                </optgroup>
-
+                        <optgroup label="Pacotes">
+                            {% for servico in servicos %}
+                            {% if servico.qtd_sessoes >= 2 %}
+                            <option value="{{ servico.id }}" data-valor="{{ servico.valor }}"
+                                class="servico-banco servico-pacote">
+                                {{ servico.nome }} - R$ {{ servico.valor }}
+                            </option>
+                            {% endif %}  
+                           {% endfor %}
+                        </optgroup>
+                        <optgroup label="Sessões Avulsas">
+                            {% for servico in servicos %}
+                            {% if servico.qtd_sessoes < 2 %} <option
+                                value="{{ servico.id }}" data-valor="{{ servico.valor }}"
+                                class="servico-banco servico-pacote">
+                                {{ servico.nome }} - R$ {{ servico.valor }}
+                                </option>
+                                {% endif %} 
+                                {% endfor %}
+                        </optgroup>
+                    <optgroup label="Reposição">
+                 <option  class="servico-reposicao" data-valor="0.00">Reposição - D</option>
+                <option class="servico-reposicao" data-valor="0.00">Reposição - DCR</option>
+                <option  class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
+                        </optgroup>
+                         
 
                 <!-- Reposição (já tinha) -->
                 <option value="d"   class="servico-reposicao" data-valor="0.00">Reposição - D</option>
@@ -234,6 +252,7 @@
                         <span><i class="fas fa-sync-alt"></i> Agendamento Recorrente</span>
                     </label>
                 </div>
+                <!--
                 <div class="formField">
                     <label for="recorrencia_dia"><i class="fas fa-calendar-week"></i> Recorrência</label>
                     <select name="recorrencia_dia" id="recorrencia_dia" class="input-s">
@@ -246,6 +265,103 @@
                         <option value="5">Todos sábados</option>
                     </select>
                 </div>
+            -->
+            </div>
+
+            <div>
+                <div id='week-recorrente'class="formField-week">
+                   <div class='week-div'>
+                        <div class='week-day'>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="recorrente" id="recorrente">
+                                <span>Segunda</span>
+                            </label>
+                            <div class="formField ffweek">
+                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
+                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                            <div class="formField ffweek">
+                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
+                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                        </div>
+                        <div class='week-day'>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="recorrente" id="recorrente">
+                                <span>Terça</span>
+                            </label>
+                            <div class="formField ffweek">
+                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
+                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                            <div class="formField ffweek">
+                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
+                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                        </div>
+                    </div>
+                    <div class='week-div'>
+                        <div class='week-day'>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="recorrente" id="recorrente">
+                                <span>Quarta</span>
+                            </label>
+                            <div class="formField ffweek">
+                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
+                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                            <div class="formField ffweek">
+                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
+                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                        </div>
+                        <div class='week-day'>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="recorrente" id="recorrente">
+                                <span>Quinta</span>
+                            </label>
+                            <div class="formField ffweek">
+                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
+                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                            <div class="formField ffweek">
+                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
+                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                        </div>
+                    </div>
+                    <div class='week-div'>
+                        <div class='week-day'>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="recorrente" id="recorrente">
+                                <span>Sexta</span>
+                            </label>
+                            <div class="formField ffweek">
+                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
+                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                            <div class="formField ffweek">
+                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
+                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                        </div>
+                        <div class='week-day'>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="recorrente" id="recorrente">
+                                <span>Sábado</span>
+                            </label>
+                            <div class="formField ffweek">
+                                <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
+                                <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                            <div class="formField ffweek">
+                                <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
+                                <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+ 
             </div>
             
             <div id="formValor" class="formRow cols-3">
@@ -334,7 +450,7 @@
             </div>
 
             <div class="formField">
-                <label for="observacoes_textarea"><i class="fas fa-sticky-note"></i> OBSERVAÇÕES / NOTAS INTERNAS</label>
+                <label for="observacoes_textarea"><i class="fas fa-sticky-note"></i>Observações</label>
                 <textarea class="textarea-large input-s" name="observacoes" id="observacoes_textarea"></textarea>
             </div>
 

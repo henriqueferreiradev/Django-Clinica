@@ -289,7 +289,7 @@ function configurarSidebar() {
 
     if (closeBtn && sidebar) {
         closeBtn.addEventListener('click', () => {
- 
+
             sidebar.classList.remove('active');
             sidebar.setAttribute('hidden', '');
 
@@ -605,7 +605,7 @@ async function verificarBeneficiosAtivos(pacienteId) {
         const btns = document.getElementById('beneficio-botoes');
         if (!box || !msg || !btns) return;
 
-        msg.innerHTML = `Benefícios de <strong>${data.status.toUpperCase()}</strong> disponíveis este mês:`; 
+        msg.innerHTML = `Benefícios de <strong>${data.status.toUpperCase()}</strong> disponíveis este mês:`;
         btns.innerHTML = '';
 
         data.beneficios.forEach(b => {
@@ -638,13 +638,13 @@ async function verificarBeneficiosAtivos(pacienteId) {
                 label = b.usado ? 'Brinde (registrado)' : 'Registrar brinde';
                 onClickAction = () => registrarBrinde();
             }
-            
+
 
             btn.innerHTML = `<i class='${iconClass}'></i> ${label}`;
             if (onClickAction) btn.onclick = onClickAction;
 
             btns.appendChild(btn);
-});
+        });
 
 
         box.style.display = 'block';
@@ -719,3 +719,13 @@ function selecionarServicoRelaxanteETravarsValor() {
 
 // quando o usuário muda para “Nova Sessão”, “Reposição” etc., limpar
 // (você já tem algo parecido em configurarTipoAgendamentoNovo)
+
+function openRecorrente() {
+    const checkRecorrente = document.getElementById('recorrente')
+    const divRecorrente = document.getElementById('week-recorrente')
+
+    if (checkRecorrente === true) {
+        divRecorrente.classList.add('active')
+    }
+}
+
