@@ -516,13 +516,13 @@ def confirmacao_agendamento(request, agendamento_id):
     valor_restante = pacote.valor_restante if pacote else 0
     sessao_atual = pacote.sessoes_realizadas if pacote else None
     sessoes_restantes = pacote.sessoes_restantes if pacote else None
-
+    '''
     try:
         validate_email(paciente.email)
     except ValidationError:
         messages.error(request, 'O e-mail do paciente é inválido.')
         return redirect('agenda')
-
+    '''
     context = {
         'agendamento': agendamento,
         'paciente': paciente,
