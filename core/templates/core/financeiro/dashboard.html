@@ -1,298 +1,898 @@
-{% extends 'core/base.html' %} {% load static %} {% block title %}Formulários
-Ativos - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
+{% extends 'core/base.html' %} 
+{% load static %} 
+ 
+
+{% block title %}Dashboard Financeiro - Ponto de Equilíbrio{% endblock %} 
+
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/financeiro/dashboard.css' %}" />
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+  /* Design System Variables */
+  :root {
+    --primary-gradient: linear-gradient(135deg, #6D398E 0%, #9b58b4 100%);
+    --success-gradient: linear-gradient(135deg, #92cbad 0%, #7bc29a 100%);
+    --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    --warning-gradient: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 8px 30px rgba(109, 57, 142, 0.15);
+  }
 
+  /* Layout Improvements */
+  .dashboard-container {
+    padding: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--titulo-perfil);
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .page-title i {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.5em;
+  }
+
+  /* Date Filter */
+  .date-filter {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    background: var(--backgroundCard);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--cinza-borda);
+    box-shadow: var(--sombra);
+  }
+
+  .date-filter select {
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 0.5rem;
+    background: var(--branco);
+    color: var(--preto);
+    font-size: 0.9rem;
+  }
+
+  /* Enhanced KPI Cards */
+  .resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .resumo-card {
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resumo-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+  }
+
+  .resumo-card.receitas::before {
+    background: var(--success-gradient);
+  }
+
+  .resumo-card.despesas::before {
+    background: var(--danger-gradient);
+  }
+
+  .resumo-card.saldo::before {
+    background: var(--primary-gradient);
+  }
+
+  .resumo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  .kpi {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .kpi-content {
+    flex: 1;
+  }
+
+  .kpi-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--cinza-escuro);
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+  }
+
+  .kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.25rem;
+    line-height: 1.2;
+  }
+
+  .kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .trend-up {
+    color: var(--verdePrincipal);
+  }
+
+  .trend-down {
+    color: var(--erro);
+  }
+
+  .kpi-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--branco);
+  }
+
+  .receitas .kpi-icon {
+    background: var(--success-gradient);
+  }
+
+  .despesas .kpi-icon {
+    background: var(--danger-gradient);
+  }
+
+  .saldo .kpi-icon {
+    background: var(--primary-gradient);
+  }
+
+  /* Charts Grid */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .chart-card {
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--titulo-perfil);
+    margin: 0;
+  }
+
+  .chart-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .chart-box {
+    position: relative;
+    height: 300px;
+    width: 100%;
+  }
+
+  /* Tables Grid */
+  .tables-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .tables-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .table-card {
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+  }
+
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    background: var(--cinza-claro);
+  }
+
+  .table-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--titulo-perfil);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .table-content {
+    padding: 0;
+  }
+
+  .tabela {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tabela th {
+    background: var(--cinza-claro);
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-size: 0.8rem;
+    color: var(--cinza-escuro);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+
+  .tabela td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    transition: background-color 0.2s ease;
+  }
+
+  .tabela tr:last-child td {
+    border-bottom: none;
+  }
+
+  .tabela tbody tr:hover {
+    background: var(--hover-dropdown);
+  }
+
+  /* Enhanced Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+  }
+
+  .badge-pago {
+    background: var(--verdePrincipal);
+    color: var(--branco);
+  }
+
+  .badge-pendente {
+    background: #f39c12;
+    color: var(--preto);
+  }
+
+  .badge-vencido {
+    background: var(--erro);
+    color: var(--branco);
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .action-card {
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    box-shadow: var(--sombra);
+  }
+
+  .action-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow-hover);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .action-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.25rem;
+    background: var(--primary-gradient);
+    color: var(--branco);
+  }
+
+  .action-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .action-desc {
+    font-size: 0.85rem;
+    color: var(--cinza-medio);
+  }
+
+  /* Loading States */
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Responsive Improvements */
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+    
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .date-filter {
+      justify-content: center;
+    }
+    
+    .resumo-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .kpi-value {
+      font-size: 1.75rem;
+    }
+    
+    .chart-box {
+      height: 250px;
+    }
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .resumo-card,
+    .chart-card,
+    .table-card,
+    .action-card {
+      background: var(--card-bg);
+    }
+  }
+</style>
 {% endblock %}
-{% block topbar_title %}<span class="text">Dashboard Financeiro</span>{% endblock %}
+
+{% block topbar_title %}
+<i class="fa-solid fa-chart-line"></i> <span class="text">Dashboard Financeiro</span>
+{% endblock %}
 
 {% block content %}
 {% include "core/partials/_confirm_modal.html" %}
 <div class="content">
-    <div class="dashboard-container">
-        <h2 class="page-title">
-            <i class="fa-solid fa-chart-line"></i> Dashboard Financeiro
-        </h2>
-
-        <!-- ===== Cards Resumo ===== -->
-        <div class="resumo-grid">
-            <!-- Receitas -->
-            <div class="resumo-card">
-                <div class="kpi">
-                    <div>
-                        <p class="kpi-title">Receitas</p>
-                        <p class="kpi-value kpi-green">R$ 28.750,00</p>
-                        <p class="kpi-sub">+12% em relação ao mês anterior</p>
-                    </div>
-                    <i class="fa-solid fa-arrow-trend-up kpi-icon"></i>
-                </div>
-            </div>
-
-            <!-- Despesas -->
-            <div class="resumo-card">
-                <div class="kpi">
-                    <div>
-                        <p class="kpi-title">Despesas</p>
-                        <p class="kpi-value kpi-red">R$ 15.230,00</p>
-                        <p class="kpi-sub">+5% em relação ao mês anterior</p>
-                    </div>
-                    <i class="fa-solid fa-arrow-trend-down kpi-icon"></i>
-                </div>
-            </div>
-
-            <!-- Saldo -->
-            <div class="resumo-card">
-                <div class="kpi">
-                    <div>
-                        <p class="kpi-title">Saldo</p>
-                        <p class="kpi-value kpi-purple">R$ 13.520,00</p>
-                        <p class="kpi-sub">+22% em relação ao mês anterior</p>
-                    </div>
-                    <i class="fa-solid fa-scale-balanced kpi-icon"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== Gráficos ===== -->
-        <div class="grid grid-2 section">
-            <div class="card">
-                <div class="card-body">
-                    <h3 class="card-title">Faturamento Mensal</h3>
-                    <div class="chart-box">
-                        <canvas id="faturamentoChart" height="200"></canvas>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title">Formas de Pagamento</h3>
-                        <div class="chart-box">
-                            <canvas id="pagamentosChart" height="200"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- ===== Tabelas Rápidas ===== -->
-                <div class="grid grid-2 section">
-                    <!-- Últimos Recebimentos -->
-                    <div class="tabela-container card">
-                        <div class="card-body">
-                            <h3 class="card-title">
-                                <span>Últimos Recebimentos</span>
-                                <a href="#" class="btn btn-outline btn-sm"><i class="fa-solid fa-list"></i> Ver
-                                    Todos</a>
-                            </h3>
-                            <div class="tabela-scroll">
-                                <table class="tabela">
-                                    <thead>
-                                        <tr>
-                                            <th>Data</th>
-                                            <th>Paciente</th>
-                                            <th class="text-right">Valor</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>15/05/2023</td>
-                                            <td>Maria Silva</td>
-                                            <td class="text-right">R$ 350,00</td>
-                                            <td><span class="badge badge-pago">Pago</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>14/05/2023</td>
-                                            <td>João Santos</td>
-                                            <td class="text-right">R$ 280,00</td>
-                                            <td><span class="badge badge-pago">Pago</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>13/05/2023</td>
-                                            <td>Ana Oliveira</td>
-                                            <td class="text-right">R$ 420,00</td>
-                                            <td><span class="badge badge-pendente">Pendente</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Próximos Vencimentos -->
-                    <div class="tabela-container card">
-                        <div class="card-body">
-                            <h3 class="card-title">
-                                <span>Próximos Vencimentos</span>
-                                <a href="#" class="btn btn-outline btn-sm"><i class="fa-solid fa-list"></i> Ver
-                                    Todos</a>
-                            </h3>
-                            <div class="tabela-scroll">
-                                <table class="tabela">
-                                    <thead>
-                                        <tr>
-                                            <th>Vencimento</th>
-                                            <th>Descrição</th>
-                                            <th class="text-right">Valor</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>20/05/2023</td>
-                                            <td>Aluguel</td>
-                                            <td class="text-right">R$ 5.000,00</td>
-                                            <td><span class="badge badge-pendente">Pendente</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>22/05/2023</td>
-                                            <td>Energia</td>
-                                            <td class="text-right">R$ 850,00</td>
-                                            <td><span class="badge badge-pendente">Pendente</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>25/05/2023</td>
-                                            <td>Internet</td>
-                                            <td class="text-right">R$ 220,00</td>
-                                            <td><span class="badge badge-pendente">Pendente</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /grid -->
-            </div>
-        </div>
-
-        {% include "core/partials/alertas.html" %} {% block extra_js %}
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-        <script>
-            // Util: converte HEX -> rgba(opacidade)
-            function hexToRgba(hex, alpha) {
-                const h = hex.replace("#", "").trim();
-                const bigint = parseInt(
-                    h.length === 3 ?
-                    h
-                    .split("")
-                    .map((c) => c + c)
-                    .join("") :
-                    h,
-                    16
-                );
-                const r = (bigint >> 16) & 255;
-                const g = (bigint >> 8) & 255;
-                const b = bigint & 255;
-                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-            }
-
-            // Lê variáveis do :root
-            const css = getComputedStyle(document.documentElement);
-            const roxo = css.getPropertyValue("--roxoPrincipal").trim() || "#6D398E";
-            const roxoHover =
-                css.getPropertyValue("--roxo-primary-hover").trim() || "#9b58b4";
-            const verde = css.getPropertyValue("--verdePrincipal").trim() || "#92cbad";
-            const erro = css.getPropertyValue("--erro").trim() || "#ff0000";
-            const cinzaMedio = css.getPropertyValue("--cinza-medio").trim() || "#888";
-
-            // ===== Gráfico de Faturamento =====
-            const fatCtx = document.getElementById("faturamentoChart").getContext("2d");
-            const faturamentoChart = new Chart(fatCtx, {
-                type: "bar",
-                data: {
-                    labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
-                    datasets: [{
-                            label: "Receita",
-                            data: [18500, 19500, 22000, 24000, 28750, 0],
-                            backgroundColor: hexToRgba(verde, 0.7),
-                            borderColor: hexToRgba(verde, 1),
-                            borderWidth: 1,
-                            borderRadius: 6,
-                        },
-                        {
-                            label: "Despesa",
-                            data: [12500, 13500, 14200, 14800, 15230, 0],
-                            backgroundColor: hexToRgba(erro, 0.7),
-                            borderColor: hexToRgba(erro, 1),
-                            borderWidth: 1,
-                            borderRadius: 6,
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: "index",
-                        intersect: false
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: cinzaMedio
-                            }
-                        },
-                        tooltip: {
-                            enabled: true
-                        },
-                    },
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: cinzaMedio
-                            },
-                        },
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: cinzaMedio
-                            },
-                            grid: {
-                                color: hexToRgba(cinzaMedio || "#888", 0.2)
-                            },
-                        },
-                    },
-                },
-            });
-
-            // ===== Gráfico de Formas de Pagamento =====
-            const pagCtx = document.getElementById("pagamentosChart").getContext("2d");
-            const pagamentosChart = new Chart(pagCtx, {
-                type: "doughnut",
-                data: {
-                    labels: ["Pix", "Débito", "Crédito", "Dinheiro"],
-                    datasets: [{
-                        data: [35, 25, 30, 10],
-                        backgroundColor: [
-                            hexToRgba(roxo, 0.85),
-                            hexToRgba(verde, 0.85),
-                            hexToRgba(roxoHover, 0.85),
-                            hexToRgba("#f39c12", 0.85),
-                        ],
-                        borderColor: [
-                            hexToRgba(roxo, 1),
-                            hexToRgba(verde, 1),
-                            hexToRgba(roxoHover, 1),
-                            hexToRgba("#f39c12", 1),
-                        ],
-                        borderWidth: 1,
-                    }, ],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: "bottom",
-                            labels: {
-                                color: cinzaMedio
-                            }
-                        },
-                    },
-                    cutout: "60%",
-                },
-            });
-        </script>
-        {% endblock %} {% endblock %}
+  <!-- Header with Date Filter -->
+  <div class="page-header">
+    <h1 class="page-title">
+      <i class="fa-solid fa-chart-line"></i> Dashboard Financeiro
+    </h1>
+    
+    <div class="date-filter">
+      <select id="filterMes" aria-label="Selecionar mês">
+        <option value="1">Janeiro</option>
+        <option value="2">Fevereiro</option>
+        <option value="3">Março</option>
+        <option value="4">Abril</option>
+        <option value="5">Maio</option>
+        <option value="6">Junho</option>
+        <option value="7">Julho</option>
+        <option value="8">Agosto</option>
+        <option value="9">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
+      
+      <select id="filterAno" aria-label="Selecionar ano">
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025" selected>2025</option>
+      </select>
+      
+      <button class="btn btn-primary btn-sm" id="aplicarFiltro">
+        <i class="fa-solid fa-filter"></i> Filtrar
+      </button>
     </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="resumo-grid">
+    <!-- Receitas -->
+    <div class="resumo-card receitas">
+      <div class="kpi">
+        <div class="kpi-content">
+          <p class="kpi-title">Receitas Totais</p>
+          <p class="kpi-value kpi-green">R$ {{ total_receitas.todas_receitas|floatformat:2 }}</p>
+          <div class="kpi-trend trend-up">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>+12% vs mês anterior</span>
+          </div>
+        </div>
+        <div class="kpi-icon">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Despesas -->
+    <div class="resumo-card despesas">
+      <div class="kpi">
+        <div class="kpi-content">
+          <p class="kpi-title">Despesas Totais</p>
+          <p class="kpi-value kpi-red">R$ 15.230,00</p>
+          <div class="kpi-trend trend-down">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>+5% vs mês anterior</span>
+          </div>
+        </div>
+        <div class="kpi-icon">
+          <i class="fa-solid fa-arrow-trend-down"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saldo -->
+    <div class="resumo-card saldo">
+      <div class="kpi">
+        <div class="kpi-content">
+          <p class="kpi-title">Saldo do Mês</p>
+          <p class="kpi-value kpi-purple">R$ 13.520,00</p>
+          <div class="kpi-trend trend-up">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>+22% vs mês anterior</span>
+          </div>
+        </div>
+        <div class="kpi-icon">
+          <i class="fa-solid fa-scale-balanced"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-grid">
+    <!-- Faturamento Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">Faturamento Mensal</h3>
+        <div class="chart-actions">
+          <button class="btn btn-outline btn-sm" id="exportFaturamento">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
+      </div>
+      <div class="chart-box">
+        <canvas id="faturamentoChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Pagamentos Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">Formas de Pagamento</h3>
+        <div class="chart-actions">
+          <button class="btn btn-outline btn-sm" id="exportPagamentos">
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
+      </div>
+      <div class="chart-box">
+        <canvas id="pagamentosChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tables Section -->
+  <div class="tables-grid">
+    <!-- Últimos Recebimentos -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3 class="table-title">
+          <i class="fa-solid fa-money-bill-wave"></i>
+          Últimos Recebimentos
+        </h3>
+        <a href="#" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-list"></i> Ver Todos
+        </a>
+      </div>
+      <div class="table-content">
+        <div class="tabela-scroll">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Paciente</th>
+                <th class="text-right">Valor</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>15/05/2023</td>
+                <td>Maria Silva</td>
+                <td class="text-right">R$ 350,00</td>
+                <td><span class="badge badge-pago"><i class="fa-solid fa-check"></i> Pago</span></td>
+              </tr>
+              <tr>
+                <td>14/05/2023</td>
+                <td>João Santos</td>
+                <td class="text-right">R$ 280,00</td>
+                <td><span class="badge badge-pago"><i class="fa-solid fa-check"></i> Pago</span></td>
+              </tr>
+              <tr>
+                <td>13/05/2023</td>
+                <td>Ana Oliveira</td>
+                <td class="text-right">R$ 420,00</td>
+                <td><span class="badge badge-pendente"><i class="fa-solid fa-clock"></i> Pendente</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Próximos Vencimentos -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3 class="table-title">
+          <i class="fa-solid fa-calendar-days"></i>
+          Próximos Vencimentos
+        </h3>
+        <a href="#" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-list"></i> Ver Todos
+        </a>
+      </div>
+      <div class="table-content">
+        <div class="tabela-scroll">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Vencimento</th>
+                <th>Descrição</th>
+                <th class="text-right">Valor</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>20/05/2023</td>
+                <td>Aluguel</td>
+                <td class="text-right">R$ 5.000,00</td>
+                <td><span class="badge badge-pendente"><i class="fa-solid fa-clock"></i> Pendente</span></td>
+              </tr>
+              <tr>
+                <td>22/05/2023</td>
+                <td>Energia</td>
+                <td class="text-right">R$ 850,00</td>
+                <td><span class="badge badge-pendente"><i class="fa-solid fa-clock"></i> Pendente</span></td>
+              </tr>
+              <tr>
+                <td>25/05/2023</td>
+                <td>Internet</td>
+                <td class="text-right">R$ 220,00</td>
+                <td><span class="badge badge-pendente"><i class="fa-solid fa-clock"></i> Pendente</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <a href=#" class="action-card">
+      <div class="action-icon">
+        <i class="fa-solid fa-plus"></i>
+      </div>
+      <div class="action-title">Novo Recebimento</div>
+      <div class="action-desc">Registrar pagamento</div>
+    </a>
+    
+    <a href="#" class="action-card">
+      <div class="action-icon">
+        <i class="fa-solid fa-receipt"></i>
+      </div>
+      <div class="action-title">Nova Despesa</div>
+      <div class="action-desc">Lançar custo</div>
+    </a>
+    
+    <a href="#" class="action-card">
+      <div class="action-icon">
+        <i class="fa-solid fa-chart-pie"></i>
+      </div>
+      <div class="action-title">Relatórios</div>
+      <div class="action-desc">Análises detalhadas</div>
+    </a>
+    
+    <a href="#" class="action-card">
+      <div class="action-icon">
+        <i class="fa-solid fa-gear"></i>
+      </div>
+      <div class="action-title">Configurações</div>
+      <div class="action-desc">Personalizar</div>
+    </a>
+  </div>
+</div>
+
+{% include "core/partials/alertas.html" %} 
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+  // Enhanced Chart Configuration
+  document.addEventListener('DOMContentLoaded', function() {
+    // Color utilities
+    function hexToRgba(hex, alpha) {
+      const h = hex.replace("#", "").trim();
+      const bigint = parseInt(
+        h.length === 3 ?
+          h.split("").map((c) => c + c).join("") : h,
+        16
+      );
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    // Get CSS variables
+    const css = getComputedStyle(document.documentElement);
+    const roxo = css.getPropertyValue("--roxoPrincipal").trim() || "#6D398E";
+    const roxoHover = css.getPropertyValue("--roxo-primary-hover").trim() || "#9b58b4";
+    const verde = css.getPropertyValue("--verdePrincipal").trim() || "#92cbad";
+    const erro = css.getPropertyValue("--erro").trim() || "#ff6b6b";
+    const cinzaMedio = css.getPropertyValue("--cinza-medio").trim() || "#888";
+    const texto = css.getPropertyValue("--preto").trim() || "#333";
+
+    // Enhanced Faturamento Chart
+    const fatCtx = document.getElementById("faturamentoChart").getContext("2d");
+    const faturamentoChart = new Chart(fatCtx, {
+      type: "bar",
+      data: {
+        labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+        datasets: [{
+          label: "Receita",
+          data: [18500, 19500, 22000, 24000, 28750, 0],
+          backgroundColor: hexToRgba(verde, 0.8),
+          borderColor: hexToRgba(verde, 1),
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        },
+        {
+          label: "Despesa",
+          data: [12500, 13500, 14200, 14800, 15230, 0],
+          backgroundColor: hexToRgba(erro, 0.8),
+          borderColor: hexToRgba(erro, 1),
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: "index",
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: texto,
+              font: {
+                size: 12,
+                weight: '600'
+              },
+              padding: 20
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: texto,
+            bodyColor: texto,
+            borderColor: cinzaMedio,
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: true,
+            callbacks: {
+              label: function(context) {
+                return `R$ ${context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+              }
+            }
+          },
+        },
+        scales: {
+          x: {
+            grid: {
+              color: hexToRgba(cinzaMedio, 0.1)
+            },
+            ticks: {
+              color: texto
+            },
+          },
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: hexToRgba(cinzaMedio, 0.1)
+            },
+            ticks: {
+              color: texto,
+              callback: function(value) {
+                return 'R$ ' + value.toLocaleString('pt-BR');
+              }
+            },
+          },
+        },
+      },
+    });
+
+    // Enhanced Pagamentos Chart
+    const pagCtx = document.getElementById("pagamentosChart").getContext("2d");
+    const pagamentosChart = new Chart(pagCtx, {
+      type: "doughnut",
+      data: {
+        labels: ["Pix", "Débito", "Crédito", "Dinheiro"],
+        datasets: [{
+          data: [35, 25, 30, 10],
+          backgroundColor: [
+            hexToRgba(roxo, 0.9),
+            hexToRgba(verde, 0.9),
+            hexToRgba(roxoHover, 0.9),
+            hexToRgba("#f39c12", 0.9),
+          ],
+          borderColor: [
+            hexToRgba(roxo, 1),
+            hexToRgba(verde, 1),
+            hexToRgba(roxoHover, 1),
+            hexToRgba("#f39c12", 1),
+          ],
+          borderWidth: 2,
+          borderRadius: 6,
+          spacing: 2,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: texto,
+              font: {
+                size: 11,
+                weight: '600'
+              },
+              padding: 15,
+              usePointStyle: true,
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.label}: ${context.parsed}%`;
+              }
+            }
+          }
+        },
+        cutout: "65%",
+      },
+    });
+
+    // Filter functionality
+    document.getElementById('aplicarFiltro').addEventListener('click', function() {
+      const mes = document.getElementById('filterMes').value;
+      const ano = document.getElementById('filterAno').value;
+      
+      // Show loading state
+      document.querySelector('.dashboard-container').classList.add('loading');
+      
+      // Simulate API call
+      setTimeout(() => {
+        // Update charts with new data
+        // This would typically be an AJAX call to fetch new data
+        console.log('Filtrando para:', mes, ano);
+        document.querySelector('.dashboard-container').classList.remove('loading');
+      }, 1000);
+    });
+
+    // Export functionality
+    document.getElementById('exportFaturamento').addEventListener('click', function() {
+      // Implement chart export
+      console.log('Exporting faturamento chart');
+    });
+
+    document.getElementById('exportPagamentos').addEventListener('click', function() {
+      // Implement chart export
+      console.log('Exporting pagamentos chart');
+    });
+  });
+</script>
+{% endblock %}

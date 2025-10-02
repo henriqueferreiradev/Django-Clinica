@@ -1,12 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-
+from django.db.models import Sum
+from core.models import Pagamento
 @login_required(login_url='login')
 def financeiro_view(request):
     if request.user.tipo == 'profissional':
         return HttpResponseForbidden("Acesso negado.")
-    return render(request, 'core/financeiro/dashboard.html')
+    
+
+    total_receitas = Pagamento.objects.aggregate(todas_receitas=(Sum('valor')))
+    print(total_receitas)
+
+    
+
+
+    context = {
+        'total_receitas': total_receitas,
+    }
+
+    return render(request, 'core/financeiro/dashboard.html', context)
 
 def fluxo_caixa_view(request):
  

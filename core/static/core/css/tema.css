@@ -42,8 +42,8 @@
 }
 
 .dark {
-  --roxoPrincipal: #7f4396;
-  --roxoPrincipal-hover: #76378f11;
+  --roxoPrincipal: #6D398E;
+  --roxoPrincipal-hover: rgba(118, 55, 143, 0.067);
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
   --verdePrincipal: #92cbad;

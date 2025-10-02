@@ -84,7 +84,7 @@ textarea {
   width: 100%;
   display: flex;
   align-items: center;
-  background: var(--verdePrincipal);
+  background: white;
   border-radius: 0 15px 15px 0;
 }
 
@@ -263,7 +263,7 @@ textarea {
   display: flex;
   align-items: center;
   color: var(--roxoPrincipal);
-  background: var(--verdePrincipal);
+  background: white;
   padding: 12px 0;
   transition: all 0.5s ease;
   border-radius: 0 0 15px 0;
@@ -288,7 +288,7 @@ textarea {
   object-fit: cover;
   border-radius: 16px;
   margin: 0 14px 0 12px;
-  background: var(--verdePrincipal);
+  background: white;
   transition: all 0.5s ease;
 }
 
