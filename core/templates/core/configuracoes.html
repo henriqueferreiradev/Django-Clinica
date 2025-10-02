@@ -15,12 +15,12 @@
         gap: var(--espaco-xs);
         border-bottom: 2px solid var(--roxoPrincipal);
         margin-bottom: var(--espaco-lg);
-        padding-bottom: 2px;
+
         flex-wrap: nowrap;
         overflow-x: auto;
         scrollbar-width: none;
         -ms-overflow-style: none;
-        padding: var(--espaco-xs) 0;
+
     }
 
     .tabs::-webkit-scrollbar {
@@ -132,7 +132,7 @@
     /* Input fields - padrão agenda */
     .input-field {
         background: var(--branco);
-        border: 2px solid var(--cinza-borda);
+        border: 1px solid var(--cinza-borda);
         border-radius: var(--borda-radius);
         padding: 0.75rem 1rem;
         color: var(--preto);
@@ -522,6 +522,9 @@
         padding: var(--espaco-md);
         border-radius: var(--borda-radius);
         margin-bottom: var(--espaco-md);
+        display: flex;
+        align-items: center;
+        gap: 1em;
     }
 
     .config-info.warning {
@@ -797,506 +800,591 @@
 
     <!-- Aba Financeiro -->
     <div class="tab-content" id="financeiro">
+        <form method="post" id="form-especialidade">
+            {% csrf_token %}
+            <input type="hidden" name="tipo" value="cadastro_bancos" />
+            <div class="form">
+                <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i>Cadastro de Bancos</h2>
+                <div class="config-info">
+                    <i class='bx bx-info-circle'></i> Cadastre os bancos aqui.
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-analyse'></i> Codigo </label>
+                        <input class="input-field" type="number" name="codigo_banco" placeholder="Ex.: 001">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-pie-chart-alt-2'></i>Nome Banco</label>
+                        <input class="input-field" type="text" name="nome_banco" placeholder="Ex.: Banco do Brasil">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i>Agência</label>
+                        <input class="input-field" type="number" step="0.1" name="agencia_banco"
+                            placeholder="Ex.: 1234">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i>Conta</label>
+                        <input class="input-field" type="number" step="0.1" name="conta_banco" placeholder="Ex.: 56789">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i>Digito</label>
+                        <input class="input-field" type="number" step="0.1" name="digito_banco" placeholder="Ex.: 1">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-analyse'></i> Tipo </label>
+                        <select class="input-field" name="tipo_conta_banco">
+                            <option disabled selected>-- Selecione --</option>
+                            <option value="corrente">Conta Corrente</option>
+                            <option value="poupanca">Conta Poupança</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i>Chave Pix</label>
+                        <input class="input-field" type="text" name="chave_pix_banco"
+                            placeholder="Ex.: CPF, CNPJ, telefone, e-mail ou aleatória">
+                    </div>
+
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Banco</button>
+        </form>
+        <div class="tabela-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Banco</th>
+                        <th>Chave Pix</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for banco in bancos %}
+                    <tr class="{% if not servico.ativo %}inativo{% endif %}">
+                        <td>{{ banco.codigo_banco }} - {{ banco.nome_banco }} AG {{banco.agencia_banco}} C/C {{conta_banco}}-{{digito_banco}} </td>
+                        <td> {{ banco.chave_pix_banco }}</td>
+                      
+                        <td>
+                            <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
+                                {{ banco.ativo|yesno:"Ativo,Inativo" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="acoes-cell">
+                                <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
+                                <button class="btn-acao excluir" title="Excluir"><i
+                                        class='bx bx-trash'></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class='bx bx-inbox'></i>
+                            <p>Nenhum serviço cadastrado</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <form method="post" id="form-fornecedores">
+        {% csrf_token %}
+        <input type="hidden" name="tipo" value="cadastro_fornecedores" />
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i> Configurações Financeiras</h2>
+            <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i>Cadastro de Fornecedores</h2>
             <div class="config-info">
-                <i class='bx bx-info-circle'></i> Configure as opções de pagamento e taxas administrativas.
+                <i class='bx bx-info-circle'></i> Cadastre seus fornecedores aqui.
             </div>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="config_financeiro" />
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-credit-card'></i> Formas de Pagamento Aceitas</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="formas_pagamento" value="dinheiro" checked>
-                                <span>Dinheiro</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="formas_pagamento" value="pix" checked>
-                                <span>PIX</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="formas_pagamento" value="debito" checked>
-                                <span>Cartão de Débito</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="formas_pagamento" value="credito">
-                                <span>Cartão de Crédito</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="formas_pagamento" value="convenio">
-                                <span>Convênio</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-analyse'></i> Taxa Administrativa (%)</label>
-                        <input class="input-field" type="number" step="0.1" name="taxa_admin" placeholder="0.0" min="0"
-                            max="50">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-pie-chart-alt-2'></i> Parcelamento Máximo</label>
-                        <input class="input-field" type="number" name="parcelas" min="1" max="12" value="1">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i> Multa por Atraso (%)</label>
-                        <input class="input-field" type="number" step="0.1" name="multa_atraso" placeholder="0.0"
-                            min="0" max="20">
-                    </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class='bx bx-analyse'></i> Tipo </label>
+                    <select class="input-field" name="tipo_pessoa">
+                        <option disabled selected>-- Selecione --</option>
+                        <option value="juridica">Pessoa Jurídica</option>
+                        <option value="fisica">Pessoa Física</option>
+                    </select>
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Aba Notificações -->
-    <div class="tab-content" id="notificacoes">
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-bell'></i> Configurações de Notificações</h2>
-
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-grid">
-
-                    <!-- Ativar envios automáticos -->
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-toggle-left'></i> Envio Automático de Lembretes</label>
-                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                            <label><input type="checkbox" name="envio_24h" value="1"> Enviar 24h antes</label>
-                            <label><input type="checkbox" name="envio_12h" value="1"> Enviar 12h antes</label>
-                            <label><input type="checkbox" name="envio_4h" value="1"> Enviar 4h antes</label>
-                            <label><input type="checkbox" name="envio_confirmacao" value="1"> Enviar imediatamente ao
-                                agendar</label>
-                        </div>
-                    </div>
-
-                    <!-- Escolha de canais -->
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-message-dots'></i> Canais de Envio</label>
-                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                            <label><input type="checkbox" name="canal_whatsapp" value="1" checked> WhatsApp</label>
-                            <label><input type="checkbox" name="canal_email" value="1"> E-mail</label>
-                            <label><input type="checkbox" name="canal_sms" value="1"> SMS</label>
-                        </div>
-                    </div>
-
-                    <!-- Mensagem WhatsApp -->
-                    <div class="form-group full-width">
-                        <label for="msg_whatsapp"><i class='bx bx-message-rounded-detail'></i> Modelo de Mensagem
-                            (WhatsApp)</label>
-                        <textarea class="input-field" rows="4" id="msg_whatsapp" name="msg_whatsapp"
-                            placeholder="Ex: Olá {{paciente}}, lembramos sua sessão dia {{data}} às {{hora}}"></textarea>
-                        <small style="color:var(--cinza-medio);">Use variáveis: <b>{{paciente}}</b>, <b>{{data}}</b>,
-                            <b>{{hora}}</b></small>
-                    </div>
-
-                    <!-- Assinatura de e-mails -->
-                    <div class="form-group full-width">
-                        <label for="assinatura_email"><i class='bx bx-envelope'></i> Assinatura nos E-mails</label>
-                        <textarea class="input-field" rows="3" id="assinatura_email" name="assinatura_email"
-                            placeholder="Equipe Clínica Ponto de Equilíbrio"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label><i class='bx bx-pie-chart-alt-2'></i>Documento</label>
+                    <input class="input-field" type="text" name="documento_fornecedor" placeholder="12.345.678/0000-00">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-pie-chart-alt-2'></i>Razão social</label>
+                    <input class="input-field" type="text" name="razao_social_fornecedor"
+                        placeholder="Ex.: Banco do Brasil">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-error'></i>Nome Fantasia</label>
+                    <input class="input-field" type="text" step="0.1" name="fantasia_fornecedor" placeholder="Ex.: 1234"
+                        min="0" max="20">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-error'></i>Telefone</label>
+                    <input class="input-field" type="number" name="telefone_fornecedor" placeholder="Ex.: 56789" min="0"
+                        max="20">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-error'></i>Email</label>
+                    <input class="input-field" type="number" step="0.1" name="email_fornecedor" placeholder="Ex.: 1"
+                        min="0" max="20">
                 </div>
 
-                <button type="submit" class="btn-submit">
-                    <i class='bx bx-save'></i> Salvar Configurações
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Aba Pacotes & Benefícios -->
-    <div class="tab-content" id="pacotes">
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-gift'></i> Pacotes & Benefícios</h2>
-            <div class="config-info">
-                <i class='bx bx-info-circle'></i> Configure os pacotes de sessões e benefícios para clientes.
             </div>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="config_pacotes" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-layer'></i> Nº Sessões Padrão do Pacote</label>
-                        <input class="input-field" type="number" name="qtd_sessoes" min="1" value="10">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-timer'></i> Validade do Pacote (dias)</label>
-                        <input class="input-field" type="number" name="validade_pacote" min="1" value="90">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-purchase-tag'></i> Desconto do Pacote (%)</label>
-                        <input class="input-field" type="number" step="0.1" name="desconto_pacote" value="10.0" min="0"
-                            max="50">
-                    </div>
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-star'></i> Regras de Benefício VIP</label>
-                        <textarea class="input-field" rows="3" name="regras_beneficio"
-                            placeholder="Ex: Cliente VIP após 10 sessões no mês">Cliente VIP: + de 10 sessões/mês\nDesconto especial: 15%\nPrioridade em agendamentos</textarea>
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
-            </form>
-        </div>
+            <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Fornecedor</button>
+    </form>
+    <div class="tabela">
+        {% for fornecedor in fornecedores %}
+        <div style="color: white ;"> {{fornecedor.razao_social }} {{fornecedor.documento}}</div>
+        {% endfor %}
     </div>
-    <!-- Aba Empresa & Franquia -->
-    <div class="tab-content" id="empresa">
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
+</div>
 
-            <form method="POST" id="form-empresa">
-                {% csrf_token %}
-                <div class="form-grid">
+</div>
+</div>
 
-                    <!-- Dados básicos -->
-                    <div class="form-group">
-                        <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
-                        <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
-                            required>
-                    </div>
+<!-- Aba Notificações -->
+<div class="tab-content" id="notificacoes">
+    <div class="form">
+        <h2 class="form_titulo"><i class='bx bx-bell'></i> Configurações de Notificações</h2>
 
-                    <div class="form-group">
-                        <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
-                        <input class="input-field" id="razao_social" name="razao_social"
-                            placeholder="Nome jurídico da empresa" type="text" required>
-                    </div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-grid">
 
-                    <div class="form-group">
-                        <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
-                        <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
-                            type="text" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
-                        <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
-                            placeholder="Isento ou número da IE" type="text">
-                    </div>
-
-                    <!-- Contatos -->
-                    <div class="form-group">
-                        <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
-                        <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999"
-                            type="text">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
-                        <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
-                            type="email">
-                    </div>
-
-                    <!-- Endereço -->
-                    <div class="form-group full-width">
-                        <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
-                        <input class="input-field" id="endereco" name="endereco"
-                            placeholder="Rua, nº, Bairro, Cidade - UF" type="text">
-                    </div>
-
-                    <!-- Franquia -->
-                    <div class="form-group">
-                        <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
-                        <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
-                            <option value="matriz">Matriz</option>
-                            <option value="franquia">Franquia</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
-                            aplicável)</label>
-                        <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
-                            <option value="">Nenhuma</option>
-                            {% for f in empresas %}
-                            <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
-                            {% endfor %}
-                        </select>
+                <!-- Ativar envios automáticos -->
+                <div class="form-group full-width">
+                    <label><i class='bx bx-toggle-left'></i> Envio Automático de Lembretes</label>
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label><input type="checkbox" name="envio_24h" value="1"> Enviar 24h antes</label>
+                        <label><input type="checkbox" name="envio_12h" value="1"> Enviar 12h antes</label>
+                        <label><input type="checkbox" name="envio_4h" value="1"> Enviar 4h antes</label>
+                        <label><input type="checkbox" name="envio_confirmacao" value="1"> Enviar imediatamente ao
+                            agendar</label>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-submit">
-                    <i class='bx bx-save'></i> Salvar Dados
-                </button>
-            </form>
-        </div>
+                <!-- Escolha de canais -->
+                <div class="form-group full-width">
+                    <label><i class='bx bx-message-dots'></i> Canais de Envio</label>
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <label><input type="checkbox" name="canal_whatsapp" value="1" checked> WhatsApp</label>
+                        <label><input type="checkbox" name="canal_email" value="1"> E-mail</label>
+                        <label><input type="checkbox" name="canal_sms" value="1"> SMS</label>
+                    </div>
+                </div>
+
+                <!-- Mensagem WhatsApp -->
+                <div class="form-group full-width">
+                    <label for="msg_whatsapp"><i class='bx bx-message-rounded-detail'></i> Modelo de Mensagem
+                        (WhatsApp)</label>
+                    <textarea class="input-field" rows="4" id="msg_whatsapp" name="msg_whatsapp"
+                        placeholder="Ex: Olá {{paciente}}, lembramos sua sessão dia {{data}} às {{hora}}"></textarea>
+                    <small style="color:var(--cinza-medio);">Use variáveis: <b>{{paciente}}</b>, <b>{{data}}</b>,
+                        <b>{{hora}}</b></small>
+                </div>
+
+                <!-- Assinatura de e-mails -->
+                <div class="form-group full-width">
+                    <label for="assinatura_email"><i class='bx bx-envelope'></i> Assinatura nos E-mails</label>
+                    <textarea class="input-field" rows="3" id="assinatura_email" name="assinatura_email"
+                        placeholder="Equipe Clínica Ponto de Equilíbrio"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class='bx bx-save'></i> Salvar Configurações
+            </button>
+        </form>
     </div>
-    <!-- Aba Empresa & Franquia -->
-    <div class="tab-content" id="empresa">
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
+</div>
 
-            <form method="POST" id="form-empresa">
-                {% csrf_token %}
-                <div class="form-grid">
-
-                    <!-- Dados básicos -->
-                    <div class="form-group">
-                        <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
-                        <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
-                            required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
-                        <input class="input-field" id="razao_social" name="razao_social"
-                            placeholder="Nome jurídico da empresa" type="text" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
-                        <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
-                            type="text" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
-                        <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
-                            placeholder="Isento ou número da IE" type="text">
-                    </div>
-
-                    <!-- Contatos -->
-                    <div class="form-group">
-                        <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
-                        <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999"
-                            type="text">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
-                        <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
-                            type="email">
-                    </div>
-
-                    <!-- Endereço -->
-                    <div class="form-group full-width">
-                        <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
-                        <input class="input-field" id="endereco" name="endereco"
-                            placeholder="Rua, nº, Bairro, Cidade - UF" type="text">
-                    </div>
-
-                    <!-- Franquia -->
-                    <div class="form-group">
-                        <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
-                        <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
-                            <option value="matriz">Matriz</option>
-                            <option value="franquia">Franquia</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
-                            aplicável)</label>
-                        <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
-                            <option value="">Nenhuma</option>
-                            {% for f in empresas %}
-                            <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">
-                    <i class='bx bx-save'></i> Salvar Dados
-                </button>
-            </form>
+<!-- Aba Pacotes & Benefícios -->
+<div class="tab-content" id="pacotes">
+    <div class="form">
+        <h2 class="form_titulo"><i class='bx bx-gift'></i> Pacotes & Benefícios</h2>
+        <div class="config-info">
+            <i class='bx bx-info-circle'></i> Configure os pacotes de sessões e benefícios para clientes.
         </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="tipo" value="config_pacotes" />
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class='bx bx-layer'></i> Nº Sessões Padrão do Pacote</label>
+                    <input class="input-field" type="number" name="qtd_sessoes" min="1" value="10">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-timer'></i> Validade do Pacote (dias)</label>
+                    <input class="input-field" type="number" name="validade_pacote" min="1" value="90">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-purchase-tag'></i> Desconto do Pacote (%)</label>
+                    <input class="input-field" type="number" step="0.1" name="desconto_pacote" value="10.0" min="0"
+                        max="50">
+                </div>
+                <div class="form-group full-width">
+                    <label><i class='bx bx-star'></i> Regras de Benefício VIP</label>
+                    <textarea class="input-field" rows="3" name="regras_beneficio"
+                        placeholder="Ex: Cliente VIP após 10 sessões no mês">Cliente VIP: + de 10 sessões/mês\nDesconto especial: 15%\nPrioridade em agendamentos</textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+        </form>
     </div>
-    <!-- Aba Estoque -->
-    <div class="tab-content" id="estoque">
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-box'></i> Controle de Estoque</h2>
+</div>
+<!-- Aba Empresa & Franquia -->
+<div class="tab-content" id="empresa">
+    <div class="form">
+        <h2 class="form_titulo"><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
 
-            <!-- Cadastro de Produtos -->
-            <form method="POST" id="form-produto">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="produto_cadastro" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="produto-nome"><i class='bx bx-rename'></i> Nome do Produto</label>
-                        <input class="input-field" id="produto-nome" name="nome" placeholder="Ex: Creme Hidratante"
-                            type="text" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-codigo"><i class='bx bx-barcode'></i> Código / EAN</label>
-                        <input class="input-field" id="produto-codigo" name="codigo" placeholder="Código de barras"
-                            type="text" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-categoria"><i class='bx bx-category'></i> Categoria</label>
-                        <input class="input-field" id="produto-categoria" name="categoria" placeholder="Ex: Cosméticos"
-                            type="text" />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-custo"><i class='bx bx-dollar'></i> Custo Unitário</label>
-                        <input class="input-field" id="produto-custo" name="custo" placeholder="0.00" type="number"
-                            step="0.01" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-preco"><i class='bx bx-dollar-circle'></i> Preço de Venda</label>
-                        <input class="input-field" id="produto-preco" name="preco" placeholder="0.00" type="number"
-                            step="0.01" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-minimo"><i class='bx bx-error-circle'></i> Estoque Mínimo</label>
-                        <input class="input-field" id="produto-minimo" name="estoque_minimo" placeholder="Qtd mínima"
-                            type="number" min="0" />
-                    </div>
+        <form method="POST" id="form-empresa">
+            {% csrf_token %}
+            <div class="form-grid">
+
+                <!-- Dados básicos -->
+                <div class="form-group">
+                    <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
+                    <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
+                        required>
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Cadastrar Produto</button>
-            </form>
 
-            <!-- Movimentação de Estoque -->
-            <form method="POST" id="form-movimentacao" style="margin-top:2rem;">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="estoque_movimentacao" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="produto-id"><i class='bx bx-box'></i> Produto</label>
-                        <select class="input-field" id="produto-id" name="produto_id" required>
-                            <option value="" disabled selected>Selecione</option>
-                            {% for p in produtos %}
-                            <option value="{{ p.id }}">{{ p.nome }} - {{ p.codigo }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mov-tipo"><i class='bx bx-transfer'></i> Tipo</label>
-                        <select class="input-field" id="mov-tipo" name="tipo_mov" required>
-                            <option value="entrada">Entrada</option>
-                            <option value="saida">Saída</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mov-quantidade"><i class='bx bx-plus-minus'></i> Quantidade</label>
-                        <input class="input-field" id="mov-quantidade" name="quantidade" type="number" min="1"
-                            required />
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="mov-observacao"><i class='bx bx-note'></i> Observação</label>
-                        <textarea class="input-field" id="mov-observacao" name="observacao" rows="2"
-                            placeholder="Motivo da movimentação"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
+                    <input class="input-field" id="razao_social" name="razao_social"
+                        placeholder="Nome jurídico da empresa" type="text" required>
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-check'></i> Registrar Movimentação</button>
-            </form>
 
-            <!-- Tabela de Estoque -->
-            <div class="tabela-wrapper" style="margin-top:2rem;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Código</th>
-                            <th>Categoria</th>
-                            <th>Estoque Atual</th>
-                            <th>Custo</th>
-                            <th>Preço Venda</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in produtos %}
-                        <tr class="{% if p.estoque_atual <= p.estoque_minimo %}inativo{% endif %}">
-                            <td>{{ p.nome }}</td>
-                            <td>{{ p.codigo }}</td>
-                            <td>{{ p.categoria }}</td>
-                            <td>{{ p.estoque_atual }}</td>
-                            <td>R$ {{ p.custo|floatformat:2 }}</td>
-                            <td>R$ {{ p.preco|floatformat:2 }}</td>
-                            <td>
-                                <div class="acoes-cell">
-                                    <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
-                                    <button class="btn-acao excluir" title="Excluir"><i
-                                            class='bx bx-trash'></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="empty-state">
-                                <i class='bx bx-package'></i>
-                                <p>Nenhum produto cadastrado</p>
-                            </td>
-                        </tr>
+                <div class="form-group">
+                    <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
+                    <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
+                        type="text" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
+                    <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
+                        placeholder="Isento ou número da IE" type="text">
+                </div>
+
+                <!-- Contatos -->
+                <div class="form-group">
+                    <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
+                    <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999" type="text">
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
+                    <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
+                        type="email">
+                </div>
+
+                <!-- Endereço -->
+                <div class="form-group full-width">
+                    <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
+                    <input class="input-field" id="endereco" name="endereco" placeholder="Rua, nº, Bairro, Cidade - UF"
+                        type="text">
+                </div>
+
+                <!-- Franquia -->
+                <div class="form-group">
+                    <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
+                    <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
+                        <option value="matriz">Matriz</option>
+                        <option value="franquia">Franquia</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
+                        aplicável)</label>
+                    <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
+                        <option value="">Nenhuma</option>
+                        {% for f in empresas %}
+                        <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
                         {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Aba Sistema -->
-    <div class="tab-content" id="sistema">
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-paint'></i> Aparência do Sistema</h2>
-            <div class="config-info">
-                <i class='bx bx-info-circle'></i> Personalize a aparência e identidade visual do sistema.
-            </div>
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="config_sistema" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-image'></i> Logo da Clínica</label>
-                        <input class="input-field" type="file" name="logo" accept="image/*">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-brightness'></i> Tema do Sistema</label>
-                        <select class="input-field" name="tema">
-                            <option value="claro">Claro</option>
-                            <option value="escuro" selected>Escuro</option>
-                            <option value="auto">Automático</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-file'></i> Cabeçalho de Relatórios</label>
-                        <textarea class="input-field" rows="3"
-                            name="cabecalho_relatorio">Clínica Ponto de Equilíbrio\nCNPJ: 12.345.678/0001-90\nTel: (11) 99999-9999 | www.pontodeequilibrio.com</textarea>
-                    </div>
+                    </select>
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Aba Segurança -->
-    <div class="tab-content" id="seguranca">
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-shield'></i> Segurança</h2>
-            <div class="config-info warning">
-                <i class='bx bx-error-circle'></i> Configure as políticas de segurança e acesso ao sistema.
             </div>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="config_seguranca" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-lock'></i> Expiração de Sessão (minutos)</label>
-                        <input class="input-field" type="number" name="expiracao_sessao" value="30" min="5" max="480">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-key'></i> Comprimento mínimo da senha</label>
-                        <input class="input-field" type="number" name="min_senha" value="8" min="6" max="20">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-check-shield'></i> Exigir senha forte</label>
-                        <select class="input-field" name="senha_forte">
-                            <option value="1" selected>Sim - Letras + Números</option>
-                            <option value="0">Não</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-history'></i> Logs de Auditoria</label>
-                        <textarea class="input-field" rows="4"
-                            disabled>Último acesso: {{ user.last_login|default:"Nunca" }}\nIP: 192.168.1.1\nNavegador: Chrome 120.0\nAtivar exibição detalhada de logs no painel administrativo</textarea>
-                    </div>
+
+            <button type="submit" class="btn-submit">
+                <i class='bx bx-save'></i> Salvar Dados
+            </button>
+        </form>
+    </div>
+</div>
+<!-- Aba Empresa & Franquia -->
+<div class="tab-content" id="empresa">
+    <div class="form">
+        <h2 class="form_titulo"><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
+
+        <form method="POST" id="form-empresa">
+            {% csrf_token %}
+            <div class="form-grid">
+
+                <!-- Dados básicos -->
+                <div class="form-group">
+                    <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
+                    <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
+                        required>
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
-            </form>
+
+                <div class="form-group">
+                    <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
+                    <input class="input-field" id="razao_social" name="razao_social"
+                        placeholder="Nome jurídico da empresa" type="text" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
+                    <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
+                        type="text" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
+                    <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
+                        placeholder="Isento ou número da IE" type="text">
+                </div>
+
+                <!-- Contatos -->
+                <div class="form-group">
+                    <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
+                    <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999" type="text">
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
+                    <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
+                        type="email">
+                </div>
+
+                <!-- Endereço -->
+                <div class="form-group full-width">
+                    <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
+                    <input class="input-field" id="endereco" name="endereco" placeholder="Rua, nº, Bairro, Cidade - UF"
+                        type="text">
+                </div>
+
+                <!-- Franquia -->
+                <div class="form-group">
+                    <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
+                    <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
+                        <option value="matriz">Matriz</option>
+                        <option value="franquia">Franquia</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
+                        aplicável)</label>
+                    <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
+                        <option value="">Nenhuma</option>
+                        {% for f in empresas %}
+                        <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class='bx bx-save'></i> Salvar Dados
+            </button>
+        </form>
+    </div>
+</div>
+<!-- Aba Estoque -->
+<div class="tab-content" id="estoque">
+    <div class="form">
+        <h2 class="form_titulo"><i class='bx bx-box'></i> Controle de Estoque</h2>
+
+        <!-- Cadastro de Produtos -->
+        <form method="POST" id="form-produto">
+            {% csrf_token %}
+            <input type="hidden" name="tipo" value="produto_cadastro" />
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="produto-nome"><i class='bx bx-rename'></i> Nome do Produto</label>
+                    <input class="input-field" id="produto-nome" name="nome" placeholder="Ex: Creme Hidratante"
+                        type="text" required />
+                </div>
+                <div class="form-group">
+                    <label for="produto-codigo"><i class='bx bx-barcode'></i> Código / EAN</label>
+                    <input class="input-field" id="produto-codigo" name="codigo" placeholder="Código de barras"
+                        type="text" required />
+                </div>
+                <div class="form-group">
+                    <label for="produto-categoria"><i class='bx bx-category'></i> Categoria</label>
+                    <input class="input-field" id="produto-categoria" name="categoria" placeholder="Ex: Cosméticos"
+                        type="text" />
+                </div>
+                <div class="form-group">
+                    <label for="produto-custo"><i class='bx bx-dollar'></i> Custo Unitário</label>
+                    <input class="input-field" id="produto-custo" name="custo" placeholder="0.00" type="number"
+                        step="0.01" required />
+                </div>
+                <div class="form-group">
+                    <label for="produto-preco"><i class='bx bx-dollar-circle'></i> Preço de Venda</label>
+                    <input class="input-field" id="produto-preco" name="preco" placeholder="0.00" type="number"
+                        step="0.01" required />
+                </div>
+                <div class="form-group">
+                    <label for="produto-minimo"><i class='bx bx-error-circle'></i> Estoque Mínimo</label>
+                    <input class="input-field" id="produto-minimo" name="estoque_minimo" placeholder="Qtd mínima"
+                        type="number" min="0" />
+                </div>
+            </div>
+            <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Cadastrar Produto</button>
+        </form>
+
+        <!-- Movimentação de Estoque -->
+        <form method="POST" id="form-movimentacao" style="margin-top:2rem;">
+            {% csrf_token %}
+            <input type="hidden" name="tipo" value="estoque_movimentacao" />
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="produto-id"><i class='bx bx-box'></i> Produto</label>
+                    <select class="input-field" id="produto-id" name="produto_id" required>
+                        <option value="" disabled selected>Selecione</option>
+                        {% for p in produtos %}
+                        <option value="{{ p.id }}">{{ p.nome }} - {{ p.codigo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mov-tipo"><i class='bx bx-transfer'></i> Tipo</label>
+                    <select class="input-field" id="mov-tipo" name="tipo_mov" required>
+                        <option value="entrada">Entrada</option>
+                        <option value="saida">Saída</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mov-quantidade"><i class='bx bx-plus-minus'></i> Quantidade</label>
+                    <input class="input-field" id="mov-quantidade" name="quantidade" type="number" min="1" required />
+                </div>
+                <div class="form-group full-width">
+                    <label for="mov-observacao"><i class='bx bx-note'></i> Observação</label>
+                    <textarea class="input-field" id="mov-observacao" name="observacao" rows="2"
+                        placeholder="Motivo da movimentação"></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit"><i class='bx bx-check'></i> Registrar Movimentação</button>
+        </form>
+
+        <!-- Tabela de Estoque -->
+        <div class="tabela-wrapper" style="margin-top:2rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Código</th>
+                        <th>Categoria</th>
+                        <th>Estoque Atual</th>
+                        <th>Custo</th>
+                        <th>Preço Venda</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in produtos %}
+                    <tr class="{% if p.estoque_atual <= p.estoque_minimo %}inativo{% endif %}">
+                        <td>{{ p.nome }}</td>
+                        <td>{{ p.codigo }}</td>
+                        <td>{{ p.categoria }}</td>
+                        <td>{{ p.estoque_atual }}</td>
+                        <td>R$ {{ p.custo|floatformat:2 }}</td>
+                        <td>R$ {{ p.preco|floatformat:2 }}</td>
+                        <td>
+                            <div class="acoes-cell">
+                                <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
+                                <button class="btn-acao excluir" title="Excluir"><i class='bx bx-trash'></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class='bx bx-package'></i>
+                            <p>Nenhum produto cadastrado</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+
+<!-- Aba Sistema -->
+<div class="tab-content" id="sistema">
+    <div class="form">
+        <h2 class="form_titulo"><i class='bx bx-paint'></i> Aparência do Sistema</h2>
+        <div class="config-info">
+            <i class='bx bx-info-circle'></i> Personalize a aparência e identidade visual do sistema.
+        </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="tipo" value="config_sistema" />
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class='bx bx-image'></i> Logo da Clínica</label>
+                    <input class="input-field" type="file" name="logo" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-brightness'></i> Tema do Sistema</label>
+                    <select class="input-field" name="tema">
+                        <option value="claro">Claro</option>
+                        <option value="escuro" selected>Escuro</option>
+                        <option value="auto">Automático</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label><i class='bx bx-file'></i> Cabeçalho de Relatórios</label>
+                    <textarea class="input-field" rows="3"
+                        name="cabecalho_relatorio">Clínica Ponto de Equilíbrio\nCNPJ: 12.345.678/0001-90\nTel: (11) 99999-9999 | www.pontodeequilibrio.com</textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+        </form>
+    </div>
+</div>
+
+<!-- Aba Segurança -->
+<div class="tab-content" id="seguranca">
+    <div class="form">
+        <h2 class="form_titulo"><i class='bx bx-shield'></i> Segurança</h2>
+        <div class="config-info warning">
+            <i class='bx bx-error-circle'></i> Configure as políticas de segurança e acesso ao sistema.
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="tipo" value="config_seguranca" />
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class='bx bx-lock'></i> Expiração de Sessão (minutos)</label>
+                    <input class="input-field" type="number" name="expiracao_sessao" value="30" min="5" max="480">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-key'></i> Comprimento mínimo da senha</label>
+                    <input class="input-field" type="number" name="min_senha" value="8" min="6" max="20">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-check-shield'></i> Exigir senha forte</label>
+                    <select class="input-field" name="senha_forte">
+                        <option value="1" selected>Sim - Letras + Números</option>
+                        <option value="0">Não</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label><i class='bx bx-history'></i> Logs de Auditoria</label>
+                    <textarea class="input-field" rows="4"
+                        disabled>Último acesso: {{ user.last_login|default:"Nunca" }}\nIP: 192.168.1.1\nNavegador: Chrome 120.0\nAtivar exibição detalhada de logs no painel administrativo</textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+        </form>
+    </div>
+</div>
 
 </div>
 {% endblock %}

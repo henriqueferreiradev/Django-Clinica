@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from core.models import Paciente, User,Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
-from core.utils import filtrar_ativos_inativos, alterar_status_ativo 
+from core.models import Fornecedor,Paciente, User,Especialidade,Profissional, ContaBancaria, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
@@ -53,7 +53,7 @@ def configuracao_view(request):
             valor_hora = float(valor_hora_str) if valor_hora_str else None
             nova_senha = request.POST.get('nova_senha')
             confirma_senha = request.POST.get('confirma_senha')
-          
+        
 
             try:
                 user = User.objects.get(id=user_id)
@@ -83,8 +83,45 @@ def configuracao_view(request):
 
             except Exception as e:
                 print(f'Erro ao atualizar usuário: {e}')
-            
+        
+        elif tipo == 'cadastro_bancos':
+             
+            codigo_banco = request.POST.get('codigo_banco')
+            nome_banco = request.POST.get('nome_banco')
+            agencia_banco = request.POST.get('agencia_banco')
+            conta_banco = request.POST.get('conta_banco')
+            digito_banco = request.POST.get('digito_banco')
+            chave_pix_banco = request.POST.get('chave_pix_banco')
+            tipo_conta_banco = request.POST.get('tipo_conta_banco')
+            ativo = True
+            try:
+                ContaBancaria.objects.create(codigo_banco=codigo_banco,nome_banco=nome_banco,agencia_banco=agencia_banco,conta_banco=conta_banco,digito_banco=digito_banco,tipo_conta_banco=tipo_conta_banco,chave_pix_banco=chave_pix_banco, ativo=ativo)
+            except Exception as e:
+                print(e)
 
+            registrar_log(
+                usuario=request.user,
+                acao='Criação',
+                modelo='Conta Bancária',
+                #objeto_id=agendamento.id,
+                descricao=f'Nova conta bancária criada.'
+            )
+                
+            
+            
+            
+        elif tipo == 'cadastro_fornecedores':
+            tipo_pessoa = request.POST.get('tipo_pessoa')
+            documento_fornecedor = request.POST.get('documento_fornecedor')
+            razao_social_fornecedor = request.POST.get('razao_social_fornecedor')
+            fantasia_fornecedor = request.POST.get('fantasia_fornecedor')
+            telefone_fornecedor = request.POST.get('telefone_fornecedor')
+            email_fornecedor = request.POST.get('email_fornecedor')
+            try:
+                Fornecedor.objects.create(tipo_pessoa=tipo_pessoa,razao_social=razao_social_fornecedor,nome_fantasia=fantasia_fornecedor,documento=documento_fornecedor,telefone=telefone_fornecedor,email=email_fornecedor,
+                ativo=ativo)
+            except Exception as e:
+                print(e)
         if tipo:
             # Exemplo: tipo == 'inativar_servico' → ação = 'inativar', modelo_str = 'servico'
             if '_' in tipo:
@@ -101,7 +138,13 @@ def configuracao_view(request):
     servicos, total_servicos_ativos, mostrar_todos_servico, filtra_inativo_servico = filtrar_ativos_inativos(request, Servico, prefixo='servico')
     especialidades, total_especialidades_ativas, mostrar_todos_especialidade, filtra_inativo_especialidade = filtrar_ativos_inativos(request, Especialidade, prefixo='especialidade')
     usuarios = User.objects.filter(ativo=True).all().select_related('profissional')
-    print(usuarios)
+    bancos = ContaBancaria.objects.all()
+    for b in bancos:print(b)
+    print(bancos)
+    fornecedores = Fornecedor.objects.all()
+    print(fornecedores)
+    
+    
     
     return render(request, 'core/configuracoes.html', {
         'servicos': servicos,
@@ -112,6 +155,8 @@ def configuracao_view(request):
         'filtra_inativo_especialidade': filtra_inativo_especialidade,
         'usuarios': usuarios,
         'user_tipo_choices': User._meta.get_field('tipo').choices,
+        'bancos':bancos,
+        'fornecedores':fornecedores,
      
       
     })

@@ -10,6 +10,7 @@ import os
 from dateutil.relativedelta import relativedelta
 import uuid
 from django.db.models import Q
+from django.forms import CharField
 from core.services.status_beneficios import calcular_beneficio
 
 def caminho_foto_paciente(instance, filename):
@@ -764,3 +765,130 @@ class UsoBeneficio(models.Model):
     class Meta:
         unique_together = ('paciente', 'mes', 'ano', 'tipo')
         indexes = [models.Index(fields=['paciente', 'ano', 'mes', 'tipo'])]
+
+
+
+
+
+
+
+
+
+
+
+#======================================================================================
+#===================================FINANCEIRO=================================
+#======================================================================================
+
+class Fornecedor(models.Model):
+    tipo_pessoa = models.CharField(max_length=20, blank=True,null=True)
+    razao_social = models.CharField(max_length=150)
+    nome_fantasia = models.CharField(max_length=150)
+    documento = models.CharField(max_length=20, blank=True,null=True)
+    telefone = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(blank=True,null=True)
+    ativo = models.BooleanField(default=False)
+    def __str__(self):
+        return self.razao_social
+    
+    
+class CategoriaFinanceira(models.Model):
+    TIPO_CHOICES = (
+        ('receita',"Receita"),
+        ('despesa',"Despesa"),
+    )
+    
+    nome = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+
+    def __str__(self):
+        return f'{self.nome} ({self.tipo})'
+
+class CategoriaDespesa(models.Model):
+    nome = models.CharField(max_length=100)
+
+
+    def __str__(self):
+        return self.nome
+
+class ContaBancaria(models.Model):
+    codigo_banco = models.CharField(max_length=10)
+    nome_banco = models.CharField(max_length=100)
+    agencia_banco = models.CharField(max_length=10)
+    conta_banco = models.CharField(max_length=20)
+    digito_banco = models.CharField(max_length=20)
+    chave_pix_banco = models.CharField(max_length=150)
+    tipo_conta_banco = models.CharField(max_length=20, choices=(('corrente', 'Corrente'), ('poupanca', 'Poupança')))
+    ativo = models.BooleanField(default=False)
+    
+ 
+    
+    def __str__(self):
+        return f"{self.nome_banco} - CC {self.agencia_banco}"
+
+
+class Despesa(models.Model):
+    STATUS_CHOICES = (
+        ('pendente', 'Pendente'),
+        ('agendado', 'Agendado'),
+        ('pago', 'Pago'),
+        ('atrasado', 'Atrasado'),
+    )
+    fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, null=True)
+    categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'despesa'})
+    descricao = models.CharField(max_length=255)
+    vencimento = models.DateField()
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
+    forma_pagamento = models.CharField(max_length=30, blank=True, null=True)
+    conta_bancaria = models.ForeignKey(ContaBancaria, on_delete=models.SET_NULL, null=True, blank=True)
+    documento = models.CharField(max_length=50, blank=True, null=True)
+    observacoes = models.TextField(blank=True, null=True)
+    comprovante = models.FileField(upload_to="comprovantes/despesas/", blank=True, null=True)
+    recorrente = models.BooleanField(default=False)
+    frequencia = models.CharField(max_length=20, blank=True, null=True)
+    inicio = models.DateField(blank=True, null=True)
+    termino = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.fornecedor} - {self.descricao} ({self.valor})"
+
+
+class Receita(models.Model):
+    STATUS_CHOICES = (
+        ('pendente', 'Pendente'),
+        ('pago', 'Pago'),
+        ('atrasado', 'Atrasado'),
+    )
+    paciente = models.ForeignKey("core.Paciente", on_delete=models.SET_NULL, null=True, blank=True)  
+    categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'receita'})
+    descricao = models.CharField(max_length=255)
+    agendamento_codigo = models.CharField(max_length=50, blank=True, null=True)
+    vencimento = models.DateField()
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
+    forma_pagamento = models.CharField(max_length=30, blank=True, null=True)
+    observacoes = models.TextField(blank=True, null=True)
+    recibo = models.FileField(upload_to="recibos/receitas/", blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.paciente} - {self.descricao} ({self.valor})"
+
+
+class Lancamento(models.Model):
+    TIPO_CHOICES = (
+        ('receita', 'Receita'),
+        ('despesa', 'Despesa'),
+    )
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    data = models.DateTimeField()
+    descricao = models.CharField(max_length=255)
+    categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True)
+    pessoa = models.CharField(max_length=150, blank=True, null=True)  # paciente ou fornecedor
+    forma_pagamento = models.CharField(max_length=30)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=(('pago', 'Pago'), ('pendente', 'Pendente')), default='pendente')
+    observacoes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.tipo} - {self.descricao} - {self.valor}"
