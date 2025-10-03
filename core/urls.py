@@ -58,6 +58,7 @@ urlpatterns = [
 
 
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
+    path('agenda/board', agendamento_views.agenda_board, name='agenda_board'),
     path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
     path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
     path('api/verificar-cpf/', api_views.verificar_cpf, name='verificar_cpf'),
@@ -67,7 +68,7 @@ urlpatterns = [
     path('agendamento/json/<int:agendamento_id>/', agendamento_views.pegar_agendamento, name='get_agendamento'),
     path('agendamento/editar/<int:agendamento_id>/', agendamento_views.editar_agendamento, name='editar_agendamento'),
     path('agendamento/<int:pk>/remarcar/', agendamento_views.remarcar_agendamento, name='remarcar_agendamento'),
-
+    
 
     path('config/', config_views.configuracao_view, name='config'),
     

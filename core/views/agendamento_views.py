@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt 
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
-from core.utils import filtrar_ativos_inativos, alterar_status_ativo,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
+from core.utils import gerar_horarios,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
 from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, STATUS_CHOICES,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse
@@ -13,7 +13,12 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 from django.db import transaction
+from django.template.context_processors import request
 import uuid
+from django.utils.timezone import now
+
+
+
 @login_required(login_url='login')
 def agenda_view(request):
     query = request.GET.get('q', '').strip()
@@ -58,6 +63,25 @@ def agenda_view(request):
 
 
 
+ 
+
+ 
+
+def agenda_board(request):
+    hoje = now().date()
+    agendamentos = Agendamento.objects.filter(data=hoje)
+
+    # pega lista única de profissionais que aparecem como profissional_1
+    profissionais = agendamentos.values_list(
+        "profissional_1__id", "profissional_1__nome"
+    ).distinct()
+
+    context = {
+        "agendamentos": agendamentos,
+        "horarios": gerar_horarios(),
+        "profissionais": profissionais,
+    }
+    return render(request, "core/agendamentos/agenda_board.html", context)
 
 
 

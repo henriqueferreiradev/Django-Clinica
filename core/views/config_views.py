@@ -109,6 +109,9 @@ def configuracao_view(request):
             fantasia_fornecedor = request.POST.get('fantasia_fornecedor')
             telefone_fornecedor = request.POST.get('telefone_fornecedor')
             email_fornecedor = request.POST.get('email_fornecedor')
+            ativo = True
+            
+             
             try:
                 Fornecedor.objects.create(tipo_pessoa=tipo_pessoa,razao_social=razao_social_fornecedor,nome_fantasia=fantasia_fornecedor,documento=documento_fornecedor,telefone=telefone_fornecedor,email=email_fornecedor,
                 ativo=ativo)
@@ -131,6 +134,7 @@ def configuracao_view(request):
     especialidades, total_especialidades_ativas, mostrar_todos_especialidade, filtra_inativo_especialidade = filtrar_ativos_inativos(request, Especialidade, prefixo='especialidade')
     usuarios = User.objects.filter(ativo=True).all().select_related('profissional')
     bancos = ContaBancaria.objects.all()
+    profissionais = Profissional.objects.all()
     for b in bancos:print(b)
     print(bancos)
     fornecedores = Fornecedor.objects.all()
@@ -149,7 +153,7 @@ def configuracao_view(request):
         'user_tipo_choices': User._meta.get_field('tipo').choices,
         'bancos':bancos,
         'fornecedores':fornecedores,
-     
+        'profissionais':profissionais,
       
     })
 

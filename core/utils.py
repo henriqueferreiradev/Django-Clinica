@@ -5,7 +5,7 @@ from django.utils.text import slugify
 from django.conf import settings
 import locale
 import calendar
-from datetime import date, timedelta
+from datetime import time, datetime, timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect
@@ -66,7 +66,17 @@ def _tipo_beneficio(ag):
     if 'beneficio:brinde' in tags:
         return 'brinde'
     return None
+def gerar_horarios(inicio="07:00", fim="19:00"):
+    horarios = []
+    h, m = map(int, inicio.split(":"))
+    inicio_dt = datetime.combine(datetime.today(), time(h, m))
+    h, m = map(int, fim.split(":"))
+    fim_dt = datetime.combine(datetime.today(), time(h, m))
 
+    while inicio_dt <= fim_dt:
+        horarios.append(inicio_dt.strftime("%H:%M"))
+        inicio_dt += timedelta(minutes=30)
+    return horarios
 def gerar_mensagem_confirmacao(ag):
     """
     Mensagem de confirmação para WhatsApp/E-mail.
