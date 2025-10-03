@@ -334,25 +334,26 @@
 
     /* Mensagens de formulário */
     .form-message {
+        position: absolute;
+        bottom: 1em;
+        right: 1em;
         font-size: 0.85rem;
         margin-top: var(--espaco-xs);
-        padding: 0.75rem;
+        padding: 1.5em;
         border-radius: var(--borda-radius);
         display: none;
         font-weight: 500;
     }
 
     .form-message.success {
-        background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-        border-left: 4px solid var(--verde-sucesso);
-        color: var(--verde-sucesso);
+        background: var(--verde-sucesso);
+        color: var(--branco);
         display: block;
     }
 
     .form-message.error {
-        background: linear-gradient(to right, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
-        border-left: 4px solid var(--vermelho-alerta);
-        color: var(--vermelho-alerta);
+        background: var(--vermelho-alerta);
+        color: var(--branco);
         display: block;
     }
 
