@@ -252,7 +252,7 @@
 
     /* Tabelas - estilo agenda */
     .tabela-wrapper {
-        border: 1px solid var(--cinza-borda);
+
         border-radius: var(--borda-arredondada);
         overflow: hidden;
         margin-top: var(--espaco-lg);
@@ -263,7 +263,7 @@
         width: 100%;
         border-collapse: collapse;
         font-size: 0.9rem;
-        color: var(--preto);
+        color: var();
     }
 
     thead {
@@ -271,8 +271,7 @@
         color: var(--branco);
     }
 
-    th,
-    td {
+    th {
         padding: 1rem;
         border-bottom: 1px solid var(--cinza-borda);
         text-align: left;
@@ -281,8 +280,12 @@
     th {
         font-weight: 700;
         font-size: 0.85rem;
-        text-transform: uppercase;
+
         letter-spacing: 0.5px;
+    }
+
+    td {
+        padding: .5em;
     }
 
     tbody tr {
@@ -302,11 +305,11 @@
     .inativo {
         background-color: var(--vermelho-alerta) !important;
         opacity: 0.7;
-        color: var(--branco);
+        color: var(--preto);
     }
 
     .inativo td {
-        color: var(--branco);
+        color: var(--preto);
     }
 
     /* Status badges - estilo agenda */
@@ -539,7 +542,7 @@
 </style>
 {% endblock %}
 
-<span class="text">{% block topbar_title %}Configurações{% endblock %}</span>
+{% block topbar_title %}<span class="text"><i class='bx bx-cog'></i>Configurações</span>{% endblock %}
 
 {% block content %}
 <div class="content multipage">
@@ -805,9 +808,7 @@
             <input type="hidden" name="tipo" value="cadastro_bancos" />
             <div class="form">
                 <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i>Cadastro de Bancos</h2>
-                <div class="config-info">
-                    <i class='bx bx-info-circle'></i> Cadastre os bancos aqui.
-                </div>
+
                 <div class="form-grid">
                     <div class="form-group">
                         <label><i class='bx bx-analyse'></i> Codigo </label>
@@ -859,20 +860,19 @@
                 </thead>
                 <tbody>
                     {% for banco in bancos %}
-                    <tr class="{% if not servico.ativo %}inativo{% endif %}">
-                        <td>{{ banco.codigo_banco }} - {{ banco.nome_banco }} AG {{banco.agencia_banco}} C/C {{conta_banco}}-{{digito_banco}} </td>
+                    <tr class="{% if banco.ativo %}active{% else %}inativo{% endif %}">
+                        <td>{{ banco.conta_bancaria_extenso }}</td>
                         <td> {{ banco.chave_pix_banco }}</td>
-                      
+
                         <td>
                             <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
-                                {{ banco.ativo|yesno:"Ativo,Inativo" }}
+                                Ativo
                             </span>
                         </td>
                         <td>
                             <div class="acoes-cell">
                                 <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
-                                <button class="btn-acao excluir" title="Excluir"><i
-                                        class='bx bx-trash'></i></button>
+                                <button class="btn-acao excluir" title="Excluir"><i class='bx bx-trash'></i></button>
                             </div>
                         </td>
                     </tr>
@@ -893,9 +893,7 @@
         <input type="hidden" name="tipo" value="cadastro_fornecedores" />
         <div class="form">
             <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i>Cadastro de Fornecedores</h2>
-            <div class="config-info">
-                <i class='bx bx-info-circle'></i> Cadastre seus fornecedores aqui.
-            </div>
+
             <div class="form-grid">
                 <div class="form-group">
                     <label><i class='bx bx-analyse'></i> Tipo </label>

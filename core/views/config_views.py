@@ -99,15 +99,7 @@ def configuracao_view(request):
             except Exception as e:
                 print(e)
 
-            registrar_log(
-                usuario=request.user,
-                acao='Criação',
-                modelo='Conta Bancária',
-                #objeto_id=agendamento.id,
-                descricao=f'Nova conta bancária criada.'
-            )
-                
-            
+ 
             
             
         elif tipo == 'cadastro_fornecedores':

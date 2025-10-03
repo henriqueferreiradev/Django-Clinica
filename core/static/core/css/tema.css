@@ -21,7 +21,13 @@
   --cinza-borda: #ddd;
   --erro: #ff0000;
   --titulo-perfil: #64748b;
-
+  --dourado: #D4AF37;
+  --verde-sucesso: #10B981;
+  --vermelho-alerta: #EF4444;
+  --sombra-suave: 0 10px 40px rgba(0, 0, 0, 0.08);
+  --sombra-destaque: 0 15px 35px rgba(109, 57, 142, 0.15);
+  --borda-arredondada: 16px;
+  --transicao: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   /* Espaçamentos */
   --espaco-xs: 0.5rem;
   --espaco-sm: 1rem;

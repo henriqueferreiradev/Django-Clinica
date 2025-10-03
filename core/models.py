@@ -820,8 +820,13 @@ class ContaBancaria(models.Model):
     chave_pix_banco = models.CharField(max_length=150)
     tipo_conta_banco = models.CharField(max_length=20, choices=(('corrente', 'Corrente'), ('poupanca', 'Poupança')))
     ativo = models.BooleanField(default=False)
-    
- 
+    @property
+    def tipo_sigla(self) -> str:
+        return "C/C" if self.tipo_conta_banco == "corrente" else "C/P"
+
+    def conta_bancaria_extenso(self):
+        base = f'{self.codigo_banco} - {self.nome_banco} - Agência {self.agencia_banco} / Conta {self.conta_banco}-{self.digito_banco} {self.tipo_sigla}'
+        return base
     
     def __str__(self):
         return f"{self.nome_banco} - CC {self.agencia_banco}"
