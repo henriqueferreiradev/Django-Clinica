@@ -292,7 +292,7 @@
         transition: var(--transicao);
     }
 
- 
+
     tbody tr:hover {
         background: var(--roxoPrincipal-hover);
         transform: translateX(4px);
@@ -537,6 +537,16 @@
         background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
         border-left: 4px solid var(--verde-sucesso);
     }
+
+    .disp-card,
+    .week-grid {
+        display: grid;
+        grid-template-columns: 150px 100px repeat(6, 120px);
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #333;
+    }
 </style>
 {% endblock %}
 
@@ -551,7 +561,9 @@
             Especialidades</button>
         <button class="tab" data-target="servicos"><i class='bx bx-cog'></i> Serviços</button>
         <button class="tab" data-target="acessos"><i class='bx bx-user'></i> Acessos & Valores</button>
-        <button class="tab" data-target="agenda"><i class='bx bx-calendar'></i> Agenda</button>
+        <a href="#agenda" class="tab" data-target="agenda" role="button">
+            <i class='bx bx-calendar'></i> Agenda
+        </a>
         <button class="tab" data-target="financeiro"><i class='bx bx-dollar-circle'></i> Financeiro</button>
         <button class="tab" data-target="notificacoes"><i class='bx bx-bell'></i> Notificações</button>
         <button class="tab" data-target="pacotes"><i class='bx bx-gift'></i> Pacotes & Benefícios</button>
@@ -798,194 +810,198 @@
             </form>
         </div>
         <div class="form mt-6">
-            <div class="subsection-title"><i class='bx bx-user-check'></i> Disponibilidade por Profissional (escala base)</div>
+            <div class="subsection-title"><i class='bx bx-user-check'></i> Disponibilidade por Profissional (escala
+                base)</div>
             <div class="config-info">
-              <i class='bx bx-info-circle'></i> Marque os dias padrão de cada profissional. Os horários por dia são opcionais —
-              se deixados em branco, valem os horários gerais da clínica definidos acima.
+                <i class='bx bx-info-circle'></i> Marque os dias padrão de cada profissional. Os horários por dia são
+                opcionais —
+                se deixados em branco, valem os horários gerais da clínica definidos acima.
             </div>
-          
-            <form method="POST"  >
-              {% csrf_token %}
-              <input type="hidden" name="tipo" value="escala_base"/>
-          
-              {% for prof in profissionais %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="escala_base" />
+
+                {% for prof in profissionais %}
                 <div class="disp-card">
-                  <div class="disp-head">
+
                     <div class="pill"><i class='bx bx-user'></i> {{ prof.nome }}</div>
                     <div class="pill"><i class='bx bx-id-card'></i> ID: {{ prof.id }}</div>
-                  </div>
-          
-                  <div class="week-grid">
-                    <div class="day-label">
-                      <label>
-                        <input type="checkbox" name="disp[{{prof.id}}][seg][ativo]">
-                        Segunda
-                      </label>
+
+
+                    <div class="week-grid">
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][seg][ativo]">
+                                Segunda
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][seg][inicio]"
+                            placeholder="Início">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][seg][fim]" placeholder="Fim">
+                        -->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][ter][ativo]">
+                                Terça
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][ter][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][ter][fim]">
+-->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][qua][ativo]">
+                                Quarta
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][qua][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][qua][fim]">
+-->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][qui][ativo]">
+                                Quinta
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][qui][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][qui][fim]">
+-->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][sex][ativo]">
+                                Sexta
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][sex][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][sex][fim]">
+-->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][sab][ativo]">
+                                Sábado
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][sab][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][sab][fim]">
+-->
+
                     </div>
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][seg][inicio]" placeholder="Início">
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][seg][fim]" placeholder="Fim">
-          
-                    <div class="day-label">
-                      <label>
-                        <input type="checkbox" name="disp[{{prof.id}}][ter][ativo]">
-                        Terça
-                      </label>
-                    </div>
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][ter][inicio]">
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][ter][fim]">
-          
-                    <div class="day-label">
-                      <label>
-                        <input type="checkbox" name="disp[{{prof.id}}][qua][ativo]">
-                        Quarta
-                      </label>
-                    </div>
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][qua][inicio]">
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][qua][fim]">
-          
-                    <div class="day-label">
-                      <label>
-                        <input type="checkbox" name="disp[{{prof.id}}][qui][ativo]">
-                        Quinta
-                      </label>
-                    </div>
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][qui][inicio]">
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][qui][fim]">
-          
-                    <div class="day-label">
-                      <label>
-                        <input type="checkbox" name="disp[{{prof.id}}][sex][ativo]">
-                        Sexta
-                      </label>
-                    </div>
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][sex][inicio]">
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][sex][fim]">
-          
-                    <div class="day-label">
-                      <label>
-                        <input type="checkbox" name="disp[{{prof.id}}][sab][ativo]">
-                        Sábado
-                      </label>
-                    </div>
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][sab][inicio]">
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][sab][fim]">
-          
-                    <div class="day-label">
-                      <label>
-                        <input type="checkbox" name="disp[{{prof.id}}][dom][ativo]">
-                        Domingo
-                      </label>
-                    </div>
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][dom][inicio]">
-                    <input class="input-field" type="time" name="disp[{{prof.id}}][dom][fim]">
-                  </div>
                 </div>
-              {% empty %}
+                {% empty %}
                 <div class="config-info"><i class='bx bx-info-circle'></i> Nenhum profissional encontrado.</div>
-              {% endfor %}
-          
-              <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Escala Base</button>
+                {% endfor %}
+
+                <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Escala Base</button>
             </form>
-          </div>
-          
-          {# =========================
-             2) EXCEÇÕES POR DATA (ADICIONAR)
-             ========================= #}
-          <div class="form mt-6">
+        </div>
+
+        <div class="form mt-6">
             <div class="subsection-title"><i class='bx bx-calendar-plus'></i> Exceções de Disponibilidade por Data</div>
             <div class="config-info">
-              <i class='bx bx-info-circle'></i> Use para ajustes pontuais (ex.: veio numa terça excepcionalmente ou faltou num dia fixo).
-              Marque <b>Disponível</b> para forçar presença no dia; desmarcado significa <b>Indisponível</b> (sobrescreve a escala).
+                <i class='bx bx-info-circle'></i> Use para ajustes pontuais (ex.: veio numa terça excepcionalmente ou
+                faltou num dia fixo).
+                Marque <b>Disponível</b> para forçar presença no dia; desmarcado significa <b>Indisponível</b>
+                (sobrescreve a escala).
             </div>
-          
-            <form method="POST"  >
-              {% csrf_token %}
-              <input type="hidden" name="tipo" value="excecao_add"/>
-          
-              <div class="form-grid">
-                <div class="form-group">
-                  <label><i class='bx bx-calendar'></i> Data</label>
-                  <input class="input-field" type="date" name="exc[0][data]" required>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="excecao_add" />
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-calendar'></i> Data</label>
+                        <input class="input-field" type="date" name="exc[0][data]" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-user'></i> Profissional</label>
+                        <select class="input-field" name="exc[0][profissional_id]" required>
+                            <option value="" selected disabled>Selecione</option>
+                            {% for p in profissionais %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-toggle-left'></i> Disponível no dia?</label>
+                        <label class="pill"><input type="checkbox" name="exc[0][ativo]" checked> Disponível</label>
+                    </div>
+
+                    {# segunda linha extra opcional, sem JS #}
+                    <div class="form-group">
+                        <input class="input-field" type="date" name="exc[1][data]">
+                    </div>
+                    <div class="form-group">
+                        <select class="input-field" name="exc[1][profissional_id]">
+                            <option value="" selected disabled>Selecione</option>
+                            {% for p in profissionais %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="pill"><input type="checkbox" name="exc[1][ativo]"> Disponível</label>
+                    </div>
                 </div>
-                <div class="form-group">
-                  <label><i class='bx bx-user'></i> Profissional</label>
-                  <select class="input-field" name="exc[0][profissional_id]" required>
-                    <option value="" selected disabled>Selecione</option>
-                    {% for p in profissionais %}
-                      <option value="{{ p.id }}">{{ p.nome }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label><i class='bx bx-toggle-left'></i> Disponível no dia?</label>
-                  <label class="pill"><input type="checkbox" name="exc[0][ativo]" checked> Disponível</label>
-                </div>
-          
-                {# segunda linha extra opcional, sem JS #}
-                <div class="form-group">
-                  <input class="input-field" type="date" name="exc[1][data]">
-                </div>
-                <div class="form-group">
-                  <select class="input-field" name="exc[1][profissional_id]">
-                    <option value="" selected disabled>Selecione</option>
-                    {% for p in profissionais %}
-                      <option value="{{ p.id }}">{{ p.nome }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="pill"><input type="checkbox" name="exc[1][ativo]"> Disponível</label>
-                </div>
-              </div>
-          
-              <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Exceções</button>
+
+                <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Exceções</button>
             </form>
-          </div>
-          
-          {# =========================
-             3) EXCEÇÕES DO MÊS (LISTA / REMOVER)
-             ========================= #}
-          <div class="form mt-6">
+        </div>
+
+        {# =========================
+        3) EXCEÇÕES DO MÊS (LISTA / REMOVER)
+        ========================= #}
+        <div class="form mt-6">
             <div class="subsection-title"><i class='bx bx-calendar-event'></i> Exceções cadastradas (mês atual)</div>
-          
+
             <table class="table-compact">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Profissional</th>
-                  <th>Status no dia</th>
-                  <th>Observação</th>
-                  <th style="width:1%"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for e in excecoes_mes %}
-                  <tr>
-                    <td>{{ e.data|date:"d/m/Y" }}</td>
-                    <td>{{ e.profissional.nome }}</td>
-                    <td>
-                      {% if e.ativo %}
-                        <span class="badge-on">Disponível</span>
-                      {% else %}
-                        <span class="badge-off">Indisponível</span>
-                      {% endif %}
-                    </td>
-                    <td>{{ e.observacao }}</td>
-                    <td>
-                      <form method="POST" >
-                        {% csrf_token %}
-                        <input type="hidden" name="tipo" value="excecao_delete"/>
-                        <input type="hidden" name="excecao_id" value="{{ e.id }}"/>
-                        <button class="btn-submit" style="padding:.35rem .6rem"><i class='bx bx-trash'></i></button>
-                      </form>
-                    </td>
-                  </tr>
-                {% empty %}
-                  <tr><td colspan="5">Nenhuma exceção cadastrada este mês.</td></tr>
-                {% endfor %}
-              </tbody>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Profissional</th>
+                        <th>Status no dia</th>
+                        <th>Observação</th>
+                        <th style="width:1%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in excecoes_mes %}
+                    <tr>
+                        <td>{{ e.data|date:"d/m/Y" }}</td>
+                        <td>{{ e.profissional.nome }}</td>
+                        <td>
+                            {% if e.ativo %}
+                            <span class="badge-on">Disponível</span>
+                            {% else %}
+                            <span class="badge-off">Indisponível</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ e.observacao }}</td>
+                        <td>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="tipo" value="excecao_delete" />
+                                <input type="hidden" name="excecao_id" value="{{ e.id }}" />
+                                <button class="btn-submit" style="padding:.35rem .6rem"><i
+                                        class='bx bx-trash'></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">Nenhuma exceção cadastrada este mês.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-          </div>
+        </div>
     </div>
 
     <!-- Aba Financeiro -->
@@ -1136,10 +1152,10 @@
                     <td>{{ fornecedor.documento }}</td>
                     <td>{{ fornecedor.razao_social }}</td>
                     <td>{{ fornecedor.nome_fantasia }}</td>
-                    
+
                     <td>{{ fornecedor.telefone }}</td>
                     <td>{{ fornecedor.email }}</td>
-                   
+
 
                     <td>
                         <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
