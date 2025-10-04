@@ -627,8 +627,14 @@
                             <td>
                                 <div class="acoes-cell">
                                     <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
-                                    <button class="btn-acao excluir" title="Excluir"><i
-                                            class='bx bx-trash'></i></button>
+                                    <!-- CORREÇÃO: Adicionar form para inativação -->
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="especialidade_id" value="{{ especialidade.id }}">
+                                        <button type="submit" name="tipo" value="inativar_especialidade" class="btn-acao excluir" title="Inativar">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -810,7 +816,7 @@
             </form>
         </div>
         <div class="form mt-6">
-            <div class="subsection-title"><i class='bx bx-user-check'></i> Disponibilidade por Profissional (escala
+            <div class="form_titulo"><i class='bx bx-user-check'></i> Disponibilidade por Profissional (escala
                 base)</div>
             <div class="config-info">
                 <i class='bx bx-info-circle'></i> Marque os dias padrão de cada profissional. Os horários por dia são
@@ -903,7 +909,7 @@
         </div>
 
         <div class="form mt-6">
-            <div class="subsection-title"><i class='bx bx-calendar-plus'></i> Exceções de Disponibilidade por Data</div>
+            <div class="form_titulo"><i class='bx bx-calendar-plus'></i> Exceções de Disponibilidade por Data</div>
             <div class="config-info">
                 <i class='bx bx-info-circle'></i> Use para ajustes pontuais (ex.: veio numa terça excepcionalmente ou
                 faltou num dia fixo).
@@ -955,9 +961,7 @@
             </form>
         </div>
 
-        {# =========================
-        3) EXCEÇÕES DO MÊS (LISTA / REMOVER)
-        ========================= #}
+
         <div class="form mt-6">
             <div class="subsection-title"><i class='bx bx-calendar-event'></i> Exceções cadastradas (mês atual)</div>
 

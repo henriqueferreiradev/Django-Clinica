@@ -5,7 +5,7 @@ from django.utils.text import slugify
 from django.conf import settings
 import locale
 import calendar
-from datetime import time, datetime, timedelta
+from datetime import time, datetime, timedelta, date
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect
