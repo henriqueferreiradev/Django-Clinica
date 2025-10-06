@@ -547,6 +547,42 @@
         padding: 0.5rem 0;
         border-bottom: 1px solid #333;
     }
+    .week-grid {
+        border: none;
+    }
+    /* Estilos para edição em linha */
+.editable {
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.editable.editing {
+    background-color: var(--roxoPrincipal-hover);
+}
+
+.edit-input {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    border: 2px solid var(--roxoPrincipal);
+    border-radius: var(--borda-radius);
+    background: var(--branco);
+    font-size: 0.9rem;
+}
+
+.editable .display-text {
+    padding: 0.25rem 0;
+}
+
+.btn-acao.salvar:hover {
+    background: var(--verde-sucesso);
+    color: var(--branco);
+}
+
+.btn-acao.cancelar:hover {
+    background: var(--vermelho-alerta);
+    color: var(--branco);
+}
 </style>
 {% endblock %}
 
@@ -564,12 +600,13 @@
         <a href="#agenda" class="tab" data-target="agenda" role="button">
             <i class='bx bx-calendar'></i> Agenda
         </a>
-        <button class="tab" data-target="financeiro"><i class='bx bx-dollar-circle'></i>Financeiro</button>
-        <button class="tab" data-target="notificacoes"><i class='bx bx-bell'></i>Notificações</button>
-        <button class="tab" data-target="pacotes"><i class='bx bx-gift'></i>Pacotes & Benefícios</button>
-        <button class="tab" data-target="empresa"><i class='bx bx-building'></i>Empresa & Franquia</button>
-        <button class="tab" data-target="estoque"><i class='bx bx-box'></i>Estoque</button>
-        <button class="tab" data-target="sistema"><i class='bx bx-paint'></i>Sistema</button>
+        <button class="tab" data-target="financeiro"><i class='bx bx-dollar-circle'></i> Financeiro</button>
+        <button class="tab" data-target="notificacoes"><i class='bx bx-bell'></i> Notificações</button>
+        <button class="tab" data-target="pacotes"><i class='bx bx-gift'></i> Pacotes & Benefícios</button>
+        <button class="tab" data-target="empresa"><i class='bx bx-building'></i> Empresa & Franquia</button>
+        <button class="tab" data-target="estoque"><i class='bx bx-box'></i> Estoque</button>
+
+        <button class="tab" data-target="sistema"><i class='bx bx-paint'></i> Sistema</button>
         <button class="tab" data-target="seguranca"><i class='bx bx-shield'></i> Segurança</button>
     </div>
 
@@ -611,27 +648,36 @@
                     <tbody>
                         {% for especialidade in especialidades %}
                         <tr class="{% if not especialidade.ativo %}inativo{% endif %}">
-                            <td>{{ especialidade.nome }}</td>
-                            <td>
-                                <div
-                                    style="background-color: {{ especialidade.cor }}; width: 60px; height: 24px; border-radius: var(--borda-radius); border: 2px solid var(--cinza-borda);">
-                                </div>
+                            <td class="editable" data-field="nome" data-id="{{ especialidade.id }}" data-model="especialidade">
+                                <span class="display-text">{{ especialidade.nome }}</span>
+                                <input type="text" class="edit-input" value="{{ especialidade.nome }}" style="display: none;">
+                            </td>
+                            <td class="editable" data-field="cor" data-id="{{ especialidade.id }}" data-model="especialidade">
+                                <span class="display-text">
+                                    <div style="background-color: {{ especialidade.cor }}; width: 60px; height: 24px; border-radius: var(--borda-radius); border: 2px solid var(--cinza-borda);"></div>
+                                </span>
+                                <input type="color" class="edit-input" value="{{ especialidade.cor }}" style="display: none; width: 60px; height: 30px;">
                             </td>
                             <td>
-                                <span
-                                    class="status-badge {% if especialidade.ativo %}active{% else %}inactive{% endif %}">
+                                <span class="status-badge {% if especialidade.ativo %}active{% else %}inactive{% endif %}">
                                     {{ especialidade.ativo|yesno:"Ativo,Inativo" }}
                                 </span>
                             </td>
                             <td>
                                 <div class="acoes-cell">
-                                    <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
-                                    <!-- CORREÇÃO: Adicionar form para inativação -->
+                                    <button class="btn-acao salvar" title="Salvar" style="display: none;" onclick="salvarEdicao(this)">
+                                        <i class='bx bx-check'></i>
+                                    </button>
+                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;" onclick="cancelarEdicao(this)">
+                                        <i class='bx bx-x'></i>
+                                    </button>
+                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
                                     <form method="post" style="display: inline;">
                                         {% csrf_token %}
                                         <input type="hidden" name="especialidade_id" value="{{ especialidade.id }}">
-                                        <button type="submit" name="tipo" value="inativar_especialidade"
-                                            class="btn-acao excluir" title="Inativar">
+                                        <button type="submit" name="tipo" value="inativar_especialidade" class="btn-acao excluir" title="Inativar">
                                             <i class='bx bx-trash'></i>
                                         </button>
                                     </form>
@@ -937,13 +983,23 @@
                     </div>
                     <div class="form-group">
                         <label><i class='bx bx-toggle-left'></i> Disponível no dia?</label>
-                        <label class="checkbox-option"><input type="checkbox" name="exc[0][ativo]" checked>
-                            Disponível</label>
+                        <label class="pill"><input type="checkbox" name="exc[0][ativo]" checked> Disponível</label>
                     </div>
 
-
+                    {# segunda linha extra opcional, sem JS #}
                     <div class="form-group">
-                        <label class="checkbox-option"><input type="checkbox" name="exc[1][ativo]"> Disponível</label>
+                        <input class="input-field" type="date" name="exc[1][data]">
+                    </div>
+                    <div class="form-group">
+                        <select class="input-field" name="exc[1][profissional_id]">
+                            <option value="" selected disabled>Selecione</option>
+                            {% for p in profissionais %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="pill"><input type="checkbox" name="exc[1][ativo]"> Disponível</label>
                     </div>
                 </div>
 
@@ -1142,13 +1198,31 @@
             <tbody>
                 {% for fornecedor in fornecedores %}
                 <tr class="{% if fornecedor.ativo %}active{% else %}inativo{% endif %}">
-                    <td>{{ fornecedor.tipo_pessoa }}</td>
-                    <td>{{ fornecedor.documento }}</td>
-                    <td>{{ fornecedor.razao_social }}</td>
-                    <td>{{ fornecedor.nome_fantasia }}</td>
-
-                    <td>{{ fornecedor.telefone }}</td>
-                    <td>{{ fornecedor.email }}</td>
+                    <td class="editable" data-field="tipo_pessoa" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                        <span class="display-text">{{ fornecedor.nome }}</span>
+                        <input type="text" class="edit-input" value="{{ fornecedor.nome }}" style="display: none;">
+                    </td>
+                    <td class="editable" data-field="documento" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                        <span class="display-text">{{ fornecedor.documento }}</span>
+                        <input type="text" class="edit-input" value="{{ fornecedor.documento }}" style="display: none;">
+                    </td>
+                    <td class="editable" data-field="razao_social" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                        <span class="display-text">{{ fornecedor.razao_social }}</span>
+                        <input type="text" class="edit-input" value="{{ fornecedor.razao_social }}" style="display: none;">
+                    </td>
+                    <td class="editable" data-field="nome_fantasia" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                        <span class="display-text">{{ fornecedor.nome_fantasia }}</span>
+                        <input type="text" class="edit-input" value="{{ fornecedor.nome_fantasia }}" style="display: none;">
+                    </td>
+                    <td class="editable" data-field="telefone" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                        <span class="display-text">{{ fornecedor.telefone }}</span>
+                        <input type="text" class="edit-input" value="{{ fornecedor.telefone }}" style="display: none;">
+                    </td>
+                    <td class="editable" data-field="email" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                        <span class="display-text">{{ fornecedor.email }}</span>
+                        <input type="text" class="edit-input" value="{{ fornecedor.email }}" style="display: none;">
+                    </td>
+ 
 
 
                     <td>
@@ -1158,8 +1232,23 @@
                     </td>
                     <td>
                         <div class="acoes-cell">
-                            <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
-                            <button class="btn-acao excluir" title="Excluir"><i class='bx bx-trash'></i></button>
+                            <button class="btn-acao salvar" title="Salvar" style="display: none;" onclick="salvarEdicao(this)">
+                                <i class='bx bx-check'></i>
+                            </button>
+                            <button class="btn-acao cancelar" title="Cancelar" style="display: none;" onclick="cancelarEdicao(this)">
+                                <i class='bx bx-x'></i>
+                            </button>
+                            <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                <i class='bx bx-edit'></i>
+                            </button>
+                            <!-- Botão de inativar -->
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="NOME_DO_MODEL_id" value="{{ objeto.id }}">
+                                <button type="submit" name="tipo" value="inativar_NOME_DO_MODEL" class="btn-acao excluir" title="Inativar">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
@@ -1626,6 +1715,7 @@
 {% endblock %}
 
 {% block scripts %}
+
 <script>
     // Sistema de tabs
     document.querySelectorAll('.tab').forEach(tab => {
@@ -1760,5 +1850,180 @@
 
     // Inicializar scroll quando a página carregar
     document.addEventListener('DOMContentLoaded', scrollToActiveTab);
+    // Sistema de edição em linha
+let editingRow = null;
+let originalValues = {};
+
+function iniciarEdicao(button) {
+    const row = button.closest('tr');
+    if (editingRow && editingRow !== row) {
+        cancelarEdicao(editingRow.querySelector('.cancelar'));
+    }
+
+    editingRow = row;
+    originalValues = {};
+
+    // Esconder botão editar e mostrar salvar/cancelar
+    row.querySelector('.btn-acao.editar').style.display = 'none';
+    row.querySelector('.btn-acao.salvar').style.display = 'inline-flex';
+    row.querySelector('.btn-acao.cancelar').style.display = 'inline-flex';
+
+    // Ativar todos os campos editáveis da linha
+    const editableCells = row.querySelectorAll('.editable');
+    editableCells.forEach(cell => {
+        cell.classList.add('editing');
+        const displayText = cell.querySelector('.display-text');
+        const editInput = cell.querySelector('.edit-input');
+        
+        // Salvar valor original
+        originalValues[cell.dataset.field] = editInput.value;
+        
+        // Mostrar input, esconder texto
+        displayText.style.display = 'none';
+        editInput.style.display = 'block';
+        editInput.focus();
+    });
+}
+
+function cancelarEdicao(button) {
+    const row = button.closest('tr');
+    
+    // Restaurar valores originais
+    const editableCells = row.querySelectorAll('.editable');
+    editableCells.forEach(cell => {
+        cell.classList.remove('editing');
+        const displayText = cell.querySelector('.display-text');
+        const editInput = cell.querySelector('.edit-input');
+        
+        editInput.value = originalValues[cell.dataset.field];
+        displayText.style.display = 'block';
+        editInput.style.display = 'none';
+    });
+
+    // Restaurar botões
+    row.querySelector('.btn-acao.editar').style.display = 'inline-flex';
+    row.querySelector('.btn-acao.salvar').style.display = 'none';
+    row.querySelector('.btn-acao.cancelar').style.display = 'none';
+    
+    editingRow = null;
+    originalValues = {};
+}
+
+function salvarEdicao(button) {
+    const row = button.closest('tr');
+    const model = row.querySelector('.editable').dataset.model;
+    const id = row.querySelector('.editable').dataset.id;
+    
+    const formData = new FormData();
+    formData.append('tipo', `editar_${model}`);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    formData.append(`${model}_id`, id);
+
+    // Coletar dados dos campos editáveis
+    const editableCells = row.querySelectorAll('.editable');
+    let hasChanges = false;
+    
+    editableCells.forEach(cell => {
+        const field = cell.dataset.field;
+        const editInput = cell.querySelector('.edit-input');
+        const displayText = cell.querySelector('.display-text');
+        
+        if (editInput.value !== originalValues[field]) {
+            hasChanges = true;
+        }
+        
+        formData.append(field, editInput.value);
+        
+        // Atualizar display
+        if (field === 'cor') {
+            displayText.innerHTML = `<div style="background-color: ${editInput.value}; width: 60px; height: 24px; border-radius: var(--borda-radius); border: 2px solid var(--cinza-borda);"></div>`;
+        } else if (field === 'valor') {
+            displayText.textContent = `R$ ${parseFloat(editInput.value).toFixed(2)}`;
+        } else {
+            displayText.textContent = editInput.value;
+        }
+        
+        // Esconder input, mostrar texto
+        displayText.style.display = 'block';
+        editInput.style.display = 'none';
+        cell.classList.remove('editing');
+    });
+
+    if (!hasChanges) {
+        cancelarEdicao(button);
+        return;
+    }
+
+    // Enviar para o servidor
+    fetch('', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarMensagem('Alterações salvas com sucesso!', 'success');
+            
+            // Restaurar botões
+            row.querySelector('.btn-acao.editar').style.display = 'inline-flex';
+            row.querySelector('.btn-acao.salvar').style.display = 'none';
+            row.querySelector('.btn-acao.cancelar').style.display = 'none';
+            
+            editingRow = null;
+            originalValues = {};
+        } else {
+            mostrarMensagem('Erro ao salvar alterações: ' + data.error, 'error');
+            cancelarEdicao(button);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        mostrarMensagem('Erro ao salvar alterações', 'error');
+        cancelarEdicao(button);
+    });
+}
+
+// Duplo clique para editar
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.editable').forEach(cell => {
+        cell.addEventListener('dblclick', function() {
+            const row = this.closest('tr');
+            const editButton = row.querySelector('.btn-acao.editar');
+            if (editButton && editButton.style.display !== 'none') {
+                iniciarEdicao(editButton);
+            }
+        });
+    });
+});
+
+// Função para mostrar mensagens
+function mostrarMensagem(mensagem, tipo) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `form-message ${tipo}`;
+    messageDiv.textContent = mensagem;
+    messageDiv.style.position = 'fixed';
+    messageDiv.style.top = '20px';
+    messageDiv.style.right = '20px';
+    messageDiv.style.zIndex = '1000';
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 5000);
+}
+
+// Tecla ESC para cancelar edição
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && editingRow) {
+        const cancelButton = editingRow.querySelector('.btn-acao.cancelar');
+        if (cancelButton) {
+            cancelarEdicao(cancelButton);
+        }
+    }
+});
 </script>
 {% endblock %}

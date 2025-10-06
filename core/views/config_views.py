@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from core.models import Fornecedor,Paciente, User,Especialidade,Profissional, ContaBancaria, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
@@ -15,7 +16,11 @@ def configuracao_view(request):
      
   
 }
-
+    '''
+    =====================================================================================
+                                        CRIAÇÃO
+    =====================================================================================
+    '''
 
     if request.method == "POST":
         tipo = request.POST.get('tipo')
@@ -117,6 +122,57 @@ def configuracao_view(request):
                 ativo=ativo)
             except Exception as e:
                 print(e)
+        '''
+        =====================================================================================
+                                            EDIÇÃO
+        =====================================================================================
+        '''
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    tipo = request.POST.get('tipo')
+                    
+                    if tipo == 'editar_especialidade':
+                        especialidade_id = request.POST.get('especialidade_id')
+                        nome = request.POST.get('nome')
+                        cor = request.POST.get('cor')
+                        
+                        try:
+                            especialidade = Especialidade.objects.get(id=especialidade_id)
+                            especialidade.nome = nome
+                            especialidade.cor = cor
+                            especialidade.save()
+                            return JsonResponse({'success': True})
+                        except Exception as e:
+                            return JsonResponse({'success': False, 'error': str(e)})
+                    
+                    if tipo == 'editar_fornecedor':
+                        
+                        fornecedor_id = request.POST.get('fornecedor_id')
+                        tipo_pessoa = request.POST.get('tipo_pessoa')
+                        razao_social = request.POST.get('razao_social')
+                        nome_fantasia = request.POST.get('nome_fantasia')
+                        documento = request.POST.get('documento')
+                        telefone = request.POST.get('telefone')
+                        email = request.POST.get('email')
+                        
+                        try:
+                            fornecedor = Fornecedor.objects.get(id=fornecedor_id)
+                            fornecedor.tipo_pessoa = tipo_pessoa
+                            fornecedor.razao_social = razao_social
+                            fornecedor.nome_fantasia = nome_fantasia
+                            fornecedor.documento = documento
+                            fornecedor.telefone = telefone
+                            fornecedor.email = email
+                            
+                            
+                            return JsonResponse({'success': True})
+                        except Exception as e:
+                            return JsonResponse({'success': False, 'error': str(e)})
+                
+        '''
+        =====================================================================================
+                                            INATIVAÇÃO
+        =====================================================================================
+        '''
         if tipo:
             # Exemplo: tipo == 'inativar_servico' → ação = 'inativar', modelo_str = 'servico'
             if '_' in tipo:
