@@ -69,6 +69,7 @@ def agenda_view(request):
 
 def agenda_board(request):
     hoje = now().date()
+    hoje = '2025-10-03'
     agendamentos = Agendamento.objects.filter(data=hoje)
 
     # pega lista única de profissionais que aparecem como profissional_1
