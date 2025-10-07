@@ -144,7 +144,7 @@ def configuracao_view(request):
                         except Exception as e:
                             return JsonResponse({'success': False, 'error': str(e)})
                     
-                    if tipo == 'editar_fornecedor':
+                    elif tipo == 'editar_fornecedor':
                         
                         fornecedor_id = request.POST.get('fornecedor_id')
                         tipo_pessoa = request.POST.get('tipo_pessoa')
@@ -162,6 +162,7 @@ def configuracao_view(request):
                             fornecedor.documento = documento
                             fornecedor.telefone = telefone
                             fornecedor.email = email
+                            fornecedor.save()
                             
                             
                             return JsonResponse({'success': True})
