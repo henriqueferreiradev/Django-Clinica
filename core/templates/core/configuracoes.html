@@ -1260,8 +1260,8 @@
                             <!-- Botão de inativar -->
                             <form method="post" style="display: inline;">
                                 {% csrf_token %}
-                                <input type="hidden" name="NOME_DO_MODEL_id" value="{{ objeto.id }}">
-                                <button type="submit" name="tipo" value="inativar_NOME_DO_MODEL"
+                                <input type="hidden" name="fornecedor_id" value="{{ fornecedor.id }}">
+                                <button type="submit" name="tipo" value="inativar_especialidade"
                                     class="btn-acao excluir" title="Inativar">
                                     <i class='bx bx-trash'></i>
                                 </button>
