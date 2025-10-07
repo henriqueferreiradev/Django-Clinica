@@ -595,27 +595,48 @@
 
     <!-- Abas -->
     <div class="tabs">
-        <button class="tab active" data-target="especialidades"><i class='bx bx-book-content'></i>
-            Especialidades</button>
-        <button class="tab" data-target="servicos"><i class='bx bx-cog'></i> Serviços</button>
-        <button class="tab" data-target="acessos"><i class='bx bx-user'></i> Acessos & Valores</button>
-        <a href="#agenda" class="tab" data-target="agenda" role="button">
+        <button class="tab active" data-target="especialidades" data-section="especialidades">
+            <i class='bx bx-book-content'></i> Especialidades
+        </button>
+        <button class="tab" data-target="servicos" data-section="servicos">
+            <i class='bx bx-cog'></i> Serviços
+        </button>
+        <button class="tab" data-target="acessos" data-section="acessos">
+            <i class='bx bx-user'></i> Acessos & Valores
+        </button>
+        <a href="#agenda" class="tab" data-target="agenda" data-section="agenda" role="button">
             <i class='bx bx-calendar'></i> Agenda
         </a>
-        <button class="tab" data-target="financeiro"><i class='bx bx-dollar-circle'></i> Financeiro</button>
-        <button class="tab" data-target="notificacoes"><i class='bx bx-bell'></i> Notificações</button>
-        <button class="tab" data-target="pacotes"><i class='bx bx-gift'></i> Pacotes & Benefícios</button>
-        <button class="tab" data-target="empresa"><i class='bx bx-building'></i> Empresa & Franquia</button>
-        <button class="tab" data-target="estoque"><i class='bx bx-box'></i> Estoque</button>
-
-        <button class="tab" data-target="sistema"><i class='bx bx-paint'></i> Sistema</button>
-        <button class="tab" data-target="seguranca"><i class='bx bx-shield'></i> Segurança</button>
+        <button class="tab" data-target="financeiro" data-section="financeiro">
+            <i class='bx bx-dollar-circle'></i> Financeiro
+        </button>
+        <button class="tab" data-target="notificacoes" data-section="notificacoes">
+            <i class='bx bx-bell'></i> Notificações
+        </button>
+        <button class="tab" data-target="pacotes" data-section="pacotes">
+            <i class='bx bx-gift'></i> Pacotes & Benefícios
+        </button>
+        <button class="tab" data-target="empresa" data-section="empresa">
+            <i class='bx bx-building'></i> Empresa & Franquia
+        </button>
+        <button class="tab" data-target="estoque" data-section="estoque">
+            <i class='bx bx-box'></i> Estoque
+        </button>
+        <button class="tab" data-target="sistema" data-section="sistema">
+            <i class='bx bx-paint'></i> Sistema
+        </button>
+        <button class="tab" data-target="seguranca" data-section="seguranca">
+            <i class='bx bx-shield'></i> Segurança
+        </button>
     </div>
+    
 
     <!-- Aba Especialidades -->
     <div class="tab-content active" id="especialidades">
         <div class="form">
+            
             <h2 class="form_titulo"><i class='bx bx-book-content'></i> Gerenciar Especialidades</h2>
+            
             <form method="post" id="form-especialidade">
                 {% csrf_token %}
                 <input type="hidden" name="tipo" value="especialidade" />
@@ -772,6 +793,74 @@
                             <td colspan="5" class="empty-state">
                                 <i class='bx bx-inbox'></i>
                                 <p>Nenhum serviço cadastrado</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tbody>
+                        {% for servico in servicos %}
+                        <tr class="{% if not servico.ativo %} inactive{% endif %}">
+                            <td class="editable" data-field="tipo_conta_banco" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.get_tipo_conta_banco_display }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.tipo_conta_banco }}" style="display: none;">
+                            </td>
+                            <td class="editable" data-field="codigo_banco" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.codigo_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.codigo_banco }}" style="display: none;">
+                            </td>
+                            <td class="editable" data-field="nome_banco" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.nome_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.nome_banco  }}" style="display: none;">
+                            </td>
+                            <td class="editable" data-field="conta_banco" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.conta_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.conta_banco }}" style="display: none;">
+                            </td>
+                            <td class="editable" data-field="digito_banco" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.digito_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.digito_banco  }}" style="display: none;">
+                            </td>
+                            <td class="editable" data-field="chave_pix_banco" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.chave_pix_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.chave_pix_banco }}" style="display: none;">
+                            </td>
+    
+                            <td>
+                                <span class="status-badge {% if servico.ativo %}active{% else %}inactive{% endif %}">
+                                    {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="acoes-cell">
+                                    <button class="btn-acao salvar" title="Salvar" style="display: none;" 
+                                            onclick="salvarEdicao(this)">
+                                        <i class='bx bx-check'></i>
+                                    </button>
+                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;" 
+                                            onclick="cancelarEdicao(this)">
+                                        <i class='bx bx-x'></i>
+                                    </button>
+                                    <button class="btn-acao editar" title="Editar" 
+                                            onclick="iniciarEdicao(this)">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
+                                    <!-- Botão de inativar -->
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="servico_id" value="{{ servico.id }}">
+                                        <button type="submit" name="tipo" value="inativar_servico"
+                                                class="btn-acao excluir" title="Inativar">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class='bx bx-inbox'></i>
+                                <p>Nenhum fornecedor cadastrado</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -1066,86 +1155,132 @@
         </div>
     </div>
 
-    <!-- Aba Financeiro -->
-    <div class="tab-content" id="financeiro">
-        <form method="post" id="form-especialidade">
+<!-- Aba Financeiro -->
+<div class="tab-content" id="financeiro">
+    <!-- Seção Bancos -->
+    <div class="form">
+        <form method="post" id="form-bancos">
             {% csrf_token %}
             <input type="hidden" name="tipo" value="cadastro_bancos" />
-            <div class="form">
-                <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i>Cadastro de Bancos</h2>
+            <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i> Cadastro de Bancos</h2>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-analyse'></i> Codigo </label>
-                        <input class="input-field" type="number" name="codigo_banco" placeholder="Ex.: 001">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-pie-chart-alt-2'></i>Nome Banco</label>
-                        <input class="input-field" type="text" name="nome_banco" placeholder="Ex.: Banco do Brasil">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i>Agência</label>
-                        <input class="input-field" type="number" step="0.1" name="agencia_banco"
-                            placeholder="Ex.: 1234">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i>Conta</label>
-                        <input class="input-field" type="number" step="0.1" name="conta_banco" placeholder="Ex.: 56789">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i>Digito</label>
-                        <input class="input-field" type="number" step="0.1" name="digito_banco" placeholder="Ex.: 1">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-analyse'></i> Tipo </label>
-                        <select class="input-field" name="tipo_conta_banco">
-                            <option disabled selected>-- Selecione --</option>
-                            <option value="corrente">Conta Corrente</option>
-                            <option value="poupanca">Conta Poupança</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i>Chave Pix</label>
-                        <input class="input-field" type="text" name="chave_pix_banco"
-                            placeholder="Ex.: CPF, CNPJ, telefone, e-mail ou aleatória">
-                    </div>
-
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class='bx bx-analyse'></i> Código</label>
+                    <input class="input-field" type="number" name="codigo_banco" placeholder="Ex.: 001">
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Banco</button>
+                <div class="form-group">
+                    <label><i class='bx bx-pie-chart-alt-2'></i> Nome Banco</label>
+                    <input class="input-field" type="text" name="nome_banco" placeholder="Ex.: Banco do Brasil">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-error'></i> Agência</label>
+                    <input class="input-field" type="number" step="0.1" name="agencia_banco" placeholder="Ex.: 1234">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-error'></i> Conta</label>
+                    <input class="input-field" type="number" step="0.1" name="conta_banco" placeholder="Ex.: 56789">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-error'></i> Dígito</label>
+                    <input class="input-field" type="number" step="0.1" name="digito_banco" placeholder="Ex.: 1">
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-analyse'></i> Tipo</label>
+                    <select class="input-field" name="tipo_conta_banco">
+                        <option disabled selected>-- Selecione --</option>
+                        <option value="corrente">Conta Corrente</option>
+                        <option value="poupanca">Conta Poupança</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class='bx bx-error'></i> Chave Pix</label>
+                    <input class="input-field" type="text" name="chave_pix_banco" 
+                           placeholder="Ex.: CPF, CNPJ, telefone, e-mail ou aleatória">
+                </div>
+            </div>
+            <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Banco</button>
         </form>
+
+        <!-- Tabela de Bancos DENTRO da div.form -->
         <div class="tabela-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>Banco</th>
+                        <th>Tipo</th>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Conta</th>
+                        <th>Digito</th>
                         <th>Chave Pix</th>
-                        <th>Status</th>
+                        <th>Situação</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for banco in bancos %}
-                    <tr class="{% if banco.ativo %}active{% else %}inativo{% endif %}">
-                        <td>{{ banco.conta_bancaria_extenso }}</td>
-                        <td> {{ banco.chave_pix_banco }}</td>
+                    <tr class="{% if not banco.ativo %} inactive{% endif %}">
+                        <td class="editable" data-field="tipo_conta_banco" data-id='{{banco.id}}' data-model="banco">
+                            <span class="display-text">{{ banco.get_tipo_conta_banco_display }}</span>
+                            <input type="text" class="edit-input" value="{{ banco.tipo_conta_banco }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="codigo_banco" data-id='{{banco.id}}' data-model="banco">
+                            <span class="display-text">{{ banco.codigo_banco }}</span>
+                            <input type="text" class="edit-input" value="{{ banco.codigo_banco }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="nome_banco" data-id='{{banco.id}}' data-model="banco">
+                            <span class="display-text">{{ banco.nome_banco }}</span>
+                            <input type="text" class="edit-input" value="{{ banco.nome_banco  }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="conta_banco" data-id='{{banco.id}}' data-model="banco">
+                            <span class="display-text">{{ banco.conta_banco }}</span>
+                            <input type="text" class="edit-input" value="{{ fbanco.conta_banco }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="digito_banco" data-id='{{banco.id}}' data-model="banco">
+                            <span class="display-text">{{ banco.digito_banco }}</span>
+                            <input type="text" class="edit-input" value="{{ banco.digito_banco  }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="chave_pix_banco" data-id='{{banco.id}}' data-model="banco">
+                            <span class="display-text">{{ banco.chave_pix_banco }}</span>
+                            <input type="text" class="edit-input" value="{{ banco.chave_pix_banco }}" style="display: none;">
+                        </td>
 
                         <td>
                             <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
-                                Ativo
+                                {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
                             </span>
                         </td>
                         <td>
                             <div class="acoes-cell">
-                                <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
-                                <button class="btn-acao excluir" title="Excluir"><i class='bx bx-trash'></i></button>
+                                <button class="btn-acao salvar" title="Salvar" style="display: none;" 
+                                        onclick="salvarEdicao(this)">
+                                    <i class='bx bx-check'></i>
+                                </button>
+                                <button class="btn-acao cancelar" title="Cancelar" style="display: none;" 
+                                        onclick="cancelarEdicao(this)">
+                                    <i class='bx bx-x'></i>
+                                </button>
+                                <button class="btn-acao editar" title="Editar" 
+                                        onclick="iniciarEdicao(this)">
+                                    <i class='bx bx-edit'></i>
+                                </button>
+                                <!-- Botão de inativar -->
+                                <form method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="banco_id" value="{{ banco.id }}">
+                                    <button type="submit" name="tipo" value="inativar_banco"
+                                            class="btn-acao excluir" title="Inativar">
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="empty-state">
+                        <td colspan="8" class="empty-state">
                             <i class='bx bx-inbox'></i>
-                            <p>Nenhum serviço cadastrado</p>
+                            <p>Nenhum fornecedor cadastrado</p>
                         </td>
                     </tr>
                     {% endfor %}
@@ -1153,15 +1288,17 @@
             </table>
         </div>
     </div>
-    <form method="post" id="form-fornecedores">
-        {% csrf_token %}
-        <input type="hidden" name="tipo" value="cadastro_fornecedores" />
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i>Cadastro de Fornecedores</h2>
+
+    <!-- Seção Fornecedores -->
+    <div class="form">
+        <form method="post" id="form-fornecedores">
+            {% csrf_token %}
+            <input type="hidden" name="tipo" value="cadastro_fornecedores" />
+            <h2 class="form_titulo"><i class='bx bx-building'></i> Cadastro de Fornecedores</h2>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label><i class='bx bx-analyse'></i> Tipo </label>
+                    <label><i class='bx bx-analyse'></i> Tipo</label>
                     <select class="input-field" name="tipo_pessoa">
                         <option disabled selected>-- Selecione --</option>
                         <option value="juridica">Pessoa Jurídica</option>
@@ -1169,122 +1306,120 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label><i class='bx bx-pie-chart-alt-2'></i>Documento</label>
-                    <input class="input-field" type="text" name="documento_fornecedor" placeholder="12.345.678/0000-00">
+                    <label><i class='bx bx-pie-chart-alt-2'></i> Documento</label>
+                    <input class="input-field" type="text" name="documento_fornecedor" 
+                           placeholder="12.345.678/0000-00">
                 </div>
                 <div class="form-group">
-                    <label><i class='bx bx-pie-chart-alt-2'></i>Razão social</label>
-                    <input class="input-field" type="text" name="razao_social_fornecedor"
-                        placeholder="Ex.: Banco do Brasil">
+                    <label><i class='bx bx-pie-chart-alt-2'></i> Razão Social</label>
+                    <input class="input-field" type="text" name="razao_social_fornecedor" 
+                           placeholder="Ex.: Empresa XYZ Ltda">
                 </div>
                 <div class="form-group">
-                    <label><i class='bx bx-error'></i>Nome Fantasia</label>
-                    <input class="input-field" type="text" name="fantasia_fornecedor">
+                    <label><i class='bx bx-error'></i> Nome Fantasia</label>
+                    <input class="input-field" type="text" name="fantasia_fornecedor" 
+                           placeholder="Nome fantasia da empresa">
                 </div>
                 <div class="form-group">
-                    <label><i class='bx bx-error'></i>Telefone</label>
-                    <input class="input-field" type="number" name="telefone_fornecedor">
+                    <label><i class='bx bx-error'></i> Telefone</label>
+                    <input class="input-field" type="text" name="telefone_fornecedor" 
+                           placeholder="(11) 99999-9999">
                 </div>
                 <div class="form-group">
-                    <label><i class='bx bx-error'></i>Email</label>
-                    <input class="input-field" type="email" name="email_fornecedor">
+                    <label><i class='bx bx-error'></i> Email</label>
+                    <input class="input-field" type="email" name="email_fornecedor" 
+                           placeholder="exemplo@empresa.com">
                 </div>
-
             </div>
             <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Fornecedor</button>
-    </form>
-    <div class="tabela-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Tipo</th>
-                    <th>Documento</th>
-                    <th>Razão Social</th>
-                    <th>Nome Fantasia</th>
-                    <th>Telefone</th>
-                    <th>Email</th>
-                    <th>Situação</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for fornecedor in fornecedores %}
-                <tr class="{% if fornecedor.ativo %}active{% else %}inativo{% endif %}">
-                    <td class="editable" data-field="tipo_pessoa" data-id='{{fornecedor.id}}' data-model="fornecedor">
-                        <span class="display-text">{{ fornecedor.tipo_pessoa }}</span>
-                        <input type="text" class="edit-input" value="{{ fornecedor.nome }}" style="display: none;">
-                    </td>
-                    <td class="editable" data-field="documento" data-id='{{fornecedor.id}}' data-model="fornecedor">
-                        <span class="display-text">{{ fornecedor.documento }}</span>
-                        <input type="text" class="edit-input" value="{{ fornecedor.documento }}" style="display: none;">
-                    </td>
-                    <td class="editable" data-field="razao_social" data-id='{{fornecedor.id}}' data-model="fornecedor">
-                        <span class="display-text">{{ fornecedor.razao_social }}</span>
-                        <input type="text" class="edit-input" value="{{ fornecedor.razao_social }}"
-                            style="display: none;">
-                    </td>
-                    <td class="editable" data-field="nome_fantasia" data-id='{{fornecedor.id}}' data-model="fornecedor">
-                        <span class="display-text">{{ fornecedor.nome_fantasia }}</span>
-                        <input type="text" class="edit-input" value="{{ fornecedor.nome_fantasia }}"
-                            style="display: none;">
-                    </td>
-                    <td class="editable" data-field="telefone" data-id='{{fornecedor.id}}' data-model="fornecedor">
-                        <span class="display-text">{{ fornecedor.telefone }}</span>
-                        <input type="text" class="edit-input" value="{{ fornecedor.telefone }}" style="display: none;">
-                    </td>
-                    <td class="editable" data-field="email" data-id='{{fornecedor.id}}' data-model="fornecedor">
-                        <span class="display-text">{{ fornecedor.email }}</span>
-                        <input type="text" class="edit-input" value="{{ fornecedor.email }}" style="display: none;">
-                    </td>
+        </form>
 
-
-
-                    <td>
-                        <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
-                            Ativo
-                        </span>
-                    </td>
-                    <td>
-                        <div class="acoes-cell">
-                            <button class="btn-acao salvar" title="Salvar" style="display: none;"
-                                onclick="salvarEdicao(this)">
-                                <i class='bx bx-check'></i>
-                            </button>
-                            <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
-                                onclick="cancelarEdicao(this)">
-                                <i class='bx bx-x'></i>
-                            </button>
-                            <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
-                                <i class='bx bx-edit'></i>
-                            </button>
-                            <!-- Botão de inativar -->
-                            <form method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="fornecedor_id" value="{{ fornecedor.id }}">
-                                <button type="submit" name="tipo" value="inativar_especialidade"
-                                    class="btn-acao excluir" title="Inativar">
-                                    <i class='bx bx-trash'></i>
+        <!-- Tabela de Fornecedores DENTRO da div.form -->
+        <div class="tabela-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Documento</th>
+                        <th>Razão Social</th>
+                        <th>Nome Fantasia</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fornecedor in fornecedores %}
+                    <tr class="{% if not fornecedor.ativo %} inactive{% endif %}">
+                        <td class="editable" data-field="tipo_pessoa" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                            <span class="display-text">{{ fornecedor.tipo_pessoa }}</span>
+                            <input type="text" class="edit-input" value="{{ fornecedor.tipo_pessoa }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="documento" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                            <span class="display-text">{{ fornecedor.documento }}</span>
+                            <input type="text" class="edit-input" value="{{ fornecedor.documento }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="razao_social" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                            <span class="display-text">{{ fornecedor.razao_social }}</span>
+                            <input type="text" class="edit-input" value="{{ fornecedor.razao_social }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="nome_fantasia" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                            <span class="display-text">{{ fornecedor.nome_fantasia }}</span>
+                            <input type="text" class="edit-input" value="{{ fornecedor.nome_fantasia }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="telefone" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                            <span class="display-text">{{ fornecedor.telefone }}</span>
+                            <input type="text" class="edit-input" value="{{ fornecedor.telefone }}" style="display: none;">
+                        </td>
+                        <td class="editable" data-field="email" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                            <span class="display-text">{{ fornecedor.email }}</span>
+                            <input type="text" class="edit-input" value="{{ fornecedor.email }}" style="display: none;">
+                        </td>
+                        <td>
+                            <span class="status-badge {% if fornecedor.ativo %}active{% else %}inactive{% endif %}">
+                                {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="acoes-cell">
+                                <button class="btn-acao salvar" title="Salvar" style="display: none;" 
+                                        onclick="salvarEdicao(this)">
+                                    <i class='bx bx-check'></i>
                                 </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="empty-state">
-                        <i class='bx bx-inbox'></i>
-                        <p>Nenhum serviço cadastrado</p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                                <button class="btn-acao cancelar" title="Cancelar" style="display: none;" 
+                                        onclick="cancelarEdicao(this)">
+                                    <i class='bx bx-x'></i>
+                                </button>
+                                <button class="btn-acao editar" title="Editar" 
+                                        onclick="iniciarEdicao(this)">
+                                    <i class='bx bx-edit'></i>
+                                </button>
+                                <!-- Botão de inativar -->
+                                <form method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="fornecedor_id" value="{{ fornecedor.id }}">
+                                    <button type="submit" name="tipo" value="inativar_fornecedor"
+                                            class="btn-acao excluir" title="Inativar">
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <i class='bx bx-inbox'></i>
+                            <p>Nenhum fornecedor cadastrado</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
-</div>
-</div>
-
 <!-- Aba Notificações -->
 <div class="tab-content" id="notificacoes">
     <div class="form">
@@ -1734,16 +1869,88 @@
 {% block scripts %}
 
 <script>
-    // Sistema de tabs
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
+        // Sistema de tabs com URL e persistência
+        document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            // Prevenir comportamento padrão de links
+            if (tab.tagName === 'A') {
+                e.preventDefault();
+            }
+            
+            const targetSection = tab.dataset.section || tab.dataset.target;
+            
+            // Atualizar tabs ativas
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
             tab.classList.add('active');
             document.getElementById(tab.dataset.target).classList.add('active');
+            
+            // Atualizar URL sem recarregar a página
+            const newUrl = `${window.location.pathname}#${targetSection}`;
+            window.history.pushState({}, '', newUrl);
+            
+            // Salvar no localStorage para persistência
+            localStorage.setItem('activeTab', targetSection);
         });
     });
 
+    // Restaurar tab ativa ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar hash na URL primeiro
+        const hash = window.location.hash.substring(1);
+        // Se não tiver hash, verificar localStorage
+        const savedTab = hash || localStorage.getItem('activeTab') || 'especialidades';
+        
+        const targetTab = document.querySelector(`.tab[data-section="${savedTab}"]`) || 
+                         document.querySelector(`.tab[data-target="${savedTab}"]`);
+        
+        if (targetTab) {
+            // Ativar a tab salva
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            targetTab.classList.add('active');
+            document.getElementById(targetTab.dataset.target).classList.add('active');
+            
+            // Atualizar URL se necessário
+            if (!hash && savedTab !== 'especialidades') {
+                const newUrl = `${window.location.pathname}#${savedTab}`;
+                window.history.replaceState({}, '', newUrl);
+            }
+        }
+        
+        // Scroll para tab ativa em mobile
+        scrollToActiveTab();
+    });
+
+    // Lidar com navegação pelo botão voltar/avancar
+    window.addEventListener('popstate', function() {
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            const targetTab = document.querySelector(`.tab[data-section="${hash}"]`) || 
+                             document.querySelector(`.tab[data-target="${hash}"]`);
+            if (targetTab) {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                targetTab.classList.add('active');
+                document.getElementById(targetTab.dataset.target).classList.add('active');
+                localStorage.setItem('activeTab', hash);
+            }
+        }
+    });
+
+    function scrollToActiveTab() {
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab) {
+            activeTab.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+    }
     // Preview de cor para especialidades
     const colorInput = document.getElementById('especialidade-cor');
     const colorPreview = document.getElementById('color-preview');

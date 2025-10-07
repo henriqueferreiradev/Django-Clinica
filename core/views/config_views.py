@@ -13,6 +13,8 @@ def configuracao_view(request):
     MODELOS_ATIVAVEIS = {
     'servico': Servico,
     'especialidade': Especialidade,
+    'fornecedor':Fornecedor,
+    'banco':ContaBancaria,
      
   
 }
@@ -144,6 +146,29 @@ def configuracao_view(request):
                         except Exception as e:
                             return JsonResponse({'success': False, 'error': str(e)})
                     
+                    
+                    elif tipo == 'editar_banco':
+                        banco_id = request.POST.get('banco_id')
+                        tipo_conta_banco = request.POST.get('tipo_conta_banco')
+                        codigo_banco = request.POST.get('codigo_banco')
+                        nome_banco = request.POST.get('nome_banco')
+                        conta_banco = request.POST.get('conta_banco')
+                        digito_banco = request.POST.get('digito_banco')
+                        chave_pix_banco = request.POST.get('chave_pix_banco')
+                        ativo = True
+                        try:
+                            banco = ContaBancaria.objects.get(id=banco_id)
+                            banco.tipo_conta_banco = tipo_conta_banco
+                            banco.codigo_banco     = codigo_banco
+                            banco.nome_banco       = nome_banco
+                            banco.conta_banco      = conta_banco
+                            banco.digito_banco     = digito_banco
+                            banco.chave_pix_banco  = chave_pix_banco
+                            banco.save()
+                            
+                            return JsonResponse({'success': True})
+                        except Exception as e:
+                            return JsonResponse({'success': False, 'error': str(e)})
                     elif tipo == 'editar_fornecedor':
                         
                         fornecedor_id = request.POST.get('fornecedor_id')
@@ -156,12 +181,12 @@ def configuracao_view(request):
                         
                         try:
                             fornecedor = Fornecedor.objects.get(id=fornecedor_id)
-                            fornecedor.tipo_pessoa = tipo_pessoa
-                            fornecedor.razao_social = razao_social
+                            fornecedor.tipo_pessoa   = tipo_pessoa
+                            fornecedor.razao_social  = razao_social
                             fornecedor.nome_fantasia = nome_fantasia
-                            fornecedor.documento = documento
-                            fornecedor.telefone = telefone
-                            fornecedor.email = email
+                            fornecedor.documento     = documento
+                            fornecedor.telefone      = telefone
+                            fornecedor.email         = email
                             fornecedor.save()
                             
                             
@@ -189,14 +214,14 @@ def configuracao_view(request):
    
     servicos, total_servicos_ativos, mostrar_todos_servico, filtra_inativo_servico = filtrar_ativos_inativos(request, Servico, prefixo='servico')
     especialidades, total_especialidades_ativas, mostrar_todos_especialidade, filtra_inativo_especialidade = filtrar_ativos_inativos(request, Especialidade, prefixo='especialidade')
+    fornecedores, total_fornecedores_ativas, mostrar_todos_fornecedores, filtra_inativo_fornecedores = filtrar_ativos_inativos(request, Fornecedor, prefixo='fornecedor')
+    
     usuarios = User.objects.filter(ativo=True).all().select_related('profissional')
     bancos = ContaBancaria.objects.all()
     profissionais = Profissional.objects.all()
-    for b in bancos:print(b)
-    print(bancos)
+  
     fornecedores = Fornecedor.objects.all()
-    print(fornecedores)
-    
+ 
     
     
     return render(request, 'core/configuracoes.html', {
@@ -206,6 +231,8 @@ def configuracao_view(request):
         'filtra_inativo_servico': filtra_inativo_servico,
         'mostrar_todos_especialidade': mostrar_todos_especialidade,
         'filtra_inativo_especialidade': filtra_inativo_especialidade,
+        'mostrar_todos_fornecedores':mostrar_todos_fornecedores,
+        'filtra_inativo_fornecedores':filtra_inativo_fornecedores,
         'usuarios': usuarios,
         'user_tipo_choices': User._meta.get_field('tipo').choices,
         'bancos':bancos,
