@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão - Fisioterapia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6D398E;
+            --secondary-color: #7fcdbb;
+            --light-color: #f0f8ff;
+            --dark-color: #253237;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .header {
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .consultation-item {
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: white;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s;
+        }
+
+        .consultation-item:hover {
+            background-color: var(--light-color);
+            transform: translateX(5px);
+        }
+
+        .patient-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .badge-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .tab-content {
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+            border: none;
+            padding: 12px 20px;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            background-color: transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 8px 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d6fa5;
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 150px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px;
+            font-size: 0.8rem;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .overlay {
+            transform: translateY(0);
+        }
+
+        .evolution-item {
+            border-left: 3px solid var(--secondary-color);
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+
+        .evolution-date {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-color);
+            background-color: var(--light-color);
+        }
+
+        .analysis-box {
+            background-color: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .doctor-contact {
+            background-color: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .top-navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-navbar .navbar-brand {
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .top-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        .top-navbar .nav-link:hover,
+        .top-navbar .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .user-info img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg top-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat me-2"></i>FisioGestão
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon text-white"><i class="fas fa-bars"></i></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="fas fa-calendar-alt me-1"></i> Consultas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-users me-1"></i> Pacientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-file-medical me-1"></i> Prontuários
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-chart-line me-1"></i> Evoluções
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-user-md me-1"></i> Comunicação Médica
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="user-info">
+                    <img src="https://i.pravatar.cc/40" alt="Fisioterapeuta">
+                    <div>
+                        <div class="fw-bold">Dra. Ana Silva</div>
+                        <div class="small">Fisioterapeuta</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <div class="header d-flex justify-content-between align-items-center">
+            <h2>Consultas do Dia</h2>
+            <div>
+                <span class="me-3">Segunda-feira, 15 de Maio de 2023</span>
+                <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>Nova Consulta</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Consultas do Dia -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Agenda de Hoje</span>
+                        <div>
+                            <button class="btn btn-sm btn-light me-2"><i class="fas fa-filter"></i> Filtrar</button>
+                            <button class="btn btn-sm btn-light"><i class="fas fa-sync-alt"></i> Atualizar</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="consultation-item">
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/50?img=5" class="patient-img" alt="Paciente">
+                                <div class="flex-grow-1">
+                                    <h5>Maria Oliveira</h5>
+                                    <p class="mb-1">10:00 - 11:00 | Lombalgia crônica</p>
+                                    <span class="badge badge-status bg-success">Confirmada</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
+                                        data-bs-target="#patientModal" data-patient="Maria Oliveira">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="consultation-item">
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/50?img=11" class="patient-img" alt="Paciente">
+                                <div class="flex-grow-1">
+                                    <h5>João Santos</h5>
+                                    <p class="mb-1">11:30 - 12:30 | Pós-cirurgia joelho</p>
+                                    <span class="badge badge-status bg-warning text-dark">Aguardando</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
+                                        data-bs-target="#patientModal" data-patient="João Santos">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="consultation-item">
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/50?img=8" class="patient-img" alt="Paciente">
+                                <div class="flex-grow-1">
+                                    <h5>Carlos Mendonça</h5>
+                                    <p class="mb-1">14:00 - 15:00 | Tendinite ombro</p>
+                                    <span class="badge badge-status bg-success">Confirmada</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
+                                        data-bs-target="#patientModal" data-patient="Carlos Mendonça">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="consultation-item">
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/50?img=15" class="patient-img" alt="Paciente">
+                                <div class="flex-grow-1">
+                                    <h5>Ana Paula Costa</h5>
+                                    <p class="mb-1">16:00 - 17:00 | Reabilitação pós-AVC</p>
+                                    <span class="badge badge-status bg-danger">Cancelada</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
+                                        data-bs-target="#patientModal" data-patient="Ana Paula Costa">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estatísticas e Ações Rápidas -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">Resumo do Dia</div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6 stat-card">
+                                <div class="stat-number">4</div>
+                                <div class="stat-label">Consultas</div>
+                            </div>
+                            <div class="col-6 stat-card">
+                                <div class="stat-number">3</div>
+                                <div class="stat-label">Confirmadas</div>
+                            </div>
+                            <div class="col-6 stat-card">
+                                <div class="stat-number">1</div>
+                                <div class="stat-label">Aguardando</div>
+                            </div>
+                            <div class="col-6 stat-card">
+                                <div class="stat-number">1</div>
+                                <div class="stat-label">Cancelada</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Ações Rápidas</div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-user-plus me-2"></i>Novo Paciente
+                        </button>
+                        <button class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-file-medical me-2"></i>Prontuário Rápido
+                        </button>
+                        <button class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-paper-plane me-2"></i>Enviar Laudo
+                        </button>
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="fas fa-chart-bar me-2"></i>Relatórios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Paciente -->
+    <div class="modal fade" id="patientModal" tabindex="-1" aria-labelledby="patientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="patientModalLabel">Prontuário do Paciente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-2 text-center">
+                            <img src="https://i.pravatar.cc/100" class="rounded-circle mb-2" alt="Paciente">
+                            <h5 id="patientName">Maria Oliveira</h5>
+                            <p class="text-muted">45 anos</p>
+                        </div>
+                        <div class="col-md-5">
+                            <p><strong>Diagnóstico:</strong> Lombalgia crônica</p>
+                            <p><strong>Médico Responsável:</strong> Dr. Roberto Almeida</p>
+                            <p><strong>Início do Tratamento:</strong> 10/03/2023</p>
+                        </div>
+                        <div class="col-md-5">
+                            <p><strong>Próxima Consulta:</strong> 22/05/2023 - 10:00</p>
+                            <p><strong>Telefone:</strong> (11) 99999-9999</p>
+                            <p><strong>E-mail:</strong> maria.oliveira@email.com</p>
+                        </div>
+                    </div>
+
+                    <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="prontuario-tab" data-bs-toggle="tab"
+                                data-bs-target="#prontuario" type="button" role="tab">Prontuário</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="evolucao-tab" data-bs-toggle="tab" data-bs-target="#evolucao"
+                                type="button" role="tab">Evolução</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="imagens-tab" data-bs-toggle="tab" data-bs-target="#imagens"
+                                type="button" role="tab">Imagens</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analise-tab" data-bs-toggle="tab" data-bs-target="#analise"
+                                type="button" role="tab">Análise Médica</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="patientTabContent">
+                        <!-- Aba Prontuário -->
+                        <div class="tab-pane fade show active" id="prontuario" role="tabpanel">
+                            <form>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="queixaPrincipal" class="form-label">Queixa Principal</label>
+                                        <textarea class="form-control" id="queixaPrincipal"
+                                            rows="3">Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="historiaDoenca" class="form-label">História da Doença Atual</label>
+                                        <textarea class="form-control" id="historiaDoenca"
+                                            rows="3">Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="exameFisico" class="form-label">Exame Físico</label>
+                                        <textarea class="form-control" id="exameFisico"
+                                            rows="4">Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="conduta" class="form-label">Conduta</label>
+                                        <textarea class="form-control" id="conduta"
+                                            rows="4">Exercícios de fortalecimento do core alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary">Salvar Prontuário</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Aba Evolução -->
+                        <div class="tab-pane fade" id="evolucao" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Registro de Evoluções</h5>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#newEvolutionModal">
+                                    <i class="fas fa-plus me-1"></i> Nova Evolução
+                                </button>
+                            </div>
+
+                            <div class="evolution-item">
+                                <div class="evolution-date">10/05/2023</div>
+                                <p>Paciente relata melhora de 40% na dor. Consegue realizar flexão anterior com menor
+                                    desconforto. Realizou exercícios de fortalecimento com boa adesão.</p>
+                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
+                            </div>
+
+                            <div class="evolution-item">
+                                <div class="evolution-date">03/05/2023</div>
+                                <p>Paciente ainda refere dor ao ficar em pé por mais de 1 hora. Realizamos exercícios de
+                                    estabilização lombar e aplicação de ultra-som.</p>
+                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
+                            </div>
+
+                            <div class="evolution-item">
+                                <div class="evolution-date">26/04/2023</div>
+                                <p>Primeira sessão. Paciente com dor intensa (8/10). Iniciado trabalho de
+                                    conscientização corporal e exercícios leves de mobilização.</p>
+                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
+                            </div>
+                        </div>
+
+                        <!-- Aba Imagens -->
+                        <div class="tab-pane fade" id="imagens" role="tabpanel">
+                            <div class="file-upload mb-4">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                                <p>Arraste imagens aqui ou clique para fazer upload</p>
+                                <input type="file" class="d-none" id="fileUpload" multiple accept="image/*">
+                                <button class="btn btn-sm btn-outline-primary"
+                                    onclick="document.getElementById('fileUpload').click()">Selecionar Arquivos</button>
+                            </div>
+
+                            <h6>Imagens do Paciente</h6>
+                            <div class="image-gallery">
+                                <div class="gallery-item">
+                                    <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                        alt="Raio-X">
+                                    <div class="overlay">Raio-X Lombar</div>
+                                </div>
+                                <div class="gallery-item">
+                                    <img src="https://images.unsplash.com/photo-1599045118108-bf9954418b76?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                        alt="Ressonância">
+                                    <div class="overlay">Ressonância</div>
+                                </div>
+                                <div class="gallery-item">
+                                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                        alt="Ultrassom">
+                                    <div class="overlay">Ultrassom</div>
+                                </div>
+                                <div class="gallery-item">
+                                    <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                        alt="Avaliação Postural">
+                                    <div class="overlay">Avaliação Postural</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aba Análise Médica -->
+                        <div class="tab-pane fade" id="analise" role="tabpanel">
+                            <div class="analysis-box">
+                                <h6><i class="fas fa-stethoscope me-2"></i>Análise para Encaminhamento</h6>
+                                <textarea class="form-control mt-2" rows="6">Paciente em tratamento para lombalgia crônica há 2 meses. Apresenta melhora parcial dos sintomas, mas persiste com limitação funcional. Sugiro avaliação ortopédica para possível infiltração ou outras condutas, uma vez que a fisioterapia convencional apresenta resposta limitada.
+
+Foram realizados exercícios de fortalecimento, alongamento e estabilização vertebral com ganhos modestos. Mantém dor à palpação em L4-L5 e teste de Lasègue positivo.
+
+Atenciosamente,
+Dra. Ana Silva
+Fisioterapeuta - CREFITO 12345</textarea>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button class="btn btn-sm btn-primary me-2">Salvar Rascunho</button>
+                                    <button class="btn btn-sm btn-success">Enviar para Médico</button>
+                                </div>
+                            </div>
+
+                            <div class="doctor-contact mt-4">
+                                <h6><i class="fas fa-user-md me-2"></i>Comunicação com Médico</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Médico Destinatário</label>
+                                    <select class="form-select">
+                                        <option>Dr. Roberto Almeida - Ortopedista</option>
+                                        <option>Dra. Carla Mendes - Reumatologista</option>
+                                        <option>Dr. Paulo Costa - Neurologista</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mensagem</label>
+                                    <textarea class="form-control" rows="4"
+                                        placeholder="Escreva sua mensagem para o médico..."></textarea>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-sm btn-success">Enviar Mensagem</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nova Evolução -->
+    <div class="modal fade" id="newEvolutionModal" tabindex="-1" aria-labelledby="newEvolutionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newEvolutionModalLabel">Nova Evolução</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="evolutionDate" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="evolutionDate" value="2023-05-15">
+                        </div>
+                        <div class="mb-3">
+                            <label for="evolutionText" class="form-label">Evolução</label>
+                            <textarea class="form-control" id="evolutionText" rows="5"
+                                placeholder="Descreva a evolução do paciente..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar Evolução</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Atualiza o nome do paciente no modal
+        document.addEventListener('DOMContentLoaded', function () {
+            var patientModal = document.getElementById('patientModal');
+            patientModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var patientName = button.getAttribute('data-patient');
+                var modalTitle = patientModal.querySelector('.modal-title');
+                modalTitle.textContent = 'Prontuário - ' + patientName;
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -26,8 +26,13 @@ def fluxo_caixa_view(request):
     return render(request, 'core/financeiro/fluxo_caixa.html')
 
 def contas_a_receber_view(request):
- 
-    return render(request, 'core/financeiro/contas_receber.html')
+    total_pendente = Pagamento.objects.filter(status='pendente').aggregate(total=Sum('valor'))['total'] or 0
+
+    context = {
+        'total_pendente':total_pendente,
+    }
+
+    return render(request, 'core/financeiro/contas_receber.html', context)
 
 
 def contas_a_pagar_view(request):

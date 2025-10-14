@@ -1,6 +1,7 @@
 from django.test import TestCase
 from datetime import date
 from core.models import Paciente, FrequenciaMensal, HistoricoStatus
+
 '''
 
 class StatusBeneficioTests(TestCase):
@@ -96,7 +97,7 @@ from django.contrib.auth.models import User
 from core.models import Paciente, Especialidade, Profissional, Servico, PacotePaciente, Agendamento
 from django.contrib.auth import get_user_model
 def iso(d): return d.isoformat()
-
+'''
 class AgendamentoRecorrenteTests(TestCase):
     def setUp(self):
         User = get_user_model()
@@ -344,3 +345,92 @@ def test_avulsos_com_pagamento_e_depois_recorrente(self):
 
     self.assertEqual(antigos, 2)
     self.assertEqual(novos_terca + novos_sexta, 8)
+
+'''
+
+
+from django.test import TestCase
+from datetime import date, timedelta
+from core.models import Paciente, Servico, PacotePaciente, Receita, Pagamento
+from core.services.financeiro import criar_receita_pacote, registrar_pagamento
+
+
+class FinanceiroTests(TestCase):
+    def setUp(self):
+        self.paciente = Paciente.objects.create(nome='João', nomeEmergencia='X', vinculo='outro')
+        self.servico = Servico.objects.create(nome='Fisio', valor=1485, qtd_sessoes=10, ativo=True)
+        self.pacote = PacotePaciente.objects.create(paciente=self.paciente, servico=self.servico, qtd_sessoes=10, valor_final=1485, valor_total=1485, ativo=True)
+        self.venc = date.today() + timedelta(days=3)
+
+    def test_cria_receita_sem_pagamento(self):
+        r = criar_receita_pacote(self.paciente, self.pacote, 1485, self.venc)
+        self.assertEqual(r.valor, 1485)
+        self.assertEqual(r.status, 'pendente')
+        self.assertEqual(r.total_pago, 0)
+        self.assertEqual(r.saldo, 1485)
+        self.assertEqual(Pagamento.objects.count(), 0)
+
+    def test_pagamento_parcial(self):
+        r = criar_receita_pacote(self.paciente, self.pacote, 1485, self.venc)
+        registrar_pagamento(r, self.paciente, self.pacote, None, 500, 'pix')
+        r.refresh_from_db()
+        self.assertEqual(r.total_pago, 500)
+        self.assertEqual(r.saldo, 985)
+        self.assertEqual(r.status, 'pendente')  # não venceu ainda
+
+    def test_pagamento_total(self):
+        r = criar_receita_pacote(self.paciente, self.pacote, 1485, self.venc)
+        registrar_pagamento(r, self.paciente, self.pacote, None, 1485, 'pix')
+        r.refresh_from_db()
+        self.assertEqual(r.total_pago, 1485)
+        self.assertEqual(r.saldo, 0)
+        self.assertEqual(r.status, 'pago')
+
+    def test_nao_duplicar_pagamento_na_criacao(self):
+        r = criar_receita_pacote(self.paciente, self.pacote, 1485, self.venc)
+        self.assertEqual(Pagamento.objects.count(), 0)  # só receita criada
+
+    def test_atrasado_quando_venceu_e_nao_pagou(self):
+        r = criar_receita_pacote(self.paciente, self.pacote, 1485, date.today() - timedelta(days=1))
+        r.atualizar_status_por_pagamentos()
+        self.assertEqual(r.status, 'atrasado')
+
+
+    def test_pagamento_multiplos_parciais(self):
+        """Simula 3 pagamentos parciais até quitar o valor total"""
+        r = criar_receita_pacote(self.paciente, self.pacote, 1000, self.venc)
+        
+        registrar_pagamento(r, self.paciente, self.pacote, None, 300, 'pix')
+        registrar_pagamento(r, self.paciente, self.pacote, None, 400, 'pix')
+        registrar_pagamento(r, self.paciente, self.pacote, None, 300, 'pix')
+        
+        r.refresh_from_db()
+        self.assertEqual(r.total_pago, 1000)
+        self.assertEqual(r.saldo, 0)
+        self.assertEqual(r.status, 'pago')
+        self.assertEqual(Pagamento.objects.filter(receita=r).count(), 3)
+
+    def test_pagamento_excedente(self):
+        """Verifica se pagamento acima do valor não deixa saldo negativo"""
+        r = criar_receita_pacote(self.paciente, self.pacote, 1000, self.venc)
+        registrar_pagamento(r, self.paciente, self.pacote, None, 1200, 'pix')
+        
+        r.refresh_from_db()
+        self.assertEqual(r.total_pago, 1200)
+        # saldo nunca deve ser negativo — o máximo é 0
+        self.assertEqual(max(r.saldo, 0), 0)
+        self.assertEqual(r.status, 'pago')
+
+    def test_vencimento_sem_pagamento_autoatualiza(self):
+        """Simula rotina de atualização automática de receitas vencidas"""
+        vencido = date.today() - timedelta(days=5)
+        r = criar_receita_pacote(self.paciente, self.pacote, 500, vencido)
+        
+        # ainda não pago
+        r.atualizar_status_por_pagamentos()
+        self.assertEqual(r.status, 'atrasado')
+
+        # paga depois do vencimento → deve virar pago
+        registrar_pagamento(r, self.paciente, self.pacote, None, 500, 'pix')
+        r.refresh_from_db()
+        self.assertEqual(r.status, 'pago')

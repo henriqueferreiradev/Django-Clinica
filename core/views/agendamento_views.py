@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt 
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
+from core.services.financeiro import criar_receita_pacote, registrar_pagamento
 from core.utils import gerar_horarios,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
 from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, STATUS_CHOICES,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
@@ -348,18 +349,36 @@ def criar_agendamento(request):
             descricao=f'Novo agendamento criado para {paciente.nome} na data {ag.data.strftime("%d/%m/%Y")}.'
         )
 
-    # pagamento só se houver valor a registrar e não for benefício gratuito
+    # =====================================================
+    # PAGAMENTO — cria pendente (conta a receber) ou pago
+    # =====================================================
+
+    primeira_data = agendamentos_criados[0].data
+
+    # 1) SEMPRE crie a Receita do pacote (conta a receber)
+    receita = criar_receita_pacote(
+        paciente=paciente,
+        pacote=pacote,
+        valor_final=valor_final,
+        vencimento=primeira_data,
+        forma_pagamento=forma_pagamento,
+        valor_pago_inicial=None  # não usamos aqui para não duplicar
+    )
+
+     # 2) Se o usuário informou um pagamento na criação (parcial/total), registre-o AGORA
     if valor_pago and valor_pago > 0:
-        Pagamento.objects.create(
-            paciente=paciente, pacote=pacote, valor=valor_pago,
-            forma_pagamento=forma_pagamento, agendamento=agendamentos_criados[0],
-        )
-        registrar_log(
-            usuario=request.user, acao='Criação', modelo='Pagamento', objeto_id=pacote.id,
-            descricao=f'Pagamento de R${valor_pago:.2f} registrado para {paciente.nome}.'
+        registrar_pagamento(
+            receita=receita,
+            paciente=paciente,
+            pacote=pacote,
+            agendamento=agendamentos_criados[0],
+            valor=valor_pago,
+            forma_pagamento=forma_pagamento
         )
 
-    # registra consumo do benefício (se aplicável)
+    # =====================================================
+    # BENEFÍCIO (opcional)
+    # =====================================================
     if beneficio_tipo:
         try:
             hoje = date.today()
@@ -375,8 +394,27 @@ def criar_agendamento(request):
         except Exception as e:
             messages.warning(request, f'Não foi possível registrar o benefício: {e}')
 
-    # redireciona para a confirmação (último gerado)
-    return redirect('confirmacao_agendamento', agendamento_id=agendamentos_criados[-1].id)
+    # =====================================================
+    # RETORNO FINAL — sempre garante resposta HTTP
+    # =====================================================
+    try:
+        ultimo_agendamento = agendamentos_criados[-1]
+    except IndexError:
+        return JsonResponse({'error': 'Nenhum agendamento foi criado.'}, status=400)
+
+    # Caso seja uma chamada da API (como /api/agendamentos/), retorna JSON
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'ok': True,
+            'paciente': paciente.nome,
+            'servico': servico.nome,
+            'agendamentos_criados': len(agendamentos_criados),
+            'vencimento': str(receita.vencimento),
+            'status_receita': receita.status,
+        })
+
+    # Caso contrário (usuário via navegador), abre a página normal
+    return redirect('confirmacao_agendamento', agendamento_id=ultimo_agendamento.id)
 
 
 
@@ -764,7 +802,10 @@ def editar_agendamento(request, agendamento_id):
                     pacote=agendamento.pacote,
                     agendamento=agendamento,
                     valor=valor_pago,
-                    forma_pagamento=forma_pagamento
+                    forma_pagamento=forma_pagamento,
+                    status='pago',
+
+                    
                 )
                 registrar_log(
                     usuario=request.user,

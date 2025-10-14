@@ -12,7 +12,7 @@ import uuid
 from django.db.models import Q
 from django.forms import CharField
 from core.services.status_beneficios import calcular_beneficio
-
+from django.db.models import Sum
 def caminho_foto_paciente(instance, filename):
     nome = slugify(instance.nome)
     extensao = os.path.splitext(filename)[1]
@@ -489,13 +489,19 @@ class Pagamento(models.Model):
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     valor = models.DecimalField(max_digits=8, decimal_places=2)
     data = models.DateTimeField(default=timezone.now)
-    forma_pagamento = models.CharField(max_length=30, choices=[
-        ('pix', 'Pix'),
-        ('credito', 'Cartão de Crédito'),
-        ('debito', 'Cartão de Débito'),
-        ('dinheiro', 'Dinheiro'),
-    ])
-  
+    receita = models.ForeignKey('Receita', null=True, blank=True,
+                                on_delete=models.SET_NULL, related_name='pagamentos')
+    forma_pagamento = models.CharField(
+        max_length=30,
+        choices=[('pix','Pix'),('credito','Cartão de Crédito'),('debito','Cartão de Débito'),('dinheiro','Dinheiro')],
+        null=True, blank=True
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=[('pendente','Pendente'),('pago','Pago'),('cancelado','Cancelado')],
+        default='pendente'
+    )
+    vencimento = models.DateField(null=True, blank=True)
 
     def __str__(self):
         ref = self.pacote.codigo if self.pacote else f"Sessão {self.agendamento.id}" if self.agendamento else "Avulso"
@@ -875,7 +881,20 @@ class Receita(models.Model):
     forma_pagamento = models.CharField(max_length=30, blank=True, null=True)
     observacoes = models.TextField(blank=True, null=True)
     recibo = models.FileField(upload_to="recibos/receitas/", blank=True, null=True)
+    @property
+    def total_pago(self):
+        return self.pagamentos.aggregate(s=Sum('valor'))['s'] or 0
 
+    @property
+    def saldo(self):
+        return (self.valor or 0) - self.total_pago
+
+    def atualizar_status_por_pagamentos(self):
+        if self.saldo <= 0:
+            self.status = 'pago'
+        else:
+            self.status = 'atrasado' if (self.vencimento and self.vencimento < date.today()) else 'pendente'
+        self.save(update_fields=['status'])
     def __str__(self):
         return f"{self.paciente} - {self.descricao} ({self.valor})"
 

@@ -278,8 +278,13 @@ def dashboard_view(request):
 }
 
 
-    formas_pagamento = ( Pagamento.objects.values('forma_pagamento')).annotate(total=Count('id'))
-     
+    formas_pagamento = (
+        Pagamento.objects
+        .exclude(forma_pagamento__isnull=True)
+        .values('forma_pagamento')
+        .annotate(total=Count('id'))
+    )
+        
     formas_pagamento_labels = [item['forma_pagamento'].capitalize() for item in formas_pagamento]
     formas_pagamento_dados = [item['total'] for item in formas_pagamento]
     

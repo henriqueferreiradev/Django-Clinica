@@ -194,7 +194,22 @@ def configuracao_view(request):
                         except Exception as e:
                             return JsonResponse({'success': False, 'error': str(e)})
                 
-        '''
+                    elif tipo == 'editar_servico':
+
+                        servico_id = request.POST.get('servico_id')
+                        nome = request.POST.get('nome')
+                        valor = request.POST.get('valor')
+                        qtd_sessoes = request.POST.get('qtd_sessoes')
+
+                        try:
+                            servico = Servico.objects.get(id=servico_id)
+                            servico.nome = nome
+                            servico.valor = valor
+                            servico.qtd_sessoes = qtd_sessoes
+                            return JsonResponse({'success': True})
+                        except Exception as e:
+                            return JsonResponse({'success': False, 'error': str(e)})
+        '''             
         =====================================================================================
                                             INATIVAÇÃO
         =====================================================================================
