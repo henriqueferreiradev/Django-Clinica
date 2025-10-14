@@ -368,3 +368,8 @@ def perfil_profissional(request, profissional_id):
     }
     
     return render(request, 'core/profissionais/perfil_profissional.html', context)
+
+
+
+def agenda_profissional(request):
+    return render(request,'core/profissionais/agenda_profissional.html', )

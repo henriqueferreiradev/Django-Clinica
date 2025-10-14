@@ -57,7 +57,9 @@ urlpatterns = [
     path('financeiro/relatorios', financeiro_views.relatorios_view, name='financeiro_relatorios'),
 
 
+    
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
+    path('agenda_profissional/', profissionais_views.agenda_profissional, name='agenda_profissional'),
     path('agenda/board', agendamento_views.agenda_board, name='agenda_board'),
     path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
     path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
