@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
@@ -446,7 +447,10 @@ class PacotePaciente(models.Model):
 
     @property
     def valor_restante(self):
-        return self.valor_final - self.total_pago
+        valor_final = Decimal(str(self.valor_final or 0))
+        total_pago = Decimal(str(self.total_pago or 0))
+        return valor_final - total_pago
+
 
     @property
     def valor_desconto(self):
@@ -885,9 +889,14 @@ class Receita(models.Model):
     def total_pago(self):
         return self.pagamentos.aggregate(s=Sum('valor'))['s'] or 0
 
+ 
+
     @property
     def saldo(self):
-        return (self.valor or 0) - self.total_pago
+        valor = Decimal(str(self.valor or 0))
+        pago = Decimal(str(self.total_pago or 0))
+        return valor - pago
+
 
     def atualizar_status_por_pagamentos(self):
         if self.saldo <= 0:

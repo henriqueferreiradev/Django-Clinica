@@ -3,64 +3,49 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Login - Ponto de Equilíbrio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
-    <link rel="stylesheet" href="{% static 'core/css/login.css' %}" />
+  <meta charset="UTF-8" />
+  <title>Login - Ponto de Equilíbrio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
+ 
 </head>
 
 <body>
-    <div class="container">
-        <div class="left-side">
-            <img src="{% static 'core/img/icons/logoRoxoFull.png' %}" alt="Logo" class="logo" />
-            <h1>Ponto de <strong>Equilíbrio</strong></h1>
-            <p>Seja bem-vindo à felicidade e bem-estar</p>
-        </div>
-
-        <div class="right-side">
-            <form class="login-container" method="post">
-                {% csrf_token %}
-                <h2 class="login_titulo">Boas vindas!</h2>
-                <p class="login-subtitulo">Faça login para acessar o sistema</p>
-
-                <div class="form-group">
-                    <label for="{{ form.username.id_for_label }}">Usuário</label>
-                    <div class="input-wrapper">
-                       <!-- <i class="bx bx-user"></i>-->
-                        {{ form.username }}
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ form.password.id_for_label }}">Senha</label>
-                    <div class="input-wrapper">
-                     <!--   <i class="bx bx-lock-alt"></i> -->
-                        {{ form.password }}
-                    </div>
-                </div>
-
-                <button type="submit">Entrar</button>
-            </form>
-        </div>
+  <div class="container">
+    <div class="left-side">
+      <img src="{% static 'core/img/icons/logoRoxoFull.png' %}" alt="Logo" class="logo" />
+      <h1>Ponto de <strong>Equilíbrio</strong></h1>
+      <p>Felicidade e bem-estar começam aqui</p>
     </div>
-    {% include "core/partials/alertas.html" %}
-    {% block scripts %}
-  
-    
- 
 
- 
-<script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
-<script src="{% static 'core/js/agenda/baseAgenda.js' %}"></script>
-<script src="{% static 'core/js/base/scriptBase.js' %}"></script>
+    <div class="right-side">
+      <form class="login-container" method="post">
+        {% csrf_token %}
+        <h2>Boas-vindas!</h2>
+        <p>Faça login para acessar o sistema</p>
 
+        <div class="form-group">
+          <label for="{{ form.username.id_for_label }}">Usuário</label>
+          <div class="input-wrapper">
+            <i class="bx bx-user"></i>
+            {{ form.username }}
+          </div>
+        </div>
 
-<script src="{% static 'core/js/profissionais/baseProfissionais.js' %}"></script>
+        <div class="form-group">
+          <label for="{{ form.password.id_for_label }}">Senha</label>
+          <div class="input-wrapper">
+            <i class="bx bx-lock-alt"></i>
+            {{ form.password }}
+          </div>
+        </div>
 
-{% endblock %}
- </body>
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+</body>
 
 </html>

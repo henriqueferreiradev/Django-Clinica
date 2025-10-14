@@ -795,7 +795,7 @@
             <div class="kpi-content">
                 <div class="kpi-text">
                     <div class="kpi-title">Atrasados</div>
-                    <div class="kpi-value">R$ 2.150,00</div>
+                    <div class="kpi-value">{{total_atrasado}}</div>
                     <div class="kpi-info">Não recebidos</div>
                 </div>
                 <div class="kpi-icon">
@@ -808,7 +808,7 @@
             <div class="kpi-content">
                 <div class="kpi-text">
                     <div class="kpi-title">Vencem Hoje</div>
-                    <div class="kpi-value">R$ 1.080,00</div>
+                    <div class="kpi-value">{{total_vence_hoje}}</div>
                     <div class="kpi-info">Para receber hoje</div>
                 </div>
                 <div class="kpi-icon">
@@ -879,122 +879,48 @@
                             <th class="text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Atrasado -->
-                        <tr class="row-status atrasado">
-                            <td><input type="checkbox" class="row-checkbox"></td>
-                            <td><span class="valor-atrasado">10/05/2023</span></td>
-                            <td><strong>Maria Silva</strong></td>
-                            <td>Consulta - Dra. Ana</td>
-                            <td><span class="badge badge-agendamento">#AGE-230510</span></td>
-                            <td class="text-right"><strong class="valor-atrasado">R$ 350,00</strong></td>
-                            <td><span class="badge badge-atrasado"><i class="fas fa-clock"></i> Atrasado</span></td>
+                        <tbody>
+                        {% for p in lancamentos  %}
+                        <tr class="row-status {% if p.status_calculado == 'Atrasado' %}atrasado{% elif p.status_calculado == 'Vence Hoje' %}hoje{% elif p.status_calculado == 'Pago' %}pago{% else %}pendente{% endif %}">
+                            <td><input type="checkbox" class="row-checkbox" {% if p.status_calculado == 'Pago' %}disabled{% endif %}></td>
+                            <td>{{ p.vencimento|date:"d/m/Y" }}</td>
+                            <td><strong>{{ p.paciente.nome }}</strong></td>
+                            <td>{{ p.descricao }}</td>
+                            <td class="text-right"><strong>R$ {{ p.valor|floatformat:2 }}</strong></td>
+                            <td>
+                            {% if p.status == 'Atrasado' %}
+                                <span class="badge badge-atrasado"><i class="fas fa-clock"></i> Atrasado</span>
+                            {% elif p.status == 'Vence Hoje' %}
+                                <span class="badge badge-pendente"><i class="fas fa-exclamation"></i> Vence Hoje</span>
+                            {% else %}
+                                <span class="badge badge-pendente"><i class="fas fa-clock"></i> Pendente</span>
+                            {% endif %}
+                            </td>
                             <td class="text-center">
                                 <div class="action-buttons">
-                                    <button class="btn btn-success btn-icon" title="Registrar Recebimento">
-                                        <i class="fas fa-cash-register"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-icon" title="Emitir Boleto">
-                                        <i class="fas fa-barcode"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-icon" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
+                                    {% if p.status_calculado != 'Pago' %}
+                                        <button class="btn btn-success btn-icon" title="Registrar Recebimento">
+                                            <i class="fas fa-cash-register"></i>
+                                        </button>
+                                        <button class="btn btn-outline btn-icon" title="Emitir Boleto">
+                                            <i class="fas fa-barcode"></i>
+                                        </button>
+                                        <button class="btn btn-outline btn-icon" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-outline btn-icon" title="Ver Comprovante">
+                                            <i class="fas fa-receipt"></i>
+                                        </button>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
+                        {% empty %}
+                        <tr><td colspan="8" class="text-center">Nenhum lançamento encontrado.</td></tr>
+                        {% endfor %}
+                        </tbody>
 
-                        <!-- Atrasado -->
-                        <tr class="row-status atrasado">
-                            <td><input type="checkbox" class="row-checkbox"></td>
-                            <td><span class="valor-atrasado">12/05/2023</span></td>
-                            <td><strong>João Santos</strong></td>
-                            <td>Parcela 2/3 - Pacote Fisioterapia</td>
-                            <td><span class="badge badge-agendamento">#PAC-FT2301</span></td>
-                            <td class="text-right"><strong class="valor-atrasado">R$ 180,00</strong></td>
-                            <td><span class="badge badge-atrasado"><i class="fas fa-clock"></i> Atrasado</span></td>
-                            <td class="text-center">
-                                <div class="action-buttons">
-                                    <button class="btn btn-success btn-icon" title="Registrar Recebimento">
-                                        <i class="fas fa-cash-register"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-icon" title="Emitir Boleto">
-                                        <i class="fas fa-barcode"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-icon" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Vence Hoje -->
-                        <tr class="row-status hoje">
-                            <td><input type="checkbox" class="row-checkbox"></td>
-                            <td><span class="valor-hoje">16/05/2023</span></td>
-                            <td><strong>Ana Oliveira</strong></td>
-                            <td>Consulta - Dr. Carlos</td>
-                            <td><span class="badge badge-agendamento">#AGE-230516</span></td>
-                            <td class="text-right"><strong class="valor-hoje">R$ 280,00</strong></td>
-                            <td><span class="badge badge-pendente"><i class="fas fa-exclamation"></i> Vence Hoje</span>
-                            </td>
-                            <td class="text-center">
-                                <div class="action-buttons">
-                                    <button class="btn btn-success btn-icon" title="Registrar Recebimento">
-                                        <i class="fas fa-cash-register"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-icon" title="Emitir Boleto">
-                                        <i class="fas fa-barcode"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-icon" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Pendente -->
-                        <tr class="row-status pendente">
-                            <td><input type="checkbox" class="row-checkbox"></td>
-                            <td>20/05/2023</td>
-                            <td><strong>Carlos Mendes</strong></td>
-                            <td>Parcela 3/3 - Pacote Fisioterapia</td>
-                            <td><span class="badge badge-agendamento">#PAC-FT2301</span></td>
-                            <td class="text-right"><strong>R$ 180,00</strong></td>
-                            <td><span class="badge badge-pendente"><i class="fas fa-clock"></i> Pendente</span></td>
-                            <td class="text-center">
-                                <div class="action-buttons">
-                                    <button class="btn btn-success btn-icon" title="Registrar Recebimento">
-                                        <i class="fas fa-cash-register"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-icon" title="Emitir Boleto">
-                                        <i class="fas fa-barcode"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-icon" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Recebido -->
-                        <tr class="row-status pago">
-                            <td><input type="checkbox" class="row-checkbox" disabled></td>
-                            <td>05/05/2023</td>
-                            <td><strong>Luana Pereira</strong></td>
-                            <td>Consulta - Dra. Ana</td>
-                            <td><span class="badge badge-agendamento">#AGE-230505</span></td>
-                            <td class="text-right"><strong>R$ 350,00</strong></td>
-                            <td><span class="badge badge-pago"><i class="fas fa-check"></i> Recebido</span></td>
-                            <td class="text-center">
-                                <div class="action-buttons">
-                                    <button class="btn btn-outline btn-icon" title="Ver Comprovante">
-                                        <i class="fas fa-receipt"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
                 </table>
             </div>
         </div>

@@ -7,7 +7,9 @@ from core.utils import registrar_log, get_semana_atual
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.db.models import Min, Max,Count 
+from django.utils import timezone
 
+from core.views.agendamento_views import listar_agendamentos
 
 def cadastrar_profissionais_view(request):
     if request.method == 'POST':
@@ -370,6 +372,75 @@ def perfil_profissional(request, profissional_id):
     return render(request, 'core/profissionais/perfil_profissional.html', context)
 
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.db.models import Q
+from django.utils import timezone
 
+from datetime import date, timedelta
+from urllib.parse import urlencode
+
+@login_required(login_url='login')
 def agenda_profissional(request):
-    return render(request,'core/profissionais/agenda_profissional.html', )
+    # --- pegar filtros existentes ---
+    query = (request.GET.get('q') or '').strip()
+    data_inicio = request.GET.get('data_inicio') or None
+    data_fim = request.GET.get('data_fim') or None
+    especialidade_id = request.GET.get('especialidade_id') or None
+    status = request.GET.get('status') or None
+
+    # --- dia selecionado (YYYY-MM-DD) ---
+    dia_str = request.GET.get('dia')
+    try:
+        dia = date.fromisoformat(dia_str) if dia_str else date.today()
+    except ValueError:
+        dia = date.today()
+
+    # --- descobrir profissional (ou forçar id=1 se ainda estiver testando) ---
+    # profissional = getattr(request.user, 'profissional', None) or Profissional.objects.filter(user=request.user).first()
+    profissional = Profissional.objects.filter(id=1).first()  # <- seu teste atual
+
+    # base por profissional_1
+    agendamentos = Agendamento.objects.filter(profissional_1=profissional)
+
+    # --- filtro do DIA ---
+    agendamentos = agendamentos.filter(data=dia)
+
+
+    # --- demais filtros (opcionais) ---
+    if data_inicio:
+        agendamentos = agendamentos.filter(data__date__gte=data_inicio)
+    if data_fim:
+        agendamentos = agendamentos.filter(data__date__lte=data_fim)
+    if especialidade_id:
+        agendamentos = agendamentos.filter(especialidade_id=especialidade_id)
+    if status:
+        agendamentos = agendamentos.filter(status=status)
+    if query:
+        agendamentos = agendamentos.filter(
+            Q(paciente__nome__icontains=query) | Q(observacoes__icontains=query)
+        )
+
+    agendamentos = agendamentos.select_related('paciente','profissional_1','servico') \
+                                .order_by('hora_inicio')
+
+    # --- construir prev/next preservando filtros atuais ---
+    base_params = {
+        'q': query or '',
+        'data_inicio': data_inicio or '',
+        'data_fim': data_fim or '',
+        'especialidade_id': especialidade_id or '',
+        'status': status or '',
+    }
+    prev_params = base_params | {'dia': (dia - timedelta(days=1)).isoformat()}
+    next_params = base_params | {'dia': (dia + timedelta(days=1)).isoformat()}
+
+    context = {
+        'agendamentos': agendamentos,
+        'profissional': profissional,
+        'dia': dia,  # para exibir formatado
+        'prev_url': f"?{urlencode(prev_params)}",
+        'next_url': f"?{urlencode(next_params)}",
+        'hoje_url': f"?{urlencode(base_params | {'dia': date.today().isoformat()})}",
+    }
+    return render(request, 'core/profissionais/agenda_profissional.html', context)

@@ -240,6 +240,96 @@
             border-radius: 50%;
             margin-right: 10px;
         }
+    /* ========================
+   CABEÇALHO DE NAVEGAÇÃO DE DIA
+   ======================== */
+.day-header {
+    background-color: white;
+    border-radius: 10px;
+    padding: 12px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 15px;
+    border-left: 4px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.day-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin: 0;
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
+}
+
+/* Botões de navegação (setas ‹ ›) */
+.nav-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: var(--primary-color);
+    background-color: rgba(111, 63, 148, 0.08);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-arrow:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Botão “Hoje” abaixo do cabeçalho */
+.btn-outline-light {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Lista de agendamentos */
+.lista-agenda {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.item-ag {
+    background-color: white;
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.item-ag:hover {
+    background-color: var(--light-color);
+    transform: translateX(3px);
+}
+
+.item-ag .hora {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.item-ag .info strong {
+    color: var(--dark-color);
+}
+
     </style>
 </head>
 
@@ -251,10 +341,8 @@
                 <i class="fas fa-heartbeat me-2"></i>FisioGestão
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon text-white"><i class="fas fa-bars"></i></span>
-            </button>
-
+ 
+<!--
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
@@ -283,7 +371,7 @@
                         </a>
                     </li>
                 </ul>
-
+-->
                 <div class="user-info">
                     <img src="https://i.pravatar.cc/40" alt="Fisioterapeuta">
                     <div>
@@ -297,13 +385,26 @@
 
     <!-- Main Content -->
     <div class="container-fluid main-content">
-        <div class="header d-flex justify-content-between align-items-center">
-            <h2>Consultas do Dia</h2>
-            <div>
-                <span class="me-3">Segunda-feira, 15 de Maio de 2023</span>
-                <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>Nova Consulta</button>
-            </div>
-        </div>
+<div class="day-header d-flex justify-content-between align-items-center py-2 px-3">
+  <a class="nav-arrow" href="{{ prev_url }}" aria-label="Dia anterior">
+    <i class="fas fa-chevron-left"></i>
+  </a>
+
+  <h2 class="m-0 text-center">
+    {{ dia|date:"l, d \\d\\e F \\d\\e Y" }}
+
+  </h2>
+
+  <a class="nav-arrow" href="{{ next_url }}" aria-label="Próximo dia">
+    <i class="fas fa-chevron-right"></i>
+  </a>
+</div>
+
+<div class="text-center mt-2">
+  <a class="btn btn-sm btn-outline-light" href="{{ hoje_url }}">Hoje</a>
+</div>
+
+ 
 
         <div class="row">
             <!-- Consultas do Dia -->
@@ -316,13 +417,15 @@
                             <button class="btn btn-sm btn-light"><i class="fas fa-sync-alt"></i> Atualizar</button>
                         </div>
                     </div>
+                    {% if agendamentos %}
                     <div class="card-body">
+                    {% for ag in agendamentos %}
                         <div class="consultation-item">
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/50?img=5" class="patient-img" alt="Paciente">
                                 <div class="flex-grow-1">
-                                    <h5>Maria Oliveira</h5>
-                                    <p class="mb-1">10:00 - 11:00 | Lombalgia crônica</p>
+                                    <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}}</h5>
+                                    <p class="mb-1">{{ag.hora_inicio}} | {{ag.especialidade}}</p>
                                     <span class="badge badge-status bg-success">Confirmada</span>
                                 </div>
                                 <div>
@@ -336,7 +439,14 @@
                                 </div>
                             </div>
                         </div>
-
+                    {% endfor %}
+                    {% else %}
+                     <div class="consultation-item">
+                            <div class="d-flex align-items-center">
+                                Sem agendamentos hoje.
+                            </div>
+                        </div>
+                    {% endif %}
                         <div class="consultation-item">
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/50?img=11" class="patient-img" alt="Paciente">
