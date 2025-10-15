@@ -22,7 +22,7 @@ async function pegarFrequencias(opts = {}) {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return await res.json();
 }
-
+ 
 function statusBadgeClass(status) {
   const s = String(status || '').toLowerCase();
   if (s.includes('premium')) return 'badge badge-premium';

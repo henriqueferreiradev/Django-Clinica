@@ -144,7 +144,6 @@ MIDIA_ESCOLHA = [
     ('whatsapp', 'WhatsApp'),
     ('outro', 'Outro'),
 ] 
-
 CONSELHO_ESCOLHA = [
     ("cref", 'CREF'),
     ("crefito", 'CREFITO'),

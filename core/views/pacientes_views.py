@@ -682,7 +682,7 @@ def politica_privacidade(request):
 
 def paciente_status(request):
     pacientes = Paciente.objects.all()
-
+    
     
     context = {
         'pacientes':pacientes
