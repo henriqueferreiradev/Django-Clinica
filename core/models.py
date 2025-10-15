@@ -925,3 +925,17 @@ class Lancamento(models.Model):
 
     def __str__(self):
         return f"{self.tipo} - {self.descricao} - {self.valor}"
+
+
+
+class Prontuario(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
+    data_criacao = models.DateField(auto_now_add=True)
+    queixa_principal = models.TextField()
+    exame_fisico = models.TextField()
+    conduta = models.TextField()
+    diagnostico = models.TextField()
+    observacoes = models.TextField()

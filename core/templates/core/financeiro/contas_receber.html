@@ -872,15 +872,15 @@
                             </th>
                             <th>Vencimento</th>
                             <th>Paciente</th>
-                            <th>Descrição</th>
-                            <th>Agendamento</th>
+                             
+                            <th>Pacote/Agendamento</th>
                             <th class="text-right">Valor</th>
                             <th>Status</th>
                             <th class="text-center">Ações</th>
                         </tr>
                     </thead>
                         <tbody>
-                        {% for p in lancamentos  %}
+                        {% for p in lancamentos %}
                         <tr class="row-status {% if p.status_calculado == 'Atrasado' %}atrasado{% elif p.status_calculado == 'Vence Hoje' %}hoje{% elif p.status_calculado == 'Pago' %}pago{% else %}pendente{% endif %}">
                             <td><input type="checkbox" class="row-checkbox" {% if p.status_calculado == 'Pago' %}disabled{% endif %}></td>
                             <td>{{ p.vencimento|date:"d/m/Y" }}</td>

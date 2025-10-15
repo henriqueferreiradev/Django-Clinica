@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Paciente, Especialidade,Prontuario,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.db.models import Min, Max,Count 
 from django.utils import timezone
-
+import json
 from core.views.agendamento_views import listar_agendamentos
 
 def cadastrar_profissionais_view(request):
@@ -434,7 +434,7 @@ def agenda_profissional(request):
     }
     prev_params = base_params | {'dia': (dia - timedelta(days=1)).isoformat()}
     next_params = base_params | {'dia': (dia + timedelta(days=1)).isoformat()}
-
+    
     context = {
         'agendamentos': agendamentos,
         'profissional': profissional,
@@ -444,3 +444,35 @@ def agenda_profissional(request):
         'hoje_url': f"?{urlencode(base_params | {'dia': date.today().isoformat()})}",
     }
     return render(request, 'core/profissionais/agenda_profissional.html', context)
+
+
+def salvar_prontuario(request):
+    try:
+        dados = json.loads(request.body)
+
+        prontuario = Prontuario.objects.create(
+            paciente_id = dados.get('paciente_id'),
+            pacote_id = dados.get('pacote_id'),
+            agndamento_id = dados.get('agendamento_id'),
+            profissional_id = dados.get('profissional_id'),
+            
+            historico_doenca = dados.get('historico_doenca',''),
+            exame_fisico = dados.get('exame_fisico',''),
+            conduta = dados.get('conduta',''),
+            diagnostico = dados.get('diagnostico',''),
+            observacoes = dados.get('observacoes',''),
+        )
+
+        return JsonResponse({
+            'sucess':True,
+            'prontuario_id':prontuario.id,
+            'message':'Prontuário salvo com sucesso!'
+        })
+
+
+        ...
+    except Exception as e:
+                return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

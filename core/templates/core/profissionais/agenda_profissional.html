@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -5,7 +7,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestão - Fisioterapia</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -13,32 +14,307 @@
             --secondary-color: #7fcdbb;
             --light-color: #f0f8ff;
             --dark-color: #253237;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --gray-color: #6c757d;
+            --light-gray: #f8f9fa;
+            --border-radius: 10px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background-color: var(--light-gray);
             color: var(--dark-color);
+            line-height: 1.6;
         }
 
+        .container-fluid {
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .justify-content-between {
+            justify-content: space-between;
+        }
+
+        .justify-content-center {
+            justify-content: center;
+        }
+
+        .justify-content-end {
+            justify-content: flex-end;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--gray-color);
+        }
+
+        .fw-bold {
+            font-weight: bold;
+        }
+
+        .small {
+            font-size: 0.875rem;
+        }
+
+        .m-0 {
+            margin: 0;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .me-1 {
+            margin-right: 0.25rem;
+        }
+
+        .me-2 {
+            margin-right: 0.5rem;
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        /* ========================
+           NAVBAR
+        ======================== */
+        .top-navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .user-info img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        /* ========================
+           MAIN CONTENT
+        ======================== */
         .main-content {
             padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .header {
             background-color: white;
             padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
             margin-bottom: 20px;
         }
 
+        /* ========================
+           DAY HEADER
+        ======================== */
+        .day-header {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 12px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .day-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+            text-transform: capitalize;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: var(--primary-color);
+            background-color: rgba(111, 63, 148, 0.08);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .nav-arrow:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* ========================
+           BUTTONS
+        ======================== */
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            border-radius: 0.2rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #5a2f72;
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            background-color: transparent;
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            color: white;
+            background-color: var(--primary-color);
+        }
+
+        .btn-outline-light {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .btn-outline-light:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-light {
+            color: var(--dark-color);
+            background-color: #f8f9fa;
+            border-color: #f8f9fa;
+        }
+
+        .btn-light:hover {
+            background-color: #e2e6ea;
+            border-color: #dae0e5;
+        }
+
+        .btn-secondary {
+            color: white;
+            background-color: var(--gray-color);
+            border-color: var(--gray-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        .btn-success {
+            color: white;
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        /* ========================
+           CARDS
+        ======================== */
         .card {
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
             margin-bottom: 20px;
             transition: transform 0.3s;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .card:hover {
@@ -48,18 +324,28 @@
         .card-header {
             background-color: var(--primary-color);
             color: white;
-            border-radius: 10px 10px 0 0 !important;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
             padding: 15px 20px;
             font-weight: 600;
         }
 
+        .card-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========================
+           CONSULTATION ITEMS
+        ======================== */
         .consultation-item {
             border-left: 4px solid var(--primary-color);
             padding: 15px;
             margin-bottom: 15px;
             background-color: white;
             border-radius: 0 8px 8px 0;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
 
         .consultation-item:hover {
@@ -75,40 +361,301 @@
             margin-right: 15px;
         }
 
+        .flex-grow-1 {
+            flex-grow: 1;
+        }
+
+        /* ========================
+           BADGES
+        ======================== */
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.4em;
+            font-size: 0.75em;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+        }
+
         .badge-status {
             padding: 5px 10px;
             border-radius: 20px;
             font-size: 0.8rem;
         }
 
-        .tab-content {
+        .bg-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        /* ========================
+           GRID SYSTEM
+        ======================== */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+
+        .col-6,
+        .col-md-2,
+        .col-md-5,
+        .col-md-6 {
+            position: relative;
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        .col-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        @media (min-width: 768px) {
+            .col-md-2 {
+                flex: 0 0 16.666667%;
+                max-width: 16.666667%;
+            }
+
+            .col-md-5 {
+                flex: 0 0 41.666667%;
+                max-width: 41.666667%;
+            }
+
+            .col-md-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        /* ========================
+           AGENDA GRID - CORRIGIDO
+        ======================== */
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 992px) {
+            .agenda-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .agenda-principal {
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+        }
+
+        .agenda-lateral {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Garante que os cards tenham altura consistente */
+        .agenda-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agenda-card .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========================
+           EMPTY STATE - CORRIGIDO
+        ======================== */
+        .empty-state {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #f8f8fb;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-weight: 500;
+            color: #666;
+            margin: 0;
+            flex: 1;
+        }
+
+        /* ========================
+           STAT CARDS
+        ======================== */
+        .stat-card {
+            text-align: center;
             padding: 20px;
-            background-color: white;
-            border-radius: 0 0 10px 10px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* ========================
+           QUICK ACTIONS
+        ======================== */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quick-actions .btn {
+            text-align: left;
+            padding: 12px 15px;
+        }
+
+        /* ========================
+           TABS
+        ======================== */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: 0;
+            margin-bottom: 0;
+            list-style: none;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-tabs .nav-item {
+            margin-bottom: -1px;
         }
 
         .nav-tabs .nav-link {
+            display: block;
+            padding: 0.5rem 1rem;
             color: var(--dark-color);
-            border: none;
-            padding: 12px 20px;
+            text-decoration: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .nav-tabs .nav-link:hover {
+            border-color: #e9ecef #e9ecef #dee2e6;
         }
 
         .nav-tabs .nav-link.active {
             color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
             background-color: transparent;
+            border-color: #dee2e6 #dee2e6 white;
+            border-bottom: 3px solid var(--primary-color);
         }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            border: none;
-            padding: 8px 20px;
+        .tab-content {
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
         }
 
-        .btn-primary:hover {
-            background-color: #1d6fa5;
+        .tab-pane {
+            display: none;
         }
 
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* ========================
+           FORMS
+        ======================== */
+        .form-label {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-control:focus {
+            color: #495057;
+            background-color: #fff;
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        textarea.form-control {
+            height: auto;
+        }
+
+        .form-select {
+            display: block;
+            width: 100%;
+            padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            appearance: none;
+        }
+
+        /* ========================
+           EVOLUTION ITEMS
+        ======================== */
+        .evolution-item {
+            border-left: 3px solid var(--secondary-color);
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: var(--light-gray);
+        }
+
+        .evolution-date {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* ========================
+           IMAGE GALLERY
+        ======================== */
         .image-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -147,25 +694,16 @@
             transform: translateY(0);
         }
 
-        .evolution-item {
-            border-left: 3px solid var(--secondary-color);
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: #f8f9fa;
-        }
-
-        .evolution-date {
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
+        /* ========================
+           FILE UPLOAD
+        ======================== */
         .file-upload {
             border: 2px dashed #ddd;
             border-radius: 8px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
 
         .file-upload:hover {
@@ -173,9 +711,16 @@
             background-color: var(--light-color);
         }
 
+        .d-none {
+            display: none;
+        }
+
+        /* ========================
+           ANALYSIS BOXES
+        ======================== */
         .analysis-box {
             background-color: #fff9e6;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid var(--warning-color);
             padding: 15px;
             margin-bottom: 15px;
         }
@@ -187,197 +732,214 @@
             margin-bottom: 15px;
         }
 
-        .stat-card {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .stat-label {
-            color: var(--dark-color);
-            font-size: 0.9rem;
-        }
-
-        .top-navbar {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .top-navbar .navbar-brand {
-            color: white;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-
-        .top-navbar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 8px 15px;
-            border-radius: 5px;
-        }
-
-        .top-navbar .nav-link:hover,
-        .top-navbar .nav-link.active {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info {
-            display: flex;
+        /* ========================
+           MODALS
+        ======================== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
             align-items: center;
-            color: white;
+            z-index: 1050;
         }
 
-        .user-info img {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            margin-right: 10px;
+        .modal.show {
+            display: flex;
         }
-    /* ========================
-   CABEÇALHO DE NAVEGAÇÃO DE DIA
-   ======================== */
-.day-header {
-    background-color: white;
-    border-radius: 10px;
-    padding: 12px 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 15px;
-    border-left: 4px solid var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
 
-.day-header h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--dark-color);
-    margin: 0;
-    text-transform: capitalize;
-    letter-spacing: 0.3px;
-}
+        .modal-dialog {
+            max-width: 500px;
+            width: 90%;
+            margin: 1.75rem auto;
+        }
 
-/* Botões de navegação (setas ‹ ›) */
-.nav-arrow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    color: var(--primary-color);
-    background-color: rgba(111, 63, 148, 0.08);
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
+        .modal-xl {
+            max-width: 1140px;
+        }
 
-.nav-arrow:hover {
-    background-color: var(--primary-color);
-    color: white;
-    transform: scale(1.05);
-}
+        .modal-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            outline: 0;
+        }
 
-/* Botão “Hoje” abaixo do cabeçalho */
-.btn-outline-light {
-    color: var(--primary-color);
-    border-color: var(--primary-color);
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 1rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
 
-.btn-outline-light:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
+        .modal-title {
+            margin-bottom: 0;
+            line-height: 1.5;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
 
-/* Lista de agendamentos */
-.lista-agenda {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
+        .modal-body {
+            position: relative;
+            flex: 1 1 auto;
+            padding: 1rem;
+        }
 
-.item-ag {
-    background-color: white;
-    border-left: 4px solid var(--primary-color);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-}
+        .modal-footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0.75rem;
+            border-top: 1px solid #dee2e6;
+            border-bottom-right-radius: var(--border-radius);
+            border-bottom-left-radius: var(--border-radius);
+        }
 
-.item-ag:hover {
-    background-color: var(--light-color);
-    transform: translateX(3px);
-}
+        .btn-close {
+            box-sizing: content-box;
+            width: 1em;
+            height: 1em;
+            padding: 0.25em 0.25em;
+            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            border: 0;
+            border-radius: 0.25rem;
+            opacity: 0.5;
+            cursor: pointer;
+        }
 
-.item-ag .hora {
-    font-weight: 600;
-    color: var(--primary-color);
-    font-size: 1rem;
-    min-width: 60px;
-    text-align: center;
-}
+        .btn-close:hover {
+            opacity: 0.75;
+        }
 
-.item-ag .info strong {
-    color: var(--dark-color);
-}
+        .rounded-circle {
+            border-radius: 50% !important;
+        }
 
+        /* ========================
+           UTILITY CLASSES
+        ======================== */
+        .d-none {
+            display: none !important;
+        }
+
+        @media (min-width: 768px) {
+            .d-md-flex {
+                display: flex !important;
+            }
+        }
+
+        /* ========================
+   PRONTUÁRIOS LIST
+======================= */
+        .prontuarios-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .prontuario-item {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .prontuario-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .prontuario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .prontuario-info h6 {
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .prontuario-preview {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .prontuario-preview strong {
+            color: var(--dark-color);
+        }
+
+        .prontuario-meta {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .section-content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .info-section {
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .info-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
     </style>
 </head>
 
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg top-navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-heartbeat me-2"></i>FisioGestão
-            </a>
+    <nav class="top-navbar">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-heartbeat me-2"></i>FisioGestão
+        </a>
 
- 
-<!--
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">
-                            <i class="fas fa-calendar-alt me-1"></i> Consultas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-users me-1"></i> Pacientes
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-file-medical me-1"></i> Prontuários
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-chart-line me-1"></i> Evoluções
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-user-md me-1"></i> Comunicação Médica
-                        </a>
-                    </li>
-                </ul>
--->
-                <div class="user-info">
-                    <img src="https://i.pravatar.cc/40" alt="Fisioterapeuta">
-                    <div>
-                        <div class="fw-bold">Dra. Ana Silva</div>
-                        <div class="small">Fisioterapeuta</div>
-                    </div>
+        <div class="user-info">
+            {% if user.profissional.foto %}
+            <img src="{{ user.profissional.foto.url }}" alt="Foto de {{ user.get_full_name }}" />
+            {% else %}
+            <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto" />
+            {% endif %}
+            <div>
+                <div class="fw-bold">
+                    {{ user.get_full_name }}
+                </div>
+                <div class="small">
+                    {{user.profissional.espe}}
                 </div>
             </div>
         </div>
@@ -385,31 +947,28 @@
 
     <!-- Main Content -->
     <div class="container-fluid main-content">
-<div class="day-header d-flex justify-content-between align-items-center py-2 px-3">
-  <a class="nav-arrow" href="{{ prev_url }}" aria-label="Dia anterior">
-    <i class="fas fa-chevron-left"></i>
-  </a>
+        <div class="day-header">
+            <a class="nav-arrow" href="{{ prev_url }}" aria-label="Dia anterior">
+                <i class="fas fa-chevron-left"></i>
+            </a>
 
-  <h2 class="m-0 text-center">
-    {{ dia|date:"l, d \\d\\e F \\d\\e Y" }}
+            <h2>
+                {{ dia|date:"l, d \\d\\e F \\d\\e Y" }}
+            </h2>
 
-  </h2>
+            <a class="nav-arrow" href="{{ next_url }}" aria-label="Próximo dia">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
 
-  <a class="nav-arrow" href="{{ next_url }}" aria-label="Próximo dia">
-    <i class="fas fa-chevron-right"></i>
-  </a>
-</div>
+        <div class="text-center mt-2">
+            <a class="btn btn-sm btn-outline-light" href="{{ hoje_url }}">Hoje</a>
+        </div>
 
-<div class="text-center mt-2">
-  <a class="btn btn-sm btn-outline-light" href="{{ hoje_url }}">Hoje</a>
-</div>
-
- 
-
-        <div class="row">
+        <div class="agenda-grid">
             <!-- Consultas do Dia -->
-            <div class="col-md-8">
-                <div class="card">
+            <div class="agenda-principal">
+                <div class="card agenda-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span>Agenda de Hoje</span>
                         <div>
@@ -417,20 +976,20 @@
                             <button class="btn btn-sm btn-light"><i class="fas fa-sync-alt"></i> Atualizar</button>
                         </div>
                     </div>
-                    {% if agendamentos %}
                     <div class="card-body">
-                    {% for ag in agendamentos %}
+                        {% if agendamentos %}
+                        {% for ag in agendamentos %}
                         <div class="consultation-item">
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/50?img=5" class="patient-img" alt="Paciente">
                                 <div class="flex-grow-1">
                                     <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}}</h5>
-                                    <p class="mb-1">{{ag.hora_inicio}} | {{ag.especialidade}}</p>
+                                    <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
                                     <span class="badge badge-status bg-success">Confirmada</span>
                                 </div>
                                 <div>
-                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
-                                        data-bs-target="#patientModal" data-patient="Maria Oliveira">
+                                    <button class="btn btn-sm btn-outline-primary me-1"
+                                        onclick="openPatientModal('{{ag.paciente.nome}} {{ag.paciente.sobrenome}}')">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="btn btn-sm btn-outline-secondary">
@@ -439,96 +998,35 @@
                                 </div>
                             </div>
                         </div>
-                    {% endfor %}
-                    {% else %}
-                     <div class="consultation-item">
-                            <div class="d-flex align-items-center">
-                                Sem agendamentos hoje.
-                            </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="empty-state">
+                            <span>Sem agendamentos no momento.</span>
                         </div>
-                    {% endif %}
-                        <div class="consultation-item">
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/50?img=11" class="patient-img" alt="Paciente">
-                                <div class="flex-grow-1">
-                                    <h5>João Santos</h5>
-                                    <p class="mb-1">11:30 - 12:30 | Pós-cirurgia joelho</p>
-                                    <span class="badge badge-status bg-warning text-dark">Aguardando</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
-                                        data-bs-target="#patientModal" data-patient="João Santos">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="consultation-item">
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/50?img=8" class="patient-img" alt="Paciente">
-                                <div class="flex-grow-1">
-                                    <h5>Carlos Mendonça</h5>
-                                    <p class="mb-1">14:00 - 15:00 | Tendinite ombro</p>
-                                    <span class="badge badge-status bg-success">Confirmada</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
-                                        data-bs-target="#patientModal" data-patient="Carlos Mendonça">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="consultation-item">
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/50?img=15" class="patient-img" alt="Paciente">
-                                <div class="flex-grow-1">
-                                    <h5>Ana Paula Costa</h5>
-                                    <p class="mb-1">16:00 - 17:00 | Reabilitação pós-AVC</p>
-                                    <span class="badge badge-status bg-danger">Cancelada</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
-                                        data-bs-target="#patientModal" data-patient="Ana Paula Costa">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
             <!-- Estatísticas e Ações Rápidas -->
-            <div class="col-md-4">
+            <div class="agenda-lateral">
                 <div class="card">
                     <div class="card-header">Resumo do Dia</div>
                     <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-6 stat-card">
+                        <div class="stats-grid">
+                            <div class="stat-card">
                                 <div class="stat-number">4</div>
                                 <div class="stat-label">Consultas</div>
                             </div>
-                            <div class="col-6 stat-card">
+                            <div class="stat-card">
                                 <div class="stat-number">3</div>
                                 <div class="stat-label">Confirmadas</div>
                             </div>
-                            <div class="col-6 stat-card">
+                            <div class="stat-card">
                                 <div class="stat-number">1</div>
                                 <div class="stat-label">Aguardando</div>
                             </div>
-                            <div class="col-6 stat-card">
+                            <div class="stat-card">
                                 <div class="stat-number">1</div>
                                 <div class="stat-label">Cancelada</div>
                             </div>
@@ -539,18 +1037,20 @@
                 <div class="card">
                     <div class="card-header">Ações Rápidas</div>
                     <div class="card-body">
-                        <button class="btn btn-outline-primary w-100 mb-2">
-                            <i class="fas fa-user-plus me-2"></i>Novo Paciente
-                        </button>
-                        <button class="btn btn-outline-primary w-100 mb-2">
-                            <i class="fas fa-file-medical me-2"></i>Prontuário Rápido
-                        </button>
-                        <button class="btn btn-outline-primary w-100 mb-2">
-                            <i class="fas fa-paper-plane me-2"></i>Enviar Laudo
-                        </button>
-                        <button class="btn btn-outline-primary w-100">
-                            <i class="fas fa-chart-bar me-2"></i>Relatórios
-                        </button>
+                        <div class="quick-actions">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-user-plus me-2"></i>Novo Paciente
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-file-medical me-2"></i>Prontuário Rápido
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Laudo
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-chart-bar me-2"></i>Relatórios
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -558,12 +1058,13 @@
     </div>
 
     <!-- Modal do Paciente -->
-    <div class="modal fade" id="patientModal" tabindex="-1" aria-labelledby="patientModalLabel" aria-hidden="true">
+    <div class="modal" id="patientModal">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="patientModalLabel">Prontuário do Paciente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" onclick="closeModal('patientModal')"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row mb-4">
@@ -584,67 +1085,242 @@
                         </div>
                     </div>
 
-                    <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+                    <ul class="nav-tabs" id="patientTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="prontuario-tab" data-bs-toggle="tab"
-                                data-bs-target="#prontuario" type="button" role="tab">Prontuário</button>
+                            <button class="nav-link active" onclick="switchTab('prontuario')">Prontuário</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="evolucao-tab" data-bs-toggle="tab" data-bs-target="#evolucao"
-                                type="button" role="tab">Evolução</button>
+                            <button class="nav-link" onclick="switchTab('evolucao')">Evolução</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="imagens-tab" data-bs-toggle="tab" data-bs-target="#imagens"
-                                type="button" role="tab">Imagens</button>
+                            <button class="nav-link" onclick="switchTab('imagens')">Imagens</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="analise-tab" data-bs-toggle="tab" data-bs-target="#analise"
-                                type="button" role="tab">Análise Médica</button>
+                            <button class="nav-link" onclick="switchTab('analise')">Análise Médica</button>
                         </li>
                     </ul>
 
                     <div class="tab-content" id="patientTabContent">
                         <!-- Aba Prontuário -->
-                        <div class="tab-pane fade show active" id="prontuario" role="tabpanel">
-                            <form>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="queixaPrincipal" class="form-label">Queixa Principal</label>
-                                        <textarea class="form-control" id="queixaPrincipal"
-                                            rows="3">Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.</textarea>
+                        <!-- Aba Prontuário -->
+                        <div class="tab-pane active" id="prontuario">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Prontuários do Paciente</h5>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('newProntuarioModal')">
+                                    <i class="fas fa-plus me-1"></i> Novo Prontuário
+                                </button>
+                            </div>
+                            <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
+                            <input type="hidden" id="profissionalId"
+                                value="{{ request.user.profissional.id|default:'' }}">
+                            <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
+                            <!-- Lista de Prontuários -->
+                            <div class="prontuarios-list">
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Prontuário - 15/05/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(1)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="historiaDoenca" class="form-label">História da Doença Atual</label>
-                                        <textarea class="form-control" id="historiaDoenca"
-                                            rows="3">Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.</textarea>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Queixa Principal:</strong> Dor lombar há 6 meses, com irradiação para
+                                            membro inferior direito...</p>
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="exameFisico" class="form-label">Exame Físico</label>
-                                        <textarea class="form-control" id="exameFisico"
-                                            rows="4">Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.</textarea>
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Prontuário - 08/05/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dr. Carlos Santos</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(2)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="conduta" class="form-label">Conduta</label>
-                                        <textarea class="form-control" id="conduta"
-                                            rows="4">Exercícios de fortalecimento do core alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.</textarea>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Queixa Principal:</strong> Dor cervical com limitação de movimento...
+                                        </p>
                                     </div>
                                 </div>
 
-                                <div class="d-flex justify-content-end">
-                                    <button type="button" class="btn btn-primary">Salvar Prontuário</button>
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Prontuário - 01/05/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(3)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
+                                    </div>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Queixa Principal:</strong> Pós-operatório de artroplastia de
+                                            quadril...</p>
+                                    </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
 
+                        <!-- Modal Novo Prontuário -->
+                        <div class="modal" id="newProntuarioModal">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Novo Prontuário</h5>
+                                        <button type="button" class="btn-close"
+                                            onclick="closeModal('newProntuarioModal')" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="prontuarioForm">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="queixaPrincipal" class="form-label">Queixa
+                                                        Principal</label>
+                                                    <textarea class="form-control" id="queixaPrincipal" rows="3"
+                                                        placeholder="Descreva a queixa principal do paciente..."></textarea>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="historiaDoenca" class="form-label">História da Doença
+                                                        Atual</label>
+                                                    <textarea class="form-control" id="historiaDoenca" rows="3"
+                                                        placeholder="Descreva a história da doença atual..."></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="exameFisico" class="form-label">Exame Físico</label>
+                                                    <textarea class="form-control" id="exameFisico" rows="4"
+                                                        placeholder="Descreva os achados do exame físico..."></textarea>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="conduta" class="form-label">Conduta</label>
+                                                    <textarea class="form-control" id="conduta" rows="4"
+                                                        placeholder="Descreva a conduta terapêutica..."></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="diagnostico" class="form-label">Diagnóstico</label>
+                                                <input type="text" class="form-control" id="diagnostico"
+                                                    placeholder="Diagnóstico principal...">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="observacoes" class="form-label">Observações
+                                                    Adicionais</label>
+                                                <textarea class="form-control" id="observacoes" rows="3"
+                                                    placeholder="Observações adicionais..."></textarea>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            onclick="closeModal('newProntuarioModal')">Cancelar</button>
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="salvarProntuario()">Salvar Prontuário</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Visualizar Prontuário Completo -->
+                        <div class="modal" id="viewProntuarioModal">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewProntuarioTitle">Prontuário Completo</h5>
+                                        <button type="button" class="btn-close"
+                                            onclick="closeModal('viewProntuarioModal')" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="prontuario-meta mb-4">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p><strong>Data:</strong> <span
+                                                            id="prontuarioData">15/05/2023</span></p>
+                                                    <p><strong>Registrado por:</strong> <span id="prontuarioAutor">Dra.
+                                                            Ana Silva</span></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><strong>Paciente:</strong> <span id="prontuarioPaciente">Maria
+                                                            Oliveira</span></p>
+                                                    <p><strong>ID:</strong> <span id="prontuarioId">#PRT001</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="prontuario-content">
+                                            <div class="info-section mb-4">
+                                                <h6 class="section-title">Queixa Principal</h6>
+                                                <div class="section-content" id="viewQueixaPrincipal">
+                                                    Dor lombar há 6 meses, com irradiação para membro inferior direito.
+                                                    Relata piora ao ficar em pé por longos períodos.
+                                                </div>
+                                            </div>
+
+                                            <div class="info-section mb-4">
+                                                <h6 class="section-title">História da Doença Atual</h6>
+                                                <div class="section-content" id="viewHistoriaDoenca">
+                                                    Paciente relata início dos sintomas após mudança de trabalho, onde
+                                                    passou a ficar mais tempo em pé. Já realizou tratamento com
+                                                    anti-inflamatórios com melhora parcial.
+                                                </div>
+                                            </div>
+
+                                            <div class="info-section mb-4">
+                                                <h6 class="section-title">Exame Físico</h6>
+                                                <div class="section-content" id="viewExameFisico">
+                                                    Amplitude de movimento diminuída na flexão anterior. Dor à palpação
+                                                    em L4-L5. Teste de elevação da perna reta positivo à direita. Força
+                                                    muscular preservada.
+                                                </div>
+                                            </div>
+
+                                            <div class="info-section mb-4">
+                                                <h6 class="section-title">Conduta</h6>
+                                                <div class="section-content" id="viewConduta">
+                                                    Exercícios de fortalecimento do core alongamento de cadeia
+                                                    posterior. Orientação postural. TENS para alívio da dor.
+                                                </div>
+                                            </div>
+
+                                            <div class="info-section mb-4">
+                                                <h6 class="section-title">Diagnóstico</h6>
+                                                <div class="section-content" id="viewDiagnostico">
+                                                    Lombalgia crônica com componente radicular.
+                                                </div>
+                                            </div>
+
+                                            <div class="info-section">
+                                                <h6 class="section-title">Observações</h6>
+                                                <div class="section-content" id="viewObservacoes">
+                                                    Paciente orientado sobre postura e ergonomia. Retorno em 15 dias
+                                                    para reavaliação.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            onclick="closeModal('viewProntuarioModal')">Fechar</button>
+                                        <button type="button" class="btn btn-outline-primary">
+                                            <i class="fas fa-print me-1"></i> Imprimir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Aba Evolução -->
-                        <div class="tab-pane fade" id="evolucao" role="tabpanel">
+                        <div class="tab-pane" id="evolucao">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5>Registro de Evoluções</h5>
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#newEvolutionModal">
+                                <button class="btn btn-sm btn-primary" onclick="openModal('newEvolutionModal')">
                                     <i class="fas fa-plus me-1"></i> Nova Evolução
                                 </button>
                             </div>
@@ -672,7 +1348,7 @@
                         </div>
 
                         <!-- Aba Imagens -->
-                        <div class="tab-pane fade" id="imagens" role="tabpanel">
+                        <div class="tab-pane" id="imagens">
                             <div class="file-upload mb-4">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
                                 <p>Arraste imagens aqui ou clique para fazer upload</p>
@@ -684,8 +1360,8 @@
                             <h6>Imagens do Paciente</h6>
                             <div class="image-gallery">
                                 <div class="gallery-item">
-                                    <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                                        alt="Raio-X">
+                                    <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56                                    alt="
+                                        Raio-X">
                                     <div class="overlay">Raio-X Lombar</div>
                                 </div>
                                 <div class="gallery-item">
@@ -707,7 +1383,7 @@
                         </div>
 
                         <!-- Aba Análise Médica -->
-                        <div class="tab-pane fade" id="analise" role="tabpanel">
+                        <div class="tab-pane" id="analise">
                             <div class="analysis-box">
                                 <h6><i class="fas fa-stethoscope me-2"></i>Análise para Encaminhamento</h6>
                                 <textarea class="form-control mt-2" rows="6">Paciente em tratamento para lombalgia crônica há 2 meses. Apresenta melhora parcial dos sintomas, mas persiste com limitação funcional. Sugiro avaliação ortopédica para possível infiltração ou outras condutas, uma vez que a fisioterapia convencional apresenta resposta limitada.
@@ -750,13 +1426,13 @@ Fisioterapeuta - CREFITO 12345</textarea>
     </div>
 
     <!-- Modal Nova Evolução -->
-    <div class="modal fade" id="newEvolutionModal" tabindex="-1" aria-labelledby="newEvolutionModalLabel"
-        aria-hidden="true">
+    <div class="modal" id="newEvolutionModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newEvolutionModalLabel">Nova Evolução</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Nova Evolução</h5>
+                    <button type="button" class="btn-close" onclick="closeModal('newEvolutionModal')"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form>
@@ -772,25 +1448,168 @@ Fisioterapeuta - CREFITO 12345</textarea>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('newEvolutionModal')">Cancelar</button>
                     <button type="button" class="btn btn-primary">Salvar Evolução</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Atualiza o nome do paciente no modal
-        document.addEventListener('DOMContentLoaded', function () {
-            var patientModal = document.getElementById('patientModal');
-            patientModal.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget;
-                var patientName = button.getAttribute('data-patient');
-                var modalTitle = patientModal.querySelector('.modal-title');
-                modalTitle.textContent = 'Prontuário - ' + patientName;
+        // Funções para controle de modais
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function openPatientModal(patientName) {
+            document.getElementById('patientName').textContent = patientName;
+            document.getElementById('patientModalLabel').textContent = 'Prontuário - ' + patientName;
+            openModal('patientModal');
+        }
+
+        // Função para alternar entre abas
+        function switchTab(tabId) {
+            // Esconde todas as abas
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            tabPanes.forEach(tab => {
+                tab.classList.remove('active');
             });
-        });
+
+            // Remove a classe active de todos os botões de aba
+            const tabButtons = document.querySelectorAll('.nav-link');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Ativa a aba selecionada
+            document.getElementById(tabId).classList.add('active');
+
+            // Ativa o botão correspondente
+            event.target.classList.add('active');
+        }
+
+        // Fechar modal ao clicar fora dele
+        window.onclick = function (event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        }
+        // Dados de exemplo dos prontuários
+        const prontuariosData = {
+            1: {
+                data: "15/05/2023",
+                autor: "Dra. Ana Silva",
+                paciente: "Maria Oliveira",
+                id: "#PRT001",
+                queixaPrincipal: "Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.",
+                historiaDoenca: "Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.",
+                exameFisico: "Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.",
+                conduta: "Exercícios de fortalecimento do core alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.",
+                diagnostico: "Lombalgia crônica com componente radicular.",
+                observacoes: "Paciente orientado sobre postura e ergonomia. Retorno em 15 dias para reavaliação."
+            },
+            2: {
+                data: "08/05/2023",
+                autor: "Dr. Carlos Santos",
+                paciente: "Maria Oliveira",
+                id: "#PRT002",
+                queixaPrincipal: "Dor cervical com limitação de movimento há 3 semanas após trauma em acidente automobilístico.",
+                historiaDoenca: "Paciente relata acidente há 3 semanas com whiplash. Refere dor constante 7/10, piora com movimentos de rotação.",
+                exameFisico: "Limitação de 50% na rotação cervical bilateral. Dor à palpação em C5-C6. Espasmo muscular em trapézio superior.",
+                conduta: "Terapia manual, mobilização cervical, exercícios de estabilização, crioterapia.",
+                diagnostico: "Síndrome do chicote (whiplash) grau II.",
+                observacoes: "Encaminhado para RX cervical. Uso de colar mole por períodos curtos."
+            },
+            3: {
+                data: "01/05/2023",
+                autor: "Dra. Ana Silva",
+                paciente: "Maria Oliveira",
+                id: "#PRT003",
+                queixaPrincipal: "Pós-operatório de artroplastia de quadril direito há 4 semanas. Relata dificuldade na marcha e dor residual.",
+                historiaDoenca: "Cirurgia realizada há 4 semanas por osteoartrose grave. Evolução dentro do esperado mas com limitação funcional.",
+                exameFisico: "Edema discreto no quadril D. Amplitude de movimento: flexão 80°, abdução 25°. Marcha com auxílio de andador.",
+                conduta: "Exercícios de fortalecimento de MMII, treino de marcha, orientações sobre precauções pós-operatórias.",
+                diagnostico: "Status pós artroplastia total de quadril direito.",
+                observacoes: "Paciente motivada. Evolução satisfatória. Manter precauções por mais 2 semanas."
+            }
+        };
+
+        // Função para abrir modal de visualização do prontuário
+        function openProntuarioModal(prontuarioId) {
+            const prontuario = prontuariosData[prontuarioId];
+
+            if (prontuario) {
+                document.getElementById('prontuarioData').textContent = prontuario.data;
+                document.getElementById('prontuarioAutor').textContent = prontuario.autor;
+                document.getElementById('prontuarioPaciente').textContent = prontuario.paciente;
+                document.getElementById('prontuarioId').textContent = prontuario.id;
+                document.getElementById('viewQueixaPrincipal').textContent = prontuario.queixaPrincipal;
+                document.getElementById('viewHistoriaDoenca').textContent = prontuario.historiaDoenca;
+                document.getElementById('viewExameFisico').textContent = prontuario.exameFisico;
+                document.getElementById('viewConduta').textContent = prontuario.conduta;
+                document.getElementById('viewDiagnostico').textContent = prontuario.diagnostico;
+                document.getElementById('viewObservacoes').textContent = prontuario.observacoes;
+
+                document.getElementById('viewProntuarioTitle').textContent = `Prontuário - ${prontuario.data}`;
+                openModal('viewProntuarioModal');
+            }
+        }
+
+        // Função para salvar novo prontuário
+        async function salvarProntuario() {
+            const dadosProntuario = {
+                paciente_id: document.getElementById('pacienteId').value,
+                profissional_id: document.getElementById('profissionalId').value,
+                pacote_id: document.getElementById('pacoteSelect')?.value || null,
+                agendamento_id: document.getElementById('agendamentoId')?.value || null,
+                queixa_principal: document.getElementById('queixaPrincipal').value,
+                historia_doenca: document.getElementById('historiaDoenca').value,
+                exame_fisico: document.getElementById('exameFisico').value,
+                conduta: document.getElementById('conduta').value,
+                diagnostico: document.getElementById('diagnostico').value,
+                observacoes: document.getElementById('observacoes').value
+            };
+
+            try {
+                const response = await fetch('/api/salvar-prontuario/', {  // ← URL ATUALIZADA
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken(),
+                        'X-Requested-With': 'XMLHttpRequest'  // Identifica como AJAX
+                    },
+                    body: JSON.stringify(dadosProntuario)
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.success) {
+                    mostrarMensagem('✅ ' + resultado.message, 'success');
+                    document.getElementById('prontuarioForm').reset();
+                    closeModal('newProntuarioModal');
+
+                    // Opcional: disparar evento para outros componentes
+                    window.dispatchEvent(new CustomEvent('prontuarioSalvo', {
+                        detail: resultado
+                    }));
+
+                } else {
+                    mostrarMensagem('❌ ' + resultado.error, 'error');
+                }
+
+            } catch (error) {
+                mostrarMensagem('🔌 Erro de conexão', 'error');
+                console.error('Erro:', error);
+            }
+        } 
     </script>
 </body>
 
