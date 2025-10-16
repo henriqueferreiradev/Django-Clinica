@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import HistoricoStatus, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
+from django.template.context_processors import request
 from core.tokens import gerar_token_acesso_unico, verificar_token_acesso
 
 import qrcode
@@ -682,9 +683,25 @@ def politica_privacidade(request):
 
 def paciente_status(request):
     pacientes = Paciente.objects.all()
-    
-    
+
     context = {
-        'pacientes':pacientes
+        'pacientes':pacientes,
+         
     }
     return render(request, 'core/pacientes/status-mensal/status_mensal.html', context)
+
+ 
+def lista_status(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    historicos = HistoricoStatus.objects.filter(paciente=paciente).order_by('-ano', '-mes')
+
+    data = [{
+        'mes': historico.mes,
+        'ano': historico.ano,
+        'status': historico.status,
+        'freq_sistema': historico.freq_sistema,
+        'freq_programada': historico.freq_programada,
+        'ganhou_beneficio': historico.ganhou_beneficio,
+    } for historico in historicos]
+
+    return JsonResponse(data, safe=False)

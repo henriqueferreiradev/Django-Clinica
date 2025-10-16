@@ -14,3 +14,7 @@ def verificar_cpf(request):
         existe = queryset.exists()
     
     return JsonResponse({'existe': existe})
+
+
+
+ 

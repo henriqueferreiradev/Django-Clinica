@@ -61,9 +61,7 @@ urlpatterns = [
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
     path('agenda_profissional/', profissionais_views.agenda_profissional, name='agenda_profissional'),
     path('agenda/board', agendamento_views.agenda_board, name='agenda_board'),
-    path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
-    path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
-    path('api/verificar-cpf/', api_views.verificar_cpf, name='verificar_cpf'),
+
     path('agendamento/confirmacao/<int:agendamento_id>/', agendamento_views.confirmacao_agendamento, name='confirmacao_agendamento'),
     path('enviar-email/<int:agendamento_id>/',agendamento_views.enviar_email_agendamento, name='enviar_email_agendamento'),
     path('agendamento/alterar_status/<int:pk>',agendamento_views.alterar_status_agenda, name='alterar_status_agendamento'),
@@ -104,5 +102,9 @@ urlpatterns = [
     path('api/verificar_beneficios_mes/<int:paciente_id>', agendamento_views.verificar_beneficios_mes, name='verificar_beneficios_mes'),
     path('api/beneficios/usar',agendamento_views.usar_beneficio,name='usar_beneficio'),
     path('api/salvar-prontuario/', profissionais_views.salvar_prontuario, name='salvar_prontuario'),
+    path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
+    path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
+    path('api/verificar-cpf/', api_views.verificar_cpf, name='verificar_cpf'),
+    path('api/lista_status/<int:paciente_id>', pacientes_views.lista_status, name='lista_status'),
 
 ]

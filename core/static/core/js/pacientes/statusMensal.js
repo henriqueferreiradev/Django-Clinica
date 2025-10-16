@@ -136,10 +136,10 @@ function linhaHTML(item) {
   <td class="col-center col-status"><span class="${stClass}">${stLabel}</span></td>
 
   <td class='col-center'>
-    <button class="action-btn btn-history" type="button" onclick="openHistory('${nome.replace(/'/g, "\\'")}')">
+    <button class="action-btn btn-history" type="button" onclick="openHistory(this)">
         <i class='bx  bx-book'  ></i> 
     </button>
-    <button class="action-btn btn-benefits" type="button" onclick="openBenefits()">
+    <button class="action-btn btn-benefits" type="button" onclick="openBenefits(this)">
       <i class='bx  bx-gift'  ></i> 
     </button>
   </td>
