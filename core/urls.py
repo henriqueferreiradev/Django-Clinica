@@ -17,6 +17,17 @@ from core.views import (
  
 
 urlpatterns = [
+    
+    
+        path('api/verificar_beneficios_mes/<int:paciente_id>', agendamento_views.verificar_beneficios_mes, name='verificar_beneficios_mes'),
+    path('api/beneficios/usar',agendamento_views.usar_beneficio,name='usar_beneficio'),
+    path('api/salvar-prontuario/', profissionais_views.salvar_prontuario, name='salvar_prontuario'),
+    path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
+    path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
+    path('api/verificar-cpf/', api_views.verificar_cpf, name='verificar_cpf'),
+    path('api/registrar_recebimento/<int:pagamento_id>/', api_views.registrar_recebimento, name='registrar_recebimento'),
+    path('api/lista_status/<int:paciente_id>', pacientes_views.lista_status, name='lista_status'),
+
     path('login/', auth_views.login_view, name='login'),
     path('logout/', auth_views.logout_view, name='logout'), 
     
@@ -98,13 +109,6 @@ urlpatterns = [
     
     path("frequencias", frequencia_views.frequencias_get, name="frequencias_get"),
     path("frequencias/salvar", frequencia_views.frequencias_post, name="frequencias_post"),
-        # 1) Retorna os benefícios disponíveis no mês para o paciente
-    path('api/verificar_beneficios_mes/<int:paciente_id>', agendamento_views.verificar_beneficios_mes, name='verificar_beneficios_mes'),
-    path('api/beneficios/usar',agendamento_views.usar_beneficio,name='usar_beneficio'),
-    path('api/salvar-prontuario/', profissionais_views.salvar_prontuario, name='salvar_prontuario'),
-    path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
-    path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
-    path('api/verificar-cpf/', api_views.verificar_cpf, name='verificar_cpf'),
-    path('api/lista_status/<int:paciente_id>', pacientes_views.lista_status, name='lista_status'),
+      
 
 ]

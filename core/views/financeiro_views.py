@@ -34,6 +34,12 @@ from django.utils import timezone
 from datetime import date
 from decimal import Decimal
 from core.models import Pagamento, PacotePaciente, Agendamento
+from django.core.paginator import Paginator
+from django.utils import timezone
+from django.db.models import Q, Sum
+from decimal import Decimal
+from datetime import date
+
 def contas_a_receber_view(request):
     hoje = timezone.localdate()
 
@@ -57,10 +63,9 @@ def contas_a_receber_view(request):
         .filter(ativo=True)
     )
 
-    # Filtra pacotes com saldo > 0
     pacotes_pendentes = [p for p in pacotes_todos if p.valor_restante and p.valor_restante > Decimal('0.00')]
 
-    # ---- KPIs BASEADOS EM PAGAMENTOS ----
+    # ---- KPIs ----
     total_pendente = Pagamento.objects.filter(status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
     total_atrasado = Pagamento.objects.filter(
         Q(status='atrasado') | Q(vencimento__lt=hoje),
@@ -68,11 +73,7 @@ def contas_a_receber_view(request):
     ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
     total_vence_hoje = Pagamento.objects.filter(vencimento=hoje, status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
 
-    # ---- SOMA OS PACOTES COM SALDO RESTANTE ----
-    saldo_pacotes = Decimal('0')
-    saldo_pacotes_atrasados = Decimal('0')
-    saldo_pacotes_hoje = Decimal('0')
-
+    saldo_pacotes = saldo_pacotes_atrasados = saldo_pacotes_hoje = Decimal('0')
     for pac in pacotes_pendentes:
         primeira_sessao = pac.agds[0] if getattr(pac, 'agds', []) else None
         venc = primeira_sessao.data if primeira_sessao else pac.data_inicio
@@ -89,10 +90,10 @@ def contas_a_receber_view(request):
     total_atrasado += saldo_pacotes_atrasados
     total_vence_hoje += saldo_pacotes_hoje
     total_a_receber = total_pendente + total_atrasado + total_vence_hoje
+
     # ---- MONTAGEM DOS LANÇAMENTOS ----
     lancamentos = []
 
-    # Pagamentos
     for p in pagamentos:
         if p.vencimento:
             if p.vencimento < hoje:
@@ -111,11 +112,8 @@ def contas_a_receber_view(request):
             'valor': p.valor,
             'vencimento': p.vencimento,
             'status': status_calc,
-            'pacote': p.pacote,
-            'agendamento': p.agendamento,
         })
 
-    # Pacotes com saldo
     for pac in pacotes_pendentes:
         primeira_sessao = pac.agds[0] if getattr(pac, 'agds', []) else None
         venc = primeira_sessao.data if primeira_sessao else pac.data_inicio
@@ -135,21 +133,24 @@ def contas_a_receber_view(request):
             'valor': saldo,
             'vencimento': venc,
             'status': status_calc,
-            'pacote': pac,
-            'agendamento': primeira_sessao,
         })
 
     lancamentos.sort(key=lambda x: x['vencimento'] or date(9999, 12, 31))
 
-    # ---- CONTEXTO ----
+    # ---- PAGINAÇÃO ----
+    paginator = Paginator(lancamentos, 10)   
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'lancamentos': lancamentos,
+        'page_obj': page_obj,
         'total_pendente': f"R$ {total_a_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
         'total_atrasado': f"R$ {total_atrasado:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
         'total_vence_hoje': f"R$ {total_vence_hoje:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
     }
 
     return render(request, 'core/financeiro/contas_receber.html', context)
+
 def contas_a_pagar_view(request):
  
     return render(request, 'core/financeiro/contas_pagar.html')
