@@ -868,7 +868,7 @@
                     <thead>
                         <tr>
                             <th width="50">
-                                <input type="checkbox" id="selectAll" class="form-check-input">
+                                <label class='checkbox-option'><input type="checkbox" id="selectAll" class="checkbox-option"></label>
                             </th>
                             <th>Vencimento</th>
                             <th>Paciente</th>
@@ -882,7 +882,7 @@
                         <tbody>
                         {% for p in lancamentos %}
                         <tr class="row-status {% if p.status_calculado == 'Atrasado' %}atrasado{% elif p.status_calculado == 'Vence Hoje' %}hoje{% elif p.status_calculado == 'Pago' %}pago{% else %}pendente{% endif %}">
-                            <td><input type="checkbox" class="row-checkbox" {% if p.status_calculado == 'Pago' %}disabled{% endif %}></td>
+                            <td><label class='checkbox-option'><input type="checkbox" {% if p.status_calculado == 'Pago' %}disabled{% endif %}></label></td>
                             <td>{{ p.vencimento|date:"d/m/Y" }}</td>
                             <td><strong>{{ p.paciente.nome }}</strong></td>
                             <td>{{ p.descricao }}</td>
@@ -1057,7 +1057,8 @@
 
                     <div class="form-group">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="gerarBoleto">
+                            <label class='checkbox-option'>
+                            <input type="checkbox" class="checkbox-option" id="gerarBoleto"></label>
                             <label class="form-check-label" for="gerarBoleto">Gerar boleto automaticamente</label>
                         </div>
                     </div>
@@ -1128,7 +1129,7 @@
 
                     <div class="form-group">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="gerarRecibo">
+                           <label class='checkbox-option'><input type="checkbox" class="form-check-input" id="gerarRecibo"></label>
                             <label class="form-check-label" for="gerarRecibo">Gerar recibo</label>
                         </div>
                     </div>

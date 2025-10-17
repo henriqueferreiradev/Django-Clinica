@@ -16,5 +16,8 @@ def verificar_cpf(request):
     return JsonResponse({'existe': existe})
 
 
+def filtra_divida_paciente(request):
+    ...
+
 
  

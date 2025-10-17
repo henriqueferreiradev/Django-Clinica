@@ -22,7 +22,7 @@ async function pegarFrequencias(opts = {}) {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return await res.json();
 }
- 
+
 function statusBadgeClass(status) {
   const s = String(status || '').toLowerCase();
   if (s.includes('premium')) return 'badge badge-premium';
@@ -290,3 +290,370 @@ document.addEventListener('DOMContentLoaded', () => {
   filtroMes.addEventListener('change', aplicarFiltro);
   filtroAno.addEventListener('change', aplicarFiltro);
 })();
+
+let DATA_ATUAL = []; // último payload renderizado
+let DIRTY_SET = new Set(); // ids de linhas alteradas
+let STATUS_FILTRO = "todos"; // filtro ativo
+
+// === Helpers de filtro ===
+function matchBusca(nome, cpf, termo) {
+  if (!termo) return true;
+  const t = termo.toLowerCase();
+  return (
+    String(nome || "")
+      .toLowerCase()
+      .includes(t) ||
+    String(cpf || "")
+      .toLowerCase()
+      .includes(t)
+  );
+}
+function matchStatus(chave, filtro) {
+  if (!filtro || filtro === "todos") return true;
+  return String(chave || "").toLowerCase() === filtro;
+}
+function statusKeyFromLabel(label) {
+  const s = String(label || "").toLowerCase();
+  if (s.includes("premium")) return "premium";
+  if (s.includes("vip")) return "vip";
+  if (s.includes("plus")) return "plus";
+  if (s.includes("primeiro")) return "primeiro_mes";
+  if (s.includes("indef")) return "indefinido";
+  return "";
+}
+
+// === KPIs ===
+function calcularKPIs(items) {
+  const n = items.length;
+  let soma = 0,
+    count = 0;
+  let premium = 0,
+    vip = 0,
+    plus = 0,
+    indef = 0;
+  for (const it of items) {
+    const p =
+      typeof it.percentual === "number"
+        ? it.percentual
+        : Number(it.freq_programada) > 0
+          ? (Number(it.freq_sistema) / Number(it.freq_programada)) * 100
+          : NaN;
+    if (isFinite(p)) {
+      soma += p;
+      count++;
+    }
+    const key = it.status
+      ? statusKeyFromLabel(it.status)
+      : isFinite(p)
+        ? p >= 100
+          ? "premium"
+          : p > 60
+            ? "vip"
+            : "plus"
+        : "indefinido";
+    if (key === "premium") premium++;
+    else if (key === "vip") vip++;
+    else if (key === "plus") plus++;
+    else indef++;
+  }
+  const media = count ? Math.round((soma / count) * 10) / 10 : 0;
+  document.getElementById("kpiPacientes").textContent = n;
+  document.getElementById("kpiMedia").textContent =
+    (Number.isInteger(media) ? media.toFixed(0) : media.toFixed(1)) + "%";
+  document.getElementById("kpiPremium").textContent = premium;
+  document.getElementById("kpiVip").textContent = vip;
+  document.getElementById("kpiPlus").textContent = plus;
+  document.getElementById("kpiIndef").textContent = indef;
+}
+
+// === Salvar bar ===
+function updateSaveBar() {
+  const bar = document.getElementById("saveBar");
+  bar.classList.remove("hidden");
+  const q = DIRTY_SET.size;
+  const badge = document.getElementById("dirtyBadge");
+  if (q > 0) {
+    badge.style.display = "inline-flex";
+    badge.textContent =
+      q === 1 ? "1 alteração pendente" : `${q} alterações pendentes`;
+  } else {
+    badge.style.display = "none";
+  }
+  const tbody = document.querySelector("table tbody");
+  document.getElementById("listInfo").textContent = `${tbody?.children.length || 0
+    } linhas exibidas`;
+}
+
+// Marca linha como alterada
+function markDirty(tr, pacienteId) {
+  if (!pacienteId) return;
+  DIRTY_SET.add(String(pacienteId));
+  tr.classList.add("dirty");
+  updateSaveBar();
+}
+
+// === Integra com sua renderização existente ===
+const _renderOriginal = window.getFrequencias;
+window.getFrequencias = async function () {
+  DIRTY_SET.clear();
+  const data = await pegarFrequencias(); // já com ?mes=&ano=
+  const items = Array.isArray(data) ? data : data.items ?? [];
+  DATA_ATUAL = items;
+
+  // render normal
+  const tbody = document.querySelector("table tbody");
+  tbody.innerHTML = items.map(linhaHTML).join("");
+
+  // feathers
+  if (window.feather?.replace) feather.replace();
+
+  // KPIs + savebar
+  calcularKPIs(items);
+  updateSaveBar();
+
+  // listeners para cálculo/dirty (você já recalcula %; aqui só marcamos dirty)
+  tbody.querySelectorAll(".fp-input").forEach((inp) => {
+    inp.addEventListener("input", (e) => {
+      const tr = e.target.closest("tr.table-row");
+      const pid =
+        tr?.dataset?.pacienteId || tr?.getAttribute("data-paciente-id");
+      markDirty(tr, pid);
+    });
+  });
+
+  // aplica filtro inicial (se algo estiver setado)
+  aplicarFiltroBuscaEChips();
+};
+
+// === Busca + chips ===
+function aplicarFiltroBuscaEChips() {
+  const busca = document
+    .getElementById("filtroBusca")
+    ?.value?.trim()
+    .toLowerCase();
+  const rows = document.querySelectorAll("tbody tr.table-row");
+  let visiveis = 0;
+  rows.forEach((tr) => {
+    const nome = tr.querySelector(".patient-name")?.textContent || "";
+    const cpf = tr.querySelector(".patient-detail")?.textContent || "";
+    const key = statusKeyFromLabel(
+      tr.querySelector(".col-status span")?.textContent
+    );
+    const show =
+      matchBusca(nome, cpf, busca) && matchStatus(key, STATUS_FILTRO);
+    tr.style.display = show ? "" : "none";
+    if (show) visiveis++;
+  });
+  document.getElementById(
+    "listInfo"
+  ).textContent = `${visiveis} linhas exibidas`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // chips
+  document.querySelectorAll(".chip").forEach((ch) => {
+    ch.addEventListener("click", () => {
+      document
+        .querySelectorAll(".chip")
+        .forEach((x) => x.classList.remove("active"));
+      ch.classList.add("active");
+      STATUS_FILTRO = ch.dataset.chip || "todos";
+      aplicarFiltroBuscaEChips();
+    });
+  });
+  // busca
+  document
+    .getElementById("filtroBusca")
+    ?.addEventListener("input", aplicarFiltroBuscaEChips);
+
+  // rodapé: topo e salvar
+  document
+    .getElementById("btnScrollTop")
+    ?.addEventListener("click", () =>
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    );
+  document.getElementById("btnSalvarTudo")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    abrirConfirmacaoSalvar();
+  });
+
+  // modal confirmação
+  document
+    .getElementById("cancelConfirmSave")
+    ?.addEventListener("click", () => closeModal("confirmSaveModal"));
+  document.getElementById("confirmSave")?.addEventListener("click", () => {
+    // submete o form real
+    document.getElementById("formFreq").submit();
+  });
+});
+
+// abre modal de confirmação
+function abrirConfirmacaoSalvar() {
+  const mes = document.getElementById("mes")?.value;
+  const ano = document.getElementById("ano")?.value;
+  document.getElementById("confirmDirtyCount").textContent = DIRTY_SET.size;
+  document.getElementById("confirmMesAno").textContent = `${mes}/${ano}`;
+  document.getElementById("confirmSaveModal").classList.remove("hidden");
+}
+
+// util dos seus modais
+function closeModal(id) {
+  document.getElementById(id).classList.add("hidden");
+}
+
+async function openBenefits(elementoOuId) {
+  const modal = document.getElementById("benefitsModal");
+  const body = modal.querySelector(".modal-body");
+
+  // exibe modal
+  modal.style.display = "flex";
+  modal.classList.remove("hidden");
+
+  // resolve o pacienteId a partir do elemento
+  let pacienteId = null;
+  if (typeof elementoOuId === "number" || typeof elementoOuId === "string") {
+    pacienteId = String(elementoOuId);
+  } else if (elementoOuId?.dataset?.pacienteId) {
+    pacienteId = elementoOuId.dataset.pacienteId;
+  } else {
+    const tr =
+      elementoOuId?.closest?.("tr.table-row") ||
+      document.activeElement?.closest?.("tr.table-row");
+    pacienteId = tr?.dataset?.pacienteId || null;
+  }
+
+  // estado de carregamento
+  body.innerHTML = `
+    <div class="benefit-item">
+      <div class="benefit-header">
+        <div><h4 class="benefit-name">Carregando benefícios…</h4>
+        <p class="benefit-date" style="opacity:.7">aguarde</p></div>
+      </div>
+    </div>
+  `;
+
+  if (!pacienteId) {
+    body.innerHTML = `<p style="color:#ef4444">Não foi possível identificar o paciente.</p>`;
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/api/verificar_beneficios_mes/${pacienteId}`);
+    if (!resp.ok) throw new Error("Erro ao buscar benefícios.");
+    const data = await resp.json();
+
+    const beneficios = data.beneficios || [];
+
+    if (!data.tem_beneficio || beneficios.length === 0) {
+      body.innerHTML = `<p style="opacity:.75">Nenhum benefício disponível para este paciente.</p>`;
+      return;
+    }
+
+    // renderiza benefícios
+    body.innerHTML = beneficios
+      .map(
+        (b) => `
+      <div class="benefit-item ${b.usado ? "benefit-used" : ""}">
+        <div class="benefit-header">
+          <div>
+            <h4 class="benefit-name">${b.titulo}</h4>
+            <p class="benefit-date">
+              ${b.usado ? "Utilizado" : "Disponível"}
+              ${b.percentual ? ` • ${b.percentual}%` : ""}
+            </p>
+          </div>
+          ${b.usado
+            ? `<span class="benefit-status utilizado">Utilizado</span>`
+            : `<span class="benefit-status disponivel">Disponível</span>`
+          }
+        </div>
+      </div>
+    `
+      )
+      .join("");
+  } catch (e) {
+    body.innerHTML = `<p style="color:#ef4444">${e.message}</p>`;
+  }
+}
+
+// ✅ expõe globalmente pro onclick inline funcionar
+window.openBenefits = openBenefits;
+async function openHistory(botaoOuId) {
+  const modal = document.getElementById("historyModal");
+  const body = modal.querySelector(".modal-body");
+
+  // resolve pacienteId
+  let pacienteId = null;
+  if (typeof botaoOuId === "number" || typeof botaoOuId === "string") {
+    pacienteId = botaoOuId;
+  } else {
+    const tr = botaoOuId.closest("tr.table-row");
+    pacienteId = tr?.dataset?.pacienteId;
+  }
+
+  modal.classList.remove("hidden");
+  body.innerHTML = `<p style="opacity:.7;">Carregando histórico...</p>`;
+
+  if (!pacienteId) {
+    body.innerHTML = `<p style="color:#ef4444">Paciente não identificado.</p>`;
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/api/lista_status/${pacienteId}`);
+    if (!resp.ok) throw new Error("Erro ao buscar histórico.");
+    const data = await resp.json();
+
+    if (!data.length) {
+      body.innerHTML = `<p style="opacity:.75">Nenhum histórico disponível para este paciente.</p>`;
+      return;
+    }
+
+    // função auxiliar local (pode ficar fora também)
+    function normalizeStatus(raw) {
+      const s = String(raw || '').toLowerCase().trim();
+      if (s.includes('premium')) return 'premium';
+      if (s.includes('vip')) return 'vip';
+      if (s.includes('plus')) return 'plus';
+      if (s.includes('primeiro')) return 'primeiro_mes';
+      if (s.includes('indefinido')) return 'indefinido';
+      return 'outro';
+    }
+    function badgeClass(statusKey) {
+      switch (statusKey) {
+        case 'premium': return 'badge badge-premium';
+        case 'vip': return 'badge badge-vip';
+        case 'plus': return 'badge badge-plus';
+        case 'primeiro_mes': return 'badge badge-primeiro_mes';
+        case 'indefinido': return 'badge badge-indefinido';
+        default: return 'badge badge-outro';
+      }
+    }
+
+    // renderiza o histórico
+    body.innerHTML = data.map(item => {
+      const key = normalizeStatus(item.status);
+      const badge = badgeClass(key);
+      const ganhou = item.ganhou_beneficio ? "status-completed" : "status-scheduled";
+
+      return `
+        <div class="history-item">
+          <div class="history-date">${item.mes}/${item.ano}</div>
+          <div class="history-details">
+            <div class="details">
+              <span class="history-type">Frequência Esperada: ${item.freq_programada}</span>
+              <span class="history-type">Frequência real: ${item.freq_sistema}</span>
+            </div>
+            <div class="details">
+              <span class="history-status ${badge}">${item.status}</span>
+              <span class="history-status ${ganhou}">${item.ganhou_beneficio ? 'Ganhou' : 'Não Ganhou'}</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch (e) {
+    body.innerHTML = `<p style="color:#ef4444">${e.message}</p>`;
+  }
+}
+
