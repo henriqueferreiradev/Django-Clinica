@@ -138,7 +138,7 @@ def contas_a_receber_view(request):
     lancamentos.sort(key=lambda x: x['vencimento'] or date(9999, 12, 31))
 
     # ---- PAGINAÇÃO ----
-    paginator = Paginator(lancamentos, 10)   
+    paginator = Paginator(lancamentos,10)   
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

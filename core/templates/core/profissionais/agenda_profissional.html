@@ -753,9 +753,12 @@
         }
 
         .modal-dialog {
-            max-width: 500px;
-            width: 90%;
+            height: 90%;
+            width: 60%;
             margin: 1.75rem auto;
+            overflow-y: auto;
+
+
         }
 
         .modal-xl {
@@ -1185,24 +1188,27 @@
                                                         placeholder="Descreva a queixa principal do paciente..."></textarea>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="historiaDoenca" class="form-label">História da Doença
-                                                        Atual</label>
-                                                    <textarea class="form-control" id="historiaDoenca" rows="3"
-                                                        placeholder="Descreva a história da doença atual..."></textarea>
+                                                    <label for="conduta" class="form-label">Conduta durante a sessão
+                                                    </label>
+                                                    <textarea class="form-control" id="conduta" rows="4"
+                                                        placeholder="Descreva a conduta durante a sessão..."></textarea>
                                                 </div>
                                             </div>
 
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
-                                                    <label for="exameFisico" class="form-label">Exame Físico</label>
+                                                    <label for="historiaDoenca" class="form-label">Feedback do paciente
+                                                    </label>
+                                                    <textarea class="form-control" id="historiaDoenca" rows="3"
+                                                        placeholder="Descreva a história da doença atual..."></textarea>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="exameFisico" class="form-label">Evolução</label>
                                                     <textarea class="form-control" id="exameFisico" rows="4"
                                                         placeholder="Descreva os achados do exame físico..."></textarea>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <label for="conduta" class="form-label">Conduta</label>
-                                                    <textarea class="form-control" id="conduta" rows="4"
-                                                        placeholder="Descreva a conduta terapêutica..."></textarea>
-                                                </div>
+
+
                                             </div>
 
                                             <div class="mb-3">
@@ -1213,7 +1219,7 @@
 
                                             <div class="mb-3">
                                                 <label for="observacoes" class="form-label">Observações
-                                                    Adicionais</label>
+                                                    Adicionais / Comunicação</label>
                                                 <textarea class="form-control" id="observacoes" rows="3"
                                                     placeholder="Observações adicionais..."></textarea>
                                             </div>
@@ -1426,31 +1432,396 @@ Fisioterapeuta - CREFITO 12345</textarea>
     </div>
 
     <!-- Modal Nova Evolução -->
+    <!-- Modal Nova Evolução -->
     <div class="modal" id="newEvolutionModal">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Nova Evolução</h5>
+                    <h5 class="modal-title">Nova Evolução - Estado de Saúde e Tratamento</h5>
                     <button type="button" class="btn-close" onclick="closeModal('newEvolutionModal')"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label for="evolutionDate" class="form-label">Data</label>
-                            <input type="date" class="form-control" id="evolutionDate" value="2023-05-15">
+                    <form id="evolutionForm">
+                        <!-- 2. Evolução do estado de saúde e tratamento -->
+                        <div class="mb-4">
+                            <h6 class="section-title">2. Evolução do estado de saúde e tratamento</h6>
+
+                            <div class="mb-3">
+                                <label for="queixaPrincipal" class="form-label">Queixa principal inicial</label>
+                                <textarea class="form-control" id="queixaPrincipal" rows="2"
+                                    placeholder="Descreva a queixa principal inicial..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="processoTerapeutico" class="form-label">Resumo do processo terapêutico até o
+                                    momento</label>
+                                <textarea class="form-control" id="processoTerapeutico" rows="3"
+                                    placeholder="Resumo do processo terapêutico..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="condutasTecnicas" class="form-label">Condutas e técnicas aplicadas neste
+                                    atendimento</label>
+                                <textarea class="form-control" id="condutasTecnicas" rows="3"
+                                    placeholder="Condutas e técnicas aplicadas..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="respostaPaciente" class="form-label">Resposta do paciente ao tratamento
+                                    (tolerância, percepção, feedback)</label>
+                                <textarea class="form-control" id="respostaPaciente" rows="3"
+                                    placeholder="Resposta do paciente..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="intercorrencias" class="form-label">Intercorrências observadas</label>
+                                <textarea class="form-control" id="intercorrencias" rows="2"
+                                    placeholder="Intercorrências observadas..."></textarea>
+                            </div>
                         </div>
+
+                        <!-- 3. Avaliação parcial do progresso (Mini reavaliação) -->
+                        <div class="mb-4">
+                            <h6 class="section-title">3. Avaliação parcial do progresso (Mini reavaliação)</h6>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Dor (0-10)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="dorInicio"
+                                                placeholder="Início" min="0" max="10">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="dorAtual" placeholder="Atual"
+                                                min="0" max="10">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="dorObservacoes"
+                                        placeholder="Observações">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Amplitude de movimento</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="amplitudeInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="amplitudeAtual"
+                                                placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="amplitudeObservacoes"
+                                        placeholder="Observações">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Força muscular</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="forcaInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="forcaAtual" placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="forcaObservacoes"
+                                        placeholder="Observações">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Postura e controle motor</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="posturaInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="posturaAtual"
+                                                placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="posturaObservacoes"
+                                        placeholder="Observações">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Edema / inflamação</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="edemaInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="edemaAtual" placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="edemaObservacoes"
+                                        placeholder="Observações">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Função nas AVDs / Treino</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="avdsInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="avdsAtual" placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="avdsObservacoes"
+                                        placeholder="Observações">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Aspectos emocionais / engajamento</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" id="emocionaisInicio"
+                                            placeholder="Início">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" id="emocionaisAtual"
+                                            placeholder="Atual">
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control mt-2" id="emocionaisObservacoes"
+                                    placeholder="Observações">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="sinteseEvolucao" class="form-label">Síntese da evolução</label>
+                                <textarea class="form-control" id="sinteseEvolucao" rows="3"
+                                    placeholder="Síntese da evolução..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 4. Orientação ao Paciente -->
+                        <div class="mb-4">
+                            <h6 class="section-title">4. Orientação ao Paciente</h6>
+
+                            <div class="mb-3">
+                                <label for="mensagemPaciente" class="form-label">Mensagem técnica e emocional
+                                    transmitida ao paciente</label>
+                                <textarea class="form-control" id="mensagemPaciente" rows="2"
+                                    placeholder="Mensagem transmitida..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="explicacaoContinuidade" class="form-label">Explicação sobre continuidade,
+                                    planejamento e importância da adesão</label>
+                                <textarea class="form-control" id="explicacaoContinuidade" rows="2"
+                                    placeholder="Explicação sobre continuidade..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="reacoesPaciente" class="form-label">Reações e entendimento do
+                                    paciente</label>
+                                <textarea class="form-control" id="reacoesPaciente" rows="2"
+                                    placeholder="Reações e entendimento..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 5. Expectativa x Realidade da Fisioterapeuta -->
+                        <div class="mb-4">
+                            <h6 class="section-title">5. Expectativa x Realidade da Fisioterapeuta</h6>
+
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nível de dor e conforto</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="dorExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="dorRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Mobilidade e função</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="mobilidadeExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="mobilidadeRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Energia e disposição</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="energiaExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="energiaRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Consciência corporal / postura</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="conscienciaExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="conscienciaRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Emoção / confiança / autoestima</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="emocaoExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="emocaoRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Próximos passos e novo Plano Terapêutico -->
+                        <div class="mb-4">
+                            <h6 class="section-title">6. Próximos passos e novo Plano Terapêutico</h6>
+
+                            <div class="mb-3">
+                                <label for="objetivosCiclo" class="form-label">Objetivos para o novo ciclo</label>
+                                <textarea class="form-control" id="objetivosCiclo" rows="2"
+                                    placeholder="Objetivos para o novo ciclo..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="condutasMantidas" class="form-label">Condutas a serem mantidas</label>
+                                <textarea class="form-control" id="condutasMantidas" rows="2"
+                                    placeholder="Condutas a serem mantidas..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="ajustesPlano" class="form-label">Ajustes necessários no plano
+                                    terapêutico</label>
+                                <textarea class="form-control" id="ajustesPlano" rows="2"
+                                    placeholder="Ajustes necessários..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Sugestões complementares</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="treinoFuncional">
+                                            <label class="form-check-label" for="treinoFuncional">Treino
+                                                funcional</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="pilatesClinico">
+                                            <label class="form-check-label" for="pilatesClinico">Pilates clínico</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="recovery">
+                                            <label class="form-check-label" for="recovery">Recovery</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="rpg">
+                                            <label class="form-check-label" for="rpg">RPG</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="nutricao">
+                                            <label class="form-check-label" for="nutricao">Nutrição</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="psicoterapia">
+                                            <label class="form-check-label" for="psicoterapia">Psicoterapia</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="estetica">
+                                            <label class="form-check-label" for="estetica">Estética</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="outro">
+                                            <label class="form-check-label" for="outro">Outro:</label>
+                                            <input type="text" class="form-control form-control-sm mt-1" id="outroTexto"
+                                                placeholder="Especificar">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 7. Registro interno / Observações profissionais -->
                         <div class="mb-3">
-                            <label for="evolutionText" class="form-label">Evolução</label>
-                            <textarea class="form-control" id="evolutionText" rows="5"
-                                placeholder="Descreva a evolução do paciente..."></textarea>
+                            <h6 class="section-title">7. Registro interno / Observações profissionais</h6>
+
+                            <div class="mb-3">
+                                <label for="observacoesInternas" class="form-label">Observações internas (para
+                                    equipe)</label>
+                                <textarea class="form-control" id="observacoesInternas" rows="2"
+                                    placeholder="Observações internas..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="orientacoesGrupo" class="form-label">Orientações a serem dadas em grupo
+                                    interno / estudo de caso</label>
+                                <textarea class="form-control" id="orientacoesGrupo" rows="2"
+                                    placeholder="Orientações para grupo interno..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Informações do profissional -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <label for="fisioterapeutaResponsavel" class="form-label">Fisioterapeuta
+                                    responsável</label>
+                                <input type="text" class="form-control" id="fisioterapeutaResponsavel"
+                                    value="{{ user.get_full_name }}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="crefito" class="form-label">CREFITO</label>
+                                <input type="text" class="form-control" id="crefito"
+                                    value="{{ user.profissional.crefito|default:'A definir' }}">
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newEvolutionModal')">Cancelar</button>
-                    <button type="button" class="btn btn-primary">Salvar Evolução</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarEvolucao()">Salvar Evolução</button>
                 </div>
             </div>
         </div>
