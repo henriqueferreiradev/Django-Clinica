@@ -347,7 +347,7 @@ select::-ms-expand {
   content: "";
   width: 12px;
   height: 12px;
-  background: #fff;
+  background: var(--roxo-primary-hover);
   transform: scale(0);
   transition: transform .12s ease-in-out;
   clip-path: polygon(14% 44%, 0 60%, 45% 100%, 100% 18%, 80% 0, 43% 62%);
