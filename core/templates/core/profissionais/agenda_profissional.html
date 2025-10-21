@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/profissionais/agenda_profissional.css' %}">
- 
+
 </head>
 
 <body>
@@ -188,8 +188,9 @@
                             <button class="nav-link" onclick="switchTab('imagens')">Imagens</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" onclick="switchTab('analisefisio')">Análise Fisioterapeutica</button>
- 
+                            <button class="nav-link" onclick="switchTab('analisefisio')">Análise
+                                Fisioterapeutica</button>
+
                     </ul>
 
                     <div class="tab-content" id="patientTabContent">
@@ -514,7 +515,7 @@
         </div>
     </div>
 
-    
+
     <!-- Modal Nova Evolução -->
     <div class="modal" id="newEvolutionModal">
         <div class="modal-dialog modal-lg">
@@ -586,7 +587,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Amplitude de movimento</label>
+                                    <label class="form-label">Amplitude de movimento (Em graus)</label>
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="text" class="form-control" id="amplitudeInicio"
@@ -604,7 +605,7 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">Força muscular</label>
+                                    <label class="form-label">Força muscular (0-5)</label>
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="text" class="form-control" id="forcaInicio"
@@ -619,7 +620,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Postura e controle motor</label>
+                                    <label class="form-label">Postura e controle motor (0-5)</label>
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="text" class="form-control" id="posturaInicio"
@@ -637,7 +638,7 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">Edema / inflamação</label>
+                                    <label class="form-label">Edema / inflamação (0-10)</label>
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="text" class="form-control" id="edemaInicio"
@@ -652,7 +653,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Função nas AVDs / Treino</label>
+                                    <label class="form-label">Função nas AVDs / Treino (0-5)</label>
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="text" class="form-control" id="avdsInicio"
@@ -668,7 +669,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Aspectos emocionais / engajamento</label>
+                                <label class="form-label">Aspectos emocionais / engajamento (0-10)</label>
                                 <div class="row">
                                     <div class="col-6">
                                         <input type="text" class="form-control" id="emocionaisInicio"
@@ -825,47 +826,47 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                         <label class="checkbox-option" for="treinoFuncional">
-                                            <input class="form-check-input" type="checkbox" id="treinoFuncional">
-                                           Treino
-                                                funcional</label>
+                                            <label class="checkbox-option" for="treinoFuncional">
+                                                <input class="form-check-input" type="checkbox" id="treinoFuncional">
+                                                Treino funcional
+                                            </label>
                                         </div>
                                         <div class="form-check">
-                                         <label class="checkbox-option" for="pilatesClinico">
-                                            <input class="form-check-input" type="checkbox" id="pilatesClinico">
-                                           Pilates clínico</label>
+                                            <label class="checkbox-option" for="pilatesClinico">
+                                                <input class="form-check-input" type="checkbox" id="pilatesClinico">
+                                                Pilates clínico</label>
                                         </div>
                                         <div class="form-check">
-                                        <label class="checkbox-option" for="recovery">
-                                            <input class="form-check-input" type="checkbox" id="recovery">
-                                            Recovery</label>
+                                            <label class="checkbox-option" for="recovery">
+                                                <input class="form-check-input" type="checkbox" id="recovery">
+                                                Recovery</label>
                                         </div>
                                         <div class="form-check">
-                                        <label class="checkbox-option" for="rpg">
-                                            <input class="form-check-input" type="checkbox" id="rpg">
-                                            RPG</label>
+                                            <label class="checkbox-option" for="rpg">
+                                                <input class="form-check-input" type="checkbox" id="rpg">
+                                                RPG</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                        <label class="checkbox-option" for="nutricao">
-                                            <input class="form-check-input" type="checkbox" id="nutricao">
-                                            Nutrição</label>
+                                            <label class="checkbox-option" for="nutricao">
+                                                <input class="form-check-input" type="checkbox" id="nutricao">
+                                                Nutrição</label>
                                         </div>
                                         <div class="form-check">
-                                         <label class="checkbox-option" for="psicoterapia">
-                                            <input class="form-check-input" type="checkbox" id="psicoterapia">
-                                           Psicoterapia</label>
+                                            <label class="checkbox-option" for="psicoterapia">
+                                                <input class="form-check-input" type="checkbox" id="psicoterapia">
+                                                Psicoterapia</label>
                                         </div>
                                         <div class="form-check">
-                                        <label class="checkbox-option" for="estetica">
-                                            <input class="form-check-input" type="checkbox" id="estetica">
-                                            Estética</label>
+                                            <label class="checkbox-option" for="estetica">
+                                                <input class="form-check-input" type="checkbox" id="estetica">
+                                                Estética</label>
                                         </div>
                                         <div class="form-check">
-                                        <label class="checkbox-option" for="outro">
-                                            <input class="form-check-input" type="checkbox" id="outro">
-                                            Outro:</label>
+                                            <label class="checkbox-option" for="outro">
+                                                <input class="form-check-input" type="checkbox" id="outro">
+                                                Outro:</label>
                                             <input type="text" class="form-control form-control-sm mt-1" id="outroTexto"
                                                 placeholder="Especificar">
                                         </div>
@@ -933,21 +934,24 @@
                         <!-- 2. Anamnese / Histórico Clínico -->
                         <div class="mb-4">
                             <h6 class="section-title">2. Anamnese / Histórico Clínico</h6>
-                            
+
                             <div class="mb-3">
-                                <label for="queixaPrincipal" class="form-label">Queixa principal (nas palavras do paciente)</label>
+                                <label for="queixaPrincipal" class="form-label">Queixa principal (nas palavras do
+                                    paciente)</label>
                                 <textarea class="form-control" id="queixaPrincipal" rows="2"
                                     placeholder="Descreva a queixa principal nas palavras do paciente..."></textarea>
                             </div>
-                            
+
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="inicioProblema" class="form-label">Como o problema começou e há quanto tempo?</label>
+                                    <label for="inicioProblema" class="form-label">Como o problema começou e há quanto
+                                        tempo?</label>
                                     <textarea class="form-control" id="inicioProblema" rows="2"
                                         placeholder="Descreva o início do problema..."></textarea>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="causaProblema" class="form-label">O que acredita ter causado o problema?</label>
+                                    <label for="causaProblema" class="form-label">O que acredita ter causado o
+                                        problema?</label>
                                     <textarea class="form-control" id="causaProblema" rows="2"
                                         placeholder="Possíveis causas..."></textarea>
                                 </div>
@@ -956,110 +960,157 @@
                             <!-- a) Histórico da doença atual -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
                                 <h6 class="section-title">a) Histórico da doença atual</h6>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="dorRecenteAntiga" class="form-label">Dor ou limitação é recente ou antiga?</label>
-                                        <input type="text" class="form-control" id="dorRecenteAntiga" placeholder="Ex: Recente, há 2 semanas">
+                                        <label for="dorRecenteAntiga" class="form-label">Dor ou limitação é recente ou
+                                            antiga?</label>
+                                        <input type="text" class="form-control" id="dorRecenteAntiga"
+                                            placeholder="Ex: Recente, há 2 semanas">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="episodiosAnteriores" class="form-label">Episódios anteriores semelhantes?</label>
-                                        <input type="text" class="form-control" id="episodiosAnteriores" placeholder="Descreva episódios anteriores...">
+                                        <label for="episodiosAnteriores" class="form-label">Episódios anteriores
+                                            semelhantes?</label>
+                                        <input type="text" class="form-control" id="episodiosAnteriores"
+                                            placeholder="Descreva episódios anteriores...">
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label class="form-label">Tratamento fisioterapêutico anterior?</label>
                                         <div class="d-flex align-items-center">
                                             <div class="form-check me-3">
-                                                <input class="form-check-input" type="radio" name="tratamentoAnterior" id="tratamentoSim" value="sim">
-                                                <label class="form-check-label" for="tratamentoSim">Sim</label>
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="tratamentoAnterior" id="tratamentoSim" value="sim">
+                                                    Sim
+                                                </label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="tratamentoAnterior" id="tratamentoNao" value="nao" checked>
-                                                <label class="form-check-label" for="tratamentoNao">Não</label>
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="tratamentoAnterior" id="tratamentoNao" value="nao"
+                                                        checked>
+                                                    Não
+                                                </label>
                                             </div>
-                                            <input type="text" class="form-control ms-2" id="qualTratamento" placeholder="Qual(is)?" style="flex: 1;">
+                                            <input type="text" class="form-control ms-2" id="qualTratamento"
+                                                placeholder="Qual(is)?" style="flex: 1;">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="cirurgiaProcedimento" class="form-label">Cirurgia ou procedimento relacionado?</label>
-                                        <input type="text" class="form-control" id="cirurgiaProcedimento" placeholder="Descreva cirurgias...">
+                                        <label for="cirurgiaProcedimento" class="form-label">Cirurgia ou procedimento
+                                            relacionado?</label>
+                                        <input type="text" class="form-control" id="cirurgiaProcedimento"
+                                            placeholder="Descreva cirurgias...">
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label class="form-label">Acompanhamento médico?</label>
                                         <div class="d-flex align-items-center">
                                             <div class="form-check me-3">
-                                                <input class="form-check-input" type="radio" name="acompanhamentoMedico" id="acompanhamentoSim" value="sim">
-                                                <label class="form-check-label" for="acompanhamentoSim">Sim</label>
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="acompanhamentoMedico" id="acompanhamentoSim" value="sim">
+                                                    Sim
+                                                </label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="acompanhamentoMedico" id="acompanhamentoNao" value="nao" checked>
-                                                <label class="form-check-label" for="acompanhamentoNao">Não</label>
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="acompanhamentoMedico" id="acompanhamentoNao" value="nao"
+                                                        checked>
+                                                    Não
+                                                </label>
                                             </div>
-                                            <input type="text" class="form-control ms-2" id="medicoEspecialidade" placeholder="Médico / Especialidade" style="flex: 1;">
+                                            <input type="text" class="form-control ms-2" id="medicoEspecialidade"
+                                                placeholder="Médico / Especialidade" style="flex: 1;">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="diagnosticoMedico" class="form-label">Diagnóstico médico (se houver)</label>
-                                        <input type="text" class="form-control" id="diagnosticoMedico" placeholder="Diagnóstico médico...">
+                                        <label for="diagnosticoMedico" class="form-label">Diagnóstico médico (se
+                                            houver)</label>
+                                        <input type="text" class="form-control" id="diagnosticoMedico"
+                                            placeholder="Diagnóstico médico...">
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="usoMedicamentos" class="form-label">Uso de medicamentos? Quais?</label>
-                                        <textarea class="form-control" id="usoMedicamentos" rows="2" placeholder="Medicamentos em uso..."></textarea>
+                                        <label for="usoMedicamentos" class="form-label">Uso de medicamentos?
+                                            Quais?</label>
+                                        <textarea class="form-control" id="usoMedicamentos" rows="2"
+                                            placeholder="Medicamentos em uso..."></textarea>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Exames trazidos?</label>
                                         <div class="d-flex align-items-center">
                                             <div class="form-check me-3">
-                                                <input class="form-check-input" type="radio" name="examesTrazidos" id="examesSim" value="sim">
-                                                <label class="form-check-label" for="examesSim">Sim</label>
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio" name="examesTrazidos"
+                                                        id="examesSim" value="sim">
+                                                    Sim
+                                                </label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="examesTrazidos" id="examesNao" value="nao" checked>
-                                                <label class="form-check-label" for="examesNao">Não</label>
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio" name="examesTrazidos"
+                                                        id="examesNao" value="nao" checked>
+                                                    Não
+                                                </label>
                                             </div>
-                                            <input type="text" class="form-control ms-2" id="tipoExame" placeholder="Tipo de exame" style="flex: 1;">
+                                            <input type="text" class="form-control ms-2" id="tipoExame"
+                                                placeholder="Tipo de exame" style="flex: 1;">
                                         </div>
                                     </div>
                                 </div>
-                                
                                 <div class="mb-2">
-                                    <label for="historicoLesoes" class="form-label">Histórico de outras lesões? Se sim? Qual(is)? e Quando? Breve histórico</label>
-                                    <textarea class="form-control" id="historicoLesoes" rows="3" placeholder="Histórico de lesões anteriores..."></textarea>
+                                    <label for="historicoLesoes" class="form-label">Histórico de outras lesões? Se sim?
+                                        Qual(is)? e Quando? Breve histórico</label>
+                                    <textarea class="form-control" id="historicoLesoes" rows="3"
+                                        placeholder="Histórico de lesões anteriores..."></textarea>
                                 </div>
                             </div>
 
                             <!-- b) Histórico pessoal e familiar -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
                                 <h6 class="section-title">b) Histórico pessoal e familiar</h6>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="doencasPrevias" class="form-label">Doenças prévias / crônicas</label>
-                                        <textarea class="form-control" id="doencasPrevias" rows="2" placeholder="Doenças prévias..."></textarea>
+                                        <label for="doencasPrevias" class="form-label">Doenças prévias /
+                                            crônicas</label>
+                                        <textarea class="form-control" id="doencasPrevias" rows="2"
+                                            placeholder="Doenças prévias..."></textarea>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="cirurgiasPrevias" class="form-label">Cirurgias prévias</label>
-                                        <textarea class="form-control" id="cirurgiasPrevias" rows="2" placeholder="Cirurgias prévias..."></textarea>
+                                        <textarea class="form-control" id="cirurgiasPrevias" rows="2"
+                                            placeholder="Cirurgias prévias..."></textarea>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="condicoesGeneticas" class="form-label">Condições genéticas / reumatológicas / metabólicas</label>
-                                        <textarea class="form-control" id="condicoesGeneticas" rows="2" placeholder="Condições genéticas..."></textarea>
+                                        <label for="condicoesGeneticas" class="form-label">Condições genéticas /
+                                            reumatológicas / metabólicas</label>
+                                        <textarea class="form-control" id="condicoesGeneticas" rows="2"
+                                            placeholder="Condições genéticas..."></textarea>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="historicoFamiliar" class="form-label">Histórico familiar relevante</label>
-                                        <textarea class="form-control" id="historicoFamiliar" rows="2" placeholder="Histórico familiar..."></textarea>
+                                        <label for="historicoFamiliar" class="form-label">Histórico familiar
+                                            relevante</label>
+                                        <textarea class="form-control" id="historicoFamiliar" rows="2"
+                                            placeholder="Histórico familiar..."></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -1067,83 +1118,107 @@
                             <!-- c) Hábitos e estilo de vida -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
                                 <h6 class="section-title">c) Hábitos e estilo de vida</h6>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-4">
                                         <label class="form-label">Qualidade do sono</label>
                                         <div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoBoa" value="boa">
-                                                <label class="form-check-label" for="sonoBoa">Boa</label>
+                                                <label class="radio-option" for="sonoBoa">
+                                                    <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                        id="sonoBoa" value="boa">Boa</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoRegular" value="regular">
-                                                <label class="form-check-label" for="sonoRegular">Regular</label>
+                                                <label class="checkbox-option" for="sonoRegular">
+                                                    <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                        id="sonoRegular" value="regular">
+                                                    Regular</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoRuim" value="ruim">
-                                                <label class="form-check-label" for="sonoRuim">Ruim</label>
+                                                <label class="checkbox-option" for="sonoRuim">
+                                                    <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                        id="sonoRuim" value="ruim">
+                                                    Ruim</label>
                                             </div>
                                         </div>
-                                        <input type="number" class="form-control mt-1" id="horasSono" placeholder="Horas/noite" min="0" max="24">
+                                        <input type="number" class="form-control mt-1" id="horasSono"
+                                            placeholder="Horas/noite" min="0" max="24">
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <label class="form-label">Alimentação</label>
                                         <div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoSaudavel" value="saudavel">
-                                                <label class="form-check-label" for="alimentacaoSaudavel">Saudável</label>
+                                                <label class="checkbox-option" for="alimentacaoSaudavel">
+                                                    <input class="form-check-input" type="radio" name="alimentacao"
+                                                        id="alimentacaoSaudavel" value="saudavel">
+                                                    Saudável</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoIrregular" value="irregular">
-                                                <label class="form-check-label" for="alimentacaoIrregular">Irregular</label>
+                                                <label class="checkbox-option" for="alimentacaoIrregular">
+                                                    <input class="form-check-input" type="radio" name="alimentacao"
+                                                        id="alimentacaoIrregular" value="irregular">
+                                                    Irregular</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoUltraprocessados" value="ultraprocessados">
-                                                <label class="form-check-label" for="alimentacaoUltraprocessados">Rica em ultraprocessados</label>
+                                                <label class="checkbox-option">
+                                                    <input class="form-check-input" type="radio" name="alimentacao"
+                                                        id="alimentacaoUltraprocessados" value="ultraprocessados">
+                                                    Rica em ultraprocessados</label>
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <label class="form-label">Nível de atividade física</label>
                                         <div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="nivelAtividade" id="sedentario" value="sedentario">
-                                                <label class="form-check-label" for="sedentario">Sedentário</label>
+                                                <label class="checkbox-option" for="sedentario">
+                                                    <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                        id="sedentario" value="sedentario">
+                                                    Sedentário</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="nivelAtividade" id="leveModerado" value="leve_moderado">
-                                                <label class="form-check-label" for="leveModerado">Exercício leve/moderado</label>
+                                                <label class="checkbox-option" for="leveModerado">
+                                                    <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                        id="leveModerado" value="leve_moderado">
+                                                    Exercício
+                                                    leve/moderado</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="nivelAtividade" id="atleta" value="atleta">
-                                                <label class="form-check-label" for="atleta">Atleta</label>
+                                                <label class="checkbox-option" for="atleta">
+                                                    <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                        id="atleta" value="atleta">
+                                                    Atleta</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label for="tipoExercicio" class="form-label">Tipo de exercício</label>
-                                        <input type="text" class="form-control" id="tipoExercicio" placeholder="Tipo de exercício praticado...">
+                                        <input type="text" class="form-control" id="tipoExercicio"
+                                            placeholder="Tipo de exercício praticado...">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="rotinaTrabalho" class="form-label">Rotina de trabalho / posturas</label>
-                                        <textarea class="form-control" id="rotinaTrabalho" rows="2" placeholder="Rotina de trabalho..."></textarea>
+                                        <label for="rotinaTrabalho" class="form-label">Rotina de trabalho /
+                                            posturas</label>
+                                        <textarea class="form-control" id="rotinaTrabalho" rows="2"
+                                            placeholder="Rotina de trabalho..."></textarea>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label for="nivelEstresse" class="form-label">Nível de estresse (0-10)</label>
-                                        <input type="number" class="form-control" id="nivelEstresse" placeholder="0-10" min="0" max="10">
+                                        <input type="number" class="form-control" id="nivelEstresse" placeholder="0-10"
+                                            min="0" max="10">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="aspectosEmocionais" class="form-label">Aspectos emocionais</label>
-                                        <textarea class="form-control" id="aspectosEmocionais" rows="2" placeholder="Aspectos emocionais..."></textarea>
+                                        <textarea class="form-control" id="aspectosEmocionais" rows="2"
+                                            placeholder="Aspectos emocionais..."></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -1151,101 +1226,129 @@
                             <!-- d) Sinais, sintomas e dor -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
                                 <h6 class="section-title">d) Sinais, sintomas e dor</h6>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="localizacaoDor" class="form-label">Localização da dor / sintoma</label>
-                                        <textarea class="form-control" id="localizacaoDor" rows="2" placeholder="Localização da dor..."></textarea>
+                                        <label for="localizacaoDor" class="form-label">Localização da dor /
+                                            sintoma</label>
+                                        <textarea class="form-control" id="localizacaoDor" rows="2"
+                                            placeholder="Localização da dor..."></textarea>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Tipo de dor</label>
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="dorPontada">
-                                                    <label class="form-check-label" for="dorPontada">Pontada</label>
+                                                    <label class="checkbox-option" for="dorPontada">
+                                                        <input class="form-check-input" type="checkbox" id="dorPontada">
+                                                        Pontada</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="dorQueimacao">
-                                                    <label class="form-check-label" for="dorQueimacao">Queimação</label>
+                                                    <label class="checkbox-option" for="dorQueimacao">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="dorQueimacao">
+                                                        Queimação</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="dorPeso">
-                                                    <label class="form-check-label" for="dorPeso">Peso</label>
+                                                    <label class="checkbox-option" for="dorPeso">
+                                                        <input class="form-check-input" type="checkbox" id="dorPeso">
+                                                        Peso</label>
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="dorChoque">
-                                                    <label class="form-check-label" for="dorChoque">Choque</label>
+                                                    <label class="checkbox-option" for="dorChoque">
+                                                        <input class="form-check-input" type="checkbox" id="dorChoque">
+                                                        Choque</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="dorOutra">
-                                                    <label class="form-check-label" for="dorOutra">Outra:</label>
-                                                    <input type="text" class="form-control form-control-sm mt-1" id="dorOutraTexto" placeholder="Especificar">
+                                                    <label class="checkbox-option" for="dorOutra">
+                                                        <input class="form-check-input" type="checkbox" id="dorOutra">
+                                                        Outra:</label>
+                                                    <input type="text" class="form-control form-control-sm mt-1"
+                                                        id="dorOutraTexto" placeholder="Especificar">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-4">
-                                        <label for="intensidadeRepouso" class="form-label">Intensidade (0-10) - Repouso</label>
-                                        <input type="number" class="form-control" id="intensidadeRepouso" placeholder="0-10" min="0" max="10">
+                                        <label for="intensidadeRepouso" class="form-label">Intensidade (0-10) -
+                                            Repouso</label>
+                                        <input type="number" class="form-control" id="intensidadeRepouso"
+                                            placeholder="0-10" min="0" max="10">
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="intensidadeMovimento" class="form-label">Intensidade (0-10) - Movimento</label>
-                                        <input type="number" class="form-control" id="intensidadeMovimento" placeholder="0-10" min="0" max="10">
+                                        <label for="intensidadeMovimento" class="form-label">Intensidade (0-10) -
+                                            Movimento</label>
+                                        <input type="number" class="form-control" id="intensidadeMovimento"
+                                            placeholder="0-10" min="0" max="10">
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="intensidadePior" class="form-label">Intensidade (0-10) - Pior momento</label>
-                                        <input type="number" class="form-control" id="intensidadePior" placeholder="0-10" min="0" max="10">
+                                        <label for="intensidadePior" class="form-label">Intensidade (0-10) - Pior
+                                            momento</label>
+                                        <input type="number" class="form-control" id="intensidadePior"
+                                            placeholder="0-10" min="0" max="10">
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label for="fatoresAgravam" class="form-label">Fatores que agravam</label>
-                                        <textarea class="form-control" id="fatoresAgravam" rows="2" placeholder="Fatores que agravam a dor..."></textarea>
+                                        <textarea class="form-control" id="fatoresAgravam" rows="2"
+                                            placeholder="Fatores que agravam a dor..."></textarea>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="fatoresAliviam" class="form-label">Fatores que aliviam</label>
-                                        <textarea class="form-control" id="fatoresAliviam" rows="2" placeholder="Fatores que aliviam a dor..."></textarea>
+                                        <textarea class="form-control" id="fatoresAliviam" rows="2"
+                                            placeholder="Fatores que aliviam a dor..."></textarea>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label class="form-label">Sinais associados</label>
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="sinalEdema">
-                                                    <label class="form-check-label" for="sinalEdema">Edema</label>
+                                                    <label class="checkbox-option" for="sinalEdema">
+                                                        <input class="form-check-input" type="checkbox" id="sinalEdema">
+                                                        Edema</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="sinalParestesia">
-                                                    <label class="form-check-label" for="sinalParestesia">Parestesia</label>
+                                                    <label class="checkbox-option" for="sinalParestesia">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="sinalParestesia">
+                                                        Parestesia</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="sinalRigidez">
-                                                    <label class="form-check-label" for="sinalRigidez">Rigidez</label>
+                                                    <label class="checkbox-option" for="sinalRigidez">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="sinalRigidez">
+                                                        Rigidez</label>
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="sinalFraqueza">
-                                                    <label class="form-check-label" for="sinalFraqueza">Fraqueza</label>
+                                                    <label class="checkbox-option" for="sinalFraqueza">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="sinalFraqueza">
+                                                        Fraqueza</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="sinalCompensacoes">
-                                                    <label class="form-check-label" for="sinalCompensacoes">Compensações</label>
+                                                    <label class="checkbox-option" for="sinalCompensacoes">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="sinalCompensacoes">
+                                                        Compensações</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="sinalOutro">
-                                                    <label class="form-check-label" for="sinalOutro">Outro:</label>
-                                                    <input type="text" class="form-control form-control-sm mt-1" id="sinalOutroTexto" placeholder="Especificar">
+                                                    <label class="checkbox-option" for="sinalOutro">
+                                                        <input class="form-check-input" type="checkbox" id="sinalOutro">
+                                                        Outro:</label>
+                                                    <input type="text" class="form-control form-control-sm mt-1"
+                                                        id="sinalOutroTexto" placeholder="Especificar">
                                                 </div>
                                             </div>
                                         </div>
@@ -1254,16 +1357,19 @@
                                         <label class="form-label">Grau de inflamação</label>
                                         <div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="grauInflamacao" id="inflamacaoLeve" value="leve">
-                                                <label class="form-check-label" for="inflamacaoLeve">Leve</label>
+                                                <label class="checkbox-option" for="inflamacaoLeve">
+                                                    <input class="form-check-input" type="radio" name="grauInflamacao"
+                                                        id="inflamacaoLeve" value="leve">Leve</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="grauInflamacao" id="inflamacaoModerado" value="moderado">
-                                                <label class="form-check-label" for="inflamacaoModerado">Moderado</label>
+                                                <label class="checkbox-option" for="inflamacaoModerado">
+                                                    <input class="form-check-input" type="radio" name="grauInflamacao"
+                                                        id="inflamacaoModerado" value="moderado">Moderado</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="grauInflamacao" id="inflamacaoIntenso" value="intenso">
-                                                <label class="form-check-label" for="inflamacaoIntenso">Intenso</label>
+                                                <label class="checkbox-option" for="inflamacaoIntenso">
+                                                    <input class="form-check-input" type="radio" name="grauInflamacao"
+                                                        id="inflamacaoIntenso" value="intenso">Intenso</label>
                                             </div>
                                         </div>
                                     </div>
@@ -1274,34 +1380,40 @@
                         <!-- 3. Exame físico e funcional -->
                         <div class="mb-4">
                             <h6 class="section-title">3. Exame físico e funcional</h6>
-                            
+
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="inspecaoPostura" class="form-label">Inspeção e postura</label>
-                                    <textarea class="form-control" id="inspecaoPostura" rows="3" placeholder="Observações sobre postura..."></textarea>
+                                    <textarea class="form-control" id="inspecaoPostura" rows="3"
+                                        placeholder="Observações sobre postura..."></textarea>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="compensacoesCorporais" class="form-label">Compensações corporais</label>
-                                    <textarea class="form-control" id="compensacoesCorporais" rows="3" placeholder="Compensações observadas..."></textarea>
+                                    <textarea class="form-control" id="compensacoesCorporais" rows="3"
+                                        placeholder="Compensações observadas..."></textarea>
                                 </div>
                             </div>
-                            
+
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="padraoRespiratorio" class="form-label">Padrão respiratório / controle motor</label>
-                                    <textarea class="form-control" id="padraoRespiratorio" rows="2" placeholder="Padrão respiratório..."></textarea>
+                                    <label for="padraoRespiratorio" class="form-label">Padrão respiratório / controle
+                                        motor</label>
+                                    <textarea class="form-control" id="padraoRespiratorio" rows="2"
+                                        placeholder="Padrão respiratório..."></textarea>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="palpacao" class="form-label">Palpação</label>
-                                    <textarea class="form-control" id="palpacao" rows="2" placeholder="Achados na palpação..."></textarea>
+                                    <textarea class="form-control" id="palpacao" rows="2"
+                                        placeholder="Achados na palpação..."></textarea>
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="pontosDor" class="form-label">Pontos de dor / rigidez / edema</label>
-                                <textarea class="form-control" id="pontosDor" rows="3" placeholder="Pontos específicos de dor..."></textarea>
+                                <textarea class="form-control" id="pontosDor" rows="3"
+                                    placeholder="Pontos específicos de dor..."></textarea>
                             </div>
-                            
+
                             <!-- Tabela para Mobilidade e Força -->
                             <div class="mb-3">
                                 <label class="form-label">Mobilidade (ADM) e Força muscular (MMT 0-5)</label>
@@ -1319,31 +1431,19 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td><input type="text" class="form-control form-control-sm" placeholder="Ex: Ombro D"></td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="°"></td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="°"></td>
+                                                <td><input type="text" class="form-control form-control-sm"
+                                                        placeholder="Ex: Ombro D"></td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="°"></td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="°"></td>
                                                 <td>
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
                                                 </td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="0-5" min="0" max="5"></td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control form-control-sm" placeholder="Ex: Joelho E"></td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="°"></td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="°"></td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox">
-                                                    </div>
-                                                </td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="0-5" min="0" max="5"></td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="0-5" min="0" max="5"></td>
                                                 <td>
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox">
@@ -1351,15 +1451,39 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><input type="text" class="form-control form-control-sm" placeholder="Ex: Coluna Lombar"></td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="°"></td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="°"></td>
+                                                <td><input type="text" class="form-control form-control-sm"
+                                                        placeholder="Ex: Joelho E"></td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="°"></td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="°"></td>
                                                 <td>
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
                                                 </td>
-                                                <td><input type="number" class="form-control form-control-sm" placeholder="0-5" min="0" max="5"></td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="0-5" min="0" max="5"></td>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="text" class="form-control form-control-sm"
+                                                        placeholder="Ex: Coluna Lombar"></td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="°"></td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="°"></td>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox">
+                                                    </div>
+                                                </td>
+                                                <td><input type="number" class="form-control form-control-sm"
+                                                        placeholder="0-5" min="0" max="5"></td>
                                                 <td>
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox">
@@ -1370,61 +1494,82 @@
                                     </table>
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="testesFuncionais" class="form-label">Testes funcionais / compensações observadas</label>
-                                <textarea class="form-control" id="testesFuncionais" rows="3" placeholder="Testes funcionais realizados..."></textarea>
+                                <label for="testesFuncionais" class="form-label">Testes funcionais / compensações
+                                    observadas</label>
+                                <textarea class="form-control" id="testesFuncionais" rows="3"
+                                    placeholder="Testes funcionais realizados..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="outrasObservacoes" class="form-label">Outras observações</label>
-                                <textarea class="form-control" id="outrasObservacoes" rows="3" placeholder="Outras observações relevantes..."></textarea>
+                                <textarea class="form-control" id="outrasObservacoes" rows="3"
+                                    placeholder="Outras observações relevantes..."></textarea>
                             </div>
                         </div>
 
                         <!-- 4. Diagnóstico Fisioterapêutico -->
                         <div class="mb-4">
                             <h6 class="section-title">4. Diagnóstico Fisioterapêutico</h6>
-                            
+
                             <div class="mb-3">
-                                <label for="diagnosticoCompleto" class="form-label">Modelo: Paciente de ____ anos com queixa de _________________________________________, apresenta limitação funcional em __________________________________________, demonstra postura compensatória em __________________________________________. Tensão muscular em ___________________. compensações ____________________ e fatores emocionais relacionados a ______________. Rotina impactada por ___________________________. Diagnóstico funcional indica ______________________________________________________.</label>
-                                <textarea class="form-control" id="diagnosticoCompleto" rows="6" placeholder="Preencha o modelo de diagnóstico..."></textarea>
+                                <label for="diagnosticoCompleto" class="form-label">Modelo: Paciente de ____ anos com
+                                    queixa de _________________________________________, apresenta limitação funcional
+                                    em __________________________________________, demonstra postura compensatória em
+                                    __________________________________________. Tensão muscular em ___________________.
+                                    compensações ____________________ e fatores emocionais relacionados a
+                                    ______________. Rotina impactada por ___________________________. Diagnóstico
+                                    funcional indica ______________________________________________________.</label>
+                                <textarea class="form-control" id="diagnosticoCompleto" rows="6"
+                                    placeholder="Preencha o modelo de diagnóstico..."></textarea>
                             </div>
-                            
+
                             <div class="row mb-3">
                                 <div class="col-md-3">
                                     <label for="grauDor" class="form-label">Grau de dor (0-10)</label>
-                                    <input type="number" class="form-control" id="grauDor" placeholder="0-10" min="0" max="10">
+                                    <input type="number" class="form-control" id="grauDor" placeholder="0-10" min="0"
+                                        max="10">
                                 </div>
                                 <div class="col-md-3">
-                                    <label for="limitaçãoFuncional" class="form-label">Limitação funcional (0-10)</label>
-                                    <input type="number" class="form-control" id="limitaçãoFuncional" placeholder="0-10" min="0" max="10">
+                                    <label for="limitaçãoFuncional" class="form-label">Limitação funcional
+                                        (0-10)</label>
+                                    <input type="number" class="form-control" id="limitaçãoFuncional" placeholder="0-10"
+                                        min="0" max="10">
                                 </div>
                                 <div class="col-md-3">
                                     <label for="grauInflamacao" class="form-label">Inflamação (0-3)</label>
-                                    <input type="number" class="form-control" id="grauInflamacao" placeholder="0-3" min="0" max="3">
+                                    <input type="number" class="form-control" id="grauInflamacao" placeholder="0-3"
+                                        min="0" max="3">
                                 </div>
                                 <div class="col-md-3">
                                     <label for="grauEdema" class="form-label">Edema (0-3)</label>
-                                    <input type="number" class="form-control" id="grauEdema" placeholder="0-3" min="0" max="3">
+                                    <input type="number" class="form-control" id="grauEdema" placeholder="0-3" min="0"
+                                        max="3">
                                 </div>
                             </div>
-                            
+
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Receptividade</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="receptividade" id="receptividadeAlta" value="alta">
-                                            <label class="form-check-label" for="receptividadeAlta">Alta</label>
+                                            <label class="checkbox-option" for="receptividadeAlta">
+                                                <input class="form-check-input" type="radio" name="receptividade"
+                                                    id="receptividadeAlta" value="alta">
+                                                Alta</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="receptividade" id="receptividadeMedia" value="media">
-                                            <label class="form-check-label" for="receptividadeMedia">Média</label>
+                                            <label class="checkbox-option" for="receptividadeMedia">
+                                                <input class="form-check-input" type="radio" name="receptividade"
+                                                    id="receptividadeMedia" value="media">
+                                                Média</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="receptividade" id="receptividadeBaixa" value="baixa">
-                                            <label class="form-check-label" for="receptividadeBaixa">Baixa</label>
+                                            <label class="checkbox-option" for="receptividadeBaixa">
+                                                <input class="form-check-input" type="radio" name="receptividade"
+                                                    id="receptividadeBaixa" value="baixa">
+                                                Baixa</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1432,16 +1577,21 @@
                                     <label class="form-label">Autonomia AVD</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="autonomiaAVD" id="autonomiaIndep" value="independente">
-                                            <label class="form-check-label" for="autonomiaIndep">Independente</label>
+                                            <label class="checkbox-option" for="autonomiaIndep">
+                                                <input class="form-check-input" type="radio" name="autonomiaAVD"
+                                                    id="autonomiaIndep" value="independente">Independente</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="autonomiaAVD" id="autonomiaParcial" value="parcial">
-                                            <label class="form-check-label" for="autonomiaParcial">Parcial</label>
+                                            <label class="checkbox-option" for="autonomiaParcial">
+                                                <input class="form-check-input" type="radio" name="autonomiaAVD"
+                                                    id="autonomiaParcial" value="parcial">
+                                                Parcial</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="autonomiaAVD" id="autonomiaDependente" value="dependente">
-                                            <label class="form-check-label" for="autonomiaDependente">Dependente</label>
+                                            <label class="checkbox-option" for="autonomiaDependente">
+                                                <input class="form-check-input" type="radio" name="autonomiaAVD"
+                                                    id="autonomiaDependente" value="dependente">
+                                                Dependente</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1451,150 +1601,184 @@
                         <!-- 5. Plano Terapêutico -->
                         <div class="mb-4">
                             <h6 class="section-title">5. Plano Terapêutico</h6>
-                            
+
                             <div class="mb-3">
                                 <label for="objetivoGeral" class="form-label">Objetivo geral</label>
-                                <textarea class="form-control" id="objetivoGeral" rows="2" placeholder="Objetivo geral do tratamento..."></textarea>
+                                <textarea class="form-control" id="objetivoGeral" rows="2"
+                                    placeholder="Objetivo geral do tratamento..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="objetivoPrincipal" class="form-label">Objetivo principal</label>
-                                <textarea class="form-control" id="objetivoPrincipal" rows="2" placeholder="Objetivo principal..."></textarea>
+                                <textarea class="form-control" id="objetivoPrincipal" rows="2"
+                                    placeholder="Objetivo principal..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="objetivoSecundario" class="form-label">Objetivo secundário</label>
-                                <textarea class="form-control" id="objetivoSecundario" rows="2" placeholder="Objetivo secundário..."></textarea>
+                                <textarea class="form-control" id="objetivoSecundario" rows="2"
+                                    placeholder="Objetivo secundário..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="pontosAtencao" class="form-label">Pontos de atenção (sobre o planejamento do tratamento, resistência do paciente, limitações...)</label>
-                                <textarea class="form-control" id="pontosAtencao" rows="3" placeholder="Pontos de atenção..."></textarea>
+                                <label for="pontosAtencao" class="form-label">Pontos de atenção (sobre o planejamento do
+                                    tratamento, resistência do paciente, limitações...)</label>
+                                <textarea class="form-control" id="pontosAtencao" rows="3"
+                                    placeholder="Pontos de atenção..."></textarea>
                             </div>
-                            
+
                             <!-- Técnicas manuais -->
                             <div class="mb-3">
                                 <label class="form-label">Técnicas manuais</label>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="tecnicaLiberacao">
-                                            <label class="form-check-label" for="tecnicaLiberacao">Liberação miofascial</label>
+                                            <label class="checkbox-option" for="tecnicaLiberacao">
+                                                <input class="form-check-input" type="checkbox" id="tecnicaLiberacao">
+                                                Liberação miofascial</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="tecnicaMobilizacao">
-                                            <label class="form-check-label" for="tecnicaMobilizacao">Mobilização</label>
+                                            <label class="checkbox-option" for="tecnicaMobilizacao">
+                                                <input class="form-check-input" type="checkbox" id="tecnicaMobilizacao">
+                                                Mobilização</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="tecnicaDryNeedling">
-                                            <label class="form-check-label" for="tecnicaDryNeedling">Dry Needling</label>
+                                            <label class="checkbox-option" for="tecnicaDryNeedling">
+                                                <input class="form-check-input" type="checkbox" id="tecnicaDryNeedling">
+                                                Dry
+                                                Needling</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="tecnicaVentosa">
-                                            <label class="form-check-label" for="tecnicaVentosa">Ventosa</label>
+                                            <label class="checkbox-option" for="tecnicaVentosa">
+                                                <input class="form-check-input" type="checkbox" id="tecnicaVentosa">
+                                                Ventosa</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="tecnicaManipulacoes">
-                                            <label class="form-check-label" for="tecnicaManipulacoes">Manipulações</label>
+                                            <label class="checkbox-option" for="tecnicaManipulacoes">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="tecnicaManipulacoes">
+                                                Manipulações</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="tecnicaOutras">
-                                            <label class="form-check-label" for="tecnicaOutras">Outras:</label>
-                                            <input type="text" class="form-control form-control-sm mt-1" id="tecnicaOutrasTexto" placeholder="Especificar">
+                                            <label class="checkbox-option" for="tecnicaOutras">
+                                                <input class="form-check-input" type="checkbox" id="tecnicaOutras">
+                                                Outras:</label>
+                                            <input type="text" class="form-control form-control-sm mt-1"
+                                                id="tecnicaOutrasTexto" placeholder="Especificar">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Recursos eletrofísicos -->
                             <div class="mb-3">
                                 <label class="form-label">Recursos eletrofísicos</label>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="recursoAussie">
-                                            <label class="form-check-label" for="recursoAussie">CORRENTE AUSSIE</label>
+                                            <label class="checkbox-option" for="recursoAussie">
+                                                <input class="form-check-input" type="checkbox" id="recursoAussie">
+                                                CORRENTE AUSSIE</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="recursoRussa">
-                                            <label class="form-check-label" for="recursoRussa">CORRENTE RUSSA</label>
+                                            <label class="checkbox-option" for="recursoRussa">
+                                                <input class="form-check-input" type="checkbox" id="recursoRussa">
+                                                CORRENTE RUSSA</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="recursoAussieTens">
-                                            <label class="form-check-label" for="recursoAussieTens">CORRENTE AUSSIE TENS</label>
+                                            <label class="checkbox-option" for="recursoAussieTens">
+                                                <input class="form-check-input" type="checkbox" id="recursoAussieTens">
+                                                CORRENTE AUSSIE
+                                                TENS</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="recursoUS">
-                                            <label class="form-check-label" for="recursoUS">US</label>
+                                            <label class="checkbox-option" for="recursoUS">
+                                                <input class="form-check-input" type="checkbox" id="recursoUS">
+                                                US</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="recursoTermo">
-                                            <label class="form-check-label" for="recursoTermo">Termo</label>
+                                            <label class="checkbox-option" for="recursoTermo">
+                                                <input class="form-check-input" type="checkbox" id="recursoTermo">
+                                                Termo</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="recursoOutro">
-                                            <label class="form-check-label" for="recursoOutro">Outro:</label>
-                                            <input type="text" class="form-control form-control-sm mt-1" id="recursoOutroTexto" placeholder="Especificar">
+                                            <label class="checkbox-option" for="recursoOutro">
+                                                <input class="form-check-input" type="checkbox" id="recursoOutro">
+                                                Outro:</label>
+                                            <input type="text" class="form-control form-control-sm mt-1"
+                                                id="recursoOutroTexto" placeholder="Especificar">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Cinesioterapia -->
                             <div class="mb-3">
                                 <label class="form-label">Cinesioterapia</label>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="cinesioFortalecimento">
-                                            <label class="form-check-label" for="cinesioFortalecimento">Fortalecimento</label>
+                                            <label class="checkbox-option" for="cinesioFortalecimento">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="cinesioFortalecimento">
+                                                Fortalecimento</label>
+                                        </div>
+                                        <div class="form-check"><label class="checkbox-option" for="cinesioAlongamento">
+                                                <input class="form-check-input" type="checkbox" id="cinesioAlongamento">
+                                                Alongamento</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="cinesioAlongamento">
-                                            <label class="form-check-label" for="cinesioAlongamento">Alongamento</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="cinesioPostural">
-                                            <label class="form-check-label" for="cinesioPostural">Postural</label>
+                                            <label class="checkbox-option" for="cinesioPostural">
+                                                <input class="form-check-input" type="checkbox" id="cinesioPostural">
+                                                Postural</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="cinesioRespiração">
-                                            <label class="form-check-label" for="cinesioRespiração">Respiração</label>
+                                            <label class="checkbox-option" for="cinesioRespiração">
+                                                <input class="form-check-input" type="checkbox" id="cinesioRespiração">
+                                                Respiração</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="cinesioMobilidade">
-                                            <label class="form-check-label" for="cinesioMobilidade">Mobilidade</label>
+                                            <label class="checkbox-option" for="cinesioMobilidade">
+                                                <input class="form-check-input" type="checkbox" id="cinesioMobilidade">
+                                                Mobilidade</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="cinesioFuncional">
-                                            <label class="form-check-label" for="cinesioFuncional">Funcional</label>
+                                            <label class="checkbox-option" for="cinesioFuncional">
+                                                <input class="form-check-input" type="checkbox" id="cinesioFuncional">
+                                                Funcional</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="descricaoPlano" class="form-label">Descrição breve sobre o plano de tratamento</label>
-                                <textarea class="form-control" id="descricaoPlano" rows="3" placeholder="Descrição do plano de tratamento..."></textarea>
+                                <label for="descricaoPlano" class="form-label">Descrição breve sobre o plano de
+                                    tratamento</label>
+                                <textarea class="form-control" id="descricaoPlano" rows="3"
+                                    placeholder="Descrição do plano de tratamento..."></textarea>
                             </div>
-                            
+
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label class="form-label">Medo de agulha?</label>
                                     <div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="medoAgulha" id="medoAgulhaSim" value="sim">
-                                            <label class="form-check-label" for="medoAgulhaSim">Sim</label>
+                                        <div class="form-check ">
+                                            <label class="checkbox-option" for="medoAgulhaSim">
+                                                <input class="form-check-input" type="radio" name="medoAgulha"
+                                                    id="medoAgulhaSim" value="sim">
+                                                Sim</label>
                                         </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="medoAgulha" id="medoAgulhaNao" value="nao" checked>
-                                            <label class="form-check-label" for="medoAgulhaNao">Não</label>
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="medoAgulhaNao">
+                                                <input class="form-check-input" type="radio" name="medoAgulha"
+                                                    id="medoAgulhaNao" value="nao" checked>
+                                                Não</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1602,12 +1786,16 @@
                                     <label class="form-label">Limiar de dor baixo?</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="limiarDor" id="limiarDorSim" value="sim">
-                                            <label class="form-check-label" for="limiarDorSim">Sim</label>
+                                            <label class="checkbox-option" for="limiarDorSim">
+                                                <input class="form-check-input" type="radio" name="limiarDor"
+                                                    id="limiarDorSim" value="sim">
+                                                Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="limiarDor" id="limiarDorNao" value="nao" checked>
-                                            <label class="form-check-label" for="limiarDorNao">Não</label>
+                                            <label class="checkbox-option" for="limiarDorNao">
+                                                <input class="form-check-input" type="radio" name="limiarDor"
+                                                    id="limiarDorNao" value="nao" checked>
+                                                Não</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1615,29 +1803,36 @@
                                     <label class="form-label">Fragilidade?</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="fragilidade" id="fragilidadeSim" value="sim">
-                                            <label class="form-check-label" for="fragilidadeSim">Sim</label>
+                                            <label class="checkbox-option" for="fragilidadeSim">
+                                                <input class="form-check-input" type="radio" name="fragilidade"
+                                                    id="fragilidadeSim" value="sim">
+                                                Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="fragilidade" id="fragilidadeNao" value="nao" checked>
-                                            <label class="form-check-label" for="fragilidadeNao">Não</label>
+                                            <label class="checkbox-option" for="fragilidadeNao">
+                                                <input class="form-check-input" type="radio" name="fragilidade"
+                                                    id="fragilidadeNao" value="nao" checked>
+                                                Não</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label for="frequencia" class="form-label">Frequência (x/semana)</label>
-                                    <input type="number" class="form-control" id="frequencia" placeholder="Ex: 3" min="1" max="7">
+                                    <input type="number" class="form-control" id="frequencia" placeholder="Ex: 3"
+                                        min="1" max="7">
                                 </div>
                                 <div class="col-md-4">
                                     <label for="duracao" class="form-label">Duração (min)</label>
-                                    <input type="number" class="form-control" id="duracao" placeholder="Ex: 60" min="15" max="180">
+                                    <input type="number" class="form-control" id="duracao" placeholder="Ex: 60" min="15"
+                                        max="180">
                                 </div>
                                 <div class="col-md-4">
                                     <label for="reavaliacaoSessao" class="form-label">Reavaliação na sessão</label>
-                                    <input type="text" class="form-control" id="reavaliacaoSessao" placeholder="Ex: 5ª sessão">
+                                    <input type="text" class="form-control" id="reavaliacaoSessao"
+                                        placeholder="Ex: 5ª sessão">
                                 </div>
                             </div>
                         </div>
@@ -1645,74 +1840,89 @@
                         <!-- 6. Prognóstico e orientações -->
                         <div class="mb-4">
                             <h6 class="section-title">6. Prognóstico e orientações</h6>
-                            
+
                             <div class="mb-3">
-                                <label for="evolucaoPrimeiraSessao" class="form-label">Evolução esperada na primeira sessão</label>
-                                <textarea class="form-control" id="evolucaoPrimeiraSessao" rows="2" placeholder="Evolução esperada na primeira sessão..."></textarea>
+                                <label for="evolucaoPrimeiraSessao" class="form-label">Evolução esperada na primeira
+                                    sessão</label>
+                                <textarea class="form-control" id="evolucaoPrimeiraSessao" rows="2"
+                                    placeholder="Evolução esperada na primeira sessão..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="evolucaoProximasSessoes" class="form-label">Evolução esperada nas próximas sessões</label>
-                                <textarea class="form-control" id="evolucaoProximasSessoes" rows="2" placeholder="Evolução esperada nas próximas sessões..."></textarea>
+                                <label for="evolucaoProximasSessoes" class="form-label">Evolução esperada nas próximas
+                                    sessões</label>
+                                <textarea class="form-control" id="evolucaoProximasSessoes" rows="2"
+                                    placeholder="Evolução esperada nas próximas sessões..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="expectativasPrimeiraEtapa" class="form-label">Expectativas sobre a primeira etapa do tratamento</label>
-                                <textarea class="form-control" id="expectativasPrimeiraEtapa" rows="2" placeholder="Expectativas da primeira etapa..."></textarea>
+                                <label for="expectativasPrimeiraEtapa" class="form-label">Expectativas sobre a primeira
+                                    etapa do tratamento</label>
+                                <textarea class="form-control" id="expectativasPrimeiraEtapa" rows="2"
+                                    placeholder="Expectativas da primeira etapa..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="proximosPassos" class="form-label">Próximos passos</label>
-                                <textarea class="form-control" id="proximosPassos" rows="2" placeholder="Próximos passos do tratamento..."></textarea>
+                                <textarea class="form-control" id="proximosPassos" rows="2"
+                                    placeholder="Próximos passos do tratamento..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="sobreOrientacoes" class="form-label">Sobre as orientações</label>
-                                <textarea class="form-control" id="sobreOrientacoes" rows="2" placeholder="Orientações gerais..."></textarea>
+                                <textarea class="form-control" id="sobreOrientacoes" rows="2"
+                                    placeholder="Orientações gerais..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="sonoRotina" class="form-label">Sono / rotina / pausas</label>
-                                <textarea class="form-control" id="sonoRotina" rows="2" placeholder="Orientações sobre sono e rotina..."></textarea>
+                                <textarea class="form-control" id="sonoRotina" rows="2"
+                                    placeholder="Orientações sobre sono e rotina..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="posturaErgonomia" class="form-label">Postura / ergonomia</label>
-                                <textarea class="form-control" id="posturaErgonomia" rows="2" placeholder="Orientações posturais..."></textarea>
+                                <textarea class="form-control" id="posturaErgonomia" rows="2"
+                                    placeholder="Orientações posturais..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="alimentacaoHidratacao" class="form-label">Alimentação / hidratação</label>
-                                <textarea class="form-control" id="alimentacaoHidratacao" rows="2" placeholder="Orientações alimentares..."></textarea>
+                                <textarea class="form-control" id="alimentacaoHidratacao" rows="2"
+                                    placeholder="Orientações alimentares..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="exerciciosCasa" class="form-label">Exercícios em casa (dever)</label>
-                                <textarea class="form-control" id="exerciciosCasa" rows="2" placeholder="Exercícios para casa..."></textarea>
+                                <textarea class="form-control" id="exerciciosCasa" rows="2"
+                                    placeholder="Exercícios para casa..."></textarea>
                             </div>
-                            
+
                             <div class="mb-3">
-                                <label for="aspectosEmocionaisEspirituais" class="form-label">Aspectos emocionais / espiritualidade</label>
-                                <textarea class="form-control" id="aspectosEmocionaisEspirituais" rows="2" placeholder="Aspectos emocionais e espirituais..."></textarea>
+                                <label for="aspectosEmocionaisEspirituais" class="form-label">Aspectos emocionais /
+                                    espiritualidade</label>
+                                <textarea class="form-control" id="aspectosEmocionaisEspirituais" rows="2"
+                                    placeholder="Aspectos emocionais e espirituais..."></textarea>
                             </div>
                         </div>
 
                         <!-- Observações finais -->
                         <div class="mb-4">
                             <h6 class="section-title">Observações finais</h6>
-                            <textarea class="form-control" id="observacoesFinais" rows="6" placeholder="Observações finais..."></textarea>
+                            <textarea class="form-control" id="observacoesFinais" rows="6"
+                                placeholder="Observações finais..."></textarea>
                         </div>
 
                         <!-- Informações do profissional -->
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <label for="fisioterapeutaAvaliacao" class="form-label">Fisioterapeuta</label>
-                                <input type="text" class="form-control" id="fisioterapeutaAvaliacao" 
+                                <input type="text" class="form-control" id="fisioterapeutaAvaliacao"
                                     value="{{ user.get_full_name }}" readonly>
                             </div>
                             <div class="col-md-6">
                                 <label for="crefitoAvaliacao" class="form-label">CREFITO</label>
-                                <input type="text" class="form-control" id="crefitoAvaliacao" 
+                                <input type="text" class="form-control" id="crefitoAvaliacao"
                                     value="{{ user.profissional.crefito|default:'A definir' }}">
                             </div>
                         </div>
@@ -1726,161 +1936,161 @@
             </div>
         </div>
     </div>
-<script>
-    // Funções para controle de modais
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.add('show');
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('show');
-    }
-
-    function openPatientModal(patientName) {
-        document.getElementById('patientName').textContent = patientName;
-        document.getElementById('patientModalLabel').textContent = 'Prontuário - ' + patientName;
-        openModal('patientModal');
-    }
-
-    // Função para alternar entre abas
-    function switchTab(tabId) {
-        // Esconde todas as abas
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        tabPanes.forEach(tab => {
-            tab.classList.remove('active');
-        });
-
-        // Remove a classe active de todos os botões de aba
-        const tabButtons = document.querySelectorAll('.nav-link');
-        tabButtons.forEach(button => {
-            button.classList.remove('active');
-        });
-
-        // Ativa a aba selecionada
-        document.getElementById(tabId).classList.add('active');
-
-        // Ativa o botão correspondente
-        event.target.classList.add('active');
-    }
-
-    // Fechar modal ao clicar fora dele
-    window.onclick = function (event) {
-        const modals = document.querySelectorAll('.modal');
-        modals.forEach(modal => {
-            if (event.target === modal) {
-                modal.classList.remove('show');
-            }
-        });
-    }
-    // Dados de exemplo dos prontuários
-    const prontuariosData = {
-        1: {
-            data: "15/05/2023",
-            autor: "Dra. Ana Silva",
-            paciente: "Maria Oliveira",
-            id: "#PRT001",
-            queixaPrincipal: "Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.",
-            historiaDoenca: "Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.",
-            exameFisico: "Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.",
-            conduta: "Exercícios de fortalecimento do core alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.",
-            diagnostico: "Lombalgia crônica com componente radicular.",
-            observacoes: "Paciente orientado sobre postura e ergonomia. Retorno em 15 dias para reavaliação."
-        },
-        2: {
-            data: "08/05/2023",
-            autor: "Dr. Carlos Santos",
-            paciente: "Maria Oliveira",
-            id: "#PRT002",
-            queixaPrincipal: "Dor cervical com limitação de movimento há 3 semanas após trauma em acidente automobilístico.",
-            historiaDoenca: "Paciente relata acidente há 3 semanas com whiplash. Refere dor constante 7/10, piora com movimentos de rotação.",
-            exameFisico: "Limitação de 50% na rotação cervical bilateral. Dor à palpação em C5-C6. Espasmo muscular em trapézio superior.",
-            conduta: "Terapia manual, mobilização cervical, exercícios de estabilização, crioterapia.",
-            diagnostico: "Síndrome do chicote (whiplash) grau II.",
-            observacoes: "Encaminhado para RX cervical. Uso de colar mole por períodos curtos."
-        },
-        3: {
-            data: "01/05/2023",
-            autor: "Dra. Ana Silva",
-            paciente: "Maria Oliveira",
-            id: "#PRT003",
-            queixaPrincipal: "Pós-operatório de artroplastia de quadril direito há 4 semanas. Relata dificuldade na marcha e dor residual.",
-            historiaDoenca: "Cirurgia realizada há 4 semanas por osteoartrose grave. Evolução dentro do esperado mas com limitação funcional.",
-            exameFisico: "Edema discreto no quadril D. Amplitude de movimento: flexão 80°, abdução 25°. Marcha com auxílio de andador.",
-            conduta: "Exercícios de fortalecimento de MMII, treino de marcha, orientações sobre precauções pós-operatórias.",
-            diagnostico: "Status pós artroplastia total de quadril direito.",
-            observacoes: "Paciente motivada. Evolução satisfatória. Manter precauções por mais 2 semanas."
+    <script>
+        // Funções para controle de modais
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
         }
-    };
 
-    // Função para abrir modal de visualização do prontuário
-    function openProntuarioModal(prontuarioId) {
-        const prontuario = prontuariosData[prontuarioId];
-
-        if (prontuario) {
-            document.getElementById('prontuarioData').textContent = prontuario.data;
-            document.getElementById('prontuarioAutor').textContent = prontuario.autor;
-            document.getElementById('prontuarioPaciente').textContent = prontuario.paciente;
-            document.getElementById('prontuarioId').textContent = prontuario.id;
-            document.getElementById('viewQueixaPrincipal').textContent = prontuario.queixaPrincipal;
-            document.getElementById('viewHistoriaDoenca').textContent = prontuario.historiaDoenca;
-            document.getElementById('viewExameFisico').textContent = prontuario.exameFisico;
-            document.getElementById('viewConduta').textContent = prontuario.conduta;
-            document.getElementById('viewDiagnostico').textContent = prontuario.diagnostico;
-            document.getElementById('viewObservacoes').textContent = prontuario.observacoes;
-
-            document.getElementById('viewProntuarioTitle').textContent = `Prontuário - ${prontuario.data}`;
-            openModal('viewProntuarioModal');
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
         }
-    }
 
-    // Função para salvar novo prontuário
-    async function salvarProntuario() {
-        const dadosProntuario = {
-            paciente_id: document.getElementById('pacienteId').value,
-            profissional_id: document.getElementById('profissionalId').value,
-            pacote_id: document.getElementById('pacoteSelect')?.value || null,
-            agendamento_id: document.getElementById('agendamentoId')?.value || null,
-            queixa_principal: document.getElementById('queixaPrincipal').value,
-            historia_doenca: document.getElementById('historiaDoenca').value,
-            exame_fisico: document.getElementById('exameFisico').value,
-            conduta: document.getElementById('conduta').value,
-            diagnostico: document.getElementById('diagnostico').value,
-            observacoes: document.getElementById('observacoes').value
-        };
+        function openPatientModal(patientName) {
+            document.getElementById('patientName').textContent = patientName;
+            document.getElementById('patientModalLabel').textContent = 'Prontuário - ' + patientName;
+            openModal('patientModal');
+        }
 
-        try {
-            const response = await fetch('/api/salvar-prontuario/', {  // ← URL ATUALIZADA
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken(),
-                    'X-Requested-With': 'XMLHttpRequest'  // Identifica como AJAX
-                },
-                body: JSON.stringify(dadosProntuario)
+        // Função para alternar entre abas
+        function switchTab(tabId) {
+            // Esconde todas as abas
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            tabPanes.forEach(tab => {
+                tab.classList.remove('active');
             });
 
-            const resultado = await response.json();
+            // Remove a classe active de todos os botões de aba
+            const tabButtons = document.querySelectorAll('.nav-link');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
 
-            if (resultado.success) {
-                mostrarMensagem('✅ ' + resultado.message, 'success');
-                document.getElementById('prontuarioForm').reset();
-                closeModal('newProntuarioModal');
+            // Ativa a aba selecionada
+            document.getElementById(tabId).classList.add('active');
 
-                // Opcional: disparar evento para outros componentes
-                window.dispatchEvent(new CustomEvent('prontuarioSalvo', {
-                    detail: resultado
-                }));
-
-            } else {
-                mostrarMensagem('❌ ' + resultado.error, 'error');
-            }
-
-        } catch (error) {
-            mostrarMensagem('🔌 Erro de conexão', 'error');
-            console.error('Erro:', error);
+            // Ativa o botão correspondente
+            event.target.classList.add('active');
         }
-    } 
-</script>
+
+        // Fechar modal ao clicar fora dele
+        window.onclick = function (event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        }
+        // Dados de exemplo dos prontuários
+        const prontuariosData = {
+            1: {
+                data: "15/05/2023",
+                autor: "Dra. Ana Silva",
+                paciente: "Maria Oliveira",
+                id: "#PRT001",
+                queixaPrincipal: "Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.",
+                historiaDoenca: "Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.",
+                exameFisico: "Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.",
+                conduta: "Exercícios de fortalecimento do core alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.",
+                diagnostico: "Lombalgia crônica com componente radicular.",
+                observacoes: "Paciente orientado sobre postura e ergonomia. Retorno em 15 dias para reavaliação."
+            },
+            2: {
+                data: "08/05/2023",
+                autor: "Dr. Carlos Santos",
+                paciente: "Maria Oliveira",
+                id: "#PRT002",
+                queixaPrincipal: "Dor cervical com limitação de movimento há 3 semanas após trauma em acidente automobilístico.",
+                historiaDoenca: "Paciente relata acidente há 3 semanas com whiplash. Refere dor constante 7/10, piora com movimentos de rotação.",
+                exameFisico: "Limitação de 50% na rotação cervical bilateral. Dor à palpação em C5-C6. Espasmo muscular em trapézio superior.",
+                conduta: "Terapia manual, mobilização cervical, exercícios de estabilização, crioterapia.",
+                diagnostico: "Síndrome do chicote (whiplash) grau II.",
+                observacoes: "Encaminhado para RX cervical. Uso de colar mole por períodos curtos."
+            },
+            3: {
+                data: "01/05/2023",
+                autor: "Dra. Ana Silva",
+                paciente: "Maria Oliveira",
+                id: "#PRT003",
+                queixaPrincipal: "Pós-operatório de artroplastia de quadril direito há 4 semanas. Relata dificuldade na marcha e dor residual.",
+                historiaDoenca: "Cirurgia realizada há 4 semanas por osteoartrose grave. Evolução dentro do esperado mas com limitação funcional.",
+                exameFisico: "Edema discreto no quadril D. Amplitude de movimento: flexão 80°, abdução 25°. Marcha com auxílio de andador.",
+                conduta: "Exercícios de fortalecimento de MMII, treino de marcha, orientações sobre precauções pós-operatórias.",
+                diagnostico: "Status pós artroplastia total de quadril direito.",
+                observacoes: "Paciente motivada. Evolução satisfatória. Manter precauções por mais 2 semanas."
+            }
+        };
+
+        // Função para abrir modal de visualização do prontuário
+        function openProntuarioModal(prontuarioId) {
+            const prontuario = prontuariosData[prontuarioId];
+
+            if (prontuario) {
+                document.getElementById('prontuarioData').textContent = prontuario.data;
+                document.getElementById('prontuarioAutor').textContent = prontuario.autor;
+                document.getElementById('prontuarioPaciente').textContent = prontuario.paciente;
+                document.getElementById('prontuarioId').textContent = prontuario.id;
+                document.getElementById('viewQueixaPrincipal').textContent = prontuario.queixaPrincipal;
+                document.getElementById('viewHistoriaDoenca').textContent = prontuario.historiaDoenca;
+                document.getElementById('viewExameFisico').textContent = prontuario.exameFisico;
+                document.getElementById('viewConduta').textContent = prontuario.conduta;
+                document.getElementById('viewDiagnostico').textContent = prontuario.diagnostico;
+                document.getElementById('viewObservacoes').textContent = prontuario.observacoes;
+
+                document.getElementById('viewProntuarioTitle').textContent = `Prontuário - ${prontuario.data}`;
+                openModal('viewProntuarioModal');
+            }
+        }
+
+        // Função para salvar novo prontuário
+        async function salvarProntuario() {
+            const dadosProntuario = {
+                paciente_id: document.getElementById('pacienteId').value,
+                profissional_id: document.getElementById('profissionalId').value,
+                pacote_id: document.getElementById('pacoteSelect')?.value || null,
+                agendamento_id: document.getElementById('agendamentoId')?.value || null,
+                queixa_principal: document.getElementById('queixaPrincipal').value,
+                historia_doenca: document.getElementById('historiaDoenca').value,
+                exame_fisico: document.getElementById('exameFisico').value,
+                conduta: document.getElementById('conduta').value,
+                diagnostico: document.getElementById('diagnostico').value,
+                observacoes: document.getElementById('observacoes').value
+            };
+
+            try {
+                const response = await fetch('/api/salvar-prontuario/', {  // ← URL ATUALIZADA
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken(),
+                        'X-Requested-With': 'XMLHttpRequest'  // Identifica como AJAX
+                    },
+                    body: JSON.stringify(dadosProntuario)
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.success) {
+                    mostrarMensagem('✅ ' + resultado.message, 'success');
+                    document.getElementById('prontuarioForm').reset();
+                    closeModal('newProntuarioModal');
+
+                    // Opcional: disparar evento para outros componentes
+                    window.dispatchEvent(new CustomEvent('prontuarioSalvo', {
+                        detail: resultado
+                    }));
+
+                } else {
+                    mostrarMensagem('❌ ' + resultado.error, 'error');
+                }
+
+            } catch (error) {
+                mostrarMensagem('🔌 Erro de conexão', 'error');
+                console.error('Erro:', error);
+            }
+        } 
+    </script>
 </body>
 
 </html>
