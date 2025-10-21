@@ -933,7 +933,7 @@
                     <form id="avaliacaoForm">
                         <!-- 2. Anamnese / Histórico Clínico -->
                         <div class="mb-4">
-                            <h6 class="section-title">2. Anamnese / Histórico Clínico</h6>
+                            <h6 class="section-title">1. Anamnese / Histórico Clínico</h6>
 
                             <div class="mb-3">
                                 <label for="queixaPrincipal" class="form-label">Queixa principal (nas palavras do
@@ -980,25 +980,27 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Tratamento fisioterapêutico anterior?</label>
                                         <div class="d-flex align-items-center">
-                                            <div class="form-check me-3">
-                                                <!-- CORREÇÃO AQUI -->
-                                                <label class="radio-option">
-                                                    <input class="form-check-input" type="radio"
-                                                        name="tratamentoAnterior" id="tratamentoSim" value="sim">
-                                                    Sim
-                                                </label>
+                                        <div class='form-radio-div'>
+                                                <div class="form-check me-3">
+                                                    
+                                                    <label class="radio-option">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="tratamentoAnterior" id="tratamentoSim" value="sim">
+                                                        Sim
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    
+                                                    <label class="radio-option">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="tratamentoAnterior" id="tratamentoNao" value="nao"
+                                                            checked>
+                                                        Não
+                                                    </label>
+                                                </div>
+                                                <input type="text" class="form-control ms-2" id="qualTratamento"
+                                                    placeholder="Qual(is)?" style="flex: 1;">
                                             </div>
-                                            <div class="form-check">
-                                                <!-- CORREÇÃO AQUI -->
-                                                <label class="radio-option">
-                                                    <input class="form-check-input" type="radio"
-                                                        name="tratamentoAnterior" id="tratamentoNao" value="nao"
-                                                        checked>
-                                                    Não
-                                                </label>
-                                            </div>
-                                            <input type="text" class="form-control ms-2" id="qualTratamento"
-                                                placeholder="Qual(is)?" style="flex: 1;">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -1085,28 +1087,28 @@
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
                                 <h6 class="section-title">b) Histórico pessoal e familiar</h6>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label for="doencasPrevias" class="form-label">Doenças prévias /
                                             crônicas</label>
                                         <textarea class="form-control" id="doencasPrevias" rows="2"
                                             placeholder="Doenças prévias..."></textarea>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label for="cirurgiasPrevias" class="form-label">Cirurgias prévias</label>
                                         <textarea class="form-control" id="cirurgiasPrevias" rows="2"
                                             placeholder="Cirurgias prévias..."></textarea>
                                     </div>
                                 </div>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label for="condicoesGeneticas" class="form-label">Condições genéticas /
                                             reumatológicas / metabólicas</label>
                                         <textarea class="form-control" id="condicoesGeneticas" rows="2"
                                             placeholder="Condições genéticas..."></textarea>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label for="historicoFamiliar" class="form-label">Histórico familiar
                                             relevante</label>
                                         <textarea class="form-control" id="historicoFamiliar" rows="2"
@@ -1117,91 +1119,79 @@
 
                             <!-- c) Hábitos e estilo de vida -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
-                                <h6 class="section-title">c) Hábitos e estilo de vida</h6>
+                               <h6 class="section-title">c) Hábitos e estilo de vida</h6>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Qualidade do sono</label>
-                                        <div>
-                                            <div class="form-check">
-                                                <label class="radio-option" for="sonoBoa">
-                                                    <input class="form-check-input" type="radio" name="qualidadeSono"
-                                                        id="sonoBoa" value="boa">Boa</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <label class="checkbox-option" for="sonoRegular">
-                                                    <input class="form-check-input" type="radio" name="qualidadeSono"
-                                                        id="sonoRegular" value="regular">
-                                                    Regular</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <label class="checkbox-option" for="sonoRuim">
-                                                    <input class="form-check-input" type="radio" name="qualidadeSono"
-                                                        id="sonoRuim" value="ruim">
-                                                    Ruim</label>
-                                            </div>
-                                        </div>
-                                        <input type="number" class="form-control mt-1" id="horasSono"
-                                            placeholder="Horas/noite" min="0" max="24">
-                                    </div>
+<div class="habitos-grid-3">
+  <!-- Qualidade do sono -->
+  <div class="habitos-col">
+    <label class="form-label">Qualidade do sono</label>
+    <div class="form-check">
+      <label class="radio-option" for="sonoBoa">
+        <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoBoa" value="boa"> Boa
+      </label>
+    </div>
+    <div class="form-check">
+      <label class="radio-option" for="sonoRegular">
+        <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoRegular" value="regular"> Regular
+      </label>
+    </div>
+    <div class="form-check">
+      <label class="radio-option" for="sonoRuim">
+        <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoRuim" value="ruim"> Ruim
+      </label>
+    </div>
+    <input type="number" class="form-control" id="horasSono" placeholder="Horas/noite" min="0" max="24">
+  </div>
 
-                                    <div class="col-md-4">
-                                        <label class="form-label">Alimentação</label>
-                                        <div>
-                                            <div class="form-check">
-                                                <label class="checkbox-option" for="alimentacaoSaudavel">
-                                                    <input class="form-check-input" type="radio" name="alimentacao"
-                                                        id="alimentacaoSaudavel" value="saudavel">
-                                                    Saudável</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <label class="checkbox-option" for="alimentacaoIrregular">
-                                                    <input class="form-check-input" type="radio" name="alimentacao"
-                                                        id="alimentacaoIrregular" value="irregular">
-                                                    Irregular</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <label class="checkbox-option">
-                                                    <input class="form-check-input" type="radio" name="alimentacao"
-                                                        id="alimentacaoUltraprocessados" value="ultraprocessados">
-                                                    Rica em ultraprocessados</label>
-                                            </div>
-                                        </div>
-                                    </div>
+  <!-- Alimentação -->
+  <div class="habitos-col">
+    <label class="form-label">Alimentação</label>
+    <div class="form-check">
+      <label class="radio-option" for="alimentacaoSaudavel">
+        <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoSaudavel" value="saudavel"> Saudável
+      </label>
+    </div>
+    <div class="form-check">
+      <label class="radio-option" for="alimentacaoIrregular">
+        <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoIrregular" value="irregular"> Irregular
+      </label>
+    </div>
+    <div class="form-check">
+      <label class="radio-option" for="alimentacaoUltraprocessados">
+        <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoUltraprocessados" value="ultraprocessados"> Rica em ultraprocessados
+      </label>
+    </div>
+  </div>
 
-                                    <div class="col-md-4">
-                                        <label class="form-label">Nível de atividade física</label>
-                                        <div>
-                                            <div class="form-check">
-                                                <label class="checkbox-option" for="sedentario">
-                                                    <input class="form-check-input" type="radio" name="nivelAtividade"
-                                                        id="sedentario" value="sedentario">
-                                                    Sedentário</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <label class="checkbox-option" for="leveModerado">
-                                                    <input class="form-check-input" type="radio" name="nivelAtividade"
-                                                        id="leveModerado" value="leve_moderado">
-                                                    Exercício
-                                                    leve/moderado</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <label class="checkbox-option" for="atleta">
-                                                    <input class="form-check-input" type="radio" name="nivelAtividade"
-                                                        id="atleta" value="atleta">
-                                                    Atleta</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+  <!-- Nível de atividade física -->
+  <div class="habitos-col">
+    <label class="form-label">Nível de atividade física</label>
+    <div class="form-check">
+      <label class="radio-option" for="sedentario">
+        <input class="form-check-input" type="radio" name="nivelAtividade" id="sedentario" value="sedentario"> Sedentário
+      </label>
+    </div>
+    <div class="form-check">
+      <label class="radio-option" for="leveModerado">
+        <input class="form-check-input" type="radio" name="nivelAtividade" id="leveModerado" value="leve_moderado"> Exercício leve/moderado
+      </label>
+    </div>
+    <div class="form-check">
+      <label class="radio-option" for="atleta">
+        <input class="form-check-input" type="radio" name="nivelAtividade" id="atleta" value="atleta"> Atleta
+      </label>
+    </div>
+  </div>
+</div>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label for="tipoExercicio" class="form-label">Tipo de exercício</label>
                                         <input type="text" class="form-control" id="tipoExercicio"
                                             placeholder="Tipo de exercício praticado...">
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label for="rotinaTrabalho" class="form-label">Rotina de trabalho /
                                             posturas</label>
                                         <textarea class="form-control" id="rotinaTrabalho" rows="2"
@@ -1209,13 +1199,13 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label for="nivelEstresse" class="form-label">Nível de estresse (0-10)</label>
                                         <input type="number" class="form-control" id="nivelEstresse" placeholder="0-10"
                                             min="0" max="10">
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label for="aspectosEmocionais" class="form-label">Aspectos emocionais</label>
                                         <textarea class="form-control" id="aspectosEmocionais" rows="2"
                                             placeholder="Aspectos emocionais..."></textarea>
@@ -1227,14 +1217,14 @@
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
                                 <h6 class="section-title">d) Sinais, sintomas e dor</h6>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label for="localizacaoDor" class="form-label">Localização da dor /
                                             sintoma</label>
                                         <textarea class="form-control" id="localizacaoDor" rows="2"
                                             placeholder="Localização da dor..."></textarea>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label class="form-label">Tipo de dor</label>
                                         <div class="row">
                                             <div class="col-6">
@@ -1273,34 +1263,40 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-2">
+                                <div class="habitos-grid-3">
+                                  <div class="habitos-col">
                                     <div class="col-md-4">
                                         <label for="intensidadeRepouso" class="form-label">Intensidade (0-10) -
                                             Repouso</label>
                                         <input type="number" class="form-control" id="intensidadeRepouso"
                                             placeholder="0-10" min="0" max="10">
                                     </div>
+                                    </div>
+                                      <div class="habitos-col">
                                     <div class="col-md-4">
                                         <label for="intensidadeMovimento" class="form-label">Intensidade (0-10) -
                                             Movimento</label>
                                         <input type="number" class="form-control" id="intensidadeMovimento"
                                             placeholder="0-10" min="0" max="10">
                                     </div>
+                                    </div>
+                                      <div class="habitos-col">
                                     <div class="col-md-4">
                                         <label for="intensidadePior" class="form-label">Intensidade (0-10) - Pior
                                             momento</label>
                                         <input type="number" class="form-control" id="intensidadePior"
                                             placeholder="0-10" min="0" max="10">
                                     </div>
+                                    </div>
                                 </div>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label for="fatoresAgravam" class="form-label">Fatores que agravam</label>
                                         <textarea class="form-control" id="fatoresAgravam" rows="2"
                                             placeholder="Fatores que agravam a dor..."></textarea>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label for="fatoresAliviam" class="form-label">Fatores que aliviam</label>
                                         <textarea class="form-control" id="fatoresAliviam" rows="2"
                                             placeholder="Fatores que aliviam a dor..."></textarea>
@@ -1309,6 +1305,7 @@
 
                                 <div class="row mb-2">
                                     <div class="col-md-6">
+                                      <div class="habitos-col">
                                         <label class="form-label">Sinais associados</label>
                                         <div class="row">
                                             <div class="col-6">
@@ -1351,26 +1348,29 @@
                                                         id="sinalOutroTexto" placeholder="Especificar">
                                                 </div>
                                             </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
+                                      <div class="habitos-col">
                                         <label class="form-label">Grau de inflamação</label>
                                         <div>
                                             <div class="form-check">
-                                                <label class="checkbox-option" for="inflamacaoLeve">
+                                                <label class="radio-option" for="inflamacaoLeve">
                                                     <input class="form-check-input" type="radio" name="grauInflamacao"
                                                         id="inflamacaoLeve" value="leve">Leve</label>
                                             </div>
                                             <div class="form-check">
-                                                <label class="checkbox-option" for="inflamacaoModerado">
+                                                <label class="radio-option" for="inflamacaoModerado">
                                                     <input class="form-check-input" type="radio" name="grauInflamacao"
                                                         id="inflamacaoModerado" value="moderado">Moderado</label>
                                             </div>
                                             <div class="form-check">
-                                                <label class="checkbox-option" for="inflamacaoIntenso">
+                                                <label class="radio-option" for="inflamacaoIntenso">
                                                     <input class="form-check-input" type="radio" name="grauInflamacao"
                                                         id="inflamacaoIntenso" value="intenso">Intenso</label>
                                             </div>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1466,7 +1466,9 @@
                                                         placeholder="0-5" min="0" max="5"></td>
                                                 <td>
                                                     <div class="form-check">
+                                                    <label class="checkbox-option">
                                                         <input class="form-check-input" type="checkbox">
+                                                    </label>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1550,23 +1552,24 @@
                             </div>
 
                             <div class="row mb-3">
+                            
                                 <div class="col-md-6">
                                     <label class="form-label">Receptividade</label>
-                                    <div>
+                                    <div> 
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="receptividadeAlta">
+                                            <label class="radio-option" for="receptividadeAlta">
                                                 <input class="form-check-input" type="radio" name="receptividade"
                                                     id="receptividadeAlta" value="alta">
                                                 Alta</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="receptividadeMedia">
+                                            <label class="radio-option" for="receptividadeMedia">
                                                 <input class="form-check-input" type="radio" name="receptividade"
                                                     id="receptividadeMedia" value="media">
                                                 Média</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="receptividadeBaixa">
+                                            <label class="radio-option" for="receptividadeBaixa">
                                                 <input class="form-check-input" type="radio" name="receptividade"
                                                     id="receptividadeBaixa" value="baixa">
                                                 Baixa</label>
@@ -1577,18 +1580,18 @@
                                     <label class="form-label">Autonomia AVD</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="autonomiaIndep">
+                                            <label class="radio-option" for="autonomiaIndep">
                                                 <input class="form-check-input" type="radio" name="autonomiaAVD"
                                                     id="autonomiaIndep" value="independente">Independente</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="autonomiaParcial">
+                                            <label class="radio-option" for="autonomiaParcial">
                                                 <input class="form-check-input" type="radio" name="autonomiaAVD"
                                                     id="autonomiaParcial" value="parcial">
                                                 Parcial</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="autonomiaDependente">
+                                            <label class="radio-option" for="autonomiaDependente">
                                                 <input class="form-check-input" type="radio" name="autonomiaAVD"
                                                     id="autonomiaDependente" value="dependente">
                                                 Dependente</label>
@@ -1628,6 +1631,7 @@
                             </div>
 
                             <!-- Técnicas manuais -->
+                              <div class="habitos-col">
                             <div class="mb-3">
                                 <label class="form-label">Técnicas manuais</label>
                                 <div class="row">
@@ -1671,8 +1675,9 @@
                                     </div>
                                 </div>
                             </div>
-
+</div>
                             <!-- Recursos eletrofísicos -->
+                              <div class="habitos-col">
                             <div class="mb-3">
                                 <label class="form-label">Recursos eletrofísicos</label>
                                 <div class="row">
@@ -1715,8 +1720,10 @@
                                     </div>
                                 </div>
                             </div>
-
+                            </div>
+                            
                             <!-- Cinesioterapia -->
+                              <div class="habitos-col">
                             <div class="mb-3">
                                 <label class="form-label">Cinesioterapia</label>
                                 <div class="row">
@@ -1756,7 +1763,7 @@
                                     </div>
                                 </div>
                             </div>
-
+</div>
                             <div class="mb-3">
                                 <label for="descricaoPlano" class="form-label">Descrição breve sobre o plano de
                                     tratamento</label>
@@ -1769,13 +1776,13 @@
                                     <label class="form-label">Medo de agulha?</label>
                                     <div>
                                         <div class="form-check ">
-                                            <label class="checkbox-option" for="medoAgulhaSim">
+                                            <label class="radio-option" for="medoAgulhaSim">
                                                 <input class="form-check-input" type="radio" name="medoAgulha"
                                                     id="medoAgulhaSim" value="sim">
                                                 Sim</label>
                                         </div>
                                         <div class="form-check">
-                                            <label class="checkbox-option" for="medoAgulhaNao">
+                                            <label class="radio-option" for="medoAgulhaNao">
                                                 <input class="form-check-input" type="radio" name="medoAgulha"
                                                     id="medoAgulhaNao" value="nao" checked>
                                                 Não</label>
@@ -1786,13 +1793,13 @@
                                     <label class="form-label">Limiar de dor baixo?</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="limiarDorSim">
+                                            <label class="radio-option" for="limiarDorSim">
                                                 <input class="form-check-input" type="radio" name="limiarDor"
                                                     id="limiarDorSim" value="sim">
                                                 Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="limiarDorNao">
+                                            <label class="radio-option" for="limiarDorNao">
                                                 <input class="form-check-input" type="radio" name="limiarDor"
                                                     id="limiarDorNao" value="nao" checked>
                                                 Não</label>
@@ -1803,13 +1810,13 @@
                                     <label class="form-label">Fragilidade?</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="fragilidadeSim">
+                                            <label class="radio-option" for="fragilidadeSim">
                                                 <input class="form-check-input" type="radio" name="fragilidade"
                                                     id="fragilidadeSim" value="sim">
                                                 Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="checkbox-option" for="fragilidadeNao">
+                                            <label class="radio-option" for="fragilidadeNao">
                                                 <input class="form-check-input" type="radio" name="fragilidade"
                                                     id="fragilidadeNao" value="nao" checked>
                                                 Não</label>
