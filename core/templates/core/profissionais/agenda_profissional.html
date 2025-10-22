@@ -935,21 +935,21 @@
                         <div class="mb-4">
                             <h6 class="section-title">1. Anamnese / Histórico Clínico</h6>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="queixaPrincipal" class="form-label">Queixa principal (nas palavras do
                                     paciente)</label>
                                 <textarea class="form-control" id="queixaPrincipal" rows="2"
                                     placeholder="Descreva a queixa principal nas palavras do paciente..."></textarea>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
                                     <label for="inicioProblema" class="form-label">Como o problema começou e há quanto
                                         tempo?</label>
                                     <textarea class="form-control" id="inicioProblema" rows="2"
                                         placeholder="Descreva o início do problema..."></textarea>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label for="causaProblema" class="form-label">O que acredita ter causado o
                                         problema?</label>
                                     <textarea class="form-control" id="causaProblema" rows="2"
@@ -961,14 +961,14 @@
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
                                 <h6 class="section-title">a) Histórico da doença atual</h6>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label for="dorRecenteAntiga" class="form-label">Dor ou limitação é recente ou
                                             antiga?</label>
                                         <input type="text" class="form-control" id="dorRecenteAntiga"
                                             placeholder="Ex: Recente, há 2 semanas">
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label for="episodiosAnteriores" class="form-label">Episódios anteriores
                                             semelhantes?</label>
                                         <input type="text" class="form-control" id="episodiosAnteriores"
@@ -976,8 +976,8 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label class="form-label">Tratamento fisioterapêutico anterior?</label>
                                         <div class="d-flex align-items-center">
                                         <div class='form-radio-div'>
@@ -1003,7 +1003,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label for="cirurgiaProcedimento" class="form-label">Cirurgia ou procedimento
                                             relacionado?</label>
                                         <input type="text" class="form-control" id="cirurgiaProcedimento"
@@ -1011,8 +1011,8 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label class="form-label">Acompanhamento médico?</label>
                                         <div class="d-flex align-items-center">
                                             <div class="form-check me-3">
@@ -1036,7 +1036,7 @@
                                                 placeholder="Médico / Especialidade" style="flex: 1;">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label for="diagnosticoMedico" class="form-label">Diagnóstico médico (se
                                             houver)</label>
                                         <input type="text" class="form-control" id="diagnosticoMedico"
@@ -1044,14 +1044,14 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
                                         <label for="usoMedicamentos" class="form-label">Uso de medicamentos?
                                             Quais?</label>
                                         <textarea class="form-control" id="usoMedicamentos" rows="2"
                                             placeholder="Medicamentos em uso..."></textarea>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="habitos-col">
                                         <label class="form-label">Exames trazidos?</label>
                                         <div class="d-flex align-items-center">
                                             <div class="form-check me-3">
@@ -1075,7 +1075,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-2">
+                                <div class="habitos-col">
                                     <label for="historicoLesoes" class="form-label">Histórico de outras lesões? Se sim?
                                         Qual(is)? e Quando? Breve histórico</label>
                                     <textarea class="form-control" id="historicoLesoes" rows="3"
@@ -1191,19 +1191,20 @@
                                         <input type="text" class="form-control" id="tipoExercicio"
                                             placeholder="Tipo de exercício praticado...">
                                     </div>
+                                                                        <div class="habitos-col">
+                                        <label for="nivelEstresse" class="form-label">Nível de estresse (0-10)</label>
+                                        <input type="number" class="form-control" id="nivelEstresse" placeholder="0-10"
+                                            min="0" max="10">
+                                    </div>
+
+                                </div>
+
+                                <div class="habitos-grid-2">
                                     <div class="habitos-col">
                                         <label for="rotinaTrabalho" class="form-label">Rotina de trabalho /
                                             posturas</label>
                                         <textarea class="form-control" id="rotinaTrabalho" rows="2"
                                             placeholder="Rotina de trabalho..."></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="habitos-grid-2">
-                                    <div class="habitos-col">
-                                        <label for="nivelEstresse" class="form-label">Nível de estresse (0-10)</label>
-                                        <input type="number" class="form-control" id="nivelEstresse" placeholder="0-10"
-                                            min="0" max="10">
                                     </div>
                                     <div class="habitos-col">
                                         <label for="aspectosEmocionais" class="form-label">Aspectos emocionais</label>
@@ -1381,41 +1382,41 @@
                         <div class="mb-4">
                             <h6 class="section-title">3. Exame físico e funcional</h6>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
                                     <label for="inspecaoPostura" class="form-label">Inspeção e postura</label>
                                     <textarea class="form-control" id="inspecaoPostura" rows="3"
                                         placeholder="Observações sobre postura..."></textarea>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="habitos=col">
                                     <label for="compensacoesCorporais" class="form-label">Compensações corporais</label>
                                     <textarea class="form-control" id="compensacoesCorporais" rows="3"
                                         placeholder="Compensações observadas..."></textarea>
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
                                     <label for="padraoRespiratorio" class="form-label">Padrão respiratório / controle
                                         motor</label>
                                     <textarea class="form-control" id="padraoRespiratorio" rows="2"
                                         placeholder="Padrão respiratório..."></textarea>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label for="palpacao" class="form-label">Palpação</label>
                                     <textarea class="form-control" id="palpacao" rows="2"
                                         placeholder="Achados na palpação..."></textarea>
                                 </div>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="pontosDor" class="form-label">Pontos de dor / rigidez / edema</label>
                                 <textarea class="form-control" id="pontosDor" rows="3"
                                     placeholder="Pontos específicos de dor..."></textarea>
                             </div>
 
                             <!-- Tabela para Mobilidade e Força -->
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label class="form-label">Mobilidade (ADM) e Força muscular (MMT 0-5)</label>
                                 <div class="table-responsive">
                                     <table class="table table-sm table-bordered">
@@ -1446,7 +1447,9 @@
                                                         placeholder="0-5" min="0" max="5"></td>
                                                 <td>
                                                     <div class="form-check">
+                                                    <label class="checkbox-option">
                                                         <input class="form-check-input" type="checkbox">
+                                                        </label>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1459,7 +1462,9 @@
                                                         placeholder="°"></td>
                                                 <td>
                                                     <div class="form-check">
+                                                    <label class="checkbox-option">
                                                         <input class="form-check-input" type="checkbox">
+                                                    </label>
                                                     </div>
                                                 </td>
                                                 <td><input type="number" class="form-control form-control-sm"
@@ -1497,14 +1502,14 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="testesFuncionais" class="form-label">Testes funcionais / compensações
                                     observadas</label>
                                 <textarea class="form-control" id="testesFuncionais" rows="3"
                                     placeholder="Testes funcionais realizados..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="outrasObservacoes" class="form-label">Outras observações</label>
                                 <textarea class="form-control" id="outrasObservacoes" rows="3"
                                     placeholder="Outras observações relevantes..."></textarea>
@@ -1527,33 +1532,33 @@
                                     placeholder="Preencha o modelo de diagnóstico..."></textarea>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-3">
+                            <div class="habitos-grid-4">
+                                <div class="habitos-col">
                                     <label for="grauDor" class="form-label">Grau de dor (0-10)</label>
                                     <input type="number" class="form-control" id="grauDor" placeholder="0-10" min="0"
                                         max="10">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="habitos-col">
                                     <label for="limitaçãoFuncional" class="form-label">Limitação funcional
                                         (0-10)</label>
                                     <input type="number" class="form-control" id="limitaçãoFuncional" placeholder="0-10"
                                         min="0" max="10">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="habitos-col">
                                     <label for="grauInflamacao" class="form-label">Inflamação (0-3)</label>
                                     <input type="number" class="form-control" id="grauInflamacao" placeholder="0-3"
                                         min="0" max="3">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="habitos-col">
                                     <label for="grauEdema" class="form-label">Edema (0-3)</label>
                                     <input type="number" class="form-control" id="grauEdema" placeholder="0-3" min="0"
                                         max="3">
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
+                            <div class="habitos-grid-2">
                             
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label class="form-label">Receptividade</label>
                                     <div> 
                                         <div class="form-check form-check-inline">
@@ -1576,7 +1581,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label class="form-label">Autonomia AVD</label>
                                     <div>
                                         <div class="form-check form-check-inline">
@@ -1605,25 +1610,25 @@
                         <div class="mb-4">
                             <h6 class="section-title">5. Plano Terapêutico</h6>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="objetivoGeral" class="form-label">Objetivo geral</label>
                                 <textarea class="form-control" id="objetivoGeral" rows="2"
                                     placeholder="Objetivo geral do tratamento..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="objetivoPrincipal" class="form-label">Objetivo principal</label>
                                 <textarea class="form-control" id="objetivoPrincipal" rows="2"
                                     placeholder="Objetivo principal..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="objetivoSecundario" class="form-label">Objetivo secundário</label>
                                 <textarea class="form-control" id="objetivoSecundario" rows="2"
                                     placeholder="Objetivo secundário..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="pontosAtencao" class="form-label">Pontos de atenção (sobre o planejamento do
                                     tratamento, resistência do paciente, limitações...)</label>
                                 <textarea class="form-control" id="pontosAtencao" rows="3"
@@ -1764,15 +1769,15 @@
                                 </div>
                             </div>
 </div>
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="descricaoPlano" class="form-label">Descrição breve sobre o plano de
                                     tratamento</label>
                                 <textarea class="form-control" id="descricaoPlano" rows="3"
                                     placeholder="Descrição do plano de tratamento..."></textarea>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-4">
+                            <div class="habitos-grid-3">
+                                <div class="habitos-col">
                                     <label class="form-label">Medo de agulha?</label>
                                     <div>
                                         <div class="form-check ">
@@ -1789,7 +1794,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="habitos-col">
                                     <label class="form-label">Limiar de dor baixo?</label>
                                     <div>
                                         <div class="form-check form-check-inline">
@@ -1806,7 +1811,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="habitos-col">
                                     <label class="form-label">Fragilidade?</label>
                                     <div>
                                         <div class="form-check form-check-inline">
@@ -1825,18 +1830,18 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-4">
+                            <div class="habitos-grid-3">
+                                <div class="habitos-col">
                                     <label for="frequencia" class="form-label">Frequência (x/semana)</label>
                                     <input type="number" class="form-control" id="frequencia" placeholder="Ex: 3"
                                         min="1" max="7">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="habitos-col">
                                     <label for="duracao" class="form-label">Duração (min)</label>
                                     <input type="number" class="form-control" id="duracao" placeholder="Ex: 60" min="15"
                                         max="180">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="habitos-col">
                                     <label for="reavaliacaoSessao" class="form-label">Reavaliação na sessão</label>
                                     <input type="text" class="form-control" id="reavaliacaoSessao"
                                         placeholder="Ex: 5ª sessão">
@@ -1848,64 +1853,64 @@
                         <div class="mb-4">
                             <h6 class="section-title">6. Prognóstico e orientações</h6>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="evolucaoPrimeiraSessao" class="form-label">Evolução esperada na primeira
                                     sessão</label>
                                 <textarea class="form-control" id="evolucaoPrimeiraSessao" rows="2"
                                     placeholder="Evolução esperada na primeira sessão..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="evolucaoProximasSessoes" class="form-label">Evolução esperada nas próximas
                                     sessões</label>
                                 <textarea class="form-control" id="evolucaoProximasSessoes" rows="2"
                                     placeholder="Evolução esperada nas próximas sessões..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="expectativasPrimeiraEtapa" class="form-label">Expectativas sobre a primeira
                                     etapa do tratamento</label>
                                 <textarea class="form-control" id="expectativasPrimeiraEtapa" rows="2"
                                     placeholder="Expectativas da primeira etapa..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="proximosPassos" class="form-label">Próximos passos</label>
                                 <textarea class="form-control" id="proximosPassos" rows="2"
                                     placeholder="Próximos passos do tratamento..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="sobreOrientacoes" class="form-label">Sobre as orientações</label>
                                 <textarea class="form-control" id="sobreOrientacoes" rows="2"
                                     placeholder="Orientações gerais..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="sonoRotina" class="form-label">Sono / rotina / pausas</label>
                                 <textarea class="form-control" id="sonoRotina" rows="2"
                                     placeholder="Orientações sobre sono e rotina..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="posturaErgonomia" class="form-label">Postura / ergonomia</label>
                                 <textarea class="form-control" id="posturaErgonomia" rows="2"
                                     placeholder="Orientações posturais..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="alimentacaoHidratacao" class="form-label">Alimentação / hidratação</label>
                                 <textarea class="form-control" id="alimentacaoHidratacao" rows="2"
                                     placeholder="Orientações alimentares..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="exerciciosCasa" class="form-label">Exercícios em casa (dever)</label>
                                 <textarea class="form-control" id="exerciciosCasa" rows="2"
                                     placeholder="Exercícios para casa..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="aspectosEmocionaisEspirituais" class="form-label">Aspectos emocionais /
                                     espiritualidade</label>
                                 <textarea class="form-control" id="aspectosEmocionaisEspirituais" rows="2"
@@ -1914,7 +1919,7 @@
                         </div>
 
                         <!-- Observações finais -->
-                        <div class="mb-4">
+                        <div class="habitos-col">
                             <h6 class="section-title">Observações finais</h6>
                             <textarea class="form-control" id="observacoesFinais" rows="6"
                                 placeholder="Observações finais..."></textarea>
@@ -1930,7 +1935,7 @@
                             <div class="col-md-6">
                                 <label for="crefitoAvaliacao" class="form-label">CREFITO</label>
                                 <input type="text" class="form-control" id="crefitoAvaliacao"
-                                    value="{{ user.profissional.crefito|default:'A definir' }}">
+                                    value="{{ profissional.conselho1|default:'A definir' }} {{profissional.num1_conselho|default:'A definir'}}">
                             </div>
                         </div>
                     </form>
