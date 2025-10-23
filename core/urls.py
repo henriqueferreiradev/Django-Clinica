@@ -1,5 +1,6 @@
 from django.urls import path
 from core.views import (
+ 
     auth_views,
     agendamento_views,
     config_views,
@@ -19,7 +20,7 @@ from core.views import (
 urlpatterns = [
     
     
-        path('api/verificar_beneficios_mes/<int:paciente_id>', agendamento_views.verificar_beneficios_mes, name='verificar_beneficios_mes'),
+    path('api/verificar_beneficios_mes/<int:paciente_id>', agendamento_views.verificar_beneficios_mes, name='verificar_beneficios_mes'),
     path('api/beneficios/usar',agendamento_views.usar_beneficio,name='usar_beneficio'),
     path('api/salvar-prontuario/', profissionais_views.salvar_prontuario, name='salvar_prontuario'),
     path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
@@ -28,6 +29,20 @@ urlpatterns = [
     path('api/registrar_recebimento/<int:pagamento_id>/', api_views.registrar_recebimento, name='registrar_recebimento'),
     path('api/lista_status/<int:paciente_id>', pacientes_views.lista_status, name='lista_status'),
 
+    path('api/salvar-prontuario/', api_views.salvar_prontuario, name='salvar_prontuario'),
+    path('api/listar-prontuarios/<int:paciente_id>/', api_views.listar_prontuarios, name='listar_prontuarios'),
+    
+    path('api/salvar-evolucao/', api_views.salvar_evolucao, name='salvar_evolucao'),
+    path('api/listar-evolucoes/<int:paciente_id>/', api_views.listar_evolucoes, name='listar_evolucoes'),
+    
+    path('api/salvar-avaliacao/', api_views.salvar_avaliacao, name='salvar_avaliacao'),
+    path('api/listar-avaliacoes/<int:paciente_id>/', api_views.listar_avaliacoes, name='listar_avaliacoes'),
+    
+    path('api/salvar-imagem/', api_views.salvar_imagem, name='salvar_imagem'),
+    path('api/listar-imagens/<int:paciente_id>/', api_views.listar_imagens, name='listar_imagens'),
+    path('api/criar-pasta/', api_views.criar_pasta_imagem, name='criar_pasta_imagem'),
+    
+    
     path('login/', auth_views.login_view, name='login'),
     path('logout/', auth_views.logout_view, name='logout'), 
     

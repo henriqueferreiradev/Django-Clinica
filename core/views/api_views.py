@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.context_processors import request
 from core.models import Paciente, Pagamento
 
 
@@ -82,3 +83,32 @@ def registrar_recebimento(request, pagamento_id):
         return JsonResponse({'ok': False, 'erro': 'Pagamento não encontrado.'}, status=404)
     except Exception as e:
         return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
+
+
+def salvar_prontuario(request):
+    ...
+    
+def listar_prontuarios(request, paciente_id):
+    ...
+    
+def salvar_evolucao(request):
+    ...
+    
+def listar_evolucoes(request, paciente_id):
+    ...
+    
+def salvar_avaliacao(request):
+    ...
+    
+def listar_avaliacoes(request, paciente_id):
+    ...
+    
+def salvar_imagem(request):
+    ...
+    
+def listar_imagens(request, paciente_id):
+    ...
+    
+def criar_pasta_imagem(request, paciente_id):
+    ...
+    

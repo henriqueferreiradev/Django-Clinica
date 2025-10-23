@@ -14,6 +14,7 @@ from django.db.models import Q
 from django.forms import CharField
 from core.services.status_beneficios import calcular_beneficio
 from django.db.models import Sum
+from django.core.validators import MaxValueValidator, MinValueValidator
 def caminho_foto_paciente(instance, filename):
     nome = slugify(instance.nome)
     extensao = os.path.splitext(filename)[1]
@@ -938,3 +939,272 @@ class Prontuario(models.Model):
     conduta = models.TextField()
     diagnostico = models.TextField()
     observacoes = models.TextField()
+
+    class Meta:
+        ordering = ['-data_criacao']
+
+    def __str__(self):
+        return f'Prontuário {self.paciente} - {self.data_criacao.date()}'
+    
+class Evolucao(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
+    data_criacao = models.DateField(auto_now_add=True)
+    
+    queixa_principal_inicial = models.TextField(blank=True)
+    processo_terapeutico = models.TextField(blank=True)
+    condutas_tecnicas = models.TextField(blank=True)
+    resposta_paciente  = models.TextField(blank=True)
+    intercorrencias = models.TextField(blank=True)
+
+    dor_inicio = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    dor_atual = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    dor_observacoes = models.TextField(blank=True)
+    
+    amplitude_inicio = models.CharField(max_length=100, blank=True)
+    amplitude_atual = models.CharField(max_length=100, blank=True)
+    amplitude_observacoes = models.TextField(blank=True)
+    
+    forca_inicio = models.CharField(max_length=100, blank=True)
+    forca_atual = models.CharField(max_length=100, blank=True)
+    forca_observacoes = models.TextField(blank=True)
+    
+    postura_inicio = models.CharField(max_length=100, blank=True)
+    postura_atual = models.CharField(max_length=100, blank=True)
+    postura_observacoes = models.TextField(blank=True)
+    
+    edema_inicio = models.CharField(max_length=100, blank=True)
+    edema_atual = models.CharField(max_length=100, blank=True)
+    edema_observacoes = models.TextField(blank=True)
+    
+    avds_inicio = models.CharField(max_length=100, blank=True)
+    avds_atual = models.CharField(max_length=100, blank=True)
+    avds_observacoes = models.TextField(blank=True)
+    
+    emocionais_inicio = models.CharField(max_length=100, blank=True)
+    emocionais_atual = models.CharField(max_length=100, blank=True)
+    emocionais_observacoes = models.TextField(blank=True)
+    
+    sintese_evolucao = models.TextField(blank=True)
+    
+    # Orientação ao Paciente
+    mensagem_paciente = models.TextField(blank=True)
+    explicacao_continuidade = models.TextField(blank=True)
+    reacoes_paciente = models.TextField(blank=True)
+    
+    # Expectativa x Realidade
+    dor_expectativa = models.CharField(max_length=100, blank=True)
+    dor_realidade = models.CharField(max_length=100, blank=True)
+    mobilidade_expectativa = models.CharField(max_length=100, blank=True)
+    mobilidade_realidade = models.CharField(max_length=100, blank=True)
+    energia_expectativa = models.CharField(max_length=100, blank=True)
+    energia_realidade = models.CharField(max_length=100, blank=True)
+    consciencia_expectativa = models.CharField(max_length=100, blank=True)
+    consciencia_realidade = models.CharField(max_length=100, blank=True)
+    emocao_expectativa = models.CharField(max_length=100, blank=True)
+    emocao_realidade = models.CharField(max_length=100, blank=True)
+    
+    # Próximos passos
+    objetivos_ciclo = models.TextField(blank=True)
+    condutas_mantidas = models.TextField(blank=True)
+    ajustes_plano = models.TextField(blank=True)
+    
+    # Sugestões complementares
+    treino_funcional = models.BooleanField(default=False)
+    pilates_clinico = models.BooleanField(default=False)
+    recovery = models.BooleanField(default=False)
+    rpg = models.BooleanField(default=False)
+    nutricao = models.BooleanField(default=False)
+    psicoterapia = models.BooleanField(default=False)
+    estetica = models.BooleanField(default=False)
+    outro_complementar = models.BooleanField(default=False)
+    outro_complementar_texto = models.CharField(max_length=100, blank=True)
+    
+    # Registro interno
+    observacoes_internas = models.TextField(blank=True)
+    orientacoes_grupo = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['-data_criacao']
+    
+    def __str__(self):
+        return f"Evolução {self.paciente} - {self.data}"
+
+
+class AvaliacaoFisioterapeutica(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
+    data_avaliacao = models.DateTimeField(auto_now_add=True)
+    
+    # Anamnese / Histórico Clínico
+    queixa_principal = models.TextField()
+    inicio_problema = models.TextField(blank=True)
+    causa_problema = models.TextField(blank=True)
+    
+    # Histórico da doença atual
+    dor_recente_antiga = models.CharField(max_length=100, blank=True)
+    episodios_anteriores = models.TextField(blank=True)
+    tratamento_anterior = models.BooleanField(null=True)
+    qual_tratamento = models.TextField(blank=True)
+    cirurgia_procedimento = models.TextField(blank=True)
+    acompanhamento_medico = models.BooleanField(null=True)
+    medico_especialidade = models.CharField(max_length=100, blank=True)
+    diagnostico_medico = models.CharField(max_length=200, blank=True)
+    uso_medicamentos = models.TextField(blank=True)
+    exames_trazidos = models.BooleanField(null=True)
+    tipo_exame = models.CharField(max_length=100, blank=True)
+    historico_lesoes = models.TextField(blank=True)
+    
+    # Histórico pessoal e familiar
+    doencas_previas = models.TextField(blank=True)
+    cirurgias_previas = models.TextField(blank=True)
+    condicoes_geneticas = models.TextField(blank=True)
+    historico_familiar = models.TextField(blank=True)
+    
+    # Hábitos e estilo de vida
+    qualidade_sono = models.CharField(max_length=20, blank=True)
+    horas_sono = models.IntegerField(null=True, blank=True)
+    alimentacao = models.CharField(max_length=50, blank=True)
+    nivel_atividade = models.CharField(max_length=50, blank=True)
+    tipo_exercicio = models.CharField(max_length=100, blank=True)
+    nivel_estresse = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    rotina_trabalho = models.TextField(blank=True)
+    aspectos_emocionais = models.TextField(blank=True)
+    
+    # Sinais, sintomas e dor
+    localizacao_dor = models.TextField(blank=True)
+    tipo_dor_pontada = models.BooleanField(default=False)
+    tipo_dor_queimacao = models.BooleanField(default=False)
+    tipo_dor_peso = models.BooleanField(default=False)
+    tipo_dor_choque = models.BooleanField(default=False)
+    tipo_dor_outra = models.BooleanField(default=False)
+    tipo_dor_outra_texto = models.CharField(max_length=100, blank=True)
+    
+    intensidade_repouso = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    intensidade_movimento = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    intensidade_pior = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    
+    fatores_agravam = models.TextField(blank=True)
+    fatores_aliviam = models.TextField(blank=True)
+    
+    sinal_edema = models.BooleanField(default=False)
+    sinal_parestesia = models.BooleanField(default=False)
+    sinal_rigidez = models.BooleanField(default=False)
+    sinal_fraqueza = models.BooleanField(default=False)
+    sinal_compensacoes = models.BooleanField(default=False)
+    sinal_outro = models.BooleanField(default=False)
+    sinal_outro_texto = models.CharField(max_length=100, blank=True)
+    
+    grau_inflamacao = models.CharField(max_length=20, blank=True)
+    
+    # Exame físico e funcional
+    inspecao_postura = models.TextField(blank=True)
+    compensacoes_corporais = models.TextField(blank=True)
+    padrao_respiratorio = models.TextField(blank=True)
+    palpacao = models.TextField(blank=True)
+    pontos_dor = models.TextField(blank=True)
+    testes_funcionais = models.TextField(blank=True)
+    outras_observacoes = models.TextField(blank=True)
+    
+    # Diagnóstico Fisioterapêutico
+    diagnostico_completo = models.TextField(blank=True)
+    grau_dor = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    limitacao_funcional = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    grau_inflamacao_num = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(3)],
+        null=True, blank=True
+    )
+    grau_edema = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(3)],
+        null=True, blank=True
+    )
+    receptividade = models.CharField(max_length=20, blank=True)
+    autonomia_avd = models.CharField(max_length=20, blank=True)
+    
+    # Plano Terapêutico
+    objetivo_geral = models.TextField(blank=True)
+    objetivo_principal = models.TextField(blank=True)
+    objetivo_secundario = models.TextField(blank=True)
+    pontos_atencao = models.TextField(blank=True)
+    
+    # Técnicas manuais
+    tecnica_liberacao = models.BooleanField(default=False)
+    tecnica_mobilizacao = models.BooleanField(default=False)
+    tecnica_dry_needling = models.BooleanField(default=False)
+    tecnica_ventosa = models.BooleanField(default=False)
+    tecnica_manipulacoes = models.BooleanField(default=False)
+    tecnica_outras = models.BooleanField(default=False)
+    tecnica_outras_texto = models.CharField(max_length=100, blank=True)
+    
+    # Recursos eletrofísicos
+    recurso_aussie = models.BooleanField(default=False)
+    recurso_russa = models.BooleanField(default=False)
+    recurso_aussie_tens = models.BooleanField(default=False)
+    recurso_us = models.BooleanField(default=False)
+    recurso_termo = models.BooleanField(default=False)
+    recurso_outro = models.BooleanField(default=False)
+    recurso_outro_texto = models.CharField(max_length=100, blank=True)
+    
+    # Cinesioterapia
+    cinesio_fortalecimento = models.BooleanField(default=False)
+    cinesio_alongamento = models.BooleanField(default=False)
+    cinesio_postural = models.BooleanField(default=False)
+    cinesio_respiracao = models.BooleanField(default=False)
+    cinesio_mobilidade = models.BooleanField(default=False)
+    cinesio_funcional = models.BooleanField(default=False)
+    
+    descricao_plano = models.TextField(blank=True)
+    
+    medo_agulha = models.BooleanField(null=True)
+    limiar_dor_baixo = models.BooleanField(null=True)
+    fragilidade = models.BooleanField(null=True)
+    
+    frequencia = models.IntegerField(null=True, blank=True)
+    duracao = models.IntegerField(null=True, blank=True)
+    reavaliacao_sessao = models.CharField(max_length=50, blank=True)
+    
+    # Prognóstico e orientações
+    evolucao_primeira_sessao = models.TextField(blank=True)
+    evolucao_proximas_sessoes = models.TextField(blank=True)
+    expectativas_primeira_etapa = models.TextField(blank=True)
+    proximos_passos = models.TextField(blank=True)
+    sobre_orientacoes = models.TextField(blank=True)
+    sono_rotina = models.TextField(blank=True)
+    postura_ergonomia = models.TextField(blank=True)
+    alimentacao_hidratacao = models.TextField(blank=True)
+    exercicios_casa = models.TextField(blank=True)
+    aspectos_emocionais_espirituais = models.TextField(blank=True)
+    
+    observacoes_finais = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['-data_avaliacao']
+    
+    def __str__(self):
+        return f"Avaliação {self.paciente} - {self.data_avaliacao.date()}"

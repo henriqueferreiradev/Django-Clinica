@@ -270,14 +270,14 @@
                                     </div>
                                     <div class="modal-body">
                                         <form id="prontuarioForm">
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
+                                            <div class="habitos-grid-2">
+                                                <div class="habitos-col">
                                                     <label for="queixaPrincipal" class="form-label">Queixa
                                                         Principal</label>
                                                     <textarea class="form-control" id="queixaPrincipal" rows="3"
                                                         placeholder="Descreva a queixa principal do paciente..."></textarea>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="habitos-col">
                                                     <label for="conduta" class="form-label">Conduta durante a sessão
                                                     </label>
                                                     <textarea class="form-control" id="conduta" rows="4"
@@ -285,14 +285,14 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
+                                            <div class="habitos-grid-2">
+                                                <div class="habitos-col">
                                                     <label for="historiaDoenca" class="form-label">Feedback do paciente
                                                     </label>
                                                     <textarea class="form-control" id="historiaDoenca" rows="3"
                                                         placeholder="Descreva a história da doença atual..."></textarea>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="habitos-col">
                                                     <label for="exameFisico" class="form-label">Evolução</label>
                                                     <textarea class="form-control" id="exameFisico" rows="4"
                                                         placeholder="Descreva os achados do exame físico..."></textarea>
@@ -301,13 +301,13 @@
 
                                             </div>
 
-                                            <div class="mb-3">
+                                            <div class="habitos-col">
                                                 <label for="diagnostico" class="form-label">Diagnóstico</label>
                                                 <input type="text" class="form-control" id="diagnostico"
                                                     placeholder="Diagnóstico principal...">
                                             </div>
 
-                                            <div class="mb-3">
+                                            <div class="habitos-col">
                                                 <label for="observacoes" class="form-label">Observações
                                                     Adicionais / Comunicação</label>
                                                 <textarea class="form-control" id="observacoes" rows="3"
@@ -353,7 +353,7 @@
 
                                         <div class="prontuario-content">
                                             <div class="info-section mb-4">
-                                                <h6 class="section-title">Queixa Principal</h6>
+                                                <h6 class="section-title habitos-col">Queixa Principal</h6>
                                                 <div class="section-content" id="viewQueixaPrincipal">
                                                     Dor lombar há 6 meses, com irradiação para membro inferior direito.
                                                     Relata piora ao ficar em pé por longos períodos.
@@ -361,7 +361,7 @@
                                             </div>
 
                                             <div class="info-section mb-4">
-                                                <h6 class="section-title">História da Doença Atual</h6>
+                                                <h6 class="section-title habitos-col">História da Doença Atual</h6>
                                                 <div class="section-content" id="viewHistoriaDoenca">
                                                     Paciente relata início dos sintomas após mudança de trabalho, onde
                                                     passou a ficar mais tempo em pé. Já realizou tratamento com
@@ -370,7 +370,7 @@
                                             </div>
 
                                             <div class="info-section mb-4">
-                                                <h6 class="section-title">Exame Físico</h6>
+                                                <h6 class="section-title habitos-col">Exame Físico</h6>
                                                 <div class="section-content" id="viewExameFisico">
                                                     Amplitude de movimento diminuída na flexão anterior. Dor à palpação
                                                     em L4-L5. Teste de elevação da perna reta positivo à direita. Força
@@ -379,7 +379,7 @@
                                             </div>
 
                                             <div class="info-section mb-4">
-                                                <h6 class="section-title">Conduta</h6>
+                                                <h6 class="section-title habitos-col">Conduta</h6>
                                                 <div class="section-content" id="viewConduta">
                                                     Exercícios de fortalecimento do core alongamento de cadeia
                                                     posterior. Orientação postural. TENS para alívio da dor.
@@ -387,14 +387,14 @@
                                             </div>
 
                                             <div class="info-section mb-4">
-                                                <h6 class="section-title">Diagnóstico</h6>
+                                                <h6 class="section-title habitos-col">Diagnóstico</h6>
                                                 <div class="section-content" id="viewDiagnostico">
                                                     Lombalgia crônica com componente radicular.
                                                 </div>
                                             </div>
 
                                             <div class="info-section">
-                                                <h6 class="section-title">Observações</h6>
+                                                <h6 class="section-title habitos-col">Observações</h6>
                                                 <div class="section-content" id="viewObservacoes">
                                                     Paciente orientado sobre postura e ergonomia. Retorno em 15 dias
                                                     para reavaliação.
@@ -445,7 +445,15 @@
 
                         <!-- Aba Imagens -->
                         <div class="tab-pane" id="imagens">
-                            <div class="file-upload mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Imagens do Paciente</h5>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('novaImagemModal')">
+                                    <i class="fas fa-plus me-1"></i> Nova Imagem
+                                </button>
+                            </div>
+
+                            <!-- Área de Upload -->
+                            <div class="file-upload mb-4" id="dropArea">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
                                 <p>Arraste imagens aqui ou clique para fazer upload</p>
                                 <input type="file" class="d-none" id="fileUpload" multiple accept="image/*">
@@ -453,27 +461,120 @@
                                     onclick="document.getElementById('fileUpload').click()">Selecionar Arquivos</button>
                             </div>
 
-                            <h6>Imagens do Paciente</h6>
-                            <div class="image-gallery">
-                                <div class="gallery-item">
-                                    <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56                                    alt="
-                                        Raio-X">
-                                    <div class="overlay">Raio-X Lombar</div>
+                            <!-- Filtro de Pastas -->
+                            <div class="mb-4">
+                                <label for="pastaSelect" class="form-label">Filtrar por pasta:</label>
+                                <select class="form-select" id="pastaSelect" onchange="filtrarPorPasta()">
+                                    <option value="todas">Todas as pastas</option>
+                                    <option value="consulta-1">Consulta 01/03/2023 - Dr. Silva</option>
+                                    <option value="consulta-2">Consulta 15/04/2023 - Dr. Oliveira</option>
+                                    <option value="consulta-3">Consulta 22/05/2023 - Dra. Santos</option>
+                                </select>
+                            </div>
+
+                            <!-- Galeria Organizada por Pastas -->
+                            <div id="galeriaPastas">
+                                <!-- Pasta 1 -->
+                                <div class="folder-section" data-pasta="consulta-1">
+                                    <div class="folder-header">
+                                        <div class="folder-title">Consulta 01/03/2023 - Dr. Silva</div>
+                                        <span class="folder-badge">3 imagens</span>
+                                    </div>
+                                    <div class="image-gallery">
+                                        <div class="gallery-item">
+                                            <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                                                alt="Raio-X">
+                                            <div class="overlay">Raio-X Lombar</div>
+                                        </div>
+                                        <div class="gallery-item">
+                                            <img src="https://images.unsplash.com/photo-1599045118108-bf9954418b76?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                                alt="Ressonância">
+                                            <div class="overlay">Ressonância</div>
+                                        </div>
+                                        <div class="gallery-item">
+                                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                                alt="Ultrassom">
+                                            <div class="overlay">Ultrassom</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="gallery-item">
-                                    <img src="https://images.unsplash.com/photo-1599045118108-bf9954418b76?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                                        alt="Ressonância">
-                                    <div class="overlay">Ressonância</div>
+
+                                <!-- Pasta 2 -->
+                                <div class="folder-section" data-pasta="consulta-2">
+                                    <div class="folder-header">
+                                        <div class="folder-title">Consulta 15/04/2023 - Dr. Oliveira</div>
+                                        <span class="folder-badge">1 imagem</span>
+                                    </div>
+                                    <div class="image-gallery">
+                                        <div class="gallery-item">
+                                            <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                                alt="Avaliação Postural">
+                                            <div class="overlay">Avaliação Postural</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="gallery-item">
-                                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                                        alt="Ultrassom">
-                                    <div class="overlay">Ultrassom</div>
+
+                                <!-- Pasta 3 (vazia) -->
+                                <div class="folder-section" data-pasta="consulta-3">
+                                    <div class="folder-header">
+                                        <div class="folder-title">Consulta 22/05/2023 - Dra. Santos</div>
+                                        <span class="folder-badge">0 imagens</span>
+                                    </div>
+                                    <div class="empty-folder">
+                                        <i class="fas fa-folder-open fa-2x mb-2"></i>
+                                        <p>Nenhuma imagem nesta pasta</p>
+                                    </div>
                                 </div>
-                                <div class="gallery-item">
-                                    <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                                        alt="Avaliação Postural">
-                                    <div class="overlay">Avaliação Postural</div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Nova Imagem -->
+                        <div class="modal" id="novaImagemModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Adicionar Nova Imagem</h5>
+                                        <button type="button" class="btn-close" onclick="closeModal('novaImagemModal')" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="formNovaImagem">
+                                            <div class="mb-3">
+                                                <label for="consultaSelect" class="form-label">Selecionar Consulta</label>
+                                                <select class="form-select" id="consultaSelect" required>
+                                                    <option value="">Selecione uma consulta</option>
+                                                    <option value="consulta-1">Consulta 01/03/2023 - Dr. Silva</option>
+                                                    <option value="consulta-2">Consulta 15/04/2023 - Dr. Oliveira</option>
+                                                    <option value="consulta-3">Consulta 22/05/2023 - Dra. Santos</option>
+                                                    <option value="nova-consulta">+ Criar nova consulta</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div id="novaConsultaForm" class="mb-3" style="display: none;">
+                                                <div class="mb-2">
+                                                    <label for="dataConsulta" class="form-label">Data da Consulta</label>
+                                                    <input type="date" class="form-control" id="dataConsulta">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="medicoConsulta" class="form-label">Médico Responsável</label>
+                                                    <input type="text" class="form-control" id="medicoConsulta" placeholder="Nome do médico">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="descricaoImagem" class="form-label">Descrição da Imagem</label>
+                                                <input type="text" class="form-control" id="descricaoImagem" placeholder="Ex: Raio-X Lombar, Ressonância, etc.">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="uploadImagemModal" class="form-label">Selecionar Imagem</label>
+                                                <input type="file" class="form-control" id="uploadImagemModal" accept="image/*" required>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" onclick="closeModal('novaImagemModal')">Cancelar</button>
+                                        <button type="button" class="btn btn-primary" onclick="adicionarNovaImagem()">Salvar Imagem</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -528,37 +629,37 @@
                 <div class="modal-body">
                     <form id="evolutionForm">
                         <!-- 2. Evolução do estado de saúde e tratamento -->
-                        <div class="mb-4">
-                            <h6 class="section-title">2. Evolução do estado de saúde e tratamento</h6>
+                        <div class="habitos-grid">
+                            <h6 class="section-title habitos-col">2. Evolução do estado de saúde e tratamento</h6>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="queixaPrincipal" class="form-label">Queixa principal inicial</label>
                                 <textarea class="form-control" id="queixaPrincipal" rows="2"
                                     placeholder="Descreva a queixa principal inicial..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="processoTerapeutico" class="form-label">Resumo do processo terapêutico até o
                                     momento</label>
                                 <textarea class="form-control" id="processoTerapeutico" rows="3"
                                     placeholder="Resumo do processo terapêutico..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="condutasTecnicas" class="form-label">Condutas e técnicas aplicadas neste
                                     atendimento</label>
                                 <textarea class="form-control" id="condutasTecnicas" rows="3"
                                     placeholder="Condutas e técnicas aplicadas..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="respostaPaciente" class="form-label">Resposta do paciente ao tratamento
                                     (tolerância, percepção, feedback)</label>
                                 <textarea class="form-control" id="respostaPaciente" rows="3"
                                     placeholder="Resposta do paciente..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="intercorrencias" class="form-label">Intercorrências observadas</label>
                                 <textarea class="form-control" id="intercorrencias" rows="2"
                                     placeholder="Intercorrências observadas..."></textarea>
@@ -567,10 +668,10 @@
 
                         <!-- 3. Avaliação parcial do progresso (Mini reavaliação) -->
                         <div class="mb-4">
-                            <h6 class="section-title">3. Avaliação parcial do progresso (Mini reavaliação)</h6>
+                            <h6 class="section-title habitos-col">3. Avaliação parcial do progresso (Mini reavaliação)</h6>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
                                     <label class="form-label">Dor (0-10)</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -586,7 +687,7 @@
                                         placeholder="Observações">
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label class="form-label">Amplitude de movimento (Em graus)</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -603,8 +704,8 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
                                     <label class="form-label">Força muscular (0-5)</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -619,7 +720,7 @@
                                         placeholder="Observações">
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label class="form-label">Postura e controle motor (0-5)</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -636,8 +737,8 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
                                     <label class="form-label">Edema / inflamação (0-10)</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -652,7 +753,7 @@
                                         placeholder="Observações">
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label class="form-label">Função nas AVDs / Treino (0-5)</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -668,7 +769,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label class="form-label">Aspectos emocionais / engajamento (0-10)</label>
                                 <div class="row">
                                     <div class="col-6">
@@ -684,7 +785,7 @@
                                     placeholder="Observações">
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="sinteseEvolucao" class="form-label">Síntese da evolução</label>
                                 <textarea class="form-control" id="sinteseEvolucao" rows="3"
                                     placeholder="Síntese da evolução..."></textarea>
@@ -693,23 +794,23 @@
 
                         <!-- 4. Orientação ao Paciente -->
                         <div class="mb-4">
-                            <h6 class="section-title">4. Orientação ao Paciente</h6>
+                            <h6 class="section-title habitos-col">4. Orientação ao Paciente</h6>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="mensagemPaciente" class="form-label">Mensagem técnica e emocional
                                     transmitida ao paciente</label>
                                 <textarea class="form-control" id="mensagemPaciente" rows="2"
                                     placeholder="Mensagem transmitida..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="explicacaoContinuidade" class="form-label">Explicação sobre continuidade,
                                     planejamento e importância da adesão</label>
                                 <textarea class="form-control" id="explicacaoContinuidade" rows="2"
                                     placeholder="Explicação sobre continuidade..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="reacoesPaciente" class="form-label">Reações e entendimento do
                                     paciente</label>
                                 <textarea class="form-control" id="reacoesPaciente" rows="2"
@@ -719,10 +820,10 @@
 
                         <!-- 5. Expectativa x Realidade da Fisioterapeuta -->
                         <div class="mb-4">
-                            <h6 class="section-title">5. Expectativa x Realidade da Fisioterapeuta</h6>
+                            <h6 class="section-title habitos-col">5. Expectativa x Realidade da Fisioterapeuta</h6>
 
-                            <div class="row mb-2">
-                                <div class="col-md-6">
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
                                     <label class="form-label">Nível de dor e conforto</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -736,7 +837,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label class="form-label">Mobilidade e função</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -751,8 +852,8 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-2">
-                                <div class="col-md-6">
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
                                     <label class="form-label">Energia e disposição</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -766,7 +867,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="habitos-col">
                                     <label class="form-label">Consciência corporal / postura</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -781,8 +882,8 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
+                            <div class="habitos-grid">
+                                <div class="habitos-col">
                                     <label class="form-label">Emoção / confiança / autoestima</label>
                                     <div class="row">
                                         <div class="col-6">
@@ -800,31 +901,31 @@
 
                         <!-- 6. Próximos passos e novo Plano Terapêutico -->
                         <div class="mb-4">
-                            <h6 class="section-title">6. Próximos passos e novo Plano Terapêutico</h6>
+                            <h6 class="section-title habitos-col">6. Próximos passos e novo Plano Terapêutico</h6>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="objetivosCiclo" class="form-label">Objetivos para o novo ciclo</label>
                                 <textarea class="form-control" id="objetivosCiclo" rows="2"
                                     placeholder="Objetivos para o novo ciclo..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="condutasMantidas" class="form-label">Condutas a serem mantidas</label>
                                 <textarea class="form-control" id="condutasMantidas" rows="2"
                                     placeholder="Condutas a serem mantidas..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="ajustesPlano" class="form-label">Ajustes necessários no plano
                                     terapêutico</label>
                                 <textarea class="form-control" id="ajustesPlano" rows="2"
                                     placeholder="Ajustes necessários..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label class="form-label">Sugestões complementares</label>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <label class="checkbox-option" for="treinoFuncional">
                                                 <input class="form-check-input" type="checkbox" id="treinoFuncional">
@@ -847,7 +948,7 @@
                                                 RPG</label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="">
                                         <div class="form-check">
                                             <label class="checkbox-option" for="nutricao">
                                                 <input class="form-check-input" type="checkbox" id="nutricao">
@@ -877,16 +978,16 @@
 
                         <!-- 7. Registro interno / Observações profissionais -->
                         <div class="mb-3">
-                            <h6 class="section-title">7. Registro interno / Observações profissionais</h6>
+                            <h6 class="section-title habitos-col">7. Registro interno / Observações profissionais</h6>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="observacoesInternas" class="form-label">Observações internas (para
                                     equipe)</label>
                                 <textarea class="form-control" id="observacoesInternas" rows="2"
                                     placeholder="Observações internas..."></textarea>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="habitos-col">
                                 <label for="orientacoesGrupo" class="form-label">Orientações a serem dadas em grupo
                                     interno / estudo de caso</label>
                                 <textarea class="form-control" id="orientacoesGrupo" rows="2"
@@ -895,14 +996,14 @@
                         </div>
 
                         <!-- Informações do profissional -->
-                        <div class="row mt-4">
-                            <div class="col-md-6">
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
                                 <label for="fisioterapeutaResponsavel" class="form-label">Fisioterapeuta
                                     responsável</label>
                                 <input type="text" class="form-control" id="fisioterapeutaResponsavel"
                                     value="{{ user.get_full_name }}" readonly>
                             </div>
-                            <div class="col-md-6">
+                            <div class="habitos-col">
                                 <label for="crefito" class="form-label">CREFITO</label>
                                 <input type="text" class="form-control" id="crefito"
                                     value="{{ user.profissional.crefito|default:'A definir' }}">
@@ -933,7 +1034,7 @@
                     <form id="avaliacaoForm">
                         <!-- 2. Anamnese / Histórico Clínico -->
                         <div class="mb-4">
-                            <h6 class="section-title">1. Anamnese / Histórico Clínico</h6>
+                            <h6 class="section-title habitos-col">1. Anamnese / Histórico Clínico</h6>
 
                             <div class="habitos-col">
                                 <label for="queixaPrincipal" class="form-label">Queixa principal (nas palavras do
@@ -959,7 +1060,7 @@
 
                             <!-- a) Histórico da doença atual -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
-                                <h6 class="section-title">a) Histórico da doença atual</h6>
+                                <h6 class="section-title habitos-col">a) Histórico da doença atual</h6>
 
                                 <div class="habitos-grid-2">
                                     <div class="habitos-col">
@@ -1085,7 +1186,7 @@
 
                             <!-- b) Histórico pessoal e familiar -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
-                                <h6 class="section-title">b) Histórico pessoal e familiar</h6>
+                                <h6 class="section-title habitos-col">b) Histórico pessoal e familiar</h6>
 
                                 <div class="habitos-grid-2">
                                     <div class="habitos-col">
@@ -1119,7 +1220,7 @@
 
                             <!-- c) Hábitos e estilo de vida -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
-                               <h6 class="section-title">c) Hábitos e estilo de vida</h6>
+                               <h6 class="section-title habitos-col">c) Hábitos e estilo de vida</h6>
 
 <div class="habitos-grid-3">
   <!-- Qualidade do sono -->
@@ -1216,7 +1317,7 @@
 
                             <!-- d) Sinais, sintomas e dor -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
-                                <h6 class="section-title">d) Sinais, sintomas e dor</h6>
+                                <h6 class="section-title habitos-col">d) Sinais, sintomas e dor</h6>
 
                                 <div class="habitos-grid-2">
                                     <div class="habitos-col">
@@ -1380,7 +1481,7 @@
 
                         <!-- 3. Exame físico e funcional -->
                         <div class="mb-4">
-                            <h6 class="section-title">3. Exame físico e funcional</h6>
+                            <h6 class="section-title habitos-col">3. Exame físico e funcional</h6>
 
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
@@ -1518,7 +1619,7 @@
 
                         <!-- 4. Diagnóstico Fisioterapêutico -->
                         <div class="mb-4">
-                            <h6 class="section-title">4. Diagnóstico Fisioterapêutico</h6>
+                            <h6 class="section-title habitos-col">4. Diagnóstico Fisioterapêutico</h6>
 
                             <div class="mb-3">
                                 <label for="diagnosticoCompleto" class="form-label">Modelo: Paciente de ____ anos com
@@ -1608,7 +1709,7 @@
 
                         <!-- 5. Plano Terapêutico -->
                         <div class="mb-4">
-                            <h6 class="section-title">5. Plano Terapêutico</h6>
+                            <h6 class="section-title habitos-col">5. Plano Terapêutico</h6>
 
                             <div class="habitos-col">
                                 <label for="objetivoGeral" class="form-label">Objetivo geral</label>
@@ -1682,7 +1783,7 @@
                             </div>
 </div>
                             <!-- Recursos eletrofísicos -->
-                              <div class="habitos-col">
+                            <div class="habitos-col">
                             <div class="mb-3">
                                 <label class="form-label">Recursos eletrofísicos</label>
                                 <div class="row">
@@ -1851,7 +1952,7 @@
 
                         <!-- 6. Prognóstico e orientações -->
                         <div class="mb-4">
-                            <h6 class="section-title">6. Prognóstico e orientações</h6>
+                            <h6 class="section-title habitos-col">6. Prognóstico e orientações</h6>
 
                             <div class="habitos-col">
                                 <label for="evolucaoPrimeiraSessao" class="form-label">Evolução esperada na primeira
@@ -1920,7 +2021,7 @@
 
                         <!-- Observações finais -->
                         <div class="habitos-col">
-                            <h6 class="section-title">Observações finais</h6>
+                            <h6 class="section-title habitos-col">Observações finais</h6>
                             <textarea class="form-control" id="observacoesFinais" rows="6"
                                 placeholder="Observações finais..."></textarea>
                         </div>
@@ -2103,6 +2204,95 @@
             }
         } 
     </script>
+    
+<script>
+// Função para filtrar imagens por pasta
+function filtrarPorPasta() {
+    const pastaSelecionada = document.getElementById('pastaSelect').value;
+    const pastas = document.querySelectorAll('.folder-section');
+    
+    pastas.forEach(pasta => {
+        if (pastaSelecionada === 'todas' || pasta.getAttribute('data-pasta') === pastaSelecionada) {
+            pasta.style.display = 'block';
+        } else {
+            pasta.style.display = 'none';
+        }
+    });
+}
+
+// Mostrar/ocultar formulário de nova consulta
+document.getElementById('consultaSelect').addEventListener('change', function() {
+    const novaConsultaForm = document.getElementById('novaConsultaForm');
+    if (this.value === 'nova-consulta') {
+        novaConsultaForm.style.display = 'block';
+    } else {
+        novaConsultaForm.style.display = 'none';
+    }
+});
+
+// Função para adicionar nova imagem
+function adicionarNovaImagem() {
+    const consultaSelect = document.getElementById('consultaSelect');
+    const descricao = document.getElementById('descricaoImagem').value;
+    const arquivo = document.getElementById('uploadImagemModal').files[0];
+    
+    if (!consultaSelect.value || !descricao || !arquivo) {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+    }
+    
+    // Aqui você implementaria a lógica para salvar no banco de dados
+    // Por enquanto, apenas fechamos o modal
+    closeModal('novaImagemModal');
+    
+    // Limpar formulário
+    document.getElementById('formNovaImagem').reset();
+    document.getElementById('novaConsultaForm').style.display = 'none';
+    
+    alert('Imagem adicionada com sucesso!');
+}
+
+// Configurar área de arrastar e soltar
+const dropArea = document.getElementById('dropArea');
+const fileInput = document.getElementById('fileUpload');
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false);
+});
+
+function highlight() {
+    dropArea.style.borderColor = '#007bff';
+    dropArea.style.backgroundColor = '#e9f5ff';
+}
+
+function unhighlight() {
+    dropArea.style.borderColor = '#dee2e6';
+    dropArea.style.backgroundColor = '#f8f9fa';
+}
+
+dropArea.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    fileInput.files = files;
+    // Aqui você processaria os arquivos para upload
+    alert(`${files.length} arquivo(s) selecionado(s) para upload`);
+}
+</script>
 </body>
 
 </html>
