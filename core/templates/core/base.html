@@ -196,17 +196,59 @@
         </div>
 
         <div class="topbar-div">
-          <!-- Ícone de notificação (sino) -->
           <div class="notification">
-            <i class="bx bx-bell"></i>
-            <span class="badge" id="notification-count">3</span>
-            <!-- Exemplo: 3 alertas -->
+            <i class="fas fa-bell"></i>
+            <span class="badge">3</span>
+            
             <div class="notification-dropdown">
+              <div class="notification-header">
+                <h3><i class="fas fa-bell"></i> Notificações</h3>
+              </div>
+              
               <ul>
-                <li>🔔 Novo paciente agendado para amanhã</li>
-                <li>⚠️ Falta registrada hoje</li>
-                <li>📅 Feriado na próxima quarta-feira</li>
+                <li>
+                  <div class="notification-item unread">
+                    <div class="notification-icon info">
+                      <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                      <div class="notification-title">Nova consulta agendada</div>
+                      <div class="notification-message">João Silva agendou para amanhã às 14:00</div>
+                      <div class="notification-time">Há 5 minutos</div>
+                    </div>
+                  </div>
+                </li>
+                
+                <li>
+                  <div class="notification-item">
+                    <div class="notification-icon success">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                      <div class="notification-title">Pagamento confirmado</div>
+                      <div class="notification-message">Maria Santos realizou o pagamento</div>
+                      <div class="notification-time">Há 2 horas</div>
+                    </div>
+                  </div>
+                </li>
+                
+                <li>
+                  <div class="notification-item">
+                    <div class="notification-icon warning">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notification-content">
+                      <div class="notification-title">Lembrete importante</div>
+                      <div class="notification-message">3 pacientes com pagamento pendente</div>
+                      <div class="notification-time">Hoje às 09:30</div>
+                    </div>
+                  </div>
+                </li>
               </ul>
+              
+              <div class="notification-footer">
+                <a href="#">Ver todas as notificações</a>
+              </div>
             </div>
           </div>
 

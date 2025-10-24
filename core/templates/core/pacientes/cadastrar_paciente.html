@@ -1,9 +1,9 @@
 {% extends 'core/base.html' %} {% load static %} {% block title %}Cadastrar
 Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
 
-
-<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}"/>
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}"/>
+
 
 {% endblock %}
 
@@ -533,11 +533,11 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                 />
               </div>
             </div>
-                          <!-- LGPD: Aviso + Consentimentos
+                          <!-- LGPD: Aviso + Consentimentos -->
               <section class="lgpd-section" style="margin-top: 1.5rem">
 
                 <div class="lgpd-box" style="
-                      background: #faf7fd;
+                      background: var(--branco);
                       border: 1px solid #e9d9f5;
                       border-radius: 12px;
                       padding: 16px;
@@ -567,7 +567,7 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                   </p>
 
                    
-                  <label class="consent">
+                  <label class="checkbox-option">
                     <input type="checkbox" name="consentimento_tratamento" required aria-required="true" />
                     <span>
                       Declaro que <strong>li</strong> e
@@ -578,7 +578,7 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                   </label>
 
                  
-                  <label class="consent">
+                  <label class="checkbox-option">
                     <input type="checkbox" name="consentimento_imagem" value="on" />
                     <span>
                       Autorizo, de forma livre e opcional, o uso da minha
@@ -590,7 +590,7 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                   </label>
 
                   
-                  <label class="consent">
+                  <label class="checkbox-option">
                     <input type="checkbox" name="consentimento_marketing" value="on" />
                     <span>
                       Aceito receber comunicações sobre orientações, conteúdos
@@ -608,7 +608,62 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                   informados na Política de Privacidade.
                 </small>
               </section>
-               -->
+              
+
+<section class="lgpd-section" style="margin-top: 1.5rem">
+  <div class="lgpd-box" style="
+        background: var(--branco);
+        border: 1px solid #e9d9f5;
+        border-radius: 12px;
+        padding: 16px;
+      ">
+    <p class="lgpd-title" style="
+          margin: 0 0 0.5rem 0;
+          font-weight: 600;
+          color: #5b2b75;
+        ">
+      Emissão de Nota Fiscal
+    </p>
+    <p class="lgpd-text" style="
+          margin: 0 0 0.75rem 0;
+          color: #4a4a4a;
+          font-size: 0.95rem;
+          line-height: 1.5;
+        ">
+      Informe abaixo se você precisa que seja emitida nota fiscal e para qual finalidade.
+      Isso nos ajuda a realizar o registro fiscal corretamente conforme a sua necessidade.
+      Para mais detalhes sobre o uso dos seus dados, consulte nossa
+      <a href="/politica-de-privacidade" target="_blank" rel="noopener"
+        style="color: #7f4396; text-decoration: underline">
+        Política de Privacidade
+      </a>.
+    </p>
+
+    <label class="checkbox-option">
+      <input type="checkbox" name="nf_reembolso_plano" />
+      <span>Reembolso de plano de saúde</span>
+    </label>
+
+    <label class="checkbox-option">
+      <input type="checkbox" name="nf_imposto_renda" />
+      <span>Declaração de imposto de renda</span>
+    </label>
+
+    <label class="checkbox-option">
+      <input type="checkbox" name="nf_nao_aplica" />
+      <span>Não se aplica</span>
+    </label>
+
+    <input type="hidden" name="politica_privacidade_versao" value="v1.0-2025-08-20" />
+  </div>
+
+  <small style="display: block; margin-top: 0.5rem; color: #666">
+    Você pode solicitar a emissão, correção ou cancelamento da nota fiscal,
+    bem como exercer seus direitos de privacidade, pelos canais informados
+    na Política de Privacidade.
+  </small>
+</section>
+
           </div>
 
           <div class="form-navigation">

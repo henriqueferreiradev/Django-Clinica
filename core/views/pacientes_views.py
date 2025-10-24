@@ -102,13 +102,13 @@ def pacientes_view(request):
 @login_required(login_url='login')
 def cadastrar_pacientes_view(request):
     if request.method == 'POST':
-        consent_trat = request.POST.get('consentimento_tratamento')
-        consent_mark = bool(request.POST.get('consentimento_marketing'))
+         
+        consent_marketing = bool(request.POST.get('consentimento_marketing'))
         politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
+        nf_nao_aplica = request.POST.get('nf_nao_aplica')
+        nf_imposto_renda =request.POST.get('nf_imposto_renda')
+        nf_reembolso_plano =request.POST.get('nf_reembolso_plano')
         
-        if consent_trat:
-            messages.error(request, 'Você precisa aceitar o termo de consentimento (LGPD) para continuar')
-            return redirect('')
         
         paciente_id = request.POST.get('paciente_id')
         nome = request.POST.get('nome')
@@ -158,10 +158,13 @@ def cadastrar_pacientes_view(request):
                 email=request.POST.get('email'),
                 observacao=request.POST.get('observacao'),
                 consentimento_lgpd=True,
-                consentimento_marketing=consent_mark,
+                consentimento_marketing=consent_marketing,
                 politica_privacidade_versao=politica_ver,
                 data_consentimento=timezone.now(),
                 ip_consentimento=request.META.get('REMOTE_ADDR'),
+                nf_nao_aplica = True
+                nf_imposto_renda = True
+                nf_reembolso_plano =request.POST.get('nf_reembolso_plano')
                 pre_cadastro=False,         
                 conferido=True,
                 ativo=True,
@@ -173,14 +176,14 @@ def cadastrar_pacientes_view(request):
                 paciente.foto = foto
                 paciente.save() 
                 messages.info(request, 'Foto do paciente atualizada')
-            messages.success(request, f'✅ Paciente {paciente.nome} cadastrado com sucesso!')
+            messages.success(request, f'Paciente {paciente.nome} cadastrado com sucesso!')
             
             registrar_log(usuario=request.user,
                         acao='Criação',
                         modelo='Paciente',
                         objeto_id=paciente.id,
                         descricao=f'Paciente {paciente.nome} cadastrado.')
-            return redirect('cadastrar_paciente')
+            return redirect('pacientes')
 
 
     

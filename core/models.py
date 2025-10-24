@@ -45,7 +45,6 @@ FORMAS_PAGAMENTO = [
     ('credito', 'Cartão de Crédito'),
     ('dinheiro', 'Dinheiro'),
 ]
-
 ESTADO_CIVIL = [
     # padrao "Não informado"
     ('solteiro(a)','Solteiro(a)'),
@@ -216,10 +215,14 @@ class Paciente(models.Model):
     
     consentimento_lgpd = models.BooleanField(default=False)
     consentimento_marketing = models.BooleanField(default=False)
+    
     politica_privacidade_versao = models.CharField(max_length=32, blank=True, default='')
     data_consentimento = models.DateField(null=True, blank=True)
     ip_consentimento = models.GenericIPAddressField(null=True, blank=True)
     
+    nf_reembolso_plano = models.BooleanField(default=False)
+    nf_imposto_renda = models.BooleanField(default=False)
+    nf_nao_aplica = models.BooleanField(default=False)
     
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
 
