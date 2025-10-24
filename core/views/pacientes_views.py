@@ -162,9 +162,9 @@ def cadastrar_pacientes_view(request):
                 politica_privacidade_versao=politica_ver,
                 data_consentimento=timezone.now(),
                 ip_consentimento=request.META.get('REMOTE_ADDR'),
-                nf_nao_aplica = True
-                nf_imposto_renda = True
-                nf_reembolso_plano =request.POST.get('nf_reembolso_plano')
+                nf_nao_aplica = True,
+                nf_imposto_renda = True,
+                nf_reembolso_plano = True,
                 pre_cadastro=False,         
                 conferido=True,
                 ativo=True,
