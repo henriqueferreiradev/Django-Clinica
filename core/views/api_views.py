@@ -1,8 +1,24 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
+from core.models import Paciente, Pagamento, PacotePaciente, Agendamento,Prontuario
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from core.models import Paciente, Pagamento
 
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+from core.models import Pagamento
+# core/views/api_views.py
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.utils.dateparse import parse_date
+from core.services.financeiro import registrar_pagamento
+from core.models import Pagamento
+from django.http import JsonResponse
+import json
 
 def verificar_cpf(request):
     cpf = request.GET.get('cpf', None)
@@ -18,22 +34,6 @@ def verificar_cpf(request):
     return JsonResponse({'existe': existe})
 
 
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from core.models import Paciente, Pagamento
-
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-import json
-from core.models import Pagamento
-# core/views/api_views.py
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
-from django.utils.dateparse import parse_date
-from core.services.financeiro import registrar_pagamento
-from core.models import Pagamento, PacotePaciente, Agendamento
-from django.http import JsonResponse
-import json
 
 @login_required
 @require_POST
@@ -84,10 +84,46 @@ def registrar_recebimento(request, pagamento_id):
     except Exception as e:
         return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
 
-
 def salvar_prontuario(request):
-    ...
-    
+    try:
+        print("🔹 Content-Type:", request.content_type)
+        print("🔹 Body cru:", request.body)
+
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            print("🔹 JSON recebido:", data)
+        else:
+            return JsonResponse({'success': False, 'error': 'Content-Type must be application/json'}, status=400)
+
+        required_fields = ['paciente_id', 'profissional_id']
+        for field in required_fields:
+            if field not in data:
+                return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
+
+        prontuario = Prontuario.objects.create(
+            paciente_id=data['paciente_id'],
+            profissional_id=data['profissional_id'],
+            agendamento_id=data.get('agendamento_id'),
+            queixa_principal=data['queixa_principal'],
+            historia_doenca=data.get('historia_doenca', ''),
+            exame_fisico=data.get('exame_fisico', ''),
+            conduta=data.get('conduta', ''),
+            diagnostico=data.get('diagnostico', ''),
+            observacoes=data.get('observacoes', '')
+        )
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Prontuário salvo com sucesso!',
+            'prontuario_id': prontuario.id,
+            'data_criacao': prontuario.data_criacao.isoformat()
+        })
+
+    except Exception as e:
+        import traceback
+        print("⚠️ Erro:", traceback.format_exc())
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
 def listar_prontuarios(request, paciente_id):
     ...
     

@@ -937,9 +937,11 @@ class Prontuario(models.Model):
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
     data_criacao = models.DateField(auto_now_add=True)
+
     queixa_principal = models.TextField()
-    exame_fisico = models.TextField()
     conduta = models.TextField()
+    feedback_paciente = models.TextField()
+    evolucao = models.TextField()
     diagnostico = models.TextField()
     observacoes = models.TextField()
 
