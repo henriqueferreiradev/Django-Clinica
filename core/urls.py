@@ -22,7 +22,6 @@ urlpatterns = [
     
     path('api/verificar_beneficios_mes/<int:paciente_id>', agendamento_views.verificar_beneficios_mes, name='verificar_beneficios_mes'),
     path('api/beneficios/usar',agendamento_views.usar_beneficio,name='usar_beneficio'),
-    path('api/salvar-prontuario/', profissionais_views.salvar_prontuario, name='salvar_prontuario'),
     path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
     path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
     path('api/verificar-cpf/', api_views.verificar_cpf, name='verificar_cpf'),

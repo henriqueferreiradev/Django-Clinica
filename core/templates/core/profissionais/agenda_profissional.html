@@ -81,9 +81,10 @@
                                 </div>
                                 <div>
                                     <button class="btn btn-sm btn-outline-primary me-1"
-                                        onclick="openPatientModal('{{ag.paciente.nome}} {{ag.paciente.sobrenome}}')">
+                                        onclick="openPatientModal({{ag.paciente.id}}, {{ag.id}}, '{{ag.paciente.nome}} {{ag.paciente.sobrenome}}')">
                                         <i class="fas fa-eye"></i>
                                     </button>
+
                                     <button class="btn btn-sm btn-outline-secondary">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -155,6 +156,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="patientModalLabel">Prontuário do Paciente</h5>
+
                     <button type="button" class="btn-close" onclick="closeModal('patientModal')"
                         aria-label="Close"></button>
                 </div>
@@ -204,8 +206,8 @@
                                 </button>
                             </div>
                             <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
-                            <input type="hidden" id="profissionalId"
-                                value="{{ request.user.profissional.id|default:'' }}">
+                            <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
+
                             <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
                             <!-- Lista de Prontuários -->
                             <div class="prontuarios-list">
@@ -270,6 +272,10 @@
                                     </div>
                                     <div class="modal-body">
                                         <form id="prontuarioForm">
+                                            <input type="hidden" id="pacienteId" value="{{ paciente.id }}">
+                                            <input type="hidden" id="profissionalId" value="{{ request.user.id }}">
+                                            <input type="hidden" id="agendamentoId" value="{{ agendamento.id }}">
+
                                             <div class="habitos-grid-2">
                                                 <div class="habitos-col">
                                                     <label for="queixaPrincipal" class="form-label">Queixa
@@ -482,7 +488,7 @@
                                     </div>
                                     <div class="image-gallery">
                                         <div class="gallery-item">
-                                            <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" 
+                                            <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
                                                 alt="Raio-X">
                                             <div class="overlay">Raio-X Lombar</div>
                                         </div>
@@ -534,46 +540,59 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Adicionar Nova Imagem</h5>
-                                        <button type="button" class="btn-close" onclick="closeModal('novaImagemModal')" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" onclick="closeModal('novaImagemModal')"
+                                            aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <form id="formNovaImagem">
                                             <div class="mb-3">
-                                                <label for="consultaSelect" class="form-label">Selecionar Consulta</label>
+                                                <label for="consultaSelect" class="form-label">Selecionar
+                                                    Consulta</label>
                                                 <select class="form-select" id="consultaSelect" required>
                                                     <option value="">Selecione uma consulta</option>
                                                     <option value="consulta-1">Consulta 01/03/2023 - Dr. Silva</option>
-                                                    <option value="consulta-2">Consulta 15/04/2023 - Dr. Oliveira</option>
-                                                    <option value="consulta-3">Consulta 22/05/2023 - Dra. Santos</option>
+                                                    <option value="consulta-2">Consulta 15/04/2023 - Dr. Oliveira
+                                                    </option>
+                                                    <option value="consulta-3">Consulta 22/05/2023 - Dra. Santos
+                                                    </option>
                                                     <option value="nova-consulta">+ Criar nova consulta</option>
                                                 </select>
                                             </div>
-                                            
+
                                             <div id="novaConsultaForm" class="mb-3" style="display: none;">
                                                 <div class="mb-2">
-                                                    <label for="dataConsulta" class="form-label">Data da Consulta</label>
+                                                    <label for="dataConsulta" class="form-label">Data da
+                                                        Consulta</label>
                                                     <input type="date" class="form-control" id="dataConsulta">
                                                 </div>
                                                 <div class="mb-2">
-                                                    <label for="medicoConsulta" class="form-label">Médico Responsável</label>
-                                                    <input type="text" class="form-control" id="medicoConsulta" placeholder="Nome do médico">
+                                                    <label for="medicoConsulta" class="form-label">Médico
+                                                        Responsável</label>
+                                                    <input type="text" class="form-control" id="medicoConsulta"
+                                                        placeholder="Nome do médico">
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="mb-3">
-                                                <label for="descricaoImagem" class="form-label">Descrição da Imagem</label>
-                                                <input type="text" class="form-control" id="descricaoImagem" placeholder="Ex: Raio-X Lombar, Ressonância, etc.">
+                                                <label for="descricaoImagem" class="form-label">Descrição da
+                                                    Imagem</label>
+                                                <input type="text" class="form-control" id="descricaoImagem"
+                                                    placeholder="Ex: Raio-X Lombar, Ressonância, etc.">
                                             </div>
-                                            
+
                                             <div class="mb-3">
-                                                <label for="uploadImagemModal" class="form-label">Selecionar Imagem</label>
-                                                <input type="file" class="form-control" id="uploadImagemModal" accept="image/*" required>
+                                                <label for="uploadImagemModal" class="form-label">Selecionar
+                                                    Imagem</label>
+                                                <input type="file" class="form-control" id="uploadImagemModal"
+                                                    accept="image/*" required>
                                             </div>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" onclick="closeModal('novaImagemModal')">Cancelar</button>
-                                        <button type="button" class="btn btn-primary" onclick="adicionarNovaImagem()">Salvar Imagem</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            onclick="closeModal('novaImagemModal')">Cancelar</button>
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="adicionarNovaImagem()">Salvar Imagem</button>
                                     </div>
                                 </div>
                             </div>
@@ -628,7 +647,9 @@
                 </div>
                 <div class="modal-body">
                     <form id="evolutionForm">
-                        <!-- 2. Evolução do estado de saúde e tratamento -->
+                        <input type="hidden" id="modalPacienteId" value="{{ paciente.id }}">
+                        <input type="hidden" id="modalProfissionalId" value="{{ request.user.profissional.id }}">
+                        <input type="hidden" id="modalAgendamentoId" value="{{ agendamento.id }}">
                         <div class="habitos-grid">
                             <h6 class="section-title habitos-col">2. Evolução do estado de saúde e tratamento</h6>
 
@@ -668,7 +689,8 @@
 
                         <!-- 3. Avaliação parcial do progresso (Mini reavaliação) -->
                         <div class="mb-4">
-                            <h6 class="section-title habitos-col">3. Avaliação parcial do progresso (Mini reavaliação)</h6>
+                            <h6 class="section-title habitos-col">3. Avaliação parcial do progresso (Mini reavaliação)
+                            </h6>
 
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
@@ -1081,9 +1103,9 @@
                                     <div class="habitos-col">
                                         <label class="form-label">Tratamento fisioterapêutico anterior?</label>
                                         <div class="d-flex align-items-center">
-                                        <div class='form-radio-div'>
+                                            <div class='form-radio-div'>
                                                 <div class="form-check me-3">
-                                                    
+
                                                     <label class="radio-option">
                                                         <input class="form-check-input" type="radio"
                                                             name="tratamentoAnterior" id="tratamentoSim" value="sim">
@@ -1091,7 +1113,7 @@
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
-                                                    
+
                                                     <label class="radio-option">
                                                         <input class="form-check-input" type="radio"
                                                             name="tratamentoAnterior" id="tratamentoNao" value="nao"
@@ -1220,70 +1242,81 @@
 
                             <!-- c) Hábitos e estilo de vida -->
                             <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
-                               <h6 class="section-title habitos-col">c) Hábitos e estilo de vida</h6>
+                                <h6 class="section-title habitos-col">c) Hábitos e estilo de vida</h6>
 
-<div class="habitos-grid-3">
-  <!-- Qualidade do sono -->
-  <div class="habitos-col">
-    <label class="form-label">Qualidade do sono</label>
-    <div class="form-check">
-      <label class="radio-option" for="sonoBoa">
-        <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoBoa" value="boa"> Boa
-      </label>
-    </div>
-    <div class="form-check">
-      <label class="radio-option" for="sonoRegular">
-        <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoRegular" value="regular"> Regular
-      </label>
-    </div>
-    <div class="form-check">
-      <label class="radio-option" for="sonoRuim">
-        <input class="form-check-input" type="radio" name="qualidadeSono" id="sonoRuim" value="ruim"> Ruim
-      </label>
-    </div>
-    <input type="number" class="form-control" id="horasSono" placeholder="Horas/noite" min="0" max="24">
-  </div>
+                                <div class="habitos-grid-3">
+                                    <!-- Qualidade do sono -->
+                                    <div class="habitos-col">
+                                        <label class="form-label">Qualidade do sono</label>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="sonoBoa">
+                                                <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                    id="sonoBoa" value="boa"> Boa
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="sonoRegular">
+                                                <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                    id="sonoRegular" value="regular"> Regular
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="sonoRuim">
+                                                <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                    id="sonoRuim" value="ruim"> Ruim
+                                            </label>
+                                        </div>
+                                        <input type="number" class="form-control" id="horasSono"
+                                            placeholder="Horas/noite" min="0" max="24">
+                                    </div>
 
-  <!-- Alimentação -->
-  <div class="habitos-col">
-    <label class="form-label">Alimentação</label>
-    <div class="form-check">
-      <label class="radio-option" for="alimentacaoSaudavel">
-        <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoSaudavel" value="saudavel"> Saudável
-      </label>
-    </div>
-    <div class="form-check">
-      <label class="radio-option" for="alimentacaoIrregular">
-        <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoIrregular" value="irregular"> Irregular
-      </label>
-    </div>
-    <div class="form-check">
-      <label class="radio-option" for="alimentacaoUltraprocessados">
-        <input class="form-check-input" type="radio" name="alimentacao" id="alimentacaoUltraprocessados" value="ultraprocessados"> Rica em ultraprocessados
-      </label>
-    </div>
-  </div>
+                                    <!-- Alimentação -->
+                                    <div class="habitos-col">
+                                        <label class="form-label">Alimentação</label>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="alimentacaoSaudavel">
+                                                <input class="form-check-input" type="radio" name="alimentacao"
+                                                    id="alimentacaoSaudavel" value="saudavel"> Saudável
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="alimentacaoIrregular">
+                                                <input class="form-check-input" type="radio" name="alimentacao"
+                                                    id="alimentacaoIrregular" value="irregular"> Irregular
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="alimentacaoUltraprocessados">
+                                                <input class="form-check-input" type="radio" name="alimentacao"
+                                                    id="alimentacaoUltraprocessados" value="ultraprocessados"> Rica em
+                                                ultraprocessados
+                                            </label>
+                                        </div>
+                                    </div>
 
-  <!-- Nível de atividade física -->
-  <div class="habitos-col">
-    <label class="form-label">Nível de atividade física</label>
-    <div class="form-check">
-      <label class="radio-option" for="sedentario">
-        <input class="form-check-input" type="radio" name="nivelAtividade" id="sedentario" value="sedentario"> Sedentário
-      </label>
-    </div>
-    <div class="form-check">
-      <label class="radio-option" for="leveModerado">
-        <input class="form-check-input" type="radio" name="nivelAtividade" id="leveModerado" value="leve_moderado"> Exercício leve/moderado
-      </label>
-    </div>
-    <div class="form-check">
-      <label class="radio-option" for="atleta">
-        <input class="form-check-input" type="radio" name="nivelAtividade" id="atleta" value="atleta"> Atleta
-      </label>
-    </div>
-  </div>
-</div>
+                                    <!-- Nível de atividade física -->
+                                    <div class="habitos-col">
+                                        <label class="form-label">Nível de atividade física</label>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="sedentario">
+                                                <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                    id="sedentario" value="sedentario"> Sedentário
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="leveModerado">
+                                                <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                    id="leveModerado" value="leve_moderado"> Exercício leve/moderado
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="atleta">
+                                                <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                    id="atleta" value="atleta"> Atleta
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
 
 
                                 <div class="habitos-grid-2">
@@ -1292,7 +1325,7 @@
                                         <input type="text" class="form-control" id="tipoExercicio"
                                             placeholder="Tipo de exercício praticado...">
                                     </div>
-                                                                        <div class="habitos-col">
+                                    <div class="habitos-col">
                                         <label for="nivelEstresse" class="form-label">Nível de estresse (0-10)</label>
                                         <input type="number" class="form-control" id="nivelEstresse" placeholder="0-10"
                                             min="0" max="10">
@@ -1366,29 +1399,29 @@
                                 </div>
 
                                 <div class="habitos-grid-3">
-                                  <div class="habitos-col">
-                                    <div class="col-md-4">
-                                        <label for="intensidadeRepouso" class="form-label">Intensidade (0-10) -
-                                            Repouso</label>
-                                        <input type="number" class="form-control" id="intensidadeRepouso"
-                                            placeholder="0-10" min="0" max="10">
+                                    <div class="habitos-col">
+                                        <div class="col-md-4">
+                                            <label for="intensidadeRepouso" class="form-label">Intensidade (0-10) -
+                                                Repouso</label>
+                                            <input type="number" class="form-control" id="intensidadeRepouso"
+                                                placeholder="0-10" min="0" max="10">
+                                        </div>
                                     </div>
+                                    <div class="habitos-col">
+                                        <div class="col-md-4">
+                                            <label for="intensidadeMovimento" class="form-label">Intensidade (0-10) -
+                                                Movimento</label>
+                                            <input type="number" class="form-control" id="intensidadeMovimento"
+                                                placeholder="0-10" min="0" max="10">
+                                        </div>
                                     </div>
-                                      <div class="habitos-col">
-                                    <div class="col-md-4">
-                                        <label for="intensidadeMovimento" class="form-label">Intensidade (0-10) -
-                                            Movimento</label>
-                                        <input type="number" class="form-control" id="intensidadeMovimento"
-                                            placeholder="0-10" min="0" max="10">
-                                    </div>
-                                    </div>
-                                      <div class="habitos-col">
-                                    <div class="col-md-4">
-                                        <label for="intensidadePior" class="form-label">Intensidade (0-10) - Pior
-                                            momento</label>
-                                        <input type="number" class="form-control" id="intensidadePior"
-                                            placeholder="0-10" min="0" max="10">
-                                    </div>
+                                    <div class="habitos-col">
+                                        <div class="col-md-4">
+                                            <label for="intensidadePior" class="form-label">Intensidade (0-10) - Pior
+                                                momento</label>
+                                            <input type="number" class="form-control" id="intensidadePior"
+                                                placeholder="0-10" min="0" max="10">
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1407,72 +1440,77 @@
 
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                      <div class="habitos-col">
-                                        <label class="form-label">Sinais associados</label>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <div class="form-check">
-                                                    <label class="checkbox-option" for="sinalEdema">
-                                                        <input class="form-check-input" type="checkbox" id="sinalEdema">
-                                                        Edema</label>
+                                        <div class="habitos-col">
+                                            <label class="form-label">Sinais associados</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalEdema">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalEdema">
+                                                            Edema</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalParestesia">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalParestesia">
+                                                            Parestesia</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalRigidez">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalRigidez">
+                                                            Rigidez</label>
+                                                    </div>
                                                 </div>
-                                                <div class="form-check">
-                                                    <label class="checkbox-option" for="sinalParestesia">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="sinalParestesia">
-                                                        Parestesia</label>
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalFraqueza">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalFraqueza">
+                                                            Fraqueza</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalCompensacoes">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalCompensacoes">
+                                                            Compensações</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalOutro">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalOutro">
+                                                            Outro:</label>
+                                                        <input type="text" class="form-control form-control-sm mt-1"
+                                                            id="sinalOutroTexto" placeholder="Especificar">
+                                                    </div>
                                                 </div>
-                                                <div class="form-check">
-                                                    <label class="checkbox-option" for="sinalRigidez">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="sinalRigidez">
-                                                        Rigidez</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-check">
-                                                    <label class="checkbox-option" for="sinalFraqueza">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="sinalFraqueza">
-                                                        Fraqueza</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <label class="checkbox-option" for="sinalCompensacoes">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="sinalCompensacoes">
-                                                        Compensações</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <label class="checkbox-option" for="sinalOutro">
-                                                        <input class="form-check-input" type="checkbox" id="sinalOutro">
-                                                        Outro:</label>
-                                                    <input type="text" class="form-control form-control-sm mt-1"
-                                                        id="sinalOutroTexto" placeholder="Especificar">
-                                                </div>
-                                            </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                      <div class="habitos-col">
-                                        <label class="form-label">Grau de inflamação</label>
-                                        <div>
-                                            <div class="form-check">
-                                                <label class="radio-option" for="inflamacaoLeve">
-                                                    <input class="form-check-input" type="radio" name="grauInflamacao"
-                                                        id="inflamacaoLeve" value="leve">Leve</label>
+                                        <div class="habitos-col">
+                                            <label class="form-label">Grau de inflamação</label>
+                                            <div>
+                                                <div class="form-check">
+                                                    <label class="radio-option" for="inflamacaoLeve">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="grauInflamacao" id="inflamacaoLeve"
+                                                            value="leve">Leve</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <label class="radio-option" for="inflamacaoModerado">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="grauInflamacao" id="inflamacaoModerado"
+                                                            value="moderado">Moderado</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <label class="radio-option" for="inflamacaoIntenso">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="grauInflamacao" id="inflamacaoIntenso"
+                                                            value="intenso">Intenso</label>
+                                                </div>
                                             </div>
-                                            <div class="form-check">
-                                                <label class="radio-option" for="inflamacaoModerado">
-                                                    <input class="form-check-input" type="radio" name="grauInflamacao"
-                                                        id="inflamacaoModerado" value="moderado">Moderado</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <label class="radio-option" for="inflamacaoIntenso">
-                                                    <input class="form-check-input" type="radio" name="grauInflamacao"
-                                                        id="inflamacaoIntenso" value="intenso">Intenso</label>
-                                            </div>
-                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1548,8 +1586,8 @@
                                                         placeholder="0-5" min="0" max="5"></td>
                                                 <td>
                                                     <div class="form-check">
-                                                    <label class="checkbox-option">
-                                                        <input class="form-check-input" type="checkbox">
+                                                        <label class="checkbox-option">
+                                                            <input class="form-check-input" type="checkbox">
                                                         </label>
                                                     </div>
                                                 </td>
@@ -1563,18 +1601,18 @@
                                                         placeholder="°"></td>
                                                 <td>
                                                     <div class="form-check">
-                                                    <label class="checkbox-option">
-                                                        <input class="form-check-input" type="checkbox">
-                                                    </label>
+                                                        <label class="checkbox-option">
+                                                            <input class="form-check-input" type="checkbox">
+                                                        </label>
                                                     </div>
                                                 </td>
                                                 <td><input type="number" class="form-control form-control-sm"
                                                         placeholder="0-5" min="0" max="5"></td>
                                                 <td>
                                                     <div class="form-check">
-                                                    <label class="checkbox-option">
-                                                        <input class="form-check-input" type="checkbox">
-                                                    </label>
+                                                        <label class="checkbox-option">
+                                                            <input class="form-check-input" type="checkbox">
+                                                        </label>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1658,10 +1696,10 @@
                             </div>
 
                             <div class="habitos-grid-2">
-                            
+
                                 <div class="habitos-col">
                                     <label class="form-label">Receptividade</label>
-                                    <div> 
+                                    <div>
                                         <div class="form-check form-check-inline">
                                             <label class="radio-option" for="receptividadeAlta">
                                                 <input class="form-check-input" type="radio" name="receptividade"
@@ -1737,139 +1775,149 @@
                             </div>
 
                             <!-- Técnicas manuais -->
-                              <div class="habitos-col">
-                            <div class="mb-3">
-                                <label class="form-label">Técnicas manuais</label>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="tecnicaLiberacao">
-                                                <input class="form-check-input" type="checkbox" id="tecnicaLiberacao">
-                                                Liberação miofascial</label>
+                            <div class="habitos-col">
+                                <div class="mb-3">
+                                    <label class="form-label">Técnicas manuais</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaLiberacao">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="tecnicaLiberacao">
+                                                    Liberação miofascial</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaMobilizacao">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="tecnicaMobilizacao">
+                                                    Mobilização</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaDryNeedling">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="tecnicaDryNeedling">
+                                                    Dry
+                                                    Needling</label>
+                                            </div>
                                         </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="tecnicaMobilizacao">
-                                                <input class="form-check-input" type="checkbox" id="tecnicaMobilizacao">
-                                                Mobilização</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="tecnicaDryNeedling">
-                                                <input class="form-check-input" type="checkbox" id="tecnicaDryNeedling">
-                                                Dry
-                                                Needling</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="tecnicaVentosa">
-                                                <input class="form-check-input" type="checkbox" id="tecnicaVentosa">
-                                                Ventosa</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="tecnicaManipulacoes">
-                                                <input class="form-check-input" type="checkbox"
-                                                    id="tecnicaManipulacoes">
-                                                Manipulações</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="tecnicaOutras">
-                                                <input class="form-check-input" type="checkbox" id="tecnicaOutras">
-                                                Outras:</label>
-                                            <input type="text" class="form-control form-control-sm mt-1"
-                                                id="tecnicaOutrasTexto" placeholder="Especificar">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaVentosa">
+                                                    <input class="form-check-input" type="checkbox" id="tecnicaVentosa">
+                                                    Ventosa</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaManipulacoes">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="tecnicaManipulacoes">
+                                                    Manipulações</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaOutras">
+                                                    <input class="form-check-input" type="checkbox" id="tecnicaOutras">
+                                                    Outras:</label>
+                                                <input type="text" class="form-control form-control-sm mt-1"
+                                                    id="tecnicaOutrasTexto" placeholder="Especificar">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-</div>
                             <!-- Recursos eletrofísicos -->
                             <div class="habitos-col">
-                            <div class="mb-3">
-                                <label class="form-label">Recursos eletrofísicos</label>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="recursoAussie">
-                                                <input class="form-check-input" type="checkbox" id="recursoAussie">
-                                                CORRENTE AUSSIE</label>
+                                <div class="mb-3">
+                                    <label class="form-label">Recursos eletrofísicos</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoAussie">
+                                                    <input class="form-check-input" type="checkbox" id="recursoAussie">
+                                                    CORRENTE AUSSIE</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoRussa">
+                                                    <input class="form-check-input" type="checkbox" id="recursoRussa">
+                                                    CORRENTE RUSSA</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoAussieTens">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="recursoAussieTens">
+                                                    CORRENTE AUSSIE
+                                                    TENS</label>
+                                            </div>
                                         </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="recursoRussa">
-                                                <input class="form-check-input" type="checkbox" id="recursoRussa">
-                                                CORRENTE RUSSA</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="recursoAussieTens">
-                                                <input class="form-check-input" type="checkbox" id="recursoAussieTens">
-                                                CORRENTE AUSSIE
-                                                TENS</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="recursoUS">
-                                                <input class="form-check-input" type="checkbox" id="recursoUS">
-                                                US</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="recursoTermo">
-                                                <input class="form-check-input" type="checkbox" id="recursoTermo">
-                                                Termo</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="recursoOutro">
-                                                <input class="form-check-input" type="checkbox" id="recursoOutro">
-                                                Outro:</label>
-                                            <input type="text" class="form-control form-control-sm mt-1"
-                                                id="recursoOutroTexto" placeholder="Especificar">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoUS">
+                                                    <input class="form-check-input" type="checkbox" id="recursoUS">
+                                                    US</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoTermo">
+                                                    <input class="form-check-input" type="checkbox" id="recursoTermo">
+                                                    Termo</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoOutro">
+                                                    <input class="form-check-input" type="checkbox" id="recursoOutro">
+                                                    Outro:</label>
+                                                <input type="text" class="form-control form-control-sm mt-1"
+                                                    id="recursoOutroTexto" placeholder="Especificar">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            </div>
-                            
+
                             <!-- Cinesioterapia -->
-                              <div class="habitos-col">
-                            <div class="mb-3">
-                                <label class="form-label">Cinesioterapia</label>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="cinesioFortalecimento">
-                                                <input class="form-check-input" type="checkbox"
-                                                    id="cinesioFortalecimento">
-                                                Fortalecimento</label>
+                            <div class="habitos-col">
+                                <div class="mb-3">
+                                    <label class="form-label">Cinesioterapia</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioFortalecimento">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioFortalecimento">
+                                                    Fortalecimento</label>
+                                            </div>
+                                            <div class="form-check"><label class="checkbox-option"
+                                                    for="cinesioAlongamento">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioAlongamento">
+                                                    Alongamento</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioPostural">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioPostural">
+                                                    Postural</label>
+                                            </div>
                                         </div>
-                                        <div class="form-check"><label class="checkbox-option" for="cinesioAlongamento">
-                                                <input class="form-check-input" type="checkbox" id="cinesioAlongamento">
-                                                Alongamento</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="cinesioPostural">
-                                                <input class="form-check-input" type="checkbox" id="cinesioPostural">
-                                                Postural</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="cinesioRespiração">
-                                                <input class="form-check-input" type="checkbox" id="cinesioRespiração">
-                                                Respiração</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="cinesioMobilidade">
-                                                <input class="form-check-input" type="checkbox" id="cinesioMobilidade">
-                                                Mobilidade</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="checkbox-option" for="cinesioFuncional">
-                                                <input class="form-check-input" type="checkbox" id="cinesioFuncional">
-                                                Funcional</label>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioRespiração">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioRespiração">
+                                                    Respiração</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioMobilidade">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioMobilidade">
+                                                    Mobilidade</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioFuncional">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioFuncional">
+                                                    Funcional</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-</div>
                             <div class="habitos-col">
                                 <label for="descricaoPlano" class="form-label">Descrição breve sobre o plano de
                                     tratamento</label>
@@ -2049,6 +2097,7 @@
             </div>
         </div>
     </div>
+    <script src="{% static 'core/js/prontuarios/formularios.js' %}"></script>
     <script>
         // Funções para controle de modais
         function openModal(modalId) {
@@ -2059,11 +2108,21 @@
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function openPatientModal(patientName) {
-            document.getElementById('patientName').textContent = patientName;
-            document.getElementById('patientModalLabel').textContent = 'Prontuário - ' + patientName;
+        function openPatientModal(pacienteId, agendamentoId, pacienteNome) {
+            // abre o modal do paciente
             openModal('patientModal');
+
+            // atualiza o nome do paciente (se aplicável)
+            document.getElementById("patientName").textContent = pacienteNome;
+
+            // guarda os IDs dentro de atributos data (seguro e prático)
+            const modal = document.getElementById('newProntuarioModal');
+            modal.dataset.pacienteId = pacienteId;
+            modal.dataset.agendamentoId = agendamentoId;
+
+            console.log("Paciente:", pacienteId, "Agendamento:", agendamentoId);
         }
+
 
         // Função para alternar entre abas
         function switchTab(tabId) {
@@ -2095,204 +2154,97 @@
                 }
             });
         }
-        // Dados de exemplo dos prontuários
-        const prontuariosData = {
-            1: {
-                data: "15/05/2023",
-                autor: "Dra. Ana Silva",
-                paciente: "Maria Oliveira",
-                id: "#PRT001",
-                queixaPrincipal: "Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.",
-                historiaDoenca: "Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.",
-                exameFisico: "Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.",
-                conduta: "Exercícios de fortalecimento do core alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.",
-                diagnostico: "Lombalgia crônica com componente radicular.",
-                observacoes: "Paciente orientado sobre postura e ergonomia. Retorno em 15 dias para reavaliação."
-            },
-            2: {
-                data: "08/05/2023",
-                autor: "Dr. Carlos Santos",
-                paciente: "Maria Oliveira",
-                id: "#PRT002",
-                queixaPrincipal: "Dor cervical com limitação de movimento há 3 semanas após trauma em acidente automobilístico.",
-                historiaDoenca: "Paciente relata acidente há 3 semanas com whiplash. Refere dor constante 7/10, piora com movimentos de rotação.",
-                exameFisico: "Limitação de 50% na rotação cervical bilateral. Dor à palpação em C5-C6. Espasmo muscular em trapézio superior.",
-                conduta: "Terapia manual, mobilização cervical, exercícios de estabilização, crioterapia.",
-                diagnostico: "Síndrome do chicote (whiplash) grau II.",
-                observacoes: "Encaminhado para RX cervical. Uso de colar mole por períodos curtos."
-            },
-            3: {
-                data: "01/05/2023",
-                autor: "Dra. Ana Silva",
-                paciente: "Maria Oliveira",
-                id: "#PRT003",
-                queixaPrincipal: "Pós-operatório de artroplastia de quadril direito há 4 semanas. Relata dificuldade na marcha e dor residual.",
-                historiaDoenca: "Cirurgia realizada há 4 semanas por osteoartrose grave. Evolução dentro do esperado mas com limitação funcional.",
-                exameFisico: "Edema discreto no quadril D. Amplitude de movimento: flexão 80°, abdução 25°. Marcha com auxílio de andador.",
-                conduta: "Exercícios de fortalecimento de MMII, treino de marcha, orientações sobre precauções pós-operatórias.",
-                diagnostico: "Status pós artroplastia total de quadril direito.",
-                observacoes: "Paciente motivada. Evolução satisfatória. Manter precauções por mais 2 semanas."
-            }
-        };
 
-        // Função para abrir modal de visualização do prontuário
-        function openProntuarioModal(prontuarioId) {
-            const prontuario = prontuariosData[prontuarioId];
-
-            if (prontuario) {
-                document.getElementById('prontuarioData').textContent = prontuario.data;
-                document.getElementById('prontuarioAutor').textContent = prontuario.autor;
-                document.getElementById('prontuarioPaciente').textContent = prontuario.paciente;
-                document.getElementById('prontuarioId').textContent = prontuario.id;
-                document.getElementById('viewQueixaPrincipal').textContent = prontuario.queixaPrincipal;
-                document.getElementById('viewHistoriaDoenca').textContent = prontuario.historiaDoenca;
-                document.getElementById('viewExameFisico').textContent = prontuario.exameFisico;
-                document.getElementById('viewConduta').textContent = prontuario.conduta;
-                document.getElementById('viewDiagnostico').textContent = prontuario.diagnostico;
-                document.getElementById('viewObservacoes').textContent = prontuario.observacoes;
-
-                document.getElementById('viewProntuarioTitle').textContent = `Prontuário - ${prontuario.data}`;
-                openModal('viewProntuarioModal');
-            }
-        }
-
-        // Função para salvar novo prontuário
-        async function salvarProntuario() {
-            const dadosProntuario = {
-                paciente_id: document.getElementById('pacienteId').value,
-                profissional_id: document.getElementById('profissionalId').value,
-                pacote_id: document.getElementById('pacoteSelect')?.value || null,
-                agendamento_id: document.getElementById('agendamentoId')?.value || null,
-                queixa_principal: document.getElementById('queixaPrincipal').value,
-                historia_doenca: document.getElementById('historiaDoenca').value,
-                exame_fisico: document.getElementById('exameFisico').value,
-                conduta: document.getElementById('conduta').value,
-                diagnostico: document.getElementById('diagnostico').value,
-                observacoes: document.getElementById('observacoes').value
-            };
-
-            try {
-                const response = await fetch('/api/salvar-prontuario/', {  // ← URL ATUALIZADA
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken(),
-                        'X-Requested-With': 'XMLHttpRequest'  // Identifica como AJAX
-                    },
-                    body: JSON.stringify(dadosProntuario)
-                });
-
-                const resultado = await response.json();
-
-                if (resultado.success) {
-                    mostrarMensagem('✅ ' + resultado.message, 'success');
-                    document.getElementById('prontuarioForm').reset();
-                    closeModal('newProntuarioModal');
-
-                    // Opcional: disparar evento para outros componentes
-                    window.dispatchEvent(new CustomEvent('prontuarioSalvo', {
-                        detail: resultado
-                    }));
-
-                } else {
-                    mostrarMensagem('❌ ' + resultado.error, 'error');
-                }
-
-            } catch (error) {
-                mostrarMensagem('🔌 Erro de conexão', 'error');
-                console.error('Erro:', error);
-            }
-        } 
     </script>
-    
-<script>
-// Função para filtrar imagens por pasta
-function filtrarPorPasta() {
-    const pastaSelecionada = document.getElementById('pastaSelect').value;
-    const pastas = document.querySelectorAll('.folder-section');
-    
-    pastas.forEach(pasta => {
-        if (pastaSelecionada === 'todas' || pasta.getAttribute('data-pasta') === pastaSelecionada) {
-            pasta.style.display = 'block';
-        } else {
-            pasta.style.display = 'none';
+
+    <script>
+        // Função para filtrar imagens por pasta
+        function filtrarPorPasta() {
+            const pastaSelecionada = document.getElementById('pastaSelect').value;
+            const pastas = document.querySelectorAll('.folder-section');
+
+            pastas.forEach(pasta => {
+                if (pastaSelecionada === 'todas' || pasta.getAttribute('data-pasta') === pastaSelecionada) {
+                    pasta.style.display = 'block';
+                } else {
+                    pasta.style.display = 'none';
+                }
+            });
         }
-    });
-}
 
-// Mostrar/ocultar formulário de nova consulta
-document.getElementById('consultaSelect').addEventListener('change', function() {
-    const novaConsultaForm = document.getElementById('novaConsultaForm');
-    if (this.value === 'nova-consulta') {
-        novaConsultaForm.style.display = 'block';
-    } else {
-        novaConsultaForm.style.display = 'none';
-    }
-});
+        // Mostrar/ocultar formulário de nova consulta
+        document.getElementById('consultaSelect').addEventListener('change', function () {
+            const novaConsultaForm = document.getElementById('novaConsultaForm');
+            if (this.value === 'nova-consulta') {
+                novaConsultaForm.style.display = 'block';
+            } else {
+                novaConsultaForm.style.display = 'none';
+            }
+        });
 
-// Função para adicionar nova imagem
-function adicionarNovaImagem() {
-    const consultaSelect = document.getElementById('consultaSelect');
-    const descricao = document.getElementById('descricaoImagem').value;
-    const arquivo = document.getElementById('uploadImagemModal').files[0];
-    
-    if (!consultaSelect.value || !descricao || !arquivo) {
-        alert('Por favor, preencha todos os campos obrigatórios.');
-        return;
-    }
-    
-    // Aqui você implementaria a lógica para salvar no banco de dados
-    // Por enquanto, apenas fechamos o modal
-    closeModal('novaImagemModal');
-    
-    // Limpar formulário
-    document.getElementById('formNovaImagem').reset();
-    document.getElementById('novaConsultaForm').style.display = 'none';
-    
-    alert('Imagem adicionada com sucesso!');
-}
+        // Função para adicionar nova imagem
+        function adicionarNovaImagem() {
+            const consultaSelect = document.getElementById('consultaSelect');
+            const descricao = document.getElementById('descricaoImagem').value;
+            const arquivo = document.getElementById('uploadImagemModal').files[0];
 
-// Configurar área de arrastar e soltar
-const dropArea = document.getElementById('dropArea');
-const fileInput = document.getElementById('fileUpload');
+            if (!consultaSelect.value || !descricao || !arquivo) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
 
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false);
-});
+            // Aqui você implementaria a lógica para salvar no banco de dados
+            // Por enquanto, apenas fechamos o modal
+            closeModal('novaImagemModal');
 
-function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
+            // Limpar formulário
+            document.getElementById('formNovaImagem').reset();
+            document.getElementById('novaConsultaForm').style.display = 'none';
 
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, highlight, false);
-});
+            alert('Imagem adicionada com sucesso!');
+        }
 
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, unhighlight, false);
-});
+        // Configurar área de arrastar e soltar
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileUpload');
 
-function highlight() {
-    dropArea.style.borderColor = '#007bff';
-    dropArea.style.backgroundColor = '#e9f5ff';
-}
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
 
-function unhighlight() {
-    dropArea.style.borderColor = '#dee2e6';
-    dropArea.style.backgroundColor = '#f8f9fa';
-}
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
-dropArea.addEventListener('drop', handleDrop, false);
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
 
-function handleDrop(e) {
-    const dt = e.dataTransfer;
-    const files = dt.files;
-    fileInput.files = files;
-    // Aqui você processaria os arquivos para upload
-    alert(`${files.length} arquivo(s) selecionado(s) para upload`);
-}
-</script>
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.style.borderColor = '#007bff';
+            dropArea.style.backgroundColor = '#e9f5ff';
+        }
+
+        function unhighlight() {
+            dropArea.style.borderColor = '#dee2e6';
+            dropArea.style.backgroundColor = '#f8f9fa';
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            // Aqui você processaria os arquivos para upload
+            alert(`${files.length} arquivo(s) selecionado(s) para upload`);
+        }
+    </script>
 </body>
 
 </html>

@@ -84,21 +84,21 @@ def registrar_recebimento(request, pagamento_id):
     except Exception as e:
         return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
 
-
 def salvar_prontuario(request):
     try:
-        if request.content_type == 'application/json':
+        print("🔹 Content-Type:", request.content_type)
+        print("🔹 Body cru:", request.body)
 
+        if request.content_type == 'application/json':
             data = json.loads(request.body)
+            print("🔹 JSON recebido:", data)
         else:
             return JsonResponse({'success': False, 'error': 'Content-Type must be application/json'}, status=400)
-        
 
-        require_fields = ['paciente_id', 'profissional_id']
-        for field in require_fields:
+        required_fields = ['paciente_id', 'profissional_id']
+        for field in required_fields:
             if field not in data:
                 return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
-                 
 
         prontuario = Prontuario.objects.create(
             paciente_id=data['paciente_id'],
@@ -110,18 +110,20 @@ def salvar_prontuario(request):
             conduta=data.get('conduta', ''),
             diagnostico=data.get('diagnostico', ''),
             observacoes=data.get('observacoes', '')
-
         )
+
         return JsonResponse({
             'success': True,
-            'message': 'Prontuario salvo com sucesso!',
+            'message': 'Prontuário salvo com sucesso!',
             'prontuario_id': prontuario.id,
             'data_criacao': prontuario.data_criacao.isoformat()
         })
 
     except Exception as e:
+        import traceback
+        print("⚠️ Erro:", traceback.format_exc())
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
-    
+
 def listar_prontuarios(request, paciente_id):
     ...
     
