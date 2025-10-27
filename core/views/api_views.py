@@ -105,13 +105,22 @@ def salvar_prontuario(request):
             profissional_id=data['profissional_id'],
             agendamento_id=data.get('agendamento_id'),
             queixa_principal=data['queixa_principal'],
-            historia_doenca=data.get('historia_doenca', ''),
-            exame_fisico=data.get('exame_fisico', ''),
+            feedback_paciente=data.get('historia_doenca', ''),
+            evolucao=data.get('exame_fisico', ''),
             conduta=data.get('conduta', ''),
             diagnostico=data.get('diagnostico', ''),
             observacoes=data.get('observacoes', '')
         )
-
+        prontuarios = Prontuario.objects.all()
+        for p in prontuarios:
+            print(p.paciente)
+            print(p.profissional)
+            print(p.agendamento)
+            print(p.data_criacao)
+            print(p.queixa_principal)
+            print(p.conduta)
+            print(p.feedback_paciente)
+        print(prontuarios)
         return JsonResponse({
             'success': True,
             'message': 'Prontuário salvo com sucesso!',

@@ -949,7 +949,7 @@ class Prontuario(models.Model):
         ordering = ['-data_criacao']
 
     def __str__(self):
-        return f'Prontuário {self.paciente} - {self.data_criacao.date()}'
+        return f'Prontuário {self.paciente} - {self.data_criacao}'
     
 class Evolucao(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
