@@ -85,9 +85,31 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
 
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
+                                    <!-- Status simplificado dos modais -->
+                                    <div class="status-simple" data-agendamento-id="{{ag.id}}">
+                                        <div class="status-badges">
+                                            <span class="status-badge prontuario" data-status="false" 
+                                                onclick="checkStatus('prontuario', {{ag.id}})">
+                                                <i class="fas fa-file-medical"></i>
+                                                <span class="status-text">Prontuário</span>
+                                            </span>
+                                            <span class="status-badge evolucao" data-status="false"
+                                                onclick="checkStatus('evolucao', {{ag.id}})">
+                                                <i class="fas fa-chart-line"></i>
+                                                <span class="status-text">Evolução</span>
+                                            </span>
+                                            <span class="status-badge imagens" data-status="false"
+                                                onclick="checkStatus('imagens', {{ag.id}})">
+                                                <i class="fas fa-images"></i>
+                                                <span class="status-text">Imagens</span>
+                                            </span>
+                                            <span class="status-badge avaliacao" data-status="false"
+                                                onclick="checkStatus('avaliacao', {{ag.id}})">
+                                                <i class="fas fa-clipboard-check"></i>
+                                                <span class="status-text">Avaliação</span>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -168,12 +190,10 @@
                             <p class="text-muted">45 anos</p>
                         </div>
                         <div class="col-md-5">
-                            <p><strong>Diagnóstico:</strong> Lombalgia crônica</p>
-                            <p><strong>Médico Responsável:</strong> Dr. Roberto Almeida</p>
                             <p><strong>Início do Tratamento:</strong> 10/03/2023</p>
+                            <p><strong>Próxima Consulta:</strong> 22/05/2023 - 10:00</p>
                         </div>
                         <div class="col-md-5">
-                            <p><strong>Próxima Consulta:</strong> 22/05/2023 - 10:00</p>
                             <p><strong>Telefone:</strong> (11) 99999-9999</p>
                             <p><strong>E-mail:</strong> maria.oliveira@email.com</p>
                         </div>

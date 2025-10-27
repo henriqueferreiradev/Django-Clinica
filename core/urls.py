@@ -1,6 +1,7 @@
 from django.urls import path
 from core.views import (
  
+ 
     auth_views,
     agendamento_views,
     config_views,
@@ -30,7 +31,7 @@ urlpatterns = [
 
     path('api/salvar-prontuario/', api_views.salvar_prontuario, name='salvar_prontuario'),
     path('api/listar-prontuarios/<int:paciente_id>/', api_views.listar_prontuarios, name='listar_prontuarios'),
-    
+    path('api/verificar-prontuario/<int:agendamento_id>/', api_views.verificar_prontuario, name='verificar_prontuario' ),
     path('api/salvar-evolucao/', api_views.salvar_evolucao, name='salvar_evolucao'),
     path('api/listar-evolucoes/<int:paciente_id>/', api_views.listar_evolucoes, name='listar_evolucoes'),
     

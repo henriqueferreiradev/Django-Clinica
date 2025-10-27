@@ -1,7 +1,7 @@
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
-from core.models import Paciente, Pagamento, PacotePaciente, Agendamento,Prontuario
+from core.models import AvaliacaoFisioterapeutica, Evolucao, Paciente, Pagamento, PacotePaciente, Agendamento,Prontuario
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -33,8 +33,36 @@ def verificar_cpf(request):
     
     return JsonResponse({'existe': existe})
 
+def verificar_prontuario(request, agendamento_id):
+    try:
+        # Verifica se existe um prontuário preenchido vinculado a esse agendamento
+        existe_prontuario = Prontuario.objects.filter(
+            agendamento_id=agendamento_id,
+            foi_preenchido=True
+        ).exists()
+        '''
+        existe_evolucao = Evolucao.objects.filter(
+            agendamento_id=agendamento_id,
+            foi_preenchido=True
+        ).exists()
+       
+        existe_imagem = Imagem.objects.filter(
+            agendamento_id=agendamento_id,
+            foi_preenchido=True
+        ).exists()
+       
+        existe_avaliacao = AvaliacaoFisioterapeutica.objects.filter(
+            agendamento_id=agendamento_id,
+            foi_preenchido=True
+        ).exists()
+ '''
+        return JsonResponse({'tem_prontuario': existe_prontuario})
 
-
+    except Exception as e:
+        print("Erro ao verificar prontuário:", e)
+        raise Http404
+    
+    
 @login_required
 @require_POST
 def registrar_recebimento(request, pagamento_id):
@@ -86,12 +114,10 @@ def registrar_recebimento(request, pagamento_id):
 
 def salvar_prontuario(request):
     try:
-        print("🔹 Content-Type:", request.content_type)
-        print("🔹 Body cru:", request.body)
+ 
 
         if request.content_type == 'application/json':
             data = json.loads(request.body)
-            print("🔹 JSON recebido:", data)
         else:
             return JsonResponse({'success': False, 'error': 'Content-Type must be application/json'}, status=400)
 
@@ -109,18 +135,13 @@ def salvar_prontuario(request):
             evolucao=data.get('exame_fisico', ''),
             conduta=data.get('conduta', ''),
             diagnostico=data.get('diagnostico', ''),
-            observacoes=data.get('observacoes', '')
+            observacoes=data.get('observacoes', ''),
+            foi_preenchido=True,
         )
         prontuarios = Prontuario.objects.all()
         for p in prontuarios:
-            print(p.paciente)
-            print(p.profissional)
-            print(p.agendamento)
-            print(p.data_criacao)
-            print(p.queixa_principal)
-            print(p.conduta)
-            print(p.feedback_paciente)
-        print(prontuarios)
+            print(p.foi_preenchido)
+ 
         return JsonResponse({
             'success': True,
             'message': 'Prontuário salvo com sucesso!',
@@ -130,7 +151,7 @@ def salvar_prontuario(request):
 
     except Exception as e:
         import traceback
-        print("⚠️ Erro:", traceback.format_exc())
+        
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 def listar_prontuarios(request, paciente_id):

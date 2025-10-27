@@ -1,4 +1,5 @@
 from decimal import Decimal
+from urllib.parse import DefragResult
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
@@ -945,6 +946,7 @@ class Prontuario(models.Model):
     diagnostico = models.TextField()
     observacoes = models.TextField()
 
+    foi_preenchido = models.BooleanField(default=False)
     class Meta:
         ordering = ['-data_criacao']
 
@@ -957,13 +959,15 @@ class Evolucao(models.Model):
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
     data_criacao = models.DateField(auto_now_add=True)
+    foi_preenchido = models.BooleanField(default=False)
     
     queixa_principal_inicial = models.TextField(blank=True)
     processo_terapeutico = models.TextField(blank=True)
     condutas_tecnicas = models.TextField(blank=True)
     resposta_paciente  = models.TextField(blank=True)
     intercorrencias = models.TextField(blank=True)
-
+     
+    
     dor_inicio = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(10)],
         null=True, blank=True
@@ -1037,6 +1041,7 @@ class Evolucao(models.Model):
     observacoes_internas = models.TextField(blank=True)
     orientacoes_grupo = models.TextField(blank=True)
     
+    
     class Meta:
         ordering = ['-data_criacao']
     
@@ -1048,7 +1053,7 @@ class AvaliacaoFisioterapeutica(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
     data_avaliacao = models.DateTimeField(auto_now_add=True)
-    
+    foi_preenchido = models.BooleanField(default=False)
     # Anamnese / Histórico Clínico
     queixa_principal = models.TextField()
     inicio_problema = models.TextField(blank=True)

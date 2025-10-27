@@ -1281,3 +1281,75 @@ textarea.form-control {
     border-color: #007bff;
     background-color: #e9f5ff;
 }
+
+
+.status-simple {
+    display: inline-block;
+}
+
+.status-badges {
+    display: flex;
+    gap: 8px;
+    padding: 6px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.status-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 60px;
+    border: 2px solid #dee2e6;
+    background: white;
+}
+
+.status-badge[data-status="false"] {
+    background-color: #edd4d4;
+    color: #571515;
+    border-color: #e6c3c3;
+}
+
+.status-badge[data-status="true"] {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.status-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-badge i {
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.status-text {
+    font-size: 10px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .status-badges {
+        gap: 4px;
+        padding: 4px;
+    }
+    
+    .status-badge {
+        min-width: 50px;
+        padding: 4px 6px;
+    }
+    
+    .status-text {
+        font-size: 9px;
+    }
+}
