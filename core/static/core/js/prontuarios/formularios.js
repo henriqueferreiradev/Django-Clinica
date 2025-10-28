@@ -58,7 +58,7 @@ function mostrarMensagem(mensagem, tipo = 'success') {
 }
 
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function atualizarStatusProntuarios() {
     const statusBlocks = document.querySelectorAll(".status-simple");
 
     for (const block of statusBlocks) {
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Erro ao atualizar status:", err);
         }
     }
-});
+};
 
 async function salvarProntuario() {
     const modal = document.getElementById('newProntuarioModal');
@@ -103,6 +103,7 @@ async function salvarProntuario() {
     if (res.success) {
         mostrarMensagem('Prontuário salvo com sucesso');
         closeModal('newProntuarioModal');
+        atualizarStatusProntuarios()
     } else {
         mostrarMensagem('Erro ao salvar prontuário: ' + res.error, 'error');
     }

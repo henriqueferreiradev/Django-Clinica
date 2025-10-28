@@ -154,9 +154,45 @@ def salvar_prontuario(request):
         
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+
 def listar_prontuarios(request, paciente_id):
-    ...
-    
+    try:
+        prontuarios = Prontuario.objects.filter(
+            paciente_id=paciente_id
+        ).select_related('profissional').order_by('-data_criacao')
+        
+        prontuarios_data = []
+        for prontuario in prontuarios:
+            prontuarios_data.append({
+                'id': prontuario.id,
+                'data': prontuario.data_criacao.strftime('%d/%m/%Y'),
+                'data_completa': prontuario.data_criacao.strftime('%d/%m/%Y - %H:%M'),
+                'agendamento_atual': prontuario.agendamento.data.strftime('%d/%m/%Y - %H:%M'),
+                'profissional_nome': prontuario.profissional.nome if prontuario.profissional else 'Não informado',
+                'profissional_id': prontuario.profissional.id if prontuario.profissional else None,
+                'queixa_principal': prontuario.queixa_principal or '',
+                'queixa_preview': (prontuario.queixa_principal[:100] + '...') if prontuario.queixa_principal and len(prontuario.queixa_principal) > 100 else (prontuario.queixa_principal or ''),
+                'feedback_paciente': prontuario.feedback_paciente  or '',
+                'evolucao': prontuario.evolucao or '',
+                'conduta': prontuario.conduta or '',
+                'diagnostico': prontuario.diagnostico or '',
+                'observacoes': prontuario.observacoes or '',
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'prontuarios': prontuarios_data,
+            'total': len(prontuarios_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'prontuarios': []
+        }, status=500)
+
+
 def salvar_evolucao(request):
     ...
     
