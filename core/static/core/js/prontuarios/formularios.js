@@ -60,26 +60,26 @@ function mostrarMensagem(mensagem, tipo = 'success') {
 
 document.addEventListener("DOMContentLoaded", async () => {
     const statusBlocks = document.querySelectorAll(".status-simple");
-  
+
     for (const block of statusBlocks) {
-      const agendamentoId = block.dataset.agendamentoId;
-      if (!agendamentoId) continue;
-  
-      try {
-        const resp = await fetch(`/api/verificar-prontuario/${agendamentoId}/`);
-        if (!resp.ok) continue;
-  
-        const data = await resp.json();
-        const badgeProntuario = block.querySelector(".status-badge.prontuario");
-        const badgeEvolucao = block.querySelector(".status-badge.evolucao");
-        if (badgeProntuario, badgeEvolucao) {
-            badgeProntuario.dataset.status = data.tem_prontuario ? "true" : "false";
+        const agendamentoId = block.dataset.agendamentoId;
+        if (!agendamentoId) continue;
+
+        try {
+            const resp = await fetch(`/api/verificar-prontuario/${agendamentoId}/`);
+            if (!resp.ok) continue;
+
+            const data = await resp.json();
+            const badgeProntuario = block.querySelector(".status-badge.prontuario");
+            const badgeEvolucao = block.querySelector(".status-badge.evolucao");
+            if (badgeProntuario, badgeEvolucao) {
+                badgeProntuario.dataset.status = data.tem_prontuario ? "true" : "false";
+            }
+        } catch (err) {
+            console.error("Erro ao atualizar status:", err);
         }
-      } catch (err) {
-        console.error("Erro ao atualizar status:", err);
-      }
     }
-  });
+});
 
 async function salvarProntuario() {
     const modal = document.getElementById('newProntuarioModal');
