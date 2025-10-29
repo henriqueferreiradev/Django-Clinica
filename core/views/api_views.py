@@ -208,7 +208,47 @@ def salvar_evolucao(request):
                 return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
 
         evolucao = Evolucao.objects.create(
- 
+            paciente_id=data['paciente_id'],
+            profissional_id=data['profissional_id'],
+            agendamento_id=data.get('agendamento_id'),
+            queixa_principal_inicial=data.get('queixa_principal'),
+            processo_terapeutico=data.get('processo_terapeutico'),
+            condutas_tecnicas=data.get('condutas_tecnicas'),
+            resposta_paciente=data.get('resposta_paciente'),
+            intercorrencias=data.get('intercorrencias'),
+            dor_inicio=data.get('dor_inicio'),
+            dor_atual=data.get('dor_atual'),
+            dor_observacoes=data.get('dor_observacoes'),
+            amplitude_inicio=data.get('amplitude_inicio'),
+            amplitude_atual=data.get('amplitude_atual'),
+            amplitude_observacoes=data.get('amplitude_observacoes'),
+            forca_inicio=data.get('forca_inicio'),
+            forca_atual=data.get('forca_atual'),
+            forca_observacoes=data.get('forca_observacoes'),
+            postura_inicio=data.get('postura_inicio'),
+            postura_atual=data.get('postura_atual'),
+            postura_observacoes=data.get('postura_observacoes'),
+            edema_inicio=data.get('edema_inicio'),
+            edema_atual=data.get('edema_atual'),
+            edema_observacoes=data.get('edema_observacoes'),
+            advs_inicio=data.get('advs_inicio'),
+            advs_atual=data.get('advs_atual'),
+            advs_observacoes=data.get('advs_observacoes'),
+            emocionais_inicio=data.get('asp_emocionais_inicio'),
+            emocionais_atual=data.get('asp_emocionais_atual'),
+            emocionais_observacoes=data.get('asp_emocionais_observacoes'),
+            sintese_evolucao=data.get('sintese_evolucao'),
+            mensagem_paciente=data.get('mensagem_paciente'),
+            explicacao_continuidade=data.get('explicacao_continuidade'),
+            reacoes_paciente=data.get('reacoes_paciente'),
+            dor_expectativa=data.get('dor_expectativa'),
+            dor_realidade=data.get('dor_realidade'),
+            energia_expectativa=data.get('energia_expectativa'),
+            energia_realidade=data.get('energia_realidade'),
+            consciencia_expectativa=data.get('consciencia_expectativa'),
+            consciencia_realidade=data.get('consciencia_realidade'),
+            
+
         )
         evolucoes = Evolucao.objects.all()
         for p in evolucoes:

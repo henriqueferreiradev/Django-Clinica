@@ -1,7 +1,7 @@
 // core/static/core/js/api.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     atualizarStatusProntuarios()
-}) 
+})
 // Função para obter o token CSRF
 function getCSRFToken() {
     const name = 'csrftoken';
@@ -115,52 +115,72 @@ async function salvarEvolucao() {
     const modal = document.getElementById('newEvolutionModal');
     const profissionalId = document.getElementById("profissionalLogado").value;
 
+    const mapeamentoSugestoesComp = {
+        treinoFuncional: "Treino funcional",
+        pilatesClinico: "Pilates clínico",
+        recovery: "Recovery",
+        rpg: "RPG",
+        nutricao: 'Nutrição',
+        psicoterapia: 'Psicoterapia',
+        estetica: 'Estética',
+        sugestaoOutro: () => document.getElementById('sugestaoOutroTexto').value.trim() || 'Outro'
+    }
+
+    const tiposSugestoesComplementares = Object.entries(mapeamentoSugestoesComp)
+        .filter(([id,]) => document.getElementById(id).checked)
+        .map(([id, valor]) => typeof valor === 'function' ? valor() : valor);
+
     const dados = {
         paciente_id: modal.dataset.pacienteId || "",
         profissional_id: profissionalId,
         agendamento_id: modal.dataset.agendamentoId || "",
         queixa_principal: document.getElementById('queixaPrincipalEvolucao').value,
         processo_terapeutico: document.getElementById('processoTerapeutico').value,
-        condutas_tecnicas:document.getElementById('condutasTecnicas').value,
-        resposta_paciente:document.getElementById('respostaPaciente').value,
-        intercorrencias:document.getElementById('intercorrencias').value,
-        dor_inicio:document.getElementById('dorInicio').value,
-        dor_atual:document.getElementById('dorAtual').value,
-        dor_observacoes:document.getElementById('dorObservacoes').value,
-        amplitude_inicio:document.getElementById('amplitudeInicio').value,
-        amplitude_atual:document.getElementById('amplitudeAtual').value,
-        amplitude_observacoes:document.getElementById('amplitudeObservacoes').value,
-        forca_inicio:document.getElementById('forcaInicio').value,
-        forca_atual:document.getElementById('forcaAtual').value,
-        forca_observacoes:document.getElementById('forcaObservacoes').value,
-        postura_inicio:document.getElementById('posturaInicio').value,
-        postura_atual:document.getElementById('posturaAtual').value,
-        postura_observacoes:document.getElementById('posturaObservacoes').value,
-        edema_inicio:document.getElementById('edemaInicio').value,
-        edema_atual:document.getElementById('edemaAtual').value,
-        edema_observacoes:document.getElementById('edemaObservacoes').value,
-        advs_inicio:document.getElementById('avdsInicio').value,
-        advs_atual:document.getElementById('avdsAtual').value,
-        advs_observacoes:document.getElementById('avdsObservacoes').value,
-        asp_emocionais_inicio:document.getElementById('emocionaisInicio').value,
-        asp_emocionais_atual:document.getElementById('emocionaisAtual').value,
-        asp_emocionais_observacoes:document.getElementById('emocionaisObservacoes').value,
-        sintese_evolucao:document.getElementById('sinteseEvolucao').value,
-        mensagem_paciente:document.getElementById('mensagemPaciente').value,
-        explicacao_continuidade:document.getElementById('explicacaoContinuidade').value,
-        reacoes_paciente:document.getElementById('reacoesPaciente').value,
-        dor_expectativa:document.getElementById('dorExpectativa').value,
-        dor_realidade:document.getElementById('dorRealidade').value,
-        mobilidade_expectativa:document.getElementById('mobilidadeExpectativa').value,
-        mobilidade_realidade:document.getElementById('mobilidadeRealidade').value,
-        energia_expectativa:document.getElementById('energiaExpectativa').value,
-        energia_realidade:document.getElementById('energiaRealidade').value,
-        consciencia_expectativa:document.getElementById('conscienciaExpectativa').value,
-        consciencia_realidade:document.getElementById('conscienciaRealidade').value,
-        rotina_trabalho:document.getElementById('rotinaTrabalho').value,
-        aspectos_emocionais:document.getElementById('aspectosEmocionais').value,
-        localizacao_dor:document.getElementById('localizacaoDor').value,
-        localizacao_dor:document.getElementById('localizacaoDor').value,
+        condutas_tecnicas: document.getElementById('condutasTecnicas').value,
+        resposta_paciente: document.getElementById('respostaPaciente').value,
+        intercorrencias: document.getElementById('intercorrencias').value,
+        dor_inicio: document.getElementById('dorInicio').value,
+        dor_atual: document.getElementById('dorAtual').value,
+        dor_observacoes: document.getElementById('dorObservacoes').value,
+        amplitude_inicio: document.getElementById('amplitudeInicio').value,
+        amplitude_atual: document.getElementById('amplitudeAtual').value,
+        amplitude_observacoes: document.getElementById('amplitudeObservacoes').value,
+        forca_inicio: document.getElementById('forcaInicio').value,
+        forca_atual: document.getElementById('forcaAtual').value,
+        forca_observacoes: document.getElementById('forcaObservacoes').value,
+        postura_inicio: document.getElementById('posturaInicio').value,
+        postura_atual: document.getElementById('posturaAtual').value,
+        postura_observacoes: document.getElementById('posturaObservacoes').value,
+        edema_inicio: document.getElementById('edemaInicio').value,
+        edema_atual: document.getElementById('edemaAtual').value,
+        edema_observacoes: document.getElementById('edemaObservacoes').value,
+        advs_inicio: document.getElementById('avdsInicio').value,
+        advs_atual: document.getElementById('avdsAtual').value,
+        advs_observacoes: document.getElementById('avdsObservacoes').value,
+        asp_emocionais_inicio: document.getElementById('emocionaisInicio').value,
+        asp_emocionais_atual: document.getElementById('emocionaisAtual').value,
+        asp_emocionais_observacoes: document.getElementById('emocionaisObservacoes').value,
+        sintese_evolucao: document.getElementById('sinteseEvolucao').value,
+        mensagem_paciente: document.getElementById('mensagemPaciente').value,
+        explicacao_continuidade: document.getElementById('explicacaoContinuidade').value,
+        reacoes_paciente: document.getElementById('reacoesPaciente').value,
+        dor_expectativa: document.getElementById('dorExpectativa').value,
+        dor_realidade: document.getElementById('dorRealidade').value,
+        mobilidade_expectativa: document.getElementById('mobilidadeExpectativa').value,
+        mobilidade_realidade: document.getElementById('mobilidadeRealidade').value,
+        energia_expectativa: document.getElementById('energiaExpectativa').value,
+        energia_realidade: document.getElementById('energiaRealidade').value,
+        consciencia_expectativa: document.getElementById('conscienciaExpectativa').value,
+        consciencia_realidade: document.getElementById('conscienciaRealidade').value,
+        emocao_expectativa: document.getElementById('emocaoExpectativa').value,
+        emocao_realidade: document.getElementById('emocaoRealidade').value,
+        objetivo_ciclo: document.getElementById('objetivosCiclo').value,
+        condutas_mantidas: document.getElementById('condutasMantidas').value,
+        ajustes_plano: document.getElementById('ajustesPlano').value,
+        ajustes_plano: document.getElementById('ajustesPlano').value,
+        tipos_sugestoes_complementares: tiposSugestoesComplementares,
+        observacoes_internas: document.getElementById('observacoesInternas').value,
+        observacoes_grupo: document.getElementById('orientacoesGrupo').value,
 
 
     };
@@ -176,3 +196,5 @@ async function salvarEvolucao() {
         mostrarMensagem('Erro ao salvar prontuário: ' + res.error, 'error');
     }
 }
+
+
