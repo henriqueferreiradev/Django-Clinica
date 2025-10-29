@@ -194,7 +194,39 @@ def listar_prontuarios(request, paciente_id):
 
 
 def salvar_evolucao(request):
-    ...
+
+    try:
+ 
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+        else:
+            return JsonResponse({'success': False, 'error': 'Content-Type must be application/json'}, status=400)
+
+        required_fields = ['paciente_id', 'profissional_id']
+        for field in required_fields:
+            if field not in data:
+                return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
+
+        evolucao = Evolucao.objects.create(
+ 
+        )
+        evolucoes = Evolucao.objects.all()
+        for p in evolucoes:
+            print(p.foi_preenchido)
+ 
+        return JsonResponse({
+            'success': True,
+            'message': 'Evolução salva com sucesso!',
+            'evolucao_id': evolucao.id,
+            'data_criacao': evolucao.data_criacao.isoformat()
+        })
+
+    except Exception as e:
+     
+        
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+ 
+
     
 def listar_evolucoes(request, paciente_id):
     ...
