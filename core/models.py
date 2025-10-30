@@ -960,14 +960,14 @@ class Evolucao(models.Model):
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
     data_criacao = models.DateField(auto_now_add=True)
     foi_preenchido = models.BooleanField(default=False)
-    
-    queixa_principal_inicial = models.TextField(blank=True)
-    processo_terapeutico = models.TextField(blank=True)
-    condutas_tecnicas = models.TextField(blank=True)
-    resposta_paciente  = models.TextField(blank=True)
-    intercorrencias = models.TextField(blank=True)
-     
-    
+
+    # Campos de texto/char opcionais -> blank=True, null=True
+    queixa_principal_inicial = models.TextField(blank=True, null=True)
+    processo_terapeutico = models.TextField(blank=True, null=True)
+    condutas_tecnicas = models.TextField(blank=True, null=True)
+    resposta_paciente  = models.TextField(blank=True, null=True)
+    intercorrencias = models.TextField(blank=True, null=True)
+
     dor_inicio = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(10)],
         null=True, blank=True
@@ -976,56 +976,56 @@ class Evolucao(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(10)],
         null=True, blank=True
     )
-    dor_observacoes = models.TextField(blank=True)
-    
-    amplitude_inicio = models.CharField(max_length=100, blank=True)
-    amplitude_atual = models.CharField(max_length=100, blank=True)
-    amplitude_observacoes = models.TextField(blank=True)
-    
-    forca_inicio = models.CharField(max_length=100, blank=True)
-    forca_atual = models.CharField(max_length=100, blank=True)
-    forca_observacoes = models.TextField(blank=True)
-    
-    postura_inicio = models.CharField(max_length=100, blank=True)
-    postura_atual = models.CharField(max_length=100, blank=True)
-    postura_observacoes = models.TextField(blank=True)
-    
-    edema_inicio = models.CharField(max_length=100, blank=True)
-    edema_atual = models.CharField(max_length=100, blank=True)
-    edema_observacoes = models.TextField(blank=True)
-    
-    avds_inicio = models.CharField(max_length=100, blank=True)
-    avds_atual = models.CharField(max_length=100, blank=True)
-    avds_observacoes = models.TextField(blank=True)
-    
-    emocionais_inicio = models.CharField(max_length=100, blank=True)
-    emocionais_atual = models.CharField(max_length=100, blank=True)
-    emocionais_observacoes = models.TextField(blank=True)
-    
-    sintese_evolucao = models.TextField(blank=True)
-    
+    dor_observacoes = models.TextField(blank=True, null=True)
+
+    amplitude_inicio = models.CharField(max_length=100, blank=True, null=True)
+    amplitude_atual = models.CharField(max_length=100, blank=True, null=True)
+    amplitude_observacoes = models.TextField(blank=True, null=True)
+
+    forca_inicio = models.CharField(max_length=100, blank=True, null=True)
+    forca_atual = models.CharField(max_length=100, blank=True, null=True)
+    forca_observacoes = models.TextField(blank=True, null=True)
+
+    postura_inicio = models.CharField(max_length=100, blank=True, null=True)
+    postura_atual = models.CharField(max_length=100, blank=True, null=True)
+    postura_observacoes = models.TextField(blank=True, null=True)
+
+    edema_inicio = models.CharField(max_length=100, blank=True, null=True)
+    edema_atual = models.CharField(max_length=100, blank=True, null=True)
+    edema_observacoes = models.TextField(blank=True, null=True)
+
+    avds_inicio = models.CharField(max_length=100, blank=True, null=True)
+    avds_atual = models.CharField(max_length=100, blank=True, null=True)
+    avds_observacoes = models.TextField(blank=True, null=True)
+
+    emocionais_inicio = models.CharField(max_length=100, blank=True, null=True)
+    emocionais_atual = models.CharField(max_length=100, blank=True, null=True)
+    emocionais_observacoes = models.TextField(blank=True, null=True)
+
+    sintese_evolucao = models.TextField(blank=True, null=True)
+
     # Orientação ao Paciente
-    mensagem_paciente = models.TextField(blank=True)
-    explicacao_continuidade = models.TextField(blank=True)
-    reacoes_paciente = models.TextField(blank=True)
-    
+    mensagem_paciente = models.TextField(blank=True, null=True)
+    explicacao_continuidade = models.TextField(blank=True, null=True)
+    reacoes_paciente = models.TextField(blank=True, null=True)
+
     # Expectativa x Realidade
-    dor_expectativa = models.CharField(max_length=100, blank=True)
-    dor_realidade = models.CharField(max_length=100, blank=True)
-    mobilidade_expectativa = models.CharField(max_length=100, blank=True)
-    mobilidade_realidade = models.CharField(max_length=100, blank=True)
-    energia_expectativa = models.CharField(max_length=100, blank=True)
-    energia_realidade = models.CharField(max_length=100, blank=True)
-    consciencia_expectativa = models.CharField(max_length=100, blank=True)
-    consciencia_realidade = models.CharField(max_length=100, blank=True)
-    emocao_expectativa = models.CharField(max_length=100, blank=True)
-    emocao_realidade = models.CharField(max_length=100, blank=True)
-    
+    dor_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    dor_realidade = models.CharField(max_length=100, blank=True, null=True)
+    mobilidade_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    mobilidade_realidade = models.CharField(max_length=100, blank=True, null=True)
+    energia_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    energia_realidade = models.CharField(max_length=100, blank=True, null=True)
+    consciencia_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    consciencia_realidade = models.CharField(max_length=100, blank=True, null=True)
+    emocao_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    emocao_realidade = models.CharField(max_length=100, blank=True, null=True)
+
     # Próximos passos
-    objetivos_ciclo = models.TextField(blank=True)
-    condutas_mantidas = models.TextField(blank=True)
-    ajustes_plano = models.TextField(blank=True)
-    
+    objetivos_ciclo = models.TextField(blank=True, null=True)
+    condutas_mantidas = models.TextField(blank=True, null=True)
+    ajustes_plano = models.TextField(blank=True, null=True)
+
     # Sugestões complementares
     treino_funcional = models.BooleanField(default=False)
     pilates_clinico = models.BooleanField(default=False)
@@ -1035,19 +1035,17 @@ class Evolucao(models.Model):
     psicoterapia = models.BooleanField(default=False)
     estetica = models.BooleanField(default=False)
     outro_complementar = models.BooleanField(default=False)
-    outro_complementar_texto = models.CharField(max_length=100, blank=True)
-    
+    outro_complementar_texto = models.CharField(max_length=100, blank=True, null=True)
+
     # Registro interno
-    observacoes_internas = models.TextField(blank=True)
-    orientacoes_grupo = models.TextField(blank=True)
-    
-    
+    observacoes_internas = models.TextField(blank=True, null=True)
+    orientacoes_grupo = models.TextField(blank=True, null=True)
+
     class Meta:
         ordering = ['-data_criacao']
-    
-    def __str__(self):
-        return f"Evolução {self.paciente} - {self.data}"
 
+    def __str__(self):
+        return f"Evolução {self.paciente} - {self.data_criacao}"
 
 class AvaliacaoFisioterapeutica(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)

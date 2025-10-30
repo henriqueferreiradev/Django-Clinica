@@ -40,12 +40,12 @@ def verificar_prontuario(request, agendamento_id):
             agendamento_id=agendamento_id,
             foi_preenchido=True
         ).exists()
-        '''
+        
         existe_evolucao = Evolucao.objects.filter(
             agendamento_id=agendamento_id,
             foi_preenchido=True
         ).exists()
-       
+        '''
         existe_imagem = Imagem.objects.filter(
             agendamento_id=agendamento_id,
             foi_preenchido=True
@@ -56,7 +56,8 @@ def verificar_prontuario(request, agendamento_id):
             foi_preenchido=True
         ).exists()
  '''
-        return JsonResponse({'tem_prontuario': existe_prontuario})
+        return JsonResponse({'tem_prontuario': existe_prontuario,
+                             'tem_evolucao':existe_evolucao})
 
     except Exception as e:
         print("Erro ao verificar prontuário:", e)
@@ -231,9 +232,9 @@ def salvar_evolucao(request):
             edema_inicio=data.get('edema_inicio'),
             edema_atual=data.get('edema_atual'),
             edema_observacoes=data.get('edema_observacoes'),
-            advs_inicio=data.get('advs_inicio'),
-            advs_atual=data.get('advs_atual'),
-            advs_observacoes=data.get('advs_observacoes'),
+            avds_inicio=data.get('advs_inicio'),
+            avds_atual=data.get('advs_atual'),
+            avds_observacoes=data.get('advs_observacoes'),
             emocionais_inicio=data.get('asp_emocionais_inicio'),
             emocionais_atual=data.get('asp_emocionais_atual'),
             emocionais_observacoes=data.get('asp_emocionais_observacoes'),
@@ -247,6 +248,22 @@ def salvar_evolucao(request):
             energia_realidade=data.get('energia_realidade'),
             consciencia_expectativa=data.get('consciencia_expectativa'),
             consciencia_realidade=data.get('consciencia_realidade'),
+            emocao_expectativa=data.get('emocao_expectativa'),
+            emocao_realidade=data.get('emocao_realidade'),
+            objetivos_ciclo=data.get('objetivos_ciclo'),
+            condutas_mantidas=data.get('condutas_mantidas'),
+            ajustes_plano=data.get('ajustes_plano'),
+            treino_funcional=data.get('treino_funcional'),
+            pilates_clinico=data.get('pilates_clinico'),
+            recovery=data.get('recovery'),
+            rpg=data.get('rpg'),
+            nutricao=data.get('nutricao'),
+            estetica=data.get('estetica'),
+            outro_complementar=data.get('outro_complementar'),
+            outro_complementar_texto=data.get('outro_complementar_texto'),
+            observacoes_internas=data.get('observacoes_internas'),
+            orientacoes_grupo=data.get('orientacoes_grupo'),
+            foi_preenchido=True,
             
 
         )
@@ -262,17 +279,53 @@ def salvar_evolucao(request):
         })
 
     except Exception as e:
-     
-        
+        import traceback
+        traceback.print_exc()   # mostra o erro completo no terminal
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
- 
 
     
 def listar_evolucoes(request, paciente_id):
     ...
     
 def salvar_avaliacao(request):
-    ...
+    try:
+    
+            if request.content_type == 'application/json':
+                data = json.loads(request.body)
+            else:
+                return JsonResponse({'success': False, 'error': 'Content-Type must be application/json'}, status=400)
+
+            required_fields = ['paciente_id', 'profissional_id']
+            for field in required_fields:
+                if field not in data:
+                    return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
+
+            evolucao = Evolucao.objects.create(
+                paciente_id=data['paciente_id'],
+                profissional_id=data['profissional_id'],
+                agendamento_id=data.get('agendamento_id'),
+                
+                
+                
+                foi_preenchido=True,
+                
+
+            )
+            evolucoes = Evolucao.objects.all()
+            for p in evolucoes:
+                print(p.foi_preenchido)
+    
+            return JsonResponse({
+                'success': True,
+                'message': 'Evolução salva com sucesso!',
+                'evolucao_id': evolucao.id,
+                'data_criacao': evolucao.data_criacao.isoformat()
+            })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()   # mostra o erro completo no terminal
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
     
 def listar_avaliacoes(request, paciente_id):
     ...

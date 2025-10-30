@@ -241,43 +241,8 @@
                                             <i class="fas fa-eye me-1"></i> Leia Mais
                                         </button>
                                     </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Dor lombar há 6 meses, com irradiação para
-                                            membro inferior direito...</p>
-                                    </div>
                                 </div>
-
-                                <div class="prontuario-item">
-                                    <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Prontuário - 08/05/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dr. Carlos Santos</span>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(2)">
-                                            <i class="fas fa-eye me-1"></i> Leia Mais
-                                        </button>
-                                    </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Dor cervical com limitação de movimento...
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="prontuario-item">
-                                    <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Prontuário - 01/05/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(3)">
-                                            <i class="fas fa-eye me-1"></i> Leia Mais
-                                        </button>
-                                    </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Pós-operatório de artroplastia de
-                                            quadril...</p>
-                                    </div>
-                                </div>
+ 
                             </div>
                         </div>
 
@@ -439,6 +404,7 @@
                             </div>
                         </div>
                         <!-- Aba Evolução -->
+                        
                         <div class="tab-pane" id="evolucao">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5>Registro de Evoluções</h5>
@@ -446,28 +412,53 @@
                                     <i class="fas fa-plus me-1"></i> Nova Evolução
                                 </button>
                             </div>
+                            <div class="prontuarios-list">
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Evolução - 10/05/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openEvolucaoModal(1)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
+                                    </div>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Resumo:</strong> Paciente relata melhora de 40% na dor. Consegue realizar flexão anterior com menor desconforto...</p>
+                                    </div>
+                                </div>
 
-                            <div class="evolution-item">
-                                <div class="evolution-date">10/05/2023</div>
-                                <p>Paciente relata melhora de 40% na dor. Consegue realizar flexão anterior com menor
-                                    desconforto. Realizou exercícios de fortalecimento com boa adesão.</p>
-                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
-                            </div>
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Evolução - 03/05/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openEvolucaoModal(2)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
+                                    </div>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Resumo:</strong> Paciente ainda refere dor ao ficar em pé por mais de 1 hora. Realizamos exercícios de estabilização...</p>
+                                    </div>
+                                </div>
 
-                            <div class="evolution-item">
-                                <div class="evolution-date">03/05/2023</div>
-                                <p>Paciente ainda refere dor ao ficar em pé por mais de 1 hora. Realizamos exercícios de
-                                    estabilização lombar e aplicação de ultra-som.</p>
-                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Evolução - 26/04/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openEvolucaoModal(3)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
+                                    </div>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Resumo:</strong> Primeira sessão. Paciente com dor intensa (8/10). Iniciado trabalho de conscientização corporal...</p>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="evolution-item">
-                                <div class="evolution-date">26/04/2023</div>
-                                <p>Primeira sessão. Paciente com dor intensa (8/10). Iniciado trabalho de
-                                    conscientização corporal e exercícios leves de mobilização.</p>
-                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
-                            </div>
-                        </div>
+                                       </div>
 
                         <!-- Aba Imagens -->
                         <div class="tab-pane" id="imagens">
@@ -620,32 +611,59 @@
 
                         <div class="tab-pane" id="analisefisio">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5>Registro de Análises</h5>
+                                <h5>Registro de Avaliações</h5>
                                 <button class="btn btn-sm btn-primary" onclick="openModal('newAvaliacaoModal')">
-                                    <i class="fas fa-plus me-1"></i> Nova Analise
+                                    <i class="fas fa-plus me-1"></i> Nova Avaliação
                                 </button>
                             </div>
 
-                            <div class="evolution-item">
-                                <div class="evolution-date">10/05/2023</div>
-                                <p>Paciente relata melhora de 40% na dor. Consegue realizar flexão anterior com menor
-                                    desconforto. Realizou exercícios de fortalecimento com boa adesão.</p>
-                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
-                            </div>
+                            <div class="prontuarios-list">
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Avaliação - 15/05/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openAvaliacaoModal(1)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
+                                    </div>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Queixa Principal:</strong> Dor lombar há 6 meses, com irradiação para membro inferior direito...</p>
+                                    </div>
+                                </div>
 
-                            <div class="evolution-item">
-                                <div class="evolution-date">03/05/2023</div>
-                                <p>Paciente ainda refere dor ao ficar em pé por mais de 1 hora. Realizamos exercícios de
-                                    estabilização lombar e aplicação de ultra-som.</p>
-                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
-                            </div>
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Avaliação - 08/05/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dr. Carlos Santos</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openAvaliacaoModal(2)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
+                                    </div>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Queixa Principal:</strong> Dor cervical com limitação de movimento...</p>
+                                    </div>
+                                </div>
 
-                            <div class="evolution-item">
-                                <div class="evolution-date">26/04/2023</div>
-                                <p>Primeira sessão. Paciente com dor intensa (8/10). Iniciado trabalho de
-                                    conscientização corporal e exercícios leves de mobilização.</p>
-                                <div class="text-muted small">Registrado por: Dra. Ana Silva</div>
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+                                        <div class="prontuario-info">
+                                            <h6>Avaliação - 01/05/2023</h6>
+                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openAvaliacaoModal(3)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
+                                    </div>
+                                    <div class="prontuario-preview">
+                                        <p><strong>Queixa Principal:</strong> Pós-operatório de artroplastia de quadril...</p>
+                                    </div>
+                                </div>
                             </div>
+             
                         </div>
 
 
@@ -667,9 +685,10 @@
                 </div>
                 <div class="modal-body">
                     <form id="evolutionForm">
-                        <input type="hidden" id="modalPacienteId" value="{{ paciente.id }}">
-                        <input type="hidden" id="modalProfissionalId" value="{{ request.user.profissional.id }}">
-                        <input type="hidden" id="modalAgendamentoId" value="{{ agendamento.id }}">
+                       <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
+                            <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
+
+                            <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
                         <div class="habitos-grid">
                             <h6 class="section-title habitos-col">2. Evolução do estado de saúde e tratamento</h6>
 
@@ -1079,9 +1098,9 @@
                             <h6 class="section-title habitos-col">1. Anamnese / Histórico Clínico</h6>
 
                             <div class="habitos-col">
-                                <label for="queixaPrincipal" class="form-label">Queixa principal (nas palavras do
+                                <label for="queixaPrincipalAvaliacao" class="form-label">Queixa principal (nas palavras do
                                     paciente)</label>
-                                <textarea class="form-control" id="queixaPrincipal" rows="2"
+                                <textarea class="form-control" id="queixaPrincipalAvaliacao" rows="2"
                                     placeholder="Descreva a queixa principal nas palavras do paciente..."></textarea>
                             </div>
 
@@ -2117,6 +2136,528 @@
             </div>
         </div>
     </div>
+    <!-- Modal Visualizar Prontuário Completo -->
+    <div class="modal" id="viewProntuarioModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Prontuário Completo</h5>
+                    <button type="button" class="btn-close" onclick="closeModal('viewProntuarioModal')" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Cabeçalho com informações do prontuário -->
+                    <div class="prontuario-meta mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Data:</strong> <span id="viewProntuarioData">15/05/2023</span></p>
+                                <p><strong>Registrado por:</strong> <span id="viewProntuarioAutor">Dra. Ana Silva</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Paciente:</strong> <span id="viewProntuarioPaciente">Maria Oliveira</span></p>
+                                <p><strong>ID:</strong> <span id="viewProntuarioId">#PRT001</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo do prontuário (mesma estrutura do novo prontuário, mas em modo leitura) -->
+                    <form>
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Queixa Principal</label>
+                                <div class="form-control-view" id="viewQueixaPrincipal">
+                                    Dor lombar há 6 meses, com irradiação para membro inferior direito...
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Conduta durante a sessão</label>
+                                <div class="form-control-view" id="viewConduta">
+                                    Exercícios de fortalecimento do core, alongamento de cadeia posterior...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Feedback do paciente</label>
+                                <div class="form-control-view" id="viewHistoriaDoenca">
+                                    Paciente relata início dos sintomas após mudança de trabalho...
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Evolução</label>
+                                <div class="form-control-view" id="viewExameFisico">
+                                    Amplitude de movimento diminuída na flexão anterior...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Diagnóstico</label>
+                            <div class="form-control-view" id="viewDiagnostico">
+                                Lombalgia crônica com componente radicular.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Observações Adicionais / Comunicação</label>
+                            <div class="form-control-view" id="viewObservacoes">
+                                Paciente orientado sobre postura e ergonomia. Retorno em 15 dias...
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('viewProntuarioModal')">Fechar</button>
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="fas fa-print me-1"></i> Imprimir
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="editarProntuario()">
+                        <i class="fas fa-edit me-1"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Visualizar Avaliação Fisioterapêutica -->
+    <div class="modal" id="viewAvaliacaoModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Avaliação Fisioterapêutica - Visualização</h5>
+                    <button type="button" class="btn-close" onclick="closeModal('viewAvaliacaoModal')" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Cabeçalho com informações da avaliação -->
+                    <div class="prontuario-meta mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Data:</strong> <span id="viewAvaliacaoData">15/05/2023</span></p>
+                                <p><strong>Avaliador:</strong> <span id="viewAvaliacaoAutor">Dra. Ana Silva</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Paciente:</strong> <span id="viewAvaliacaoPaciente">Maria Oliveira</span></p>
+                                <p><strong>ID:</strong> <span id="viewAvaliacaoId">#AVA001</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1. Anamnese / Histórico Clínico -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">1. Anamnese / Histórico Clínico</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Queixa principal (nas palavras do paciente)</label>
+                            <div class="form-control-view" id="viewQueixaPrincipalAvaliacao">
+                                Dor lombar há 6 meses, com irradiação para membro inferior direito...
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Como o problema começou e há quanto tempo?</label>
+                                <div class="form-control-view" id="viewInicioProblema">
+                                    Sintomas iniciados após mudança de trabalho há 6 meses...
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">O que acredita ter causado o problema?</label>
+                                <div class="form-control-view" id="viewCausaProblema">
+                                    Longos períodos em pé no novo trabalho...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- a) Histórico da doença atual -->
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h6 class="section-title habitos-col">a) Histórico da doença atual</h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Dor ou limitação é recente ou antiga?</label>
+                                    <div class="form-control-view" id="viewDorRecenteAntiga">Antiga, há 6 meses</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Episódios anteriores semelhantes?</label>
+                                    <div class="form-control-view" id="viewEpisodiosAnteriores">Nenhum episódio anterior</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Tratamento fisioterapêutico anterior?</label>
+                                    <div class="form-control-view" id="viewTratamentoAnterior">Não</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Cirurgia ou procedimento relacionado?</label>
+                                    <div class="form-control-view" id="viewCirurgiaProcedimento">Nenhuma</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Acompanhamento médico?</label>
+                                    <div class="form-control-view" id="viewAcompanhamentoMedico">Sim - Dr. Carlos Ortopeida</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Diagnóstico médico (se houver)</label>
+                                    <div class="form-control-view" id="viewDiagnosticoMedico">Lombalgia crônica</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Uso de medicamentos? Quais?</label>
+                                    <div class="form-control-view" id="viewUsoMedicamentos">Anti-inflamatórios ocasionais</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Exames trazidos?</label>
+                                    <div class="form-control-view" id="viewExamesTrazidos">Sim - Raio-X lombar</div>
+                                </div>
+                            </div>
+                            
+                            <div class="habitos-col">
+                                <label class="form-label">Histórico de outras lesões?</label>
+                                <div class="form-control-view" id="viewHistoricoLesoes">
+                                    Lesão no tornozelo direito em 2018, tratada com fisioterapia por 2 meses.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- b) Histórico pessoal e familiar -->
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h6 class="section-title habitos-col">b) Histórico pessoal e familiar</h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Doenças prévias / crônicas</label>
+                                    <div class="form-control-view" id="viewDoencasPrevias">Hipertensão controlada</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Cirurgias prévias</label>
+                                    <div class="form-control-view" id="viewCirurgiasPrevias">Apêndice (2010)</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Condições genéticas / reumatológicas / metabólicas</label>
+                                    <div class="form-control-view" id="viewCondicoesGeneticas">Nenhuma</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Histórico familiar relevante</label>
+                                    <div class="form-control-view" id="viewHistoricoFamiliar">Mãe com artrose</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- c) Hábitos e estilo de vida -->
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h6 class="section-title habitos-col">c) Hábitos e estilo de vida</h6>
+
+                            <div class="habitos-grid-3">
+                                <div class="habitos-col">
+                                    <label class="form-label">Qualidade do sono</label>
+                                    <div class="form-control-view" id="viewQualidadeSono">Regular - 6 horas/noite</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Alimentação</label>
+                                    <div class="form-control-view" id="viewAlimentacao">Irregular</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Nível de atividade física</label>
+                                    <div class="form-control-view" id="viewNivelAtividade">Sedentário</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Tipo de exercício</label>
+                                    <div class="form-control-view" id="viewTipoExercicio">Caminhadas ocasionais</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Nível de estresse (0-10)</label>
+                                    <div class="form-control-view" id="viewNivelEstresse">7</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Rotina de trabalho / posturas</label>
+                                    <div class="form-control-view" id="viewRotinaTrabalho">
+                                        Trabalha como recepcionista, fica 8h em pé. Postura com peso mais na perna direita.
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Aspectos emocionais</label>
+                                    <div class="form-control-view" id="viewAspectosEmocionais">
+                                        Ansiosa com a dor, preocupada com o trabalho.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- d) Sinais, sintomas e dor -->
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h6 class="section-title habitos-col">d) Sinais, sintomas e dor</h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Localização da dor / sintoma</label>
+                                    <div class="form-control-view" id="viewLocalizacaoDor">
+                                        Região lombar baixa, com irradiação para glúteo direito e face posterior da coxa.
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Tipo de dor</label>
+                                    <div class="form-control-view" id="viewTipoDor">Pontada, Queimação</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-3">
+                                <div class="habitos-col">
+                                    <label class="form-label">Intensidade (0-10) - Repouso</label>
+                                    <div class="form-control-view" id="viewIntensidadeRepouso">3</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Intensidade (0-10) - Movimento</label>
+                                    <div class="form-control-view" id="viewIntensidadeMovimento">7</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Intensidade (0-10) - Pior momento</label>
+                                    <div class="form-control-view" id="viewIntensidadePior">8</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Fatores que agravam</label>
+                                    <div class="form-control-view" id="viewFatoresAgravam">
+                                        Ficar em pé por longos períodos, levantar peso, dirigir.
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Fatores que aliviam</label>
+                                    <div class="form-control-view" id="viewFatoresAliviam">
+                                        Repouso, deitar de lado com travesseiro entre os joelhos.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <div class="habitos-col">
+                                        <label class="form-label">Sinais associados</label>
+                                        <div class="form-control-view" id="viewSinaisAssociados">Rigidez, Compensações</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="habitos-col">
+                                        <label class="form-label">Grau de inflamação</label>
+                                        <div class="form-control-view" id="viewGrauInflamacao">Leve</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Exame físico e funcional -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">3. Exame físico e funcional</h6>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Inspeção e postura</label>
+                                <div class="form-control-view" id="viewInspecaoPostura">
+                                    Hiperlordose lombar, ombro direito mais elevado, pelve anteroversa.
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Compensações corporais</label>
+                                <div class="form-control-view" id="viewCompensacoesCorporais">
+                                    Compensação com rotação pélvica à direita durante a marcha.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Padrão respiratório / controle motor</label>
+                                <div class="form-control-view" id="viewPadraoRespiratorio">
+                                    Respiração torácica predominante, dificuldade de ativação do transverso abdominal.
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Palpação</label>
+                                <div class="form-control-view" id="viewPalpacao">
+                                    Dor à palpação em L4-L5, pontos gatilho em quadrado lombar direito.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Pontos de dor / rigidez / edema</label>
+                            <div class="form-control-view" id="viewPontosDor">
+                                L4-L5, SI direita, músculo piriforme direito.
+                            </div>
+                        </div>
+
+                        <!-- Tabela para Mobilidade e Força -->
+                        <div class="habitos-col">
+                            <label class="form-label">Mobilidade (ADM) e Força muscular (MMT 0-5)</label>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Região/Grupo</th>
+                                            <th>ADM Ativa (°)</th>
+                                            <th>ADM Passiva (°)</th>
+                                            <th>Dor ADM</th>
+                                            <th>Força (0-5)</th>
+                                            <th>Dor Força</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Quadril D - Flexão</td>
+                                            <td>90°</td>
+                                            <td>110°</td>
+                                            <td>✓</td>
+                                            <td>4</td>
+                                            <td>✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Coluna Lombar - Flexão</td>
+                                            <td>40°</td>
+                                            <td>50°</td>
+                                            <td>✓</td>
+                                            <td>3</td>
+                                            <td>✓</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Testes funcionais / compensações observadas</label>
+                            <div class="form-control-view" id="viewTestesFuncionais">
+                                Teste de elevação da perna reta positivo à direita (45°). Teste de Thomas positivo para retração de iliopsoas.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Outras observações</label>
+                            <div class="form-control-view" id="viewOutrasObservacoes">
+                                Marcha antálgica leve, dificuldade para calçar sapatos.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Continua com as outras seções seguindo o mesmo padrão... -->
+                    <!-- 4. Diagnóstico Fisioterapêutico -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">4. Diagnóstico Fisioterapêutico</h6>
+
+                        <div class="mb-3">
+                            <label class="form-label">Diagnóstico Completo</label>
+                            <div class="form-control-view" id="viewDiagnosticoCompleto">
+                                Paciente de 45 anos com queixa de dor lombar há 6 meses com irradiação para membro inferior direito, apresenta limitação funcional em atividades de vida diária como permanecer em pé por longos períodos e dirigir, demonstra postura compensatória em pelve anteroversa e rotação pélvica direita. Tensão muscular em quadrado lombar e piriforme direito. Compensações em padrão respiratório torácico e fatores emocionais relacionados a ansiedade com a dor. Rotina impactada por trabalho em pé. Diagnóstico funcional indica síndrome dolorosa miofascial com componente de disfunção sacroilíaca.
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-4">
+                            <div class="habitos-col">
+                                <label class="form-label">Grau de dor (0-10)</label>
+                                <div class="form-control-view" id="viewGrauDor">7</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Limitação funcional (0-10)</label>
+                                <div class="form-control-view" id="viewLimitacaoFuncional">6</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Inflamação (0-3)</label>
+                                <div class="form-control-view" id="viewGrauInflamacaoGeral">1</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Edema (0-3)</label>
+                                <div class="form-control-view" id="viewGrauEdema">0</div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Receptividade</label>
+                                <div class="form-control-view" id="viewReceptividade">Alta</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Autonomia AVD</label>
+                                <div class="form-control-view" id="viewAutonomiaAVD">Independente</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Plano Terapêutico -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">5. Plano Terapêutico</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Objetivo geral</label>
+                            <div class="form-control-view" id="viewObjetivoGeral">
+                                Redução da dor lombar e melhora da função para retorno às atividades laborais sem limitações.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Objetivo principal</label>
+                            <div class="form-control-view" id="viewObjetivoPrincipal">
+                                Reduzir dor para 3/10 em 4 semanas.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Objetivo secundário</label>
+                            <div class="form-control-view" id="viewObjetivoSecundario">
+                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Técnicas selecionadas</label>
+                            <div class="form-control-view" id="viewTecnicasSelecionadas">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-3">
+                            <div class="habitos-col">
+                                <label class="form-label">Frequência (x/semana)</label>
+                                <div class="form-control-view" id="viewFrequencia">3</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Duração (min)</label>
+                                <div class="form-control-view" id="viewDuracao">60</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Reavaliação na sessão</label>
+                                <div class="form-control-view" id="viewReavaliacaoSessao">8ª sessão</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('viewAvaliacaoModal')">Fechar</button>
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="fas fa-print me-1"></i> Imprimir
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="editarAvaliacao()">
+                        <i class="fas fa-edit me-1"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
     <script src="{% static 'core/js/prontuarios/formularios.js' %}"></script>
     <script>
         // Funções para controle de modais
@@ -2132,17 +2673,30 @@
             // abre o modal do paciente
             openModal('patientModal');
 
-            // atualiza o nome do paciente (se aplicável)
+            // atualiza o nome do paciente
             document.getElementById("patientName").textContent = pacienteNome;
 
-            // guarda os IDs dentro de atributos data (seguro e prático)
+            // guarda os IDs dentro de atributos data
             const modal = document.getElementById('newProntuarioModal');
+            const evolutionModal = document.getElementById('newEvolutionModal');
+            const avaliacaoModal = document.getElementById('newAvaliacaoModal');
+
+
             modal.dataset.pacienteId = pacienteId;
             modal.dataset.agendamentoId = agendamentoId;
 
-            console.log("Paciente:", pacienteId, "Agendamento:", agendamentoId);
-        }
+            evolutionModal.dataset.pacienteId = pacienteId;
+            evolutionModal.dataset.agendamentoId = agendamentoId;
 
+            avaliacaoModal.dataset.pacienteId = pacienteId;
+            avaliacaoModal.dataset.agendamentoId = agendamentoId;
+
+            console.log("IDs definidos:", {
+                pacienteId: pacienteId,
+                agendamentoId: agendamentoId,
+                pacienteNome: pacienteNome
+            });
+        }
 
         // Função para alternar entre abas
         function switchTab(tabId) {
@@ -2223,7 +2777,7 @@
 
             alert('Imagem adicionada com sucesso!');
         }
-
+        
         // Configurar área de arrastar e soltar
         const dropArea = document.getElementById('dropArea');
         const fileInput = document.getElementById('fileUpload');
@@ -2264,6 +2818,78 @@
             // Aqui você processaria os arquivos para upload
             alert(`${files.length} arquivo(s) selecionado(s) para upload`);
         }
+        // Função para abrir o modal de visualização do prontuário
+function openProntuarioModal(prontuarioId) {
+    // Simulação de dados - substitua por chamada AJAX real
+    const prontuarios = {
+        1: {
+            data: "15/05/2023",
+            autor: "Dra. Ana Silva",
+            paciente: "Maria Oliveira",
+            id: "#PRT001",
+            queixaPrincipal: "Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.",
+            conduta: "Exercícios de fortalecimento do core, alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.",
+            historiaDoenca: "Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.",
+            exameFisico: "Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.",
+            diagnostico: "Lombalgia crônica com componente radicular.",
+            observacoes: "Paciente orientado sobre postura e ergonomia. Retorno em 15 dias para reavaliação. Demonstrou boa adesão ao tratamento."
+        },
+        2: {
+            data: "08/05/2023",
+            autor: "Dr. Carlos Santos",
+            paciente: "Maria Oliveira", 
+            id: "#PRT002",
+            queixaPrincipal: "Dor cervical com limitação de movimento. Relata dificuldade para dirigir por longos períodos.",
+            conduta: "Mobilização cervical, exercícios de fortalecimento para musculatura cervical, alongamentos.",
+            historiaDoenca: "Sintomas iniciados após viagem longa de carro. História prévia de hérnia de disco cervical.",
+            exameFisico: "Limitação de 30% na rotação cervical. Dor à palpação em C5-C6. Força muscular 4/5 em flexores cervicais.",
+            diagnostico: "Cervicalgia mecânica.",
+            observacoes: "Paciente orientado sobre ergonomia no trabalho. Exercícios domiciliares prescritos."
+        },
+        3: {
+            data: "01/05/2023",
+            autor: "Dra. Ana Silva",
+            paciente: "Maria Oliveira",
+            id: "#PRT003",
+            queixaPrincipal: "Pós-operatório de artroplastia de quadril direito. Relata dor e dificuldade para deambular.",
+            conduta: "Exercícios de fortalecimento de quadril, treino de marcha com andador, crioterapia.",
+            historiaDoenca: "Cirurgia realizada há 3 semanas devido a artrose grave. Evolução dentro do esperado.",
+            exameFisico: "Edema moderado no quadril direito. Amplitude de movimento: flexão 60°, abdução 20°. Marcha com andador.",
+            diagnostico: "Pós-operatório de artroplastia total de quadril direito.",
+            observacoes: "Evolução satisfatória. Paciente motivada com a reabilitação."
+        }
+    };
+
+    const prontuario = prontuarios[prontuarioId];
+    
+    if (prontuario) {
+        // Preencher metadados
+        document.getElementById('viewProntuarioData').textContent = prontuario.data;
+        document.getElementById('viewProntuarioAutor').textContent = prontuario.autor;
+        document.getElementById('viewProntuarioPaciente').textContent = prontuario.paciente;
+        document.getElementById('viewProntuarioId').textContent = prontuario.id;
+        
+        // Preencher conteúdo
+        document.getElementById('viewQueixaPrincipal').textContent = prontuario.queixaPrincipal;
+        document.getElementById('viewConduta').textContent = prontuario.conduta;
+        document.getElementById('viewHistoriaDoenca').textContent = prontuario.historiaDoenca;
+        document.getElementById('viewExameFisico').textContent = prontuario.exameFisico;
+        document.getElementById('viewDiagnostico').textContent = prontuario.diagnostico;
+        document.getElementById('viewObservacoes').textContent = prontuario.observacoes;
+        
+        // Abrir modal
+        openModal('viewProntuarioModal');
+    } else {
+        alert('Prontuário não encontrado!');
+    }
+}
+
+// Função para editar prontuário (futura implementação)
+function editarProntuario() {
+    const prontuarioId = document.getElementById('viewProntuarioId').textContent;
+    alert(`Abrir edição do prontuário ${prontuarioId}`);
+    // Aqui você pode implementar a lógica para abrir o modal de edição
+}
     </script>
 </body>
 
