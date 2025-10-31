@@ -62,6 +62,7 @@ function mostrarMensagem(mensagem, tipo = 'success') {
 
 async function atualizarStatusProntuarios() {
     const statusBlocks = document.querySelectorAll(".status-simple");
+    const btnProntuario = document.getElementById('btn-salvar-prontuario')
 
     for (const block of statusBlocks) {
         const agendamentoId = block.dataset.agendamentoId;
@@ -74,9 +75,15 @@ async function atualizarStatusProntuarios() {
             const data = await resp.json();
             const badgeProntuario = block.querySelector(".status-badge.prontuario");
             const badgeEvolucao = block.querySelector(".status-badge.evolucao");
-            if (badgeProntuario, badgeEvolucao) {
+            const badgeAvaliacao = block.querySelector(".status-badge.avaliacao");
+
+            if (badgeProntuario, badgeEvolucao, badgeAvaliacao) {
                 badgeProntuario.dataset.status = data.tem_prontuario ? "true" : "false";
-                badgeEvolucao.dataset.status = data.tem_prontuario ? "true" : "false";
+                badgeEvolucao.dataset.status = data.tem_evolucao ? "true" : "false";
+                badgeAvaliacao.dataset.status = data.tem_avaliacao ? "true" : "false";
+                
+
+                
             }
         } catch (err) {
             console.error("Erro ao atualizar status:", err);
@@ -232,7 +239,7 @@ async function salvarAvaliacao() {
         agendamento_id: agendamentoId,  
         profissional_id: profissionalId,
         // Anamnese / Histórico Clínico
-        queixa_principal: document.getElementById('queixaPrincipal').value,
+        queixa_principal: document.getElementById('queixaPrincipalAvaliacao').value,
         inicio_problema: document.getElementById('inicioProblema').value,
         causa_problema: document.getElementById('causaProblema').value,
         

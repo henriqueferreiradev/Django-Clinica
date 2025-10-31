@@ -75,9 +75,9 @@
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/50?img=5" class="patient-img" alt="Paciente">
                                 <div class="flex-grow-1">
-                                    <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}}</h5>
+                                    <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}} {{ag.paciente.id}}</h5>
                                     <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
-                                    <span class="badge badge-status bg-success">Confirmada</span>
+                                    <span class="badge badge-status bg-success">Agendamento Nº {{ ag.id }} - Confirmado</span>
                                 </div>
                                 <div>
                                     <button class="btn btn-sm btn-outline-primary me-1"
@@ -309,7 +309,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             onclick="closeModal('newProntuarioModal')">Cancelar</button>
-                                        <button type="button" class="btn btn-primary"
+                                        <button type="button" class="btn btn-primary" id='btn-salvar-prontuario'
                                             onclick="salvarProntuario()">Salvar Prontuário</button>
                                     </div>
                                 </div>
