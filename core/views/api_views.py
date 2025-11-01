@@ -363,7 +363,7 @@ def salvar_avaliacao(request):
                 diagnostico_completo=data.get('diagnostico_completo'),
                 grau_dor=int(data.get('grau_dor') or 0),
                 limitacao_funcional=int(data.get('limitacao_funcional') or 0),
-                grau_inflamacao_num=data.get('grau_inflamacao_num'),
+                grau_inflamacao_num=int(data.get('grau_inflamacao_num') or 0),
                 grau_edema=data.get('grau_edema'),
                 receptividade=data.get('receptividade'),
                 autonomia_avd=data.get('autonomia_avd'),
