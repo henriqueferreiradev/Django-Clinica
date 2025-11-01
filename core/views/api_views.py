@@ -300,12 +300,13 @@ def salvar_avaliacao(request):
             for field in required_fields:
                 if field not in data:
                     return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
+            criado_por = request.user if request.user.is_authenticated else None
 
             avaliacao = AvaliacaoFisioterapeutica.objects.create(
                 paciente_id=data['paciente_id'],
                 profissional_id=data['profissional_id'],
                 agendamento_id=data.get('agendamento_id'),
-                usuario_logado=request.user,
+                criado_por=criado_por,
                 queixa_principal=data.get('queixa_principal'),
                 inicio_problema=data.get('inicio_problema'),
                 causa_problema=data.get('causa_problema'),
@@ -325,11 +326,11 @@ def salvar_avaliacao(request):
                 cirurgias_previas=data.get('cirurgias_previas'),
                 historico_familiar=data.get('historico_familiar'),
                 qualidade_sono=data.get('qualidade_sono'),
-                horas_sono=data.get('horas_sono'),
+                horas_sono=data.get('horas_sono', 0),
                 alimentacao=data.get('alimentacao'),
                 nivel_atividade=data.get('nivel_atividade'),
                 tipo_exercicio=data.get('tipo_exercicio'),
-                nivel_estresse=data.get('nivel_estresse'),
+                nivel_estresse=int(data.get('nivel_estresse') or 0),                
                 rotina_trabalho=data.get('rotina_trabalho'),
                 aspectos_emocionais=data.get('aspectos_emocionais'),
                 localizacao_dor=data.get('localizacao_dor'),
@@ -339,9 +340,9 @@ def salvar_avaliacao(request):
                 tipo_dor_choque=data.get('tipo_dor_choque'),
                 tipo_dor_outra=data.get('tipo_dor_outra'),
                 tipo_dor_outra_texto=data.get('tipo_dor_outra_texto'),
-                intensidade_repouso=data.get('intensidade_repouso'),
-                intensidade_movimento=data.get('intensidade_movimento'),
-                intensidade_pior=data.get('intensidade_pior'),
+                intensidade_repouso=int(data.get('intensidade_repouso')or 0),
+                intensidade_movimento=int(data.get('intensidade_movimento') or 0),
+                intensidade_pior=int(data.get('intensidade_pior') or 0),
                 fatores_agravam=data.get('fatores_agravam'),
                 fatores_aliviam=data.get('fatores_aliviam'),
                 sinal_edema=data.get('sinal_edema'),
@@ -360,8 +361,8 @@ def salvar_avaliacao(request):
                 testes_funcionais=data.get('testes_funcionais'),
                 outras_observacoes=data.get('outras_observacoes'),
                 diagnostico_completo=data.get('diagnostico_completo'),
-                grau_dor=data.get('grau_dor'),
-                limitacao_funcional=data.get('limitacao_funcional'),
+                grau_dor=int(data.get('grau_dor') or 0),
+                limitacao_funcional=int(data.get('limitacao_funcional') or 0),
                 grau_inflamacao_num=data.get('grau_inflamacao_num'),
                 grau_edema=data.get('grau_edema'),
                 receptividade=data.get('receptividade'),
@@ -414,7 +415,7 @@ def salvar_avaliacao(request):
             )
             avaliacoes = AvaliacaoFisioterapeutica.objects.all()
             for p in avaliacoes:
-                
+                print(p.usuario_logado)
                 print(p.foi_preenchido)
     
             return JsonResponse({
