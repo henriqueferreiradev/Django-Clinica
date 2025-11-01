@@ -1052,6 +1052,7 @@ class AvaliacaoFisioterapeutica(models.Model):
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     data_avaliacao = models.DateTimeField(auto_now_add=True)
+    usuario_logado = models.ForeingKey(User, on_delete=models.CASCADE)
     foi_preenchido = models.BooleanField(default=False)
     # Anamnese / Histórico Clínico
     queixa_principal = models.TextField()

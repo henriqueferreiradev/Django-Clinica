@@ -305,6 +305,7 @@ def salvar_avaliacao(request):
                 paciente_id=data['paciente_id'],
                 profissional_id=data['profissional_id'],
                 agendamento_id=data.get('agendamento_id'),
+                usuario_logado=request.user,
                 queixa_principal=data.get('queixa_principal'),
                 inicio_problema=data.get('inicio_problema'),
                 causa_problema=data.get('causa_problema'),
