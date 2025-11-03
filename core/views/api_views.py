@@ -35,30 +35,31 @@ def verificar_cpf(request):
 
 def verificar_prontuario(request, agendamento_id):
     try:
-        # Verifica se existe um prontuário preenchido vinculado a esse agendamento
-        existe_prontuario = Prontuario.objects.filter(
-            agendamento_id=agendamento_id,
-            foi_preenchido=True
-        ).exists()
+        # Verifica se existe um prontuário vinculado a esse agendamento
+        prontuario = Prontuario.objects.filter(agendamento_id=agendamento_id).first()
+        
+        
+        existe_prontuario = prontuario is not None
+        prontuario_nao_se_aplica = prontuario.nao_se_aplica if prontuario else False
+        print(existe_prontuario, prontuario_nao_se_aplica)
+        
         
         existe_evolucao = Evolucao.objects.filter(
             agendamento_id=agendamento_id,
             foi_preenchido=True
         ).exists()
-        '''
-        existe_imagem = Imagem.objects.filter(
-            agendamento_id=agendamento_id,
-            foi_preenchido=True
-        ).exists()
-        '''
+
         existe_avaliacao = AvaliacaoFisioterapeutica.objects.filter(
             agendamento_id=agendamento_id,
             foi_preenchido=True
         ).exists()
 
-        return JsonResponse({'tem_prontuario': existe_prontuario,
-                            'tem_evolucao':existe_evolucao,
-                            'tem_avaliacao': existe_avaliacao})
+        return JsonResponse({
+            'tem_prontuario': existe_prontuario,
+            'prontuario_nao_se_aplica': prontuario_nao_se_aplica,
+            'tem_evolucao': existe_evolucao,
+            'tem_avaliacao': existe_avaliacao
+        })
 
     except Exception as e:
         print("Erro ao verificar prontuário:", e)
@@ -128,18 +129,36 @@ def salvar_prontuario(request):
             if field not in data:
                 return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
 
-        prontuario = Prontuario.objects.create(
-            paciente_id=data['paciente_id'],
-            profissional_id=data['profissional_id'],
-            agendamento_id=data.get('agendamento_id'),
-            queixa_principal=data['queixa_principal'],
-            feedback_paciente=data.get('historia_doenca', ''),
-            evolucao=data.get('exame_fisico', ''),
-            conduta=data.get('conduta', ''),
-            diagnostico=data.get('diagnostico', ''),
-            observacoes=data.get('observacoes', ''),
-            foi_preenchido=True,
-        )
+        nao_se_aplica = data.get('nao_se_aplica', False)
+                
+        if nao_se_aplica:
+            prontuario = Prontuario.objects.create(
+                paciente_id=data['paciente_id'],
+                profissional_id=data['profissional_id'],
+                agendamento_id=data.get('agendamento_id'),
+                queixa_principal='',
+                feedback_paciente='',
+                evolucao='',
+                conduta='',
+                diagnostico='',
+                observacoes='',
+                foi_preenchido=False,   
+                nao_se_aplica=True,     
+            )
+            print(prontuario)
+        else:
+            prontuario = Prontuario.objects.create(
+                paciente_id=data['paciente_id'],
+                profissional_id=data['profissional_id'],
+                agendamento_id=data.get('agendamento_id'),
+                queixa_principal=data['queixa_principal'],
+                feedback_paciente=data.get('historia_doenca', ''),
+                evolucao=data.get('exame_fisico', ''),
+                conduta=data.get('conduta', ''),
+                diagnostico=data.get('diagnostico', ''),
+                observacoes=data.get('observacoes', ''),
+                foi_preenchido=True,
+            )
         prontuarios = Prontuario.objects.all()
         for p in prontuarios:
             print(p.foi_preenchido)
@@ -153,15 +172,15 @@ def salvar_prontuario(request):
 
     except Exception as e:
         import traceback
+        traceback.print_exc()
         
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
-
 
 def listar_prontuarios(request, paciente_id):
     try:
         prontuarios = Prontuario.objects.filter(
             paciente_id=paciente_id
-        ).select_related('profissional').order_by('-data_criacao')
+        ).select_related('profissional', 'agendamento').order_by('-data_criacao')
         
         prontuarios_data = []
         for prontuario in prontuarios:
@@ -169,12 +188,13 @@ def listar_prontuarios(request, paciente_id):
                 'id': prontuario.id,
                 'data': prontuario.data_criacao.strftime('%d/%m/%Y'),
                 'data_completa': prontuario.data_criacao.strftime('%d/%m/%Y - %H:%M'),
-                'agendamento_atual': prontuario.agendamento.data.strftime('%d/%m/%Y - %H:%M'),
+                'agendamento_atual_id':prontuario.agendamento.id,
+                'agendamento_atual': prontuario.agendamento.data.strftime('%d/%m/%Y') if prontuario.agendamento else 'Não informado',
                 'profissional_nome': prontuario.profissional.nome if prontuario.profissional else 'Não informado',
                 'profissional_id': prontuario.profissional.id if prontuario.profissional else None,
                 'queixa_principal': prontuario.queixa_principal or '',
                 'queixa_preview': (prontuario.queixa_principal[:100] + '...') if prontuario.queixa_principal and len(prontuario.queixa_principal) > 100 else (prontuario.queixa_principal or ''),
-                'feedback_paciente': prontuario.feedback_paciente  or '',
+                'feedback_paciente': prontuario.feedback_paciente or '',
                 'evolucao': prontuario.evolucao or '',
                 'conduta': prontuario.conduta or '',
                 'diagnostico': prontuario.diagnostico or '',
@@ -193,8 +213,8 @@ def listar_prontuarios(request, paciente_id):
             'error': str(e),
             'prontuarios': []
         }, status=500)
-
-
+        
+        
 def salvar_evolucao(request):
 
     try:

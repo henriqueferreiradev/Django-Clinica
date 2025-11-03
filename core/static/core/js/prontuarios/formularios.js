@@ -1,7 +1,42 @@
 // core/static/core/js/api.js
 document.addEventListener('DOMContentLoaded', function () {
     atualizarStatusProntuarios()
+    listarProntuarios()
 })
+
+async function openPatientModal(pacienteId, agendamentoId, pacienteNome) {
+    // abre o modal do paciente
+    openModal('patientModal');
+
+    // atualiza o nome do paciente
+    document.getElementById("patientName").textContent = pacienteNome;
+
+    // guarda os IDs dentro de atributos data
+    const modal = document.getElementById('newProntuarioModal');
+    const evolutionModal = document.getElementById('newEvolutionModal');
+    const avaliacaoModal = document.getElementById('newAvaliacaoModal');
+
+    modal.dataset.pacienteId = pacienteId;
+    modal.dataset.agendamentoId = agendamentoId;
+
+    evolutionModal.dataset.pacienteId = pacienteId;
+    evolutionModal.dataset.agendamentoId = agendamentoId;
+
+    avaliacaoModal.dataset.pacienteId = pacienteId;
+    avaliacaoModal.dataset.agendamentoId = agendamentoId;
+
+    console.log("IDs definidos:", {
+        pacienteId: pacienteId,
+        agendamentoId: agendamentoId,
+        pacienteNome: pacienteNome
+    });
+    
+    // ✅ CARREGA OS PRONTUÁRIOS DO PACIENTE CLICADO
+    await listarProntuarios(pacienteId);
+    
+    // ✅ MUDA PARA A ABA PRONTUÁRIO
+    switchTab('prontuario');
+}
 // Função para obter o token CSRF
 function getCSRFToken() {
     const name = 'csrftoken';
@@ -93,7 +128,6 @@ async function travarBotoes() {
 async function atualizarStatusProntuarios() {
     const statusBlocks = document.querySelectorAll(".status-simple");
 
-
     for (const block of statusBlocks) {
         const agendamentoId = block.dataset.agendamentoId;
         if (!agendamentoId) continue;
@@ -107,43 +141,64 @@ async function atualizarStatusProntuarios() {
             const badgeEvolucao = block.querySelector(".status-badge.evolucao");
             const badgeAvaliacao = block.querySelector(".status-badge.avaliacao");
 
-            if (badgeProntuario, badgeEvolucao, badgeAvaliacao) {
-                badgeProntuario.dataset.status = data.tem_prontuario ? "true" : "false";
-                badgeEvolucao.dataset.status = data.tem_evolucao ? "true" : "false";
-                badgeAvaliacao.dataset.status = data.tem_avaliacao ? "true" : "false";
-
-
-
+            if (badgeProntuario) {
+                // Define o status baseado no prontuário
+                if (data.tem_prontuario) {
+                    if (data.prontuario_nao_se_aplica) {
+                        badgeProntuario.dataset.status = "nao_se_aplica";
+                    } else {
+                        badgeProntuario.dataset.status = "true";
+                    }
+                } else {
+                    badgeProntuario.dataset.status = "false";
+                }
             }
+
+            if (badgeEvolucao) {
+                badgeEvolucao.dataset.status = data.tem_evolucao ? "true" : "false";
+            }
+
+            if (badgeAvaliacao) {
+                badgeAvaliacao.dataset.status = data.tem_avaliacao ? "true" : "false";
+            }
+
         } catch (err) {
             console.error("Erro ao atualizar status:", err);
         }
     }
-};
-
+}
 async function salvarProntuario() {
     const modal = document.getElementById('newProntuarioModal');
     const profissionalId = document.getElementById("profissionalLogado").value;
+    const naoSeAplica = document.getElementById('naoSeAplicaProntuario').checked;
 
     const dados = {
         paciente_id: modal.dataset.pacienteId || "",
         profissional_id: profissionalId,
         agendamento_id: modal.dataset.agendamentoId || "",
-        queixa_principal: document.getElementById('queixaPrincipal').value,
-        historia_doenca: document.getElementById('historiaDoenca').value,
-        exame_fisico: document.getElementById('exameFisico').value,
-        conduta: document.getElementById('conduta').value,
-        diagnostico: document.getElementById('diagnostico').value,
-        observacoes: document.getElementById('observacoes').value,
+        nao_se_aplica: naoSeAplica
     };
+
+   
+    if (!naoSeAplica) {
+        dados.queixa_principal = document.getElementById('queixaPrincipal').value;
+        dados.historia_doenca = document.getElementById('historiaDoenca').value;
+        dados.exame_fisico = document.getElementById('exameFisico').value;
+        dados.conduta = document.getElementById('conduta').value;
+        dados.diagnostico = document.getElementById('diagnostico').value;
+        dados.observacoes = document.getElementById('observacoes').value;
+    }
 
     console.log("Enviando dados:", dados);
 
     const res = await apiRequest('/api/salvar-prontuario/', dados);
     if (res.success) {
-        mostrarMensagem('Prontuário salvo com sucesso');
+        const mensagem = naoSeAplica ? 'Prontuário salvo como "Não se aplica" com sucesso!' : 'Prontuário salvo com sucesso!';
+        mostrarMensagem(mensagem);
         closeModal('newProntuarioModal');
-        atualizarStatusProntuarios()
+        
+        atualizarStatusProntuarios();
+        document.getElementById('prontuarioForm').reset();
     } else {
         mostrarMensagem('Erro ao salvar prontuário: ' + res.error, 'error');
     }
@@ -413,4 +468,74 @@ async function salvarAvaliacao() {
     } else {
         mostrarMensagem('Erro ao salvar evolução: ' + res.error, 'error');
     }
+}
+
+
+async function listarProntuarios(pacienteId = null) {
+    // Se não receber pacienteId, tenta pegar do modal
+    if (!pacienteId) {
+        const modal = document.getElementById('newProntuarioModal');
+        pacienteId = modal.dataset.pacienteId;
+    }
+    
+    if (!pacienteId) {
+        console.error('Nenhum paciente ID encontrado');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/listar-prontuarios/${pacienteId}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao buscar prontuários');
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            renderizarListaProntuarios(data.prontuarios);
+        } else {
+            console.error('Erro na resposta:', data.error);
+            mostrarMensagem('Erro ao carregar prontuários', 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao listar prontuários:', error);
+        mostrarMensagem('Erro ao carregar prontuários', 'error');
+    }
+}
+
+
+function renderizarListaProntuarios(prontuarios) {
+    const container = document.querySelector('.prontuarios-list');
+    
+    if (!prontuarios || prontuarios.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-file-medical fa-2x mb-2 text-muted"></i>
+                <p>Nenhum prontuário encontrado para este paciente.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = prontuarios.map(prontuario => `
+        <div class="prontuario-item">
+            <div class="prontuario-header">
+                <div class="prontuario-info">
+                    <h6>Data do prontuário - ${prontuario.data_completa}</h6>
+                    <span class="text-muted small">Registrado por: ${prontuario.profissional_nome}</span>
+                    <span class="text-muted small">Agendamento Nº ${prontuario.agendamento_atual_id} - ${prontuario.agendamento_atual} </span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(${prontuario.id})">
+                    <i class="fas fa-eye me-1"></i> Leia Mais
+                </button>
+            </div>
+        </div>
+    `).join('');
 }

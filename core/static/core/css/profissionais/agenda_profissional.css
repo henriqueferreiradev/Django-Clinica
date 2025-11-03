@@ -866,12 +866,17 @@ PRONTUÁRIOS LIST
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 10px;
+     
 }
+.prontuario-info {
+    display: flex;
+    flex-direction: column;
 
+}
 .prontuario-info h6 {
     margin: 0 0 5px 0;
     color: var(--roxoPrincipal);
+    font-size: 14px;
     font-weight: 600;
 }
 
@@ -1319,7 +1324,6 @@ textarea.form-control {
     border: 2px solid #dee2e6;
     background: white;
 }
-
 .status-badge[data-status="false"] {
     background-color: #edd4d4;
     color: #571515;
@@ -1332,6 +1336,11 @@ textarea.form-control {
     border-color: #c3e6cb;
 }
 
+.status-badge[data-status="nao_se_aplica"] {
+    background-color: #d4e3ed;  /* Azul claro */
+    color: #154a72;            /* Azul escuro */
+    border-color: #c3d6e6;     /* Azul mais claro para a borda */
+}
 .status-badge:hover {
     transform: translateY(-2px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1375,4 +1384,14 @@ textarea.form-control {
 .btn-secondary {
     background-color: #6c757d;
     border-color: #6c757d;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    margin-bottom: 1rem;
 }

@@ -946,6 +946,7 @@ class Prontuario(models.Model):
     diagnostico = models.TextField()
     observacoes = models.TextField()
 
+    nao_se_aplica = models.BooleanField(default=False)
     foi_preenchido = models.BooleanField(default=False)
     class Meta:
         ordering = ['-data_criacao']
@@ -960,7 +961,7 @@ class Evolucao(models.Model):
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
     data_criacao = models.DateField(auto_now_add=True)
     foi_preenchido = models.BooleanField(default=False)
-
+    nao_se_aplica = models.BooleanField(default=False)
     # Campos de texto/char opcionais -> blank=True, null=True
     queixa_principal_inicial = models.TextField(blank=True, null=True)
     processo_terapeutico = models.TextField(blank=True, null=True)
@@ -1054,6 +1055,7 @@ class AvaliacaoFisioterapeutica(models.Model):
     data_avaliacao = models.DateTimeField(auto_now_add=True)
     criado_por = models.ForeignKey(User, on_delete=models.CASCADE)
     foi_preenchido = models.BooleanField(default=False)
+    nao_se_aplica = models.BooleanField(default=False)
     # Anamnese / Histórico Clínico
     queixa_principal = models.TextField()
     inicio_problema = models.TextField(blank=True)

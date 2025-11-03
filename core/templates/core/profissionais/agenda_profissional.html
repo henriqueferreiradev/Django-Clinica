@@ -136,15 +136,15 @@
                             </div>
                             <div class="stat-card">
                                 <div class="stat-number">3</div>
-                                <div class="stat-label">Confirmadas</div>
+                                <div class="stat-label">Prontuários Pendentes</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-number">1</div>
-                                <div class="stat-label">Aguardando</div>
+                                <div class="stat-label">Evoluções Pendentes</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-number">1</div>
-                                <div class="stat-label">Cancelada</div>
+                                <div class="stat-label">Avaliações Pendentes</div>
                             </div>
                         </div>
                     </div>
@@ -228,16 +228,12 @@
                             </div>
                             <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
                             <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
-
                             <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
-                            <!-- Lista de Prontuários -->
+                             
                             <div class="prontuarios-list">
                                 <div class="prontuario-item">
                                     <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Prontuário - 15/05/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
-                                        </div>
+ 
                                         <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(1)">
                                             <i class="fas fa-eye me-1"></i> Leia Mais
                                         </button>
@@ -308,6 +304,10 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
+                                        <label class="checkbox-option" for="naoSeAplicaProntuario">
+                                            <input class="form-check-input" type="checkbox" id="naoSeAplicaProntuario">
+                                            Não se aplica
+                                        </label>
                                         <button type="button" class="btn btn-secondary"
                                             onclick="closeModal('newProntuarioModal')">Cancelar</button>
                                         <button type="button" class="btn btn-primary" id='btn-salvar-prontuario'
@@ -1080,6 +1080,10 @@
                     </form>
                 </div>
                 <div class="modal-footer">
+                        <label class="checkbox-option" for="naoSeAplicaEvolucao">
+                            <input class="form-check-input" type="checkbox" id="naoSeAplicaEvolucao">
+                            Não se aplica
+                        </label>
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newEvolutionModal')">Cancelar</button>
                     <button type="button" class="btn btn-primary" id='btn-salvar-evolucao'
@@ -2140,6 +2144,10 @@
                     </form>
                 </div>
                 <div class="modal-footer">
+                    <label class="checkbox-option" for="naoSeAplicaAvaliacao">
+                            <input class="form-check-input" type="checkbox" id="naoSeAplicaAvaliacao">
+                            Não se aplica
+                        </label>
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newAvaliacaoModal')">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="btn-salvar-avaliacao"
@@ -2728,6 +2736,7 @@
                 agendamentoId: agendamentoId,
                 pacienteNome: pacienteNome
             });
+            listarProntuarios()
         }
 
         // Função para alternar entre abas
