@@ -77,7 +77,8 @@
                                 <div class="flex-grow-1">
                                     <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}} {{ag.paciente.id}}</h5>
                                     <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
-                                    <span class="badge badge-status bg-success">Agendamento Nº {{ ag.id }} - Confirmado</span>
+                                    <span class="badge badge-status bg-success">Agendamento Nº {{ ag.id }} -
+                                        Confirmado</span>
                                 </div>
                                 <div>
                                     <button class="btn btn-sm btn-outline-primary me-1"
@@ -130,7 +131,7 @@
                     <div class="card-body">
                         <div class="stats-grid">
                             <div class="stat-card">
-                                <div class="stat-number">4</div>
+                                <div class="stat-number">{{atendimentos_dia}}</div>
                                 <div class="stat-label">Consultas</div>
                             </div>
                             <div class="stat-card">
@@ -242,7 +243,7 @@
                                         </button>
                                     </div>
                                 </div>
- 
+
                             </div>
                         </div>
 
@@ -404,7 +405,7 @@
                             </div>
                         </div>
                         <!-- Aba Evolução -->
-                        
+
                         <div class="tab-pane" id="evolucao">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5>Registro de Evoluções</h5>
@@ -424,7 +425,8 @@
                                         </button>
                                     </div>
                                     <div class="prontuario-preview">
-                                        <p><strong>Resumo:</strong> Paciente relata melhora de 40% na dor. Consegue realizar flexão anterior com menor desconforto...</p>
+                                        <p><strong>Resumo:</strong> Paciente relata melhora de 40% na dor. Consegue
+                                            realizar flexão anterior com menor desconforto...</p>
                                     </div>
                                 </div>
 
@@ -439,7 +441,8 @@
                                         </button>
                                     </div>
                                     <div class="prontuario-preview">
-                                        <p><strong>Resumo:</strong> Paciente ainda refere dor ao ficar em pé por mais de 1 hora. Realizamos exercícios de estabilização...</p>
+                                        <p><strong>Resumo:</strong> Paciente ainda refere dor ao ficar em pé por mais de
+                                            1 hora. Realizamos exercícios de estabilização...</p>
                                     </div>
                                 </div>
 
@@ -454,11 +457,12 @@
                                         </button>
                                     </div>
                                     <div class="prontuario-preview">
-                                        <p><strong>Resumo:</strong> Primeira sessão. Paciente com dor intensa (8/10). Iniciado trabalho de conscientização corporal...</p>
+                                        <p><strong>Resumo:</strong> Primeira sessão. Paciente com dor intensa (8/10).
+                                            Iniciado trabalho de conscientização corporal...</p>
                                     </div>
                                 </div>
                             </div>
-                                       </div>
+                        </div>
 
                         <!-- Aba Imagens -->
                         <div class="tab-pane" id="imagens">
@@ -629,7 +633,8 @@
                                         </button>
                                     </div>
                                     <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Dor lombar há 6 meses, com irradiação para membro inferior direito...</p>
+                                        <p><strong>Queixa Principal:</strong> Dor lombar há 6 meses, com irradiação para
+                                            membro inferior direito...</p>
                                     </div>
                                 </div>
 
@@ -644,7 +649,8 @@
                                         </button>
                                     </div>
                                     <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Dor cervical com limitação de movimento...</p>
+                                        <p><strong>Queixa Principal:</strong> Dor cervical com limitação de movimento...
+                                        </p>
                                     </div>
                                 </div>
 
@@ -659,11 +665,12 @@
                                         </button>
                                     </div>
                                     <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Pós-operatório de artroplastia de quadril...</p>
+                                        <p><strong>Queixa Principal:</strong> Pós-operatório de artroplastia de
+                                            quadril...</p>
                                     </div>
                                 </div>
                             </div>
-             
+
                         </div>
 
 
@@ -685,10 +692,10 @@
                 </div>
                 <div class="modal-body">
                     <form id="evolutionForm">
-                       <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
-                            <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
+                        <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
+                        <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
 
-                            <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
+                        <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
                         <div class="habitos-grid">
                             <h6 class="section-title habitos-col">2. Evolução do estado de saúde e tratamento</h6>
 
@@ -1075,7 +1082,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newEvolutionModal')">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="salvarEvolucao()">Salvar Evolução</button>
+                    <button type="button" class="btn btn-primary" id='btn-salvar-evolucao'
+                        onclick="salvarEvolucao()">Salvar Evolução</button>
                 </div>
             </div>
         </div>
@@ -1098,7 +1106,8 @@
                             <h6 class="section-title habitos-col">1. Anamnese / Histórico Clínico</h6>
 
                             <div class="habitos-col">
-                                <label for="queixaPrincipalAvaliacao" class="form-label">Queixa principal (nas palavras do
+                                <label for="queixaPrincipalAvaliacao" class="form-label">Queixa principal (nas palavras
+                                    do
                                     paciente)</label>
                                 <textarea class="form-control" id="queixaPrincipalAvaliacao" rows="2"
                                     placeholder="Descreva a queixa principal nas palavras do paciente..."></textarea>
@@ -1618,9 +1627,9 @@
                                                         placeholder="°"></td>
                                                 <td>
                                                     <div class="form-check">
-                                                    <label class="checkbox-option">
-                                                        <input class="form-check-input" type="checkbox">
-                                                    </label>
+                                                        <label class="checkbox-option">
+                                                            <input class="form-check-input" type="checkbox">
+                                                        </label>
                                                     </div>
                                                 </td>
                                                 <td><input type="number" class="form-control form-control-sm"
@@ -2133,7 +2142,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newAvaliacaoModal')">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="salvarAvaliacao()">Salvar Avaliação</button>
+                    <button type="button" class="btn btn-primary" id="btn-salvar-avaliacao"
+                        onclick="salvarAvaliacao()">Salvar Avaliação</button>
                 </div>
             </div>
         </div>
@@ -2144,7 +2154,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Prontuário Completo</h5>
-                    <button type="button" class="btn-close" onclick="closeModal('viewProntuarioModal')" aria-label="Close"></button>
+                    <button type="button" class="btn-close" onclick="closeModal('viewProntuarioModal')"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Cabeçalho com informações do prontuário -->
@@ -2152,10 +2163,12 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <p><strong>Data:</strong> <span id="viewProntuarioData">15/05/2023</span></p>
-                                <p><strong>Registrado por:</strong> <span id="viewProntuarioAutor">Dra. Ana Silva</span></p>
+                                <p><strong>Registrado por:</strong> <span id="viewProntuarioAutor">Dra. Ana Silva</span>
+                                </p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Paciente:</strong> <span id="viewProntuarioPaciente">Maria Oliveira</span></p>
+                                <p><strong>Paciente:</strong> <span id="viewProntuarioPaciente">Maria Oliveira</span>
+                                </p>
                                 <p><strong>ID:</strong> <span id="viewProntuarioId">#PRT001</span></p>
                             </div>
                         </div>
@@ -2209,7 +2222,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('viewProntuarioModal')">Fechar</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('viewProntuarioModal')">Fechar</button>
                     <button type="button" class="btn btn-outline-primary">
                         <i class="fas fa-print me-1"></i> Imprimir
                     </button>
@@ -2226,7 +2240,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Avaliação Fisioterapêutica - Visualização</h5>
-                    <button type="button" class="btn-close" onclick="closeModal('viewAvaliacaoModal')" aria-label="Close"></button>
+                    <button type="button" class="btn-close" onclick="closeModal('viewAvaliacaoModal')"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Cabeçalho com informações da avaliação -->
@@ -2280,7 +2295,8 @@
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Episódios anteriores semelhantes?</label>
-                                    <div class="form-control-view" id="viewEpisodiosAnteriores">Nenhum episódio anterior</div>
+                                    <div class="form-control-view" id="viewEpisodiosAnteriores">Nenhum episódio anterior
+                                    </div>
                                 </div>
                             </div>
 
@@ -2298,7 +2314,8 @@
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
                                     <label class="form-label">Acompanhamento médico?</label>
-                                    <div class="form-control-view" id="viewAcompanhamentoMedico">Sim - Dr. Carlos Ortopeida</div>
+                                    <div class="form-control-view" id="viewAcompanhamentoMedico">Sim - Dr. Carlos
+                                        Ortopeida</div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Diagnóstico médico (se houver)</label>
@@ -2309,14 +2326,15 @@
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
                                     <label class="form-label">Uso de medicamentos? Quais?</label>
-                                    <div class="form-control-view" id="viewUsoMedicamentos">Anti-inflamatórios ocasionais</div>
+                                    <div class="form-control-view" id="viewUsoMedicamentos">Anti-inflamatórios
+                                        ocasionais</div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Exames trazidos?</label>
                                     <div class="form-control-view" id="viewExamesTrazidos">Sim - Raio-X lombar</div>
                                 </div>
                             </div>
-                            
+
                             <div class="habitos-col">
                                 <label class="form-label">Histórico de outras lesões?</label>
                                 <div class="form-control-view" id="viewHistoricoLesoes">
@@ -2386,7 +2404,8 @@
                                 <div class="habitos-col">
                                     <label class="form-label">Rotina de trabalho / posturas</label>
                                     <div class="form-control-view" id="viewRotinaTrabalho">
-                                        Trabalha como recepcionista, fica 8h em pé. Postura com peso mais na perna direita.
+                                        Trabalha como recepcionista, fica 8h em pé. Postura com peso mais na perna
+                                        direita.
                                     </div>
                                 </div>
                                 <div class="habitos-col">
@@ -2406,7 +2425,8 @@
                                 <div class="habitos-col">
                                     <label class="form-label">Localização da dor / sintoma</label>
                                     <div class="form-control-view" id="viewLocalizacaoDor">
-                                        Região lombar baixa, com irradiação para glúteo direito e face posterior da coxa.
+                                        Região lombar baixa, com irradiação para glúteo direito e face posterior da
+                                        coxa.
                                     </div>
                                 </div>
                                 <div class="habitos-col">
@@ -2449,7 +2469,8 @@
                                 <div class="col-md-6">
                                     <div class="habitos-col">
                                         <label class="form-label">Sinais associados</label>
-                                        <div class="form-control-view" id="viewSinaisAssociados">Rigidez, Compensações</div>
+                                        <div class="form-control-view" id="viewSinaisAssociados">Rigidez, Compensações
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -2543,7 +2564,8 @@
                         <div class="habitos-col">
                             <label class="form-label">Testes funcionais / compensações observadas</label>
                             <div class="form-control-view" id="viewTestesFuncionais">
-                                Teste de elevação da perna reta positivo à direita (45°). Teste de Thomas positivo para retração de iliopsoas.
+                                Teste de elevação da perna reta positivo à direita (45°). Teste de Thomas positivo para
+                                retração de iliopsoas.
                             </div>
                         </div>
 
@@ -2563,7 +2585,13 @@
                         <div class="mb-3">
                             <label class="form-label">Diagnóstico Completo</label>
                             <div class="form-control-view" id="viewDiagnosticoCompleto">
-                                Paciente de 45 anos com queixa de dor lombar há 6 meses com irradiação para membro inferior direito, apresenta limitação funcional em atividades de vida diária como permanecer em pé por longos períodos e dirigir, demonstra postura compensatória em pelve anteroversa e rotação pélvica direita. Tensão muscular em quadrado lombar e piriforme direito. Compensações em padrão respiratório torácico e fatores emocionais relacionados a ansiedade com a dor. Rotina impactada por trabalho em pé. Diagnóstico funcional indica síndrome dolorosa miofascial com componente de disfunção sacroilíaca.
+                                Paciente de 45 anos com queixa de dor lombar há 6 meses com irradiação para membro
+                                inferior direito, apresenta limitação funcional em atividades de vida diária como
+                                permanecer em pé por longos períodos e dirigir, demonstra postura compensatória em pelve
+                                anteroversa e rotação pélvica direita. Tensão muscular em quadrado lombar e piriforme
+                                direito. Compensações em padrão respiratório torácico e fatores emocionais relacionados
+                                a ansiedade com a dor. Rotina impactada por trabalho em pé. Diagnóstico funcional indica
+                                síndrome dolorosa miofascial com componente de disfunção sacroilíaca.
                             </div>
                         </div>
 
@@ -2605,7 +2633,8 @@
                         <div class="habitos-col">
                             <label class="form-label">Objetivo geral</label>
                             <div class="form-control-view" id="viewObjetivoGeral">
-                                Redução da dor lombar e melhora da função para retorno às atividades laborais sem limitações.
+                                Redução da dor lombar e melhora da função para retorno às atividades laborais sem
+                                limitações.
                             </div>
                         </div>
 
@@ -2647,7 +2676,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('viewAvaliacaoModal')">Fechar</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('viewAvaliacaoModal')">Fechar</button>
                     <button type="button" class="btn btn-outline-primary">
                         <i class="fas fa-print me-1"></i> Imprimir
                     </button>
@@ -2658,8 +2688,8 @@
             </div>
         </div>
     </div>
-    
-    
+
+
     <script src="{% static 'core/js/prontuarios/formularios.js' %}"></script>
     <script>
         // Funções para controle de modais
@@ -2779,7 +2809,7 @@
 
             alert('Imagem adicionada com sucesso!');
         }
-        
+
         // Configurar área de arrastar e soltar
         const dropArea = document.getElementById('dropArea');
         const fileInput = document.getElementById('fileUpload');
@@ -2821,77 +2851,77 @@
             alert(`${files.length} arquivo(s) selecionado(s) para upload`);
         }
         // Função para abrir o modal de visualização do prontuário
-function openProntuarioModal(prontuarioId) {
-    // Simulação de dados - substitua por chamada AJAX real
-    const prontuarios = {
-        1: {
-            data: "15/05/2023",
-            autor: "Dra. Ana Silva",
-            paciente: "Maria Oliveira",
-            id: "#PRT001",
-            queixaPrincipal: "Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.",
-            conduta: "Exercícios de fortalecimento do core, alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.",
-            historiaDoenca: "Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.",
-            exameFisico: "Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.",
-            diagnostico: "Lombalgia crônica com componente radicular.",
-            observacoes: "Paciente orientado sobre postura e ergonomia. Retorno em 15 dias para reavaliação. Demonstrou boa adesão ao tratamento."
-        },
-        2: {
-            data: "08/05/2023",
-            autor: "Dr. Carlos Santos",
-            paciente: "Maria Oliveira", 
-            id: "#PRT002",
-            queixaPrincipal: "Dor cervical com limitação de movimento. Relata dificuldade para dirigir por longos períodos.",
-            conduta: "Mobilização cervical, exercícios de fortalecimento para musculatura cervical, alongamentos.",
-            historiaDoenca: "Sintomas iniciados após viagem longa de carro. História prévia de hérnia de disco cervical.",
-            exameFisico: "Limitação de 30% na rotação cervical. Dor à palpação em C5-C6. Força muscular 4/5 em flexores cervicais.",
-            diagnostico: "Cervicalgia mecânica.",
-            observacoes: "Paciente orientado sobre ergonomia no trabalho. Exercícios domiciliares prescritos."
-        },
-        3: {
-            data: "01/05/2023",
-            autor: "Dra. Ana Silva",
-            paciente: "Maria Oliveira",
-            id: "#PRT003",
-            queixaPrincipal: "Pós-operatório de artroplastia de quadril direito. Relata dor e dificuldade para deambular.",
-            conduta: "Exercícios de fortalecimento de quadril, treino de marcha com andador, crioterapia.",
-            historiaDoenca: "Cirurgia realizada há 3 semanas devido a artrose grave. Evolução dentro do esperado.",
-            exameFisico: "Edema moderado no quadril direito. Amplitude de movimento: flexão 60°, abdução 20°. Marcha com andador.",
-            diagnostico: "Pós-operatório de artroplastia total de quadril direito.",
-            observacoes: "Evolução satisfatória. Paciente motivada com a reabilitação."
+        function openProntuarioModal(prontuarioId) {
+            // Simulação de dados - substitua por chamada AJAX real
+            const prontuarios = {
+                1: {
+                    data: "15/05/2023",
+                    autor: "Dra. Ana Silva",
+                    paciente: "Maria Oliveira",
+                    id: "#PRT001",
+                    queixaPrincipal: "Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.",
+                    conduta: "Exercícios de fortalecimento do core, alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.",
+                    historiaDoenca: "Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.",
+                    exameFisico: "Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.",
+                    diagnostico: "Lombalgia crônica com componente radicular.",
+                    observacoes: "Paciente orientado sobre postura e ergonomia. Retorno em 15 dias para reavaliação. Demonstrou boa adesão ao tratamento."
+                },
+                2: {
+                    data: "08/05/2023",
+                    autor: "Dr. Carlos Santos",
+                    paciente: "Maria Oliveira",
+                    id: "#PRT002",
+                    queixaPrincipal: "Dor cervical com limitação de movimento. Relata dificuldade para dirigir por longos períodos.",
+                    conduta: "Mobilização cervical, exercícios de fortalecimento para musculatura cervical, alongamentos.",
+                    historiaDoenca: "Sintomas iniciados após viagem longa de carro. História prévia de hérnia de disco cervical.",
+                    exameFisico: "Limitação de 30% na rotação cervical. Dor à palpação em C5-C6. Força muscular 4/5 em flexores cervicais.",
+                    diagnostico: "Cervicalgia mecânica.",
+                    observacoes: "Paciente orientado sobre ergonomia no trabalho. Exercícios domiciliares prescritos."
+                },
+                3: {
+                    data: "01/05/2023",
+                    autor: "Dra. Ana Silva",
+                    paciente: "Maria Oliveira",
+                    id: "#PRT003",
+                    queixaPrincipal: "Pós-operatório de artroplastia de quadril direito. Relata dor e dificuldade para deambular.",
+                    conduta: "Exercícios de fortalecimento de quadril, treino de marcha com andador, crioterapia.",
+                    historiaDoenca: "Cirurgia realizada há 3 semanas devido a artrose grave. Evolução dentro do esperado.",
+                    exameFisico: "Edema moderado no quadril direito. Amplitude de movimento: flexão 60°, abdução 20°. Marcha com andador.",
+                    diagnostico: "Pós-operatório de artroplastia total de quadril direito.",
+                    observacoes: "Evolução satisfatória. Paciente motivada com a reabilitação."
+                }
+            };
+
+            const prontuario = prontuarios[prontuarioId];
+
+            if (prontuario) {
+                // Preencher metadados
+                document.getElementById('viewProntuarioData').textContent = prontuario.data;
+                document.getElementById('viewProntuarioAutor').textContent = prontuario.autor;
+                document.getElementById('viewProntuarioPaciente').textContent = prontuario.paciente;
+                document.getElementById('viewProntuarioId').textContent = prontuario.id;
+
+                // Preencher conteúdo
+                document.getElementById('viewQueixaPrincipal').textContent = prontuario.queixaPrincipal;
+                document.getElementById('viewConduta').textContent = prontuario.conduta;
+                document.getElementById('viewHistoriaDoenca').textContent = prontuario.historiaDoenca;
+                document.getElementById('viewExameFisico').textContent = prontuario.exameFisico;
+                document.getElementById('viewDiagnostico').textContent = prontuario.diagnostico;
+                document.getElementById('viewObservacoes').textContent = prontuario.observacoes;
+
+                // Abrir modal
+                openModal('viewProntuarioModal');
+            } else {
+                alert('Prontuário não encontrado!');
+            }
         }
-    };
 
-    const prontuario = prontuarios[prontuarioId];
-    
-    if (prontuario) {
-        // Preencher metadados
-        document.getElementById('viewProntuarioData').textContent = prontuario.data;
-        document.getElementById('viewProntuarioAutor').textContent = prontuario.autor;
-        document.getElementById('viewProntuarioPaciente').textContent = prontuario.paciente;
-        document.getElementById('viewProntuarioId').textContent = prontuario.id;
-        
-        // Preencher conteúdo
-        document.getElementById('viewQueixaPrincipal').textContent = prontuario.queixaPrincipal;
-        document.getElementById('viewConduta').textContent = prontuario.conduta;
-        document.getElementById('viewHistoriaDoenca').textContent = prontuario.historiaDoenca;
-        document.getElementById('viewExameFisico').textContent = prontuario.exameFisico;
-        document.getElementById('viewDiagnostico').textContent = prontuario.diagnostico;
-        document.getElementById('viewObservacoes').textContent = prontuario.observacoes;
-        
-        // Abrir modal
-        openModal('viewProntuarioModal');
-    } else {
-        alert('Prontuário não encontrado!');
-    }
-}
-
-// Função para editar prontuário (futura implementação)
-function editarProntuario() {
-    const prontuarioId = document.getElementById('viewProntuarioId').textContent;
-    alert(`Abrir edição do prontuário ${prontuarioId}`);
-    // Aqui você pode implementar a lógica para abrir o modal de edição
-}
+        // Função para editar prontuário (futura implementação)
+        function editarProntuario() {
+            const prontuarioId = document.getElementById('viewProntuarioId').textContent;
+            alert(`Abrir edição do prontuário ${prontuarioId}`);
+            // Aqui você pode implementar a lógica para abrir o modal de edição
+        }
     </script>
 </body>
 

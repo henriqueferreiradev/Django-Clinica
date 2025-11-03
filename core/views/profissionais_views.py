@@ -406,6 +406,8 @@ def agenda_profissional(request):
     # --- filtro do DIA ---
     agendamentos = agendamentos.filter(data=dia)
 
+    atendimentos_dia = agendamentos.count()
+    print(atendimentos_dia)
 
     # --- demais filtros (opcionais) ---
     if data_inicio:
@@ -438,6 +440,7 @@ def agenda_profissional(request):
     context = {
         'agendamentos': agendamentos,
         'profissional': profissional,
+        'atendimentos_dia':atendimentos_dia,
         'dia': dia,  # para exibir formatado
         'prev_url': f"?{urlencode(prev_params)}",
         'next_url': f"?{urlencode(next_params)}",
@@ -445,34 +448,3 @@ def agenda_profissional(request):
     }
     return render(request, 'core/profissionais/agenda_profissional.html', context)
 
-
-def salvar_prontuario(request):
-    try:
-        dados = json.loads(request.body)
-
-        prontuario = Prontuario.objects.create(
-            paciente_id = dados.get('paciente_id'),
-            pacote_id = dados.get('pacote_id'),
-            agndamento_id = dados.get('agendamento_id'),
-            profissional_id = dados.get('profissional_id'),
-            
-            historico_doenca = dados.get('historico_doenca',''),
-            exame_fisico = dados.get('exame_fisico',''),
-            conduta = dados.get('conduta',''),
-            diagnostico = dados.get('diagnostico',''),
-            observacoes = dados.get('observacoes',''),
-        )
-
-        return JsonResponse({
-            'sucess':True,
-            'prontuario_id':prontuario.id,
-            'message':'Prontuário salvo com sucesso!'
-        })
-
-
-        ...
-    except Exception as e:
-                return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=400)

@@ -59,10 +59,40 @@ function mostrarMensagem(mensagem, tipo = 'success') {
     }, 5000);
 }
 
+async function travarBotoes() {
+    const btnProntuario = document.getElementById('btn-salvar-prontuario')
+    const btnEvolucao = document.getElementById('btn-salvar-evolucao')
+    const btnAvaliacao = document.getElementById('btn-salvar-avaliacao')
+
+    for (const block of statusBlocks) {
+        const agendamentoId = block.dataset.agendamentoId;
+        if (!agendamentoId) continue;
+
+        try {
+            const resp = await fetch(`/api/verificar-prontuario/${agendamentoId}/`);
+            if (!resp.ok) continue;
+
+            const data = await resp.json();
+
+
+            if (btnAvaliacao, btnEvolucao, btnProntuario) {
+                btnProntuario.dataset.status = data.tem_prontuario ? "true" : "false";
+                btnEvolucao.dataset.status = data.tem_evolucao ? "true" : "false";
+                btnAvaliacao.dataset.status = data.tem_avaliacao ? "true" : "false";
+
+
+
+            }
+        } catch (err) {
+            console.error("Erro ao atualizar status:", err);
+        }
+    }
+
+}
 
 async function atualizarStatusProntuarios() {
     const statusBlocks = document.querySelectorAll(".status-simple");
-    const btnProntuario = document.getElementById('btn-salvar-prontuario')
+
 
     for (const block of statusBlocks) {
         const agendamentoId = block.dataset.agendamentoId;
@@ -81,9 +111,9 @@ async function atualizarStatusProntuarios() {
                 badgeProntuario.dataset.status = data.tem_prontuario ? "true" : "false";
                 badgeEvolucao.dataset.status = data.tem_evolucao ? "true" : "false";
                 badgeAvaliacao.dataset.status = data.tem_avaliacao ? "true" : "false";
-                
 
-                
+
+
             }
         } catch (err) {
             console.error("Erro ao atualizar status:", err);
@@ -127,10 +157,10 @@ async function salvarEvolucao() {
     const pacienteId = modal.dataset.pacienteId || "";
     const agendamentoId = modal.dataset.agendamentoId || "";
 
-    console.log("IDs capturados:", { 
-        pacienteId: pacienteId, 
+    console.log("IDs capturados:", {
+        pacienteId: pacienteId,
         agendamentoId: agendamentoId,
-        profissionalId: profissionalId 
+        profissionalId: profissionalId
     });
 
     // Verificar se tem paciente_id (obrigatório)
@@ -221,10 +251,10 @@ async function salvarAvaliacao() {
     const pacienteId = modal.dataset.pacienteId || "";
     const agendamentoId = modal.dataset.agendamentoId || "";
 
-    console.log("IDs capturados:", { 
-        pacienteId: pacienteId, 
+    console.log("IDs capturados:", {
+        pacienteId: pacienteId,
         agendamentoId: agendamentoId,
-        profissionalId: profissionalId 
+        profissionalId: profissionalId
     });
 
     // Verificar se tem paciente_id (obrigatório)
@@ -235,14 +265,14 @@ async function salvarAvaliacao() {
 
     const dados = {
 
-        paciente_id: pacienteId, 
-        agendamento_id: agendamentoId,  
+        paciente_id: pacienteId,
+        agendamento_id: agendamentoId,
         profissional_id: profissionalId,
         // Anamnese / Histórico Clínico
         queixa_principal: document.getElementById('queixaPrincipalAvaliacao').value,
         inicio_problema: document.getElementById('inicioProblema').value,
         causa_problema: document.getElementById('causaProblema').value,
-        
+
         // Histórico da doença atual
         dor_recente_antiga: document.getElementById('dorRecenteAntiga').value,
         episodios_anteriores: document.getElementById('episodiosAnteriores').value,
@@ -256,13 +286,13 @@ async function salvarAvaliacao() {
         exames_trazidos: document.getElementById('examesSim').checked,
         tipo_exame: document.getElementById('tipoExame').value,
         historico_lesoes: document.getElementById('historicoLesoes').value,
-        
+
         // Histórico pessoal e familiar
         doencas_previas: document.getElementById('doencasPrevias').value,
         cirurgias_previas: document.getElementById('cirurgiasPrevias').value,
         condicoes_geneticas: document.getElementById('condicoesGeneticas').value,
         historico_familiar: document.getElementById('historicoFamiliar').value,
-        
+
         // Hábitos e estilo de vida
         qualidade_sono: document.querySelector('input[name="qualidadeSono"]:checked')?.value || '',
         horas_sono: document.getElementById('horasSono').value,
@@ -272,7 +302,7 @@ async function salvarAvaliacao() {
         nivel_estresse: document.getElementById('nivelEstresse').value,
         rotina_trabalho: document.getElementById('rotinaTrabalho').value,
         aspectos_emocionais: document.getElementById('aspectosEmocionais').value,
-        
+
         // Sinais, sintomas e dor
         localizacao_dor: document.getElementById('localizacaoDor').value,
         tipo_dor_pontada: document.getElementById('dorPontada').checked,
@@ -281,14 +311,14 @@ async function salvarAvaliacao() {
         tipo_dor_choque: document.getElementById('dorChoque').checked,
         tipo_dor_outra: document.getElementById('dorOutra').checked,
         tipo_dor_outra_texto: document.getElementById('dorOutraTexto').value,
-        
+
         intensidade_repouso: document.getElementById('intensidadeRepouso').value,
         intensidade_movimento: document.getElementById('intensidadeMovimento').value,
         intensidade_pior: document.getElementById('intensidadePior').value,
-        
+
         fatores_agravam: document.getElementById('fatoresAgravam').value,
         fatores_aliviam: document.getElementById('fatoresAliviam').value,
-        
+
         sinal_edema: document.getElementById('sinalEdema').checked,
         sinal_parestesia: document.getElementById('sinalParestesia').checked,
         sinal_rigidez: document.getElementById('sinalRigidez').checked,
@@ -296,9 +326,9 @@ async function salvarAvaliacao() {
         sinal_compensacoes: document.getElementById('sinalCompensacoes').checked,
         sinal_outro: document.getElementById('sinalOutro').checked,
         sinal_outro_texto: document.getElementById('sinalOutroTexto').value,
-        
+
         grau_inflamacao: document.querySelector('input[name="grauInflamacao"]:checked')?.value || '',
-        
+
         // Exame físico e funcional
         inspecao_postura: document.getElementById('inspecaoPostura').value,
         compensacoes_corporais: document.getElementById('compensacoesCorporais').value,
@@ -307,21 +337,21 @@ async function salvarAvaliacao() {
         pontos_dor: document.getElementById('pontosDor').value,
         testes_funcionais: document.getElementById('testesFuncionais').value,
         outras_observacoes: document.getElementById('outrasObservacoes').value,
-        
+
         // Diagnóstico Fisioterapêutico
         diagnostico_completo: document.getElementById('diagnosticoCompleto').value,
         grau_dor: document.getElementById('grauDor').value,
         limitacao_funcional: document.getElementById('limitaçãoFuncional').value,
         grau_inflamacao_num: document.getElementById('grauInflamacao').value,
         grau_edema: document.getElementById('grauEdema').value,
-        receptividade: document.querySelector('input[name="receptividade"]:checked')?.value,  
-        autonomia_avd: document.querySelector('input[name="autonomiaAVD"]:checked')?.value,        
+        receptividade: document.querySelector('input[name="receptividade"]:checked')?.value,
+        autonomia_avd: document.querySelector('input[name="autonomiaAVD"]:checked')?.value,
         // Plano Terapêutico
         objetivo_geral: document.getElementById('objetivoGeral').value,
         objetivo_principal: document.getElementById('objetivoPrincipal').value,
         objetivo_secundario: document.getElementById('objetivoSecundario').value,
         pontos_atencao: document.getElementById('pontosAtencao').value,
-        
+
         // Técnicas manuais
         tecnica_liberacao: document.getElementById('tecnicaLiberacao').checked,
         tecnica_mobilizacao: document.getElementById('tecnicaMobilizacao').checked,
@@ -330,7 +360,7 @@ async function salvarAvaliacao() {
         tecnica_manipulacoes: document.getElementById('tecnicaManipulacoes').checked,
         tecnica_outras: document.getElementById('tecnicaOutras').checked,
         tecnica_outras_texto: document.getElementById('tecnicaOutrasTexto').value,
-        
+
         // Recursos eletrofísicos
         recurso_aussie: document.getElementById('recursoAussie').checked,
         recurso_russa: document.getElementById('recursoRussa').checked,
@@ -339,7 +369,7 @@ async function salvarAvaliacao() {
         recurso_termo: document.getElementById('recursoTermo').checked,
         recurso_outro: document.getElementById('recursoOutro').checked,
         recurso_outro_texto: document.getElementById('recursoOutroTexto').value,
-        
+
         // Cinesioterapia
         cinesio_fortalecimento: document.getElementById('cinesioFortalecimento').checked,
         cinesio_alongamento: document.getElementById('cinesioAlongamento').checked,
@@ -347,17 +377,17 @@ async function salvarAvaliacao() {
         cinesio_respiracao: document.getElementById('cinesioRespiração').checked,
         cinesio_mobilidade: document.getElementById('cinesioMobilidade').checked,
         cinesio_funcional: document.getElementById('cinesioFuncional').checked,
-        
+
         descricao_plano: document.getElementById('descricaoPlano').value,
-        
+
         medo_agulha: document.getElementById('medoAgulhaSim').checked,
         limiar_dor_baixo: document.getElementById('limiarDorSim').checked,
         fragilidade: document.getElementById('fragilidadeSim').checked,
-        
+
         frequencia: document.getElementById('frequencia').value,
         duracao: document.getElementById('duracao').value,
         reavaliacao_sessao: document.getElementById('reavaliacaoSessao').value,
-        
+
         // Prognóstico e orientações
         evolucao_primeira_sessao: document.getElementById('evolucaoPrimeiraSessao').value,
         evolucao_proximas_sessoes: document.getElementById('evolucaoProximasSessoes').value,
@@ -369,7 +399,7 @@ async function salvarAvaliacao() {
         alimentacao_hidratacao: document.getElementById('alimentacaoHidratacao').value,
         exercicios_casa: document.getElementById('exerciciosCasa').value,
         aspectos_emocionais_espirituais: document.getElementById('aspectosEmocionaisEspirituais').value,
-        
+
         observacoes_finais: document.getElementById('observacoesFinais').value
     };
 
