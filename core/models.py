@@ -935,9 +935,9 @@ class Lancamento(models.Model):
 class Prontuario(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
-    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
-    data_criacao = models.DateField(auto_now_add=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
 
     queixa_principal = models.TextField()
     conduta = models.TextField()
@@ -957,9 +957,9 @@ class Prontuario(models.Model):
 class Evolucao(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
-    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
-    data_criacao = models.DateField(auto_now_add=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
     foi_preenchido = models.BooleanField(default=False)
     nao_se_aplica = models.BooleanField(default=False)
     # Campos de texto/char opcionais -> blank=True, null=True
@@ -1051,7 +1051,7 @@ class Evolucao(models.Model):
 class AvaliacaoFisioterapeutica(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
-    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     data_avaliacao = models.DateTimeField(auto_now_add=True)
     criado_por = models.ForeignKey(User, on_delete=models.CASCADE)
     foi_preenchido = models.BooleanField(default=False)
@@ -1156,7 +1156,8 @@ class AvaliacaoFisioterapeutica(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(3)],
         null=True, blank=True
     )
-    receptividade = models.CharField(max_length=20, blank=True)
+    receptividade = models.CharField(max_length=20, blank=True, null=True)
+
     autonomia_avd = models.CharField(max_length=20, blank=True)
     
     # Plano Terapêutico
