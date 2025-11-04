@@ -30,10 +30,10 @@ async function openPatientModal(pacienteId, agendamentoId, pacienteNome) {
         agendamentoId: agendamentoId,
         pacienteNome: pacienteNome
     });
-    
+
     // ✅ CARREGA OS PRONTUÁRIOS DO PACIENTE CLICADO
     await listarProntuarios(pacienteId);
-    
+
     // ✅ MUDA PARA A ABA PRONTUÁRIO
     switchTab('prontuario');
 }
@@ -179,7 +179,7 @@ async function salvarProntuario() {
         nao_se_aplica: naoSeAplica
     };
 
-   
+
     if (!naoSeAplica) {
         dados.queixa_principal = document.getElementById('queixaPrincipal').value;
         dados.historia_doenca = document.getElementById('historiaDoenca').value;
@@ -196,7 +196,7 @@ async function salvarProntuario() {
         const mensagem = naoSeAplica ? 'Prontuário salvo como "Não se aplica" com sucesso!' : 'Prontuário salvo com sucesso!';
         mostrarMensagem(mensagem);
         closeModal('newProntuarioModal');
-        
+
         atualizarStatusProntuarios();
         document.getElementById('prontuarioForm').reset();
     } else {
@@ -208,9 +208,11 @@ async function salvarEvolucao() {
     const modal = document.getElementById('newEvolutionModal');
     const profissionalId = document.getElementById("profissionalLogado").value;
 
+
     // ✅ CORRETO - Pegar os IDs do dataset do modal
     const pacienteId = modal.dataset.pacienteId || "";
     const agendamentoId = modal.dataset.agendamentoId || "";
+    const naoSeAplica = document.getElementById('naoSeAplicaEvolucao').checked;
 
     console.log("IDs capturados:", {
         pacienteId: pacienteId,
@@ -226,63 +228,66 @@ async function salvarEvolucao() {
 
 
     const dados = {
-        paciente_id: pacienteId, // ✅ AGORA CORRETO
-        agendamento_id: agendamentoId, // ✅ AGORA CORRETO
+        paciente_id: pacienteId,
+        agendamento_id: agendamentoId,
         profissional_id: profissionalId,
-        queixa_principal: document.getElementById('queixaPrincipalEvolucao').value,
-        processo_terapeutico: document.getElementById('processoTerapeutico').value,
-        condutas_tecnicas: document.getElementById('condutasTecnicas').value,
-        resposta_paciente: document.getElementById('respostaPaciente').value,
-        intercorrencias: document.getElementById('intercorrencias').value,
-        dor_inicio: document.getElementById('dorInicio').value,
-        dor_atual: document.getElementById('dorAtual').value,
-        dor_observacoes: document.getElementById('dorObservacoes').value,
-        amplitude_inicio: document.getElementById('amplitudeInicio').value,
-        amplitude_atual: document.getElementById('amplitudeAtual').value,
-        amplitude_observacoes: document.getElementById('amplitudeObservacoes').value,
-        forca_inicio: document.getElementById('forcaInicio').value,
-        forca_atual: document.getElementById('forcaAtual').value,
-        forca_observacoes: document.getElementById('forcaObservacoes').value,
-        postura_inicio: document.getElementById('posturaInicio').value,
-        postura_atual: document.getElementById('posturaAtual').value,
-        postura_observacoes: document.getElementById('posturaObservacoes').value,
-        edema_inicio: document.getElementById('edemaInicio').value,
-        edema_atual: document.getElementById('edemaAtual').value,
-        edema_observacoes: document.getElementById('edemaObservacoes').value,
-        avds_inicio: document.getElementById('avdsInicio').value,
-        avds_atual: document.getElementById('avdsAtual').value,
-        avds_observacoes: document.getElementById('avdsObservacoes').value,
-        asp_emocionais_inicio: document.getElementById('emocionaisInicio').value,
-        asp_emocionais_atual: document.getElementById('emocionaisAtual').value,
-        asp_emocionais_observacoes: document.getElementById('emocionaisObservacoes').value,
-        sintese_evolucao: document.getElementById('sinteseEvolucao').value,
-        mensagem_paciente: document.getElementById('mensagemPaciente').value,
-        explicacao_continuidade: document.getElementById('explicacaoContinuidade').value,
-        reacoes_paciente: document.getElementById('reacoesPaciente').value,
-        dor_expectativa: document.getElementById('dorExpectativa').value,
-        dor_realidade: document.getElementById('dorRealidade').value,
-        mobilidade_expectativa: document.getElementById('mobilidadeExpectativa').value,
-        mobilidade_realidade: document.getElementById('mobilidadeRealidade').value,
-        energia_expectativa: document.getElementById('energiaExpectativa').value,
-        energia_realidade: document.getElementById('energiaRealidade').value,
-        consciencia_expectativa: document.getElementById('conscienciaExpectativa').value,
-        consciencia_realidade: document.getElementById('conscienciaRealidade').value,
-        emocao_expectativa: document.getElementById('emocaoExpectativa').value,
-        emocao_realidade: document.getElementById('emocaoRealidade').value,
-        objetivos_ciclo: document.getElementById('objetivosCiclo').value,
-        condutas_mantidas: document.getElementById('condutasMantidas').value,
-        ajustes_plano: document.getElementById('ajustesPlano').value,
-        treino_funcional: document.getElementById('treinoFuncional').checked,
-        pilates_clinico: document.getElementById('pilatesClinico').checked,
-        recovery: document.getElementById('recovery').checked,
-        rpg: document.getElementById('rpg').checked,
-        nutricao: document.getElementById('nutricao').checked,
-        psicoterapia: document.getElementById('psicoterapia').checked,
-        estetica: document.getElementById('estetica').checked,
-        outro_complementar: document.getElementById('sugestaoOutro').checked,
-        outro_complementar_texto: document.getElementById('sugestaoOutroTexto').value.trim(),
-        observacoes_internas: document.getElementById('observacoesInternas').value,
-        orientacoes_grupo: document.getElementById('orientacoesGrupo').value,
+        nao_se_aplica: naoSeAplica,
+    }
+    if (!naoSeAplica) {
+        dados.queixa_principal = document.getElementById('queixaPrincipalEvolucao').value;
+        dados.processo_terapeutico = document.getElementById('processoTerapeutico').value;
+        dados.condutas_tecnicas = document.getElementById('condutasTecnicas').value;
+        dados.resposta_paciente = document.getElementById('respostaPaciente').value;
+        dados.intercorrencias = document.getElementById('intercorrencias').value;
+        dados.dor_inicio = document.getElementById('dorInicio').value;
+        dados.dor_atual = document.getElementById('dorAtual').value;
+        dados.dor_observacoes = document.getElementById('dorObservacoes').value;
+        dados.amplitude_inicio = document.getElementById('amplitudeInicio').value;
+        dados.amplitude_atual = document.getElementById('amplitudeAtual').value;
+        dados.amplitude_observacoes = document.getElementById('amplitudeObservacoes').value;
+        dados.forca_inicio = document.getElementById('forcaInicio').value;
+        dados.forca_atual = document.getElementById('forcaAtual').value;
+        dados.forca_observacoes = document.getElementById('forcaObservacoes').value;
+        dados.postura_inicio = document.getElementById('posturaInicio').value;
+        dados.postura_atual = document.getElementById('posturaAtual').value;
+        dados.postura_observacoes = document.getElementById('posturaObservacoes').value;
+        dados.edema_inicio = document.getElementById('edemaInicio').value;
+        dados.edema_atual = document.getElementById('edemaAtual').value;
+        dados.edema_observacoes = document.getElementById('edemaObservacoes').value;
+        dados.avds_inicio = document.getElementById('avdsInicio').value;
+        dados.avds_atual = document.getElementById('avdsAtual').value;
+        dados.avds_observacoes = document.getElementById('avdsObservacoes').value;
+        dados.asp_emocionais_inicio = document.getElementById('emocionaisInicio').value;
+        dados.asp_emocionais_atual = document.getElementById('emocionaisAtual').value;
+        dados.asp_emocionais_observacoes = document.getElementById('emocionaisObservacoes').value;
+        dados.sintese_evolucao = document.getElementById('sinteseEvolucao').value;
+        dados.mensagem_paciente = document.getElementById('mensagemPaciente').value;
+        dados.explicacao_continuidade = document.getElementById('explicacaoContinuidade').value;
+        dados.reacoes_paciente = document.getElementById('reacoesPaciente').value;
+        dados.dor_expectativa = document.getElementById('dorExpectativa').value;
+        dados.dor_realidade = document.getElementById('dorRealidade').value;
+        dados.mobilidade_expectativa = document.getElementById('mobilidadeExpectativa').value;
+        dados.mobilidade_realidade = document.getElementById('mobilidadeRealidade').value;
+        dados.energia_expectativa = document.getElementById('energiaExpectativa').value;
+        dados.energia_realidade = document.getElementById('energiaRealidade').value;
+        dados.consciencia_expectativa = document.getElementById('conscienciaExpectativa').value;
+        dados.consciencia_realidade = document.getElementById('conscienciaRealidade').value;
+        dados.emocao_expectativa = document.getElementById('emocaoExpectativa').value;
+        dados.emocao_realidade = document.getElementById('emocaoRealidade').value;
+        dados.objetivos_ciclo = document.getElementById('objetivosCiclo').value;
+        dados.condutas_mantidas = document.getElementById('condutasMantidas').value;
+        dados.ajustes_plano = document.getElementById('ajustesPlano').value;
+        dados.treino_funcional = document.getElementById('treinoFuncional').checked;
+        dados.pilates_clinico = document.getElementById('pilatesClinico').checked;
+        dados.recovery = document.getElementById('recovery').checked;
+        dados.rpg = document.getElementById('rpg').checked;
+        dados.nutricao = document.getElementById('nutricao').checked;
+        dados.psicoterapia = document.getElementById('psicoterapia').checked;
+        dados.estetica = document.getElementById('estetica').checked;
+        dados.outro_complementar = document.getElementById('sugestaoOutro').checked;
+        dados.outro_complementar_texto = document.getElementById('sugestaoOutroTexto').value.trim();
+        dados.observacoes_internas = document.getElementById('observacoesInternas').value;
+        dados.orientacoes_grupo = document.getElementById('orientacoesGrupo').value;
     };
 
     console.log("Enviando dados da evolução:", dados);
@@ -477,7 +482,7 @@ async function listarProntuarios(pacienteId = null) {
         const modal = document.getElementById('newProntuarioModal');
         pacienteId = modal.dataset.pacienteId;
     }
-    
+
     if (!pacienteId) {
         console.error('Nenhum paciente ID encontrado');
         return;
@@ -497,7 +502,7 @@ async function listarProntuarios(pacienteId = null) {
         }
 
         const data = await response.json();
-        
+
         if (data.success) {
             renderizarListaProntuarios(data.prontuarios);
         } else {
@@ -513,7 +518,7 @@ async function listarProntuarios(pacienteId = null) {
 
 function renderizarListaProntuarios(prontuarios) {
     const container = document.querySelector('.prontuarios-list');
-    
+
     if (!prontuarios || prontuarios.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
