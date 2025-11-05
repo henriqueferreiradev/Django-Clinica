@@ -6,10 +6,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão - Fisioterapia</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Agenda - Ponto de Equilíbrio</title>
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/profissionais/agenda_profissional.css' %}">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
 
 </head>
 
@@ -72,15 +75,19 @@
                         {% if agendamentos %}
                         {% for ag in agendamentos %}
                         <div class="consultation-item">
+
                             <div class="d-flex align-items-center">
+                            <div class="patient-header">
                                 <img src="https://i.pravatar.cc/50?img=5" class="patient-img" alt="Paciente">
-                                <div class="flex-grow-1">
-                                    <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}} {{ag.paciente.id}}</h5>
-                                    <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
-                                    <span class="badge badge-status bg-success">Agendamento Nº {{ ag.id }} -
-                                        Confirmado</span>
-                                </div>
+                                    <div class="flex-grow-1">
+                                        <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}} {{ag.paciente.id}}</h5>
+                                        <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
+                                        <span class="badge badge-status bg-success">Agendamento Nº {{ ag.id }} -
+                                            Confirmado</span>
+                                    </div>
+                            </div>
                                 <div>
+                               
                                     <!-- REMOVA ESTE BOTÃO -->
                                     <!-- <button class="btn btn-sm btn-outline-primary me-1" onclick="openPatientModal(...)">
                 <i class="fas fa-eye"></i>
@@ -215,12 +222,14 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" onclick="switchTab('evolucao')">Evolução</button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" onclick="switchTab('imagens')">Imagens</button>
-                        </li>
+
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" onclick="switchTab('analisefisio')">Análise
-                                Fisioterapeutica</button>
+                                Fisioterapeutica</button></li>
+
+                                                       <li class="nav-item" role="presentation">
+                            <button class="nav-link" onclick="switchTab('imagens')">Imagens</button>
+                        </li> 
 
                     </ul>
 

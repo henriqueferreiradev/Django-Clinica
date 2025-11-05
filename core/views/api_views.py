@@ -177,7 +177,7 @@ def listar_prontuarios(request, paciente_id):
     try:
         prontuarios = Prontuario.objects.filter(
             paciente_id=paciente_id
-        ).select_related('profissional', 'agendamento').order_by('-data_criacao')
+        ).select_related('profissional', 'agendamento').order_by('-data_criacao')[:3]
         
         prontuarios_data = []
         for prontuario in prontuarios:
