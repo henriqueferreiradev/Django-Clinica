@@ -1,43 +1,178 @@
 // core/static/core/js/api.js
 document.addEventListener('DOMContentLoaded', function () {
-    atualizarStatusProntuarios()
-    listarProntuarios()
-})
 
-async function openPatientModal(pacienteId, agendamentoId, pacienteNome) {
-    // abre o modal do paciente
+    atualizarStatusProntuarios()
+    setupBadgeClickHandlers();
+})
+// Funções para controle de modais
+function openModal(modalId) {
+    document.getElementById(modalId).classList.add('show');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('show');
+}
+// Função principal para abrir modal e navegar para a aba específica
+function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab = null) {
+    // Abre o modal do paciente
     openModal('patientModal');
 
-    // atualiza o nome do paciente
+    // Atualiza o nome do paciente
     document.getElementById("patientName").textContent = pacienteNome;
 
-    // guarda os IDs dentro de atributos data
+    // Atualiza os campos hidden com os IDs corretos
+    document.getElementById('pacienteId').value = pacienteId;
+    document.getElementById('agendamentoId').value = agendamentoId;
+
+    // Guarda os IDs dentro de atributos data dos modais
     const modal = document.getElementById('newProntuarioModal');
     const evolutionModal = document.getElementById('newEvolutionModal');
     const avaliacaoModal = document.getElementById('newAvaliacaoModal');
 
-    modal.dataset.pacienteId = pacienteId;
-    modal.dataset.agendamentoId = agendamentoId;
+    if (modal) {
+        modal.dataset.pacienteId = pacienteId;
+        modal.dataset.agendamentoId = agendamentoId;
+    }
 
-    evolutionModal.dataset.pacienteId = pacienteId;
-    evolutionModal.dataset.agendamentoId = agendamentoId;
+    if (evolutionModal) {
+        evolutionModal.dataset.pacienteId = pacienteId;
+        evolutionModal.dataset.agendamentoId = agendamentoId;
+    }
 
-    avaliacaoModal.dataset.pacienteId = pacienteId;
-    avaliacaoModal.dataset.agendamentoId = agendamentoId;
+    if (avaliacaoModal) {
+        avaliacaoModal.dataset.pacienteId = pacienteId;
+        avaliacaoModal.dataset.agendamentoId = agendamentoId;
+    }
 
     console.log("IDs definidos:", {
         pacienteId: pacienteId,
         agendamentoId: agendamentoId,
-        pacienteNome: pacienteNome
+        pacienteNome: pacienteNome,
+        targetTab: targetTab
     });
 
-    // ✅ CARREGA OS PRONTUÁRIOS DO PACIENTE CLICADO
-    await listarProntuarios(pacienteId);
-
-    // ✅ MUDA PARA A ABA PRONTUÁRIO
-    switchTab('prontuario');
+    // Se uma aba específica foi solicitada, navega para ela
+    if (targetTab) {
+        setTimeout(() => {
+            switchTab(targetTab);
+            // Chama listarProntuarios após mudar para a aba de prontuário
+            if (targetTab === 'prontuario') {
+                listarProntuarios(pacienteId, agendamentoId);
+            }
+        }, 100);
+    } else {
+        // Se não especificou aba, vai para prontuário e carrega os dados
+        setTimeout(() => {
+            switchTab('prontuario');
+            listarProntuarios(pacienteId, agendamentoId);
+        }, 100);
+    }
 }
-// Função para obter o token CSRF
+
+function setupBadgeClickHandlers() {
+    document.addEventListener('click', function (e) {
+        // Verifica se o clique foi em uma badge
+        const badge = e.target.closest('.status-badge');
+        if (badge) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const agendamentoId = badge.getAttribute('data-agendamento-id');
+            const targetTab = badge.getAttribute('data-tab-target');
+
+            // Encontra o paciente ID e nome a partir do agendamento
+            const consultationItem = badge.closest('.consultation-item');
+            const pacienteNome = consultationItem.querySelector('h5').textContent;
+
+            // Aqui você precisaria obter o pacienteId real - ajuste conforme sua estrutura de dados
+            // Por enquanto, usando um valor padrão ou do data-attribute se disponível
+            const pacienteId = badge.getAttribute('data-paciente-id') || agendamentoId;
+
+            // Abre o modal navegando diretamente para a aba desejada
+            openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab);
+        }
+    });
+}
+
+// Versão alternativa mais específica para cada tipo de badge
+function setupIndividualBadgeHandlers() {
+    // Handler para badge de Prontuário
+    document.querySelectorAll('.status-badge.prontuario').forEach(badge => {
+        badge.addEventListener('click', function () {
+            const agendamentoId = this.getAttribute('data-agendamento-id');
+            // Sua lógica para obter pacienteId e nome
+            openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'prontuario');
+        });
+    });
+
+    // Handler para badge de Evolução
+    document.querySelectorAll('.status-badge.evolucao').forEach(badge => {
+        badge.addEventListener('click', function () {
+            const agendamentoId = this.getAttribute('data-agendamento-id');
+            openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'evolucao');
+        });
+    });
+
+    // Handler para badge de Imagens
+    document.querySelectorAll('.status-badge.imagens').forEach(badge => {
+        badge.addEventListener('click', function () {
+            const agendamentoId = this.getAttribute('data-agendamento-id');
+            openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'imagens');
+        });
+    });
+
+    // Handler para badge de Avaliação
+    document.querySelectorAll('.status-badge.avaliacao').forEach(badge => {
+        badge.addEventListener('click', function () {
+            const agendamentoId = this.getAttribute('data-agendamento-id');
+            openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'analisefisio');
+        });
+    });
+}
+
+// Função melhorada para alternar entre abas
+function switchTab(tabId) {
+    // Esconde todas as abas
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabPanes.forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Remove a classe active de todos os botões de aba
+    const tabButtons = document.querySelectorAll('.nav-link');
+    tabButtons.forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // Ativa a aba selecionada
+    const targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        targetTab.classList.add('active');
+    }
+
+    // Ativa o botão correspondente
+    const correspondingButton = document.querySelector(`[onclick="switchTab('${tabId}')"]`);
+    if (correspondingButton) {
+        correspondingButton.classList.add('active');
+    }
+}
+
+// Inicializa os handlers quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function () {
+    setupBadgeClickHandlers();
+    // Ou use a versão alternativa:
+    // setupIndividualBadgeHandlers();
+});
+window.onclick = function (event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            modal.classList.remove('show');
+        }
+    });
+}
+
+
 function getCSRFToken() {
     const name = 'csrftoken';
     let cookieValue = null;
@@ -224,7 +359,7 @@ async function salvarProntuario() {
 async function salvarEvolucao() {
     const modal = document.getElementById('newEvolutionModal');
     const profissionalId = document.getElementById("profissionalLogado").value;
- 
+
     const pacienteId = modal.dataset.pacienteId || "";
     const agendamentoId = modal.dataset.agendamentoId || "";
     const naoSeAplica = document.getElementById('naoSeAplicaEvolucao').checked;
@@ -342,9 +477,9 @@ async function salvarAvaliacao() {
         profissional_id: profissionalId,
         nao_se_aplica: naoSeAplica,
     }
-    
 
-        if (!naoSeAplica)  {
+
+    if (!naoSeAplica) {
         dados.queixa_principal = document.getElementById('queixaPrincipalAvaliacao').value;
         dados.inicio_problema = document.getElementById('inicioProblema').value;
         dados.causa_problema = document.getElementById('causaProblema').value;
@@ -491,21 +626,52 @@ async function salvarAvaliacao() {
     }
 }
 
+async function listarProntuarios(pacienteId = null, agendamentoId = null) {
+    console.log("listarProntuarios chamada com:", { pacienteId, agendamentoId });
 
-async function listarProntuarios(pacienteId = null) {
-    // Se não receber pacienteId, tenta pegar do modal
+    // CORREÇÃO: Buscar os IDs corretamente dos campos hidden
     if (!pacienteId) {
-        const modal = document.getElementById('newProntuarioModal');
-        pacienteId = modal.dataset.pacienteId;
+        const pacienteIdField = document.getElementById('pacienteId');
+        pacienteId = pacienteIdField ? pacienteIdField.value : null;
     }
 
-    if (!pacienteId) {
-        console.error('Nenhum paciente ID encontrado');
+    if (!agendamentoId) {
+        const agendamentoIdField = document.getElementById('agendamentoId');
+        agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
+    }
+
+    console.log("IDs encontrados:", {
+        pacienteId: pacienteId,
+        agendamentoId: agendamentoId
+    });
+
+    // CORREÇÃO: Verificar se os IDs são válidos e diferentes
+    if (!pacienteId || pacienteId === 'undefined' || pacienteId === 'null') {
+        console.error('Paciente ID inválido:', pacienteId);
+        mostrarMensagem('Erro: Paciente não identificado', 'error');
+        return;
+    }
+
+    const container = document.getElementById('listProntuarios');
+    if (!container) {
+        console.error('Container de prontuários não encontrado');
         return;
     }
 
     try {
-        const response = await fetch(`/api/listar-prontuarios/${pacienteId}/`, {
+        // Mostrar loading
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                Carregando prontuários...
+            </div>
+        `;
+
+        // DEBUG: Verificar a URL que será chamada
+        const url = `/api/listar-prontuarios/${pacienteId}`;
+        console.log("Fazendo requisição para:", url);
+
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -514,28 +680,56 @@ async function listarProntuarios(pacienteId = null) {
         });
 
         if (!response.ok) {
-            throw new Error('Erro ao buscar prontuários');
+            throw new Error(`Erro HTTP: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log("Resposta completa da API:", data);
 
-        if (data.success) {
+        // DEBUG mais detalhado
+        console.log("Success:", data.success);
+        console.log("Prontuários array:", data.prontuarios);
+        console.log("Total de prontuários:", data.total);
+        console.log("Tipo de prontuários:", typeof data.prontuarios);
+
+        if (data.success && data.prontuarios && Array.isArray(data.prontuarios) && data.prontuarios.length > 0) {
+            console.log("Chamando renderizarListaProntuarios com:", data.prontuarios);
             renderizarListaProntuarios(data.prontuarios);
         } else {
-            console.error('Erro na resposta:', data.error);
-            mostrarMensagem('Erro ao carregar prontuários', 'error');
+            console.log('Nenhum prontuário encontrado ou array vazio');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-file-medical fa-2x mb-2 text-muted"></i>
+                    <p>Nenhum prontuário encontrado para este paciente.</p>
+                </div>
+            `;
         }
     } catch (error) {
         console.error('Erro ao listar prontuários:', error);
-        mostrarMensagem('Erro ao carregar prontuários', 'error');
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                Erro de conexão ao carregar prontuários: ${error.message}
+            </div>
+        `;
     }
 }
 
-
 function renderizarListaProntuarios(prontuarios) {
-    const container = document.querySelector('.prontuarios-list');
+    const container = document.getElementById('listProntuarios');
 
-    if (!prontuarios || prontuarios.length === 0) {
+    console.log("=== RENDERIZAR LISTA ===");
+    console.log("Container encontrado:", !!container);
+    console.log("Prontuários recebidos:", prontuarios);
+    console.log("Número de prontuários:", prontuarios.length);
+
+    if (!container) {
+        console.error('Container listProntuarios não encontrado!');
+        return;
+    }
+
+    if (!prontuarios || !Array.isArray(prontuarios) || prontuarios.length === 0) {
+        console.log('Renderizando estado vazio');
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-file-medical fa-2x mb-2 text-muted"></i>
@@ -545,13 +739,15 @@ function renderizarListaProntuarios(prontuarios) {
         return;
     }
 
-    container.innerHTML = prontuarios.map(prontuario => `
+    console.log("Gerando HTML para", prontuarios.length, "prontuários");
+
+    const html = prontuarios.map(prontuario => `
         <div class="prontuario-item">
             <div class="prontuario-header">
                 <div class="prontuario-info">
                     <h6>Data do prontuário - ${prontuario.data_completa}</h6>
                     <span class="text-muted small">Registrado por: ${prontuario.profissional_nome}</span>
-                    <span class="text-muted small">Agendamento Nº ${prontuario.agendamento_atual_id} - ${prontuario.agendamento_atual} </span>
+                    <span class="text-muted small">Agendamento Nº ${prontuario.agendamento_atual_id} - ${prontuario.agendamento_atual}</span>
                 </div>
                 <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(${prontuario.id})">
                     <i class="fas fa-eye me-1"></i> Leia Mais
@@ -559,4 +755,8 @@ function renderizarListaProntuarios(prontuarios) {
             </div>
         </div>
     `).join('');
+
+    console.log("HTML gerado:", html);
+    container.innerHTML = html;
+    console.log("HTML inserido no container");
 }

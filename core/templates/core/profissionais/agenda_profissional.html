@@ -81,31 +81,39 @@
                                         Confirmado</span>
                                 </div>
                                 <div>
-                                    <button class="btn btn-sm btn-outline-primary me-1"
-                                        onclick="openPatientModal({{ag.paciente.id}}, {{ag.id}}, '{{ag.paciente.nome}} {{ag.paciente.sobrenome}}')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
+                                    <!-- REMOVA ESTE BOTÃO -->
+                                    <!-- <button class="btn btn-sm btn-outline-primary me-1" onclick="openPatientModal(...)">
+                <i class="fas fa-eye"></i>
+            </button> -->
 
                                     <!-- Status simplificado dos modais -->
                                     <div class="status-simple" data-agendamento-id="{{ag.id}}">
                                         <div class="status-badges">
                                             <span class="status-badge prontuario" data-status="false"
-                                                onclick="checkStatus('prontuario', {{ag.id}})">
+                                                data-tab-target="prontuario" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
                                                 <i class="fas fa-file-medical"></i>
                                                 <span class="status-text">Prontuário</span>
                                             </span>
                                             <span class="status-badge evolucao" data-status="false"
-                                                onclick="checkStatus('evolucao', {{ag.id}})">
+                                                data-tab-target="evolucao" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
                                                 <i class="fas fa-chart-line"></i>
                                                 <span class="status-text">Evolução</span>
                                             </span>
                                             <span class="status-badge imagens" data-status="false"
-                                                onclick="checkStatus('imagens', {{ag.id}})">
+                                                data-tab-target="imagens" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
                                                 <i class="fas fa-images"></i>
                                                 <span class="status-text">Imagens</span>
                                             </span>
                                             <span class="status-badge avaliacao" data-status="false"
-                                                onclick="checkStatus('avaliacao', {{ag.id}})">
+                                                data-tab-target="analisefisio" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
                                                 <i class="fas fa-clipboard-check"></i>
                                                 <span class="status-text">Avaliação</span>
                                             </span>
@@ -229,11 +237,11 @@
                             <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
                             <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
                             <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
-                             
-                            <div class="prontuarios-list">
+
+                            <div id="listProntuarios" class="prontuarios-list">
                                 <div class="prontuario-item">
                                     <div class="prontuario-header">
- 
+
                                         <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(1)">
                                             <i class="fas fa-eye me-1"></i> Leia Mais
                                         </button>
@@ -620,7 +628,9 @@
                                     <i class="fas fa-plus me-1"></i> Nova Avaliação
                                 </button>
                             </div>
-
+                            <input type="hidden" id="pacienteIdAtual" value="">
+                            <input type="hidden" id="agendamentoIdAtual" value="">
+                            <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
                             <div class="prontuarios-list">
                                 <div class="prontuario-item">
                                     <div class="prontuario-header">
@@ -1080,10 +1090,10 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                        <label class="checkbox-option" for="naoSeAplicaEvolucao">
-                            <input class="form-check-input" type="checkbox" id="naoSeAplicaEvolucao">
-                            Não se aplica
-                        </label>
+                    <label class="checkbox-option" for="naoSeAplicaEvolucao">
+                        <input class="form-check-input" type="checkbox" id="naoSeAplicaEvolucao">
+                        Não se aplica
+                    </label>
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newEvolutionModal')">Cancelar</button>
                     <button type="button" class="btn btn-primary" id='btn-salvar-evolucao'
@@ -2145,9 +2155,9 @@
                 </div>
                 <div class="modal-footer">
                     <label class="checkbox-option" for="naoSeAplicaAvaliacao">
-                            <input class="form-check-input" type="checkbox" id="naoSeAplicaAvaliacao">
-                            Não se aplica
-                        </label>
+                        <input class="form-check-input" type="checkbox" id="naoSeAplicaAvaliacao">
+                        Não se aplica
+                    </label>
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newAvaliacaoModal')">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="btn-salvar-avaliacao"
@@ -2708,38 +2718,125 @@
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('show');
         }
-
-        function openPatientModal(pacienteId, agendamentoId, pacienteNome) {
-            // abre o modal do paciente
+        // Função principal para abrir modal e navegar para a aba específica
+        function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab = null) {
+            // Abre o modal do paciente
             openModal('patientModal');
 
-            // atualiza o nome do paciente
+            // Atualiza o nome do paciente
             document.getElementById("patientName").textContent = pacienteNome;
 
-            // guarda os IDs dentro de atributos data
+            // Atualiza os campos hidden com os IDs corretos
+            document.getElementById('pacienteId').value = pacienteId;
+            document.getElementById('agendamentoId').value = agendamentoId;
+
+            // Guarda os IDs dentro de atributos data dos modais
             const modal = document.getElementById('newProntuarioModal');
             const evolutionModal = document.getElementById('newEvolutionModal');
             const avaliacaoModal = document.getElementById('newAvaliacaoModal');
 
+            if (modal) {
+                modal.dataset.pacienteId = pacienteId;
+                modal.dataset.agendamentoId = agendamentoId;
+            }
 
-            modal.dataset.pacienteId = pacienteId;
-            modal.dataset.agendamentoId = agendamentoId;
+            if (evolutionModal) {
+                evolutionModal.dataset.pacienteId = pacienteId;
+                evolutionModal.dataset.agendamentoId = agendamentoId;
+            }
 
-            evolutionModal.dataset.pacienteId = pacienteId;
-            evolutionModal.dataset.agendamentoId = agendamentoId;
-
-            avaliacaoModal.dataset.pacienteId = pacienteId;
-            avaliacaoModal.dataset.agendamentoId = agendamentoId;
+            if (avaliacaoModal) {
+                avaliacaoModal.dataset.pacienteId = pacienteId;
+                avaliacaoModal.dataset.agendamentoId = agendamentoId;
+            }
 
             console.log("IDs definidos:", {
                 pacienteId: pacienteId,
                 agendamentoId: agendamentoId,
-                pacienteNome: pacienteNome
+                pacienteNome: pacienteNome,
+                targetTab: targetTab
             });
-            listarProntuarios()
+
+            // Se uma aba específica foi solicitada, navega para ela
+            if (targetTab) {
+                setTimeout(() => {
+                    switchTab(targetTab);
+                    // Chama listarProntuarios após mudar para a aba de prontuário
+                    if (targetTab === 'prontuario') {
+                        listarProntuarios(pacienteId, agendamentoId);
+                    }
+                }, 100);
+            } else {
+                // Se não especificou aba, vai para prontuário e carrega os dados
+                setTimeout(() => {
+                    switchTab('prontuario');
+                    listarProntuarios(pacienteId, agendamentoId);
+                }, 100);
+            }
         }
 
-        // Função para alternar entre abas
+        function setupBadgeClickHandlers() {
+            document.addEventListener('click', function (e) {
+                // Verifica se o clique foi em uma badge
+                const badge = e.target.closest('.status-badge');
+                if (badge) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const agendamentoId = badge.getAttribute('data-agendamento-id');
+                    const targetTab = badge.getAttribute('data-tab-target');
+
+                    // Encontra o paciente ID e nome a partir do agendamento
+                    const consultationItem = badge.closest('.consultation-item');
+                    const pacienteNome = consultationItem.querySelector('h5').textContent;
+
+                    // Aqui você precisaria obter o pacienteId real - ajuste conforme sua estrutura de dados
+                    // Por enquanto, usando um valor padrão ou do data-attribute se disponível
+                    const pacienteId = badge.getAttribute('data-paciente-id') || agendamentoId;
+
+                    // Abre o modal navegando diretamente para a aba desejada
+                    openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab);
+                }
+            });
+        }
+
+        // Versão alternativa mais específica para cada tipo de badge
+        function setupIndividualBadgeHandlers() {
+            // Handler para badge de Prontuário
+            document.querySelectorAll('.status-badge.prontuario').forEach(badge => {
+                badge.addEventListener('click', function () {
+                    const agendamentoId = this.getAttribute('data-agendamento-id');
+                    // Sua lógica para obter pacienteId e nome
+                    openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'prontuario');
+                });
+            });
+
+            // Handler para badge de Evolução
+            document.querySelectorAll('.status-badge.evolucao').forEach(badge => {
+                badge.addEventListener('click', function () {
+                    const agendamentoId = this.getAttribute('data-agendamento-id');
+                    openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'evolucao');
+                });
+            });
+
+            // Handler para badge de Imagens
+            document.querySelectorAll('.status-badge.imagens').forEach(badge => {
+                badge.addEventListener('click', function () {
+                    const agendamentoId = this.getAttribute('data-agendamento-id');
+                    openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'imagens');
+                });
+            });
+
+            // Handler para badge de Avaliação
+            document.querySelectorAll('.status-badge.avaliacao').forEach(badge => {
+                badge.addEventListener('click', function () {
+                    const agendamentoId = this.getAttribute('data-agendamento-id');
+                    openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'analisefisio');
+                });
+            });
+        }
+
+        // Função melhorada para alternar entre abas
         function switchTab(tabId) {
             // Esconde todas as abas
             const tabPanes = document.querySelectorAll('.tab-pane');
@@ -2754,13 +2851,24 @@
             });
 
             // Ativa a aba selecionada
-            document.getElementById(tabId).classList.add('active');
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
 
             // Ativa o botão correspondente
-            event.target.classList.add('active');
+            const correspondingButton = document.querySelector(`[onclick="switchTab('${tabId}')"]`);
+            if (correspondingButton) {
+                correspondingButton.classList.add('active');
+            }
         }
 
-        // Fechar modal ao clicar fora dele
+        // Inicializa os handlers quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', function () {
+            setupBadgeClickHandlers();
+            // Ou use a versão alternativa:
+            // setupIndividualBadgeHandlers();
+        });
         window.onclick = function (event) {
             const modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
