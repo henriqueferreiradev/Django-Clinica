@@ -9,10 +9,10 @@
     <title>Agenda - Ponto de Equilíbrio</title>
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/profissionais/agenda_profissional.css' %}">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    
+
+
 
 </head>
 
@@ -77,17 +77,17 @@
                         <div class="consultation-item">
 
                             <div class="d-flex align-items-center">
-                            <div class="patient-header">
-                                <img src="https://i.pravatar.cc/50?img=5" class="patient-img" alt="Paciente">
+                                <div class="patient-header">
+                                    <img src="https://i.pravatar.cc/50?img=5" class="patient-img" alt="Paciente">
                                     <div class="flex-grow-1">
                                         <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}} {{ag.paciente.id}}</h5>
                                         <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
                                         <span class="badge badge-status bg-success">Agendamento Nº {{ ag.id }} -
                                             Confirmado</span>
                                     </div>
-                            </div>
+                                </div>
                                 <div>
-                               
+
                                     <!-- REMOVA ESTE BOTÃO -->
                                     <!-- <button class="btn btn-sm btn-outline-primary me-1" onclick="openPatientModal(...)">
                 <i class="fas fa-eye"></i>
@@ -217,19 +217,23 @@
 
                     <ul class="nav-tabs" id="patientTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" onclick="switchTab('prontuario')">Prontuário</button>
+                            <button class="nav-link active" onclick="switchTab('prontuario')"><i
+                                    class="fas fa-file-medical"></i>Prontuário</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" onclick="switchTab('evolucao')">Evolução</button>
+                            <button class="nav-link" onclick="switchTab('evolucao')"><i
+                                    class="fas fa-chart-line"></i>Evolução</button>
                         </li>
 
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" onclick="switchTab('analisefisio')">Análise
-                                Fisioterapeutica</button></li>
+                            <button class="nav-link" onclick="switchTab('analisefisio')"><i
+                                    class="fas fa-images"></i>Avaliação</button>
+                        </li>
 
-                                                       <li class="nav-item" role="presentation">
-                            <button class="nav-link" onclick="switchTab('imagens')">Imagens</button>
-                        </li> 
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" onclick="switchTab('imagens')"><i
+                                    class="fas fa-clipboard-check"></i>Imagens</button>
+                        </li>
 
                     </ul>
 
@@ -430,54 +434,10 @@
                                     <i class="fas fa-plus me-1"></i> Nova Evolução
                                 </button>
                             </div>
-                            <div class="prontuarios-list">
-                                <div class="prontuario-item">
-                                    <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Evolução - 10/05/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openEvolucaoModal(1)">
-                                            <i class="fas fa-eye me-1"></i> Leia Mais
-                                        </button>
-                                    </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Resumo:</strong> Paciente relata melhora de 40% na dor. Consegue
-                                            realizar flexão anterior com menor desconforto...</p>
-                                    </div>
-                                </div>
+                            <div id="listEvolucoes" class="prontuarios-list">
 
-                                <div class="prontuario-item">
-                                    <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Evolução - 03/05/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openEvolucaoModal(2)">
-                                            <i class="fas fa-eye me-1"></i> Leia Mais
-                                        </button>
-                                    </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Resumo:</strong> Paciente ainda refere dor ao ficar em pé por mais de
-                                            1 hora. Realizamos exercícios de estabilização...</p>
-                                    </div>
-                                </div>
 
-                                <div class="prontuario-item">
-                                    <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Evolução - 26/04/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openEvolucaoModal(3)">
-                                            <i class="fas fa-eye me-1"></i> Leia Mais
-                                        </button>
-                                    </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Resumo:</strong> Primeira sessão. Paciente com dor intensa (8/10).
-                                            Iniciado trabalho de conscientização corporal...</p>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
 
@@ -2718,176 +2678,7 @@
 
 
     <script src="{% static 'core/js/prontuarios/formularios.js' %}"></script>
-    <script>
-        // Funções para controle de modais
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('show');
-        }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
-        // Função principal para abrir modal e navegar para a aba específica
-        function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab = null) {
-            // Abre o modal do paciente
-            openModal('patientModal');
-
-            // Atualiza o nome do paciente
-            document.getElementById("patientName").textContent = pacienteNome;
-
-            // Atualiza os campos hidden com os IDs corretos
-            document.getElementById('pacienteId').value = pacienteId;
-            document.getElementById('agendamentoId').value = agendamentoId;
-
-            // Guarda os IDs dentro de atributos data dos modais
-            const modal = document.getElementById('newProntuarioModal');
-            const evolutionModal = document.getElementById('newEvolutionModal');
-            const avaliacaoModal = document.getElementById('newAvaliacaoModal');
-
-            if (modal) {
-                modal.dataset.pacienteId = pacienteId;
-                modal.dataset.agendamentoId = agendamentoId;
-            }
-
-            if (evolutionModal) {
-                evolutionModal.dataset.pacienteId = pacienteId;
-                evolutionModal.dataset.agendamentoId = agendamentoId;
-            }
-
-            if (avaliacaoModal) {
-                avaliacaoModal.dataset.pacienteId = pacienteId;
-                avaliacaoModal.dataset.agendamentoId = agendamentoId;
-            }
-
-            console.log("IDs definidos:", {
-                pacienteId: pacienteId,
-                agendamentoId: agendamentoId,
-                pacienteNome: pacienteNome,
-                targetTab: targetTab
-            });
-
-            // Se uma aba específica foi solicitada, navega para ela
-            if (targetTab) {
-                setTimeout(() => {
-                    switchTab(targetTab);
-                    // Chama listarProntuarios após mudar para a aba de prontuário
-                    if (targetTab === 'prontuario') {
-                        listarProntuarios(pacienteId, agendamentoId);
-                    }
-                }, 100);
-            } else {
-                // Se não especificou aba, vai para prontuário e carrega os dados
-                setTimeout(() => {
-                    switchTab('prontuario');
-                    listarProntuarios(pacienteId, agendamentoId);
-                }, 100);
-            }
-        }
-
-        function setupBadgeClickHandlers() {
-            document.addEventListener('click', function (e) {
-                // Verifica se o clique foi em uma badge
-                const badge = e.target.closest('.status-badge');
-                if (badge) {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    const agendamentoId = badge.getAttribute('data-agendamento-id');
-                    const targetTab = badge.getAttribute('data-tab-target');
-
-                    // Encontra o paciente ID e nome a partir do agendamento
-                    const consultationItem = badge.closest('.consultation-item');
-                    const pacienteNome = consultationItem.querySelector('h5').textContent;
-
-                    // Aqui você precisaria obter o pacienteId real - ajuste conforme sua estrutura de dados
-                    // Por enquanto, usando um valor padrão ou do data-attribute se disponível
-                    const pacienteId = badge.getAttribute('data-paciente-id') || agendamentoId;
-
-                    // Abre o modal navegando diretamente para a aba desejada
-                    openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab);
-                }
-            });
-        }
-
-        // Versão alternativa mais específica para cada tipo de badge
-        function setupIndividualBadgeHandlers() {
-            // Handler para badge de Prontuário
-            document.querySelectorAll('.status-badge.prontuario').forEach(badge => {
-                badge.addEventListener('click', function () {
-                    const agendamentoId = this.getAttribute('data-agendamento-id');
-                    // Sua lógica para obter pacienteId e nome
-                    openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'prontuario');
-                });
-            });
-
-            // Handler para badge de Evolução
-            document.querySelectorAll('.status-badge.evolucao').forEach(badge => {
-                badge.addEventListener('click', function () {
-                    const agendamentoId = this.getAttribute('data-agendamento-id');
-                    openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'evolucao');
-                });
-            });
-
-            // Handler para badge de Imagens
-            document.querySelectorAll('.status-badge.imagens').forEach(badge => {
-                badge.addEventListener('click', function () {
-                    const agendamentoId = this.getAttribute('data-agendamento-id');
-                    openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'imagens');
-                });
-            });
-
-            // Handler para badge de Avaliação
-            document.querySelectorAll('.status-badge.avaliacao').forEach(badge => {
-                badge.addEventListener('click', function () {
-                    const agendamentoId = this.getAttribute('data-agendamento-id');
-                    openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'analisefisio');
-                });
-            });
-        }
-
-        // Função melhorada para alternar entre abas
-        function switchTab(tabId) {
-            // Esconde todas as abas
-            const tabPanes = document.querySelectorAll('.tab-pane');
-            tabPanes.forEach(tab => {
-                tab.classList.remove('active');
-            });
-
-            // Remove a classe active de todos os botões de aba
-            const tabButtons = document.querySelectorAll('.nav-link');
-            tabButtons.forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // Ativa a aba selecionada
-            const targetTab = document.getElementById(tabId);
-            if (targetTab) {
-                targetTab.classList.add('active');
-            }
-
-            // Ativa o botão correspondente
-            const correspondingButton = document.querySelector(`[onclick="switchTab('${tabId}')"]`);
-            if (correspondingButton) {
-                correspondingButton.classList.add('active');
-            }
-        }
-
-        // Inicializa os handlers quando o DOM estiver carregado
-        document.addEventListener('DOMContentLoaded', function () {
-            setupBadgeClickHandlers();
-            // Ou use a versão alternativa:
-            // setupIndividualBadgeHandlers();
-        });
-        window.onclick = function (event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.classList.remove('show');
-                }
-            });
-        }
-
-    </script>
 
     <script>
         // Função para filtrar imagens por pasta

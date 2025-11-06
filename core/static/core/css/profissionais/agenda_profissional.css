@@ -52,6 +52,7 @@ body {
 
 .align-items-center {
     align-items: center;
+    justify-content: space-between;
 }
 
 .text-center {
@@ -420,22 +421,24 @@ body {
         flex: 0 0 50%;
         max-width: 50%;
     }
-    .patient-img {
-        
-    }
+
+    .patient-img {}
+
     .d-flex {
         flex-direction: column;
     }
+
     .day-header h2 {
         font-size: 14px;
     }
+
     .status-badges {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 6px;
         justify-content: center;
         padding: 6px;
-      }
+    }
 
 }
 
@@ -564,6 +567,11 @@ body {
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
     transition: var(--transition);
+
+}
+
+.nav-tabs .nav-link i {
+    margin-right: .5em;
 }
 
 .nav-tabs .nav-link:hover {
@@ -883,13 +891,15 @@ PRONTUÁRIOS LIST
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-     
+
 }
+
 .prontuario-info {
     display: flex;
     flex-direction: column;
 
 }
+
 .prontuario-info h6 {
     margin: 0 0 5px 0;
     color: var(--roxoPrincipal);
@@ -1118,6 +1128,11 @@ form {
     margin-bottom: .35rem;
 }
 
+.patient-header {
+    display: flex;
+    align-items: center;
+}
+
 .form-control,
 textarea.form-control {
     border: 1px solid var(--border-color);
@@ -1220,18 +1235,20 @@ textarea.form-control {
     .form-label {
         font-size: .9rem;
     }
+
     .consultation-item {
         border-bottom: 4px solid var(--roxoPrincipal);
         border-left: none;
         border-radius: 8px;
     }
+
     .status-badges {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 6px;
         justify-content: center;
         padding: 6px;
-      }
+    }
 }
 
 
@@ -1353,6 +1370,7 @@ textarea.form-control {
     border: 2px solid #dee2e6;
     background: white;
 }
+
 .status-badge[data-status="false"] {
     background-color: #edd4d4;
     color: #571515;
@@ -1366,10 +1384,14 @@ textarea.form-control {
 }
 
 .status-badge[data-status="nao_se_aplica"] {
-    background-color: #d4e3ed;  /* Azul claro */
-    color: #154a72;            /* Azul escuro */
-    border-color: #c3d6e6;     /* Azul mais claro para a borda */
+    background-color: #d4e3ed;
+    /* Azul claro */
+    color: #154a72;
+    /* Azul escuro */
+    border-color: #c3d6e6;
+    /* Azul mais claro para a borda */
 }
+
 .status-badge:hover {
     transform: translateY(-2px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1424,6 +1446,7 @@ textarea.form-control {
 .empty-state i {
     margin-bottom: 1rem;
 }
+
 /* ========================
    STATUS BADGES - RESPONSIVE (VERSÃO CORRIGIDA)
 ======================== */
@@ -1432,17 +1455,17 @@ textarea.form-control {
     width: 100%;
 }
 
-.status-badges{
+.status-badges {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));  
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
     padding: 6px;
     background: #f8f9fa;
     border-radius: 6px;
-  }
-  
-  .status-badge{
-    width: 100%;            
+}
+
+.status-badge {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1450,7 +1473,7 @@ textarea.form-control {
     border-radius: 6px;
     border: 2px solid #dee2e6;
     background: #fff;
-  }
+}
 
 .status-badge[data-status="false"] {
     background-color: #edd4d4;
@@ -1494,7 +1517,6 @@ textarea.form-control {
 
 @media (max-width: 400px) {
     .status-badges {
-      grid-template-columns: 1fr;
+        grid-template-columns: 1fr;
     }
-  }
-  
+}

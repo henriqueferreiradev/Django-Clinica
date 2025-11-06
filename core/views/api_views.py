@@ -177,7 +177,7 @@ def listar_prontuarios(request, paciente_id):
     try:
         prontuarios = Prontuario.objects.filter(
             paciente_id=paciente_id
-        ).select_related('profissional', 'agendamento').order_by('-data_criacao')[:3]
+        ).select_related('profissional', 'agendamento').exclude(nao_se_aplica=True).order_by('-data_criacao')[:3]
         
         prontuarios_data = []
         for prontuario in prontuarios:
@@ -293,26 +293,26 @@ def salvar_evolucao(request):
                 condutas_tecnicas=data.get('condutas_tecnicas'),
                 resposta_paciente=data.get('resposta_paciente'),
                 intercorrencias=data.get('intercorrencias'),
-                dor_inicio=data.get('dor_inicio'),
-                dor_atual=data.get('dor_atual'),
+                dor_inicio=int(data.get('dor_inicio') or 0),
+                dor_atual=int(data.get('dor_atual') or 0),
                 dor_observacoes=data.get('dor_observacoes'),
-                amplitude_inicio=data.get('amplitude_inicio'),
-                amplitude_atual=data.get('amplitude_atual'),
+                amplitude_inicio=int(data.get('amplitude_inicio') or 0),
+                amplitude_atual=int(data.get('amplitude_atual') or 0),
                 amplitude_observacoes=data.get('amplitude_observacoes'),
-                forca_inicio=data.get('forca_inicio'),
-                forca_atual=data.get('forca_atual'),
+                forca_inicio=int(data.get('forca_inicio') or 0),
+                forca_atual=int(data.get('forca_atual') or 0),
                 forca_observacoes=data.get('forca_observacoes'),
-                postura_inicio=data.get('postura_inicio'),
-                postura_atual=data.get('postura_atual'),
+                postura_inicio=int(data.get('postura_inicio') or 0),
+                postura_atual=int(data.get('postura_atual') or 0),
                 postura_observacoes=data.get('postura_observacoes'),
-                edema_inicio=data.get('edema_inicio'),
-                edema_atual=data.get('edema_atual'),
+                edema_inicio=int(data.get('edema_inicio') or 0),
+                edema_atual=int(data.get('edema_atual') or 0),
                 edema_observacoes=data.get('edema_observacoes'),
-                avds_inicio=data.get('advs_inicio'),
-                avds_atual=data.get('advs_atual'),
+                avds_inicio=int(data.get('advs_inicio') or 0),
+                avds_atual=int(data.get('advs_atual') or 0),
                 avds_observacoes=data.get('advs_observacoes'),
-                emocionais_inicio=data.get('asp_emocionais_inicio'),
-                emocionais_atual=data.get('asp_emocionais_atual'),
+                emocionais_inicio=int(data.get('asp_emocionais_inicio') or 0),
+                emocionais_atual=int(data.get('asp_emocionais_atual') or 0),
                 emocionais_observacoes=data.get('asp_emocionais_observacoes'),
                 sintese_evolucao=data.get('sintese_evolucao'),
                 mensagem_paciente=data.get('mensagem_paciente'),
@@ -362,8 +362,45 @@ def salvar_evolucao(request):
 
     
 def listar_evolucoes(request, paciente_id):
-    ...
-    
+    try:
+        evolucoes = Evolucao.objects.filter(
+            paciente_id=paciente_id
+        ).select_related('profissional', 'agendamento').exclude(nao_se_aplica=True).order_by('-data_criacao')[:3]
+        
+        evolucoes_data = []
+        for evolucao in evolucoes:
+            evolucoes_data.append({
+                'id': evolucao.id,
+                'data': evolucao.data_criacao.strftime('%d/%m/%Y'),
+                'data_completa': evolucao.data_criacao.strftime('%d/%m/%Y - %H:%M'),
+                'agendamento_atual_id':evolucao.agendamento.id,
+                'agendamento_atual': evolucao.agendamento.data.strftime('%d/%m/%Y') if evolucao.agendamento else 'Não informado',
+                'profissional_nome': evolucao.profissional.nome if evolucao.profissional else 'Não informado',
+                'profissional_id': evolucao.profissional.id if evolucao.profissional else None,
+                 
+ 
+            })
+            from django.conf import settings
+            from django.utils import timezone
+            print("=== DEBUG TIMEZONE ===")
+            print("TIME_ZONE no settings:", settings.TIME_ZONE)
+            print("Data criacao (raw):", evolucao.data_criacao)
+            print("Data criacao (localtime):", timezone.localtime(evolucao.data_criacao))
+            print("Data formatada:", timezone.localtime(evolucao.data_criacao).strftime('%d/%m/%Y - %H:%M'))
+        return JsonResponse({
+            'success': True,
+            'evolucoes': evolucoes_data,
+            'total': len(evolucoes_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'prontuarios': []
+        }, status=500)
+        
+        
 def salvar_avaliacao(request):
     try:
     
@@ -462,7 +499,6 @@ def salvar_avaliacao(request):
                 )
             
             else:
-            
                 avaliacao = AvaliacaoFisioterapeutica.objects.create(
                     paciente_id=data['paciente_id'],
                     profissional_id=data['profissional_id'],

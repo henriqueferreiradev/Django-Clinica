@@ -54,11 +54,19 @@ function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, target
     // Se uma aba específica foi solicitada, navega para ela
     if (targetTab) {
         setTimeout(() => {
+            console.log("🎯 ABA SOLICITADA:", targetTab); // ← ADICIONE ESTE LOG
             switchTab(targetTab);
-            // Chama listarProntuarios após mudar para a aba de prontuário
+
+            // Chama a função correspondente baseada na aba
             if (targetTab === 'prontuario') {
+                console.log("✅ Chamando listarProntuarios");
                 listarProntuarios(pacienteId, agendamentoId);
             }
+            if (targetTab === 'evolucao') {
+                console.log("✅ Chamando listarEvolucoes"); // ← ADICIONE ESTE LOG
+                listarEvolucoes(pacienteId, agendamentoId);
+            }
+            console.log('chegou aqui');
         }, 100);
     } else {
         // Se não especificou aba, vai para prontuário e carrega os dados
@@ -130,8 +138,10 @@ function setupIndividualBadgeHandlers() {
     });
 }
 
-// Função melhorada para alternar entre abas
+// Função melhorada para alternar entre abas E carregar dados
 function switchTab(tabId) {
+    console.log("🎯 SwitchTab chamado para:", tabId);
+
     // Esconde todas as abas
     const tabPanes = document.querySelectorAll('.tab-pane');
     tabPanes.forEach(tab => {
@@ -155,8 +165,53 @@ function switchTab(tabId) {
     if (correspondingButton) {
         correspondingButton.classList.add('active');
     }
+
+    // ✅ NOVO: Carrega os dados da aba quando ela é ativada
+    carregarDadosAba(tabId);
 }
 
+// ✅ NOVA FUNÇÃO: Carrega dados específicos de cada aba
+function carregarDadosAba(tabId) {
+    console.log("📂 Carregando dados para aba:", tabId);
+
+    // Pega os IDs do paciente e agendamento
+    const pacienteId = document.getElementById('pacienteId').value;
+    const agendamentoId = document.getElementById('agendamentoId').value;
+
+    console.log("IDs disponíveis:", { pacienteId, agendamentoId });
+
+    if (!pacienteId || pacienteId === 'undefined' || pacienteId === 'null') {
+        console.warn("⚠️ Paciente ID não disponível para carregar dados da aba");
+        return;
+    }
+
+    // Carrega os dados baseado na aba selecionada
+    switch (tabId) {
+        case 'prontuario':
+            console.log("🩺 Carregando prontuários...");
+            listarProntuarios(pacienteId, agendamentoId);
+            break;
+
+        case 'evolucao':
+            console.log("📈 Carregando evoluções...");
+            listarEvolucoes(pacienteId, agendamentoId);
+            break;
+
+        case 'analisefisio':
+            console.log("📋 Carregando avaliações...");
+            // Se você tiver uma função para avaliações, adicione aqui
+            // listarAvaliacoes(pacienteId, agendamentoId);
+            break;
+
+        case 'imagens':
+            console.log("🖼️ Aba de imagens ativada");
+            // Carregar imagens se tiver função
+            break;
+
+        default:
+            console.log("ℹ️ Aba sem carregamento específico:", tabId);
+    }
+}
 // Inicializa os handlers quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function () {
     setupBadgeClickHandlers();
@@ -453,7 +508,7 @@ async function salvarEvolucao() {
 
 
 async function salvarAvaliacao() {
-    const modal = document.getElementById('newEvolutionModal');
+    const modal = document.getElementById('newAvaliacaoModal');
     const profissionalId = document.getElementById("profissionalLogado").value;
 
     // ✅ CORRETO - Pegar os IDs do dataset do modal
@@ -699,8 +754,7 @@ async function listarProntuarios(pacienteId = null, agendamentoId = null) {
             console.log('Nenhum prontuário encontrado ou array vazio');
             container.innerHTML = `
                 <div class="empty-state">
-                    <i class="fas fa-file-medical fa-2x mb-2 text-muted"></i>
-                    <p>Nenhum prontuário encontrado para este paciente.</p>
+                     <p>Nenhum prontuário encontrado para este paciente.</p>
                 </div>
             `;
         }
@@ -752,6 +806,148 @@ function renderizarListaProntuarios(prontuarios) {
                 <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(${prontuario.id})">
                     <i class="fas fa-eye me-1"></i> Leia Mais
                 </button>
+            </div>
+        </div>
+    `).join('');
+
+    console.log("HTML gerado:", html);
+    container.innerHTML = html;
+    console.log("HTML inserido no container");
+}
+
+
+
+async function listarEvolucoes(pacienteId = null, agendamentoId = null) {
+    console.log("listarEvolucoes chamada com:", { pacienteId, agendamentoId });
+
+    // Buscar os IDs corretamente dos campos hidden
+    if (!pacienteId) {
+        const pacienteIdField = document.getElementById('pacienteId');
+        pacienteId = pacienteIdField ? pacienteIdField.value : null;
+    }
+
+    if (!agendamentoId) {
+        const agendamentoIdField = document.getElementById('agendamentoId');
+        agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
+    }
+
+    console.log("IDs encontrados:", {
+        pacienteId: pacienteId,
+        agendamentoId: agendamentoId
+    });
+
+    if (!pacienteId || pacienteId === 'undefined' || pacienteId === 'null') {
+        console.error('Paciente ID inválido:', pacienteId);
+        mostrarMensagem('Erro: Paciente não identificado', 'error');
+        return;
+    }
+
+    // CORREÇÃO: Container correto para evoluções
+    const container = document.getElementById('listEvolucoes');
+    if (!container) {
+        console.error('Container de evoluções não encontrado');
+        return;
+    }
+
+    try {
+        // Mostrar loading
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                Carregando evoluções...
+            </div>
+        `;
+
+        // CORREÇÃO: URL correta para evoluções
+        const url = `/api/listar-evolucoes/${pacienteId}`;
+        console.log("Fazendo requisição para:", url);
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Resposta completa da API:", data);
+
+        // CORREÇÃO: Logs corretos para evoluções
+        console.log("Success:", data.success);
+        console.log("Evoluções array:", data.evolucoes);
+        console.log("Total de evoluções:", data.total);
+
+        // CORREÇÃO: Verificar array de evoluções
+        if (data.success && data.evolucoes && Array.isArray(data.evolucoes) && data.evolucoes.length > 0) {
+            console.log("Chamando renderizarListaEvolucoes com:", data.evolucoes);
+            renderizarListaEvolucoes(data.evolucoes);
+        } else {
+            console.log('Nenhuma evolução encontrada ou array vazio');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-chart-line fa-2x mb-2 text-muted"></i>
+                    <p>Nenhuma evolução encontrada para este paciente.</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Erro ao listar evoluções:', error);
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                Erro de conexão ao carregar evoluções: ${error.message}
+            </div>
+        `;
+    }
+}
+
+function renderizarListaEvolucoes(evolucoes) {
+    // CORREÇÃO: Container correto para evoluções
+    const container = document.getElementById('listEvolucoes');
+
+    console.log("=== RENDERIZAR LISTA EVOLUÇÕES ===");
+    console.log("Container encontrado:", !!container);
+    console.log("Evoluções recebidas:", evolucoes);
+    console.log("Número de evoluções:", evolucoes.length);
+
+    if (!container) {
+        console.error('Container listEvolucoes não encontrado!');
+        return;
+    }
+
+    if (!evolucoes || !Array.isArray(evolucoes) || evolucoes.length === 0) {
+        console.log('Renderizando estado vazio para evoluções');
+        container.innerHTML = `
+            <div class="empty-state">
+                 
+                <p>Nenhuma evolução encontrada para este paciente.</p>
+            </div>
+        `;
+        return;
+    }
+
+    console.log("Gerando HTML para", evolucoes.length, "evoluções");
+
+    // CORREÇÃO: HTML específico para evoluções
+    const html = evolucoes.map(evolucao => `
+        <div class="prontuario-item">
+            <div class="prontuario-header">
+                <div class="prontuario-info">
+                    <h6>Evolução - ${evolucao.data_completa}</h6>
+                    <span class="text-muted small">Registrado por: ${evolucao.profissional_nome}</span>
+                    <span class="text-muted small">Agendamento Nº ${evolucao.agendamento_atual_id} - ${evolucao.agendamento_atual}</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="openEvolucaoModal(${evolucao.id})">
+                    <i class="fas fa-eye me-1"></i> Leia Mais
+                </button>
+            </div>
+            <div class="prontuario-preview">
+                <p><strong>Resumo:</strong> ${evolucao.sintese_evolucao || 'Sem resumo disponível'}</p>
             </div>
         </div>
     `).join('');
