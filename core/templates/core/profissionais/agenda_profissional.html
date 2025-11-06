@@ -327,13 +327,16 @@
                                     <div class="modal-footer">
                                         <label class="checkbox-option" for="naoSeAplicaProntuario">
                                             <input class="form-check-input" type="checkbox" id="naoSeAplicaProntuario">
-                                            Não se aplica
+                                            Não foi necessário prontuário.
                                         </label>
+                                        <div>
                                         <button type="button" class="btn btn-secondary"
                                             onclick="closeModal('newProntuarioModal')">Cancelar</button>
                                         <button type="button" class="btn btn-primary" id='btn-salvar-prontuario'
                                             onclick="salvarProntuario()">Salvar Prontuário</button>
+                                            </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -347,7 +350,7 @@
                                         <button type="button" class="btn-close"
                                             onclick="closeModal('viewProntuarioModal')" aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body">
+                                    <div id='prontuarioDetalhes'class="modal-body">
                                         <div class="prontuario-meta mb-4">
                                             <div class="row">
                                                 <div class="col-md-6">
@@ -600,7 +603,7 @@
                             <input type="hidden" id="pacienteIdAtual" value="">
                             <input type="hidden" id="agendamentoIdAtual" value="">
                             <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
-                            <div class="prontuarios-list">
+                            <div id='listAvaliacoes' class="prontuarios-list">
                                 <div class="prontuario-item">
                                     <div class="prontuario-header">
                                         <div class="prontuario-info">
@@ -1061,12 +1064,14 @@
                 <div class="modal-footer">
                     <label class="checkbox-option" for="naoSeAplicaEvolucao">
                         <input class="form-check-input" type="checkbox" id="naoSeAplicaEvolucao">
-                        Não se aplica
+                        Não foi necessário evolução.
                     </label>
+                    <div>
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newEvolutionModal')">Cancelar</button>
                     <button type="button" class="btn btn-primary" id='btn-salvar-evolucao'
                         onclick="salvarEvolucao()">Salvar Evolução</button>
+                        </div>
                 </div>
             </div>
         </div>
@@ -2125,12 +2130,14 @@
                 <div class="modal-footer">
                     <label class="checkbox-option" for="naoSeAplicaAvaliacao">
                         <input class="form-check-input" type="checkbox" id="naoSeAplicaAvaliacao">
-                        Não se aplica
+                        Não foi necessário avaliação.
                     </label>
+                    <div>
                     <button type="button" class="btn btn-secondary"
                         onclick="closeModal('newAvaliacaoModal')">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="btn-salvar-avaliacao"
                         onclick="salvarAvaliacao()">Salvar Avaliação</button>
+                        </div>
                 </div>
             </div>
         </div>
@@ -2221,6 +2228,15 @@
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
     <!-- Modal Visualizar Avaliação Fisioterapêutica -->
     <div class="modal" id="viewAvaliacaoModal">
         <div class="modal-dialog modal-xl">

@@ -44,29 +44,22 @@ function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, target
         avaliacaoModal.dataset.agendamentoId = agendamentoId;
     }
 
-    console.log("IDs definidos:", {
-        pacienteId: pacienteId,
-        agendamentoId: agendamentoId,
-        pacienteNome: pacienteNome,
-        targetTab: targetTab
-    });
-
     // Se uma aba específica foi solicitada, navega para ela
     if (targetTab) {
         setTimeout(() => {
-            console.log("🎯 ABA SOLICITADA:", targetTab); // ← ADICIONE ESTE LOG
             switchTab(targetTab);
 
             // Chama a função correspondente baseada na aba
             if (targetTab === 'prontuario') {
-                console.log("✅ Chamando listarProntuarios");
                 listarProntuarios(pacienteId, agendamentoId);
             }
             if (targetTab === 'evolucao') {
-                console.log("✅ Chamando listarEvolucoes"); // ← ADICIONE ESTE LOG
                 listarEvolucoes(pacienteId, agendamentoId);
             }
-            console.log('chegou aqui');
+            if (targetTab === 'analisefisio') {
+                listarAvaliacoes(pacienteId, agendamentoId);
+            }
+
         }, 100);
     } else {
         // Se não especificou aba, vai para prontuário e carrega os dados
@@ -140,7 +133,7 @@ function setupIndividualBadgeHandlers() {
 
 // Função melhorada para alternar entre abas E carregar dados
 function switchTab(tabId) {
-    console.log("🎯 SwitchTab chamado para:", tabId);
+
 
     // Esconde todas as abas
     const tabPanes = document.querySelectorAll('.tab-pane');
@@ -172,13 +165,11 @@ function switchTab(tabId) {
 
 // ✅ NOVA FUNÇÃO: Carrega dados específicos de cada aba
 function carregarDadosAba(tabId) {
-    console.log("📂 Carregando dados para aba:", tabId);
 
     // Pega os IDs do paciente e agendamento
     const pacienteId = document.getElementById('pacienteId').value;
     const agendamentoId = document.getElementById('agendamentoId').value;
 
-    console.log("IDs disponíveis:", { pacienteId, agendamentoId });
 
     if (!pacienteId || pacienteId === 'undefined' || pacienteId === 'null') {
         console.warn("⚠️ Paciente ID não disponível para carregar dados da aba");
@@ -188,28 +179,22 @@ function carregarDadosAba(tabId) {
     // Carrega os dados baseado na aba selecionada
     switch (tabId) {
         case 'prontuario':
-            console.log("🩺 Carregando prontuários...");
             listarProntuarios(pacienteId, agendamentoId);
             break;
 
         case 'evolucao':
-            console.log("📈 Carregando evoluções...");
             listarEvolucoes(pacienteId, agendamentoId);
             break;
 
         case 'analisefisio':
-            console.log("📋 Carregando avaliações...");
-            // Se você tiver uma função para avaliações, adicione aqui
-            // listarAvaliacoes(pacienteId, agendamentoId);
+            listarAvaliacoes(pacienteId, agendamentoId)
             break;
 
         case 'imagens':
-            console.log("🖼️ Aba de imagens ativada");
             // Carregar imagens se tiver função
             break;
 
         default:
-            console.log("ℹ️ Aba sem carregamento específico:", tabId);
     }
 }
 // Inicializa os handlers quando o DOM estiver carregado
@@ -396,8 +381,6 @@ async function salvarProntuario() {
         dados.observacoes = document.getElementById('observacoes').value;
     }
 
-    console.log("Enviando dados:", dados);
-
     const res = await apiRequest('/api/salvar-prontuario/', dados);
     if (res.success) {
         const mensagem = naoSeAplica ? 'Prontuário salvo como "Não se aplica" com sucesso!' : 'Prontuário salvo com sucesso!';
@@ -418,12 +401,6 @@ async function salvarEvolucao() {
     const pacienteId = modal.dataset.pacienteId || "";
     const agendamentoId = modal.dataset.agendamentoId || "";
     const naoSeAplica = document.getElementById('naoSeAplicaEvolucao').checked;
-
-    console.log("IDs capturados:", {
-        pacienteId: pacienteId,
-        agendamentoId: agendamentoId,
-        profissionalId: profissionalId
-    });
 
     if (!pacienteId) {
         mostrarMensagem('Erro: Paciente não identificado', 'error');
@@ -494,7 +471,7 @@ async function salvarEvolucao() {
         dados.orientacoes_grupo = document.getElementById('orientacoesGrupo').value;
     };
 
-    console.log("Enviando dados da evolução:", dados);
+
 
     const res = await apiRequest('/api/salvar-evolucao/', dados);
     if (res.success) {
@@ -506,7 +483,6 @@ async function salvarEvolucao() {
     }
 }
 
-
 async function salvarAvaliacao() {
     const modal = document.getElementById('newAvaliacaoModal');
     const profissionalId = document.getElementById("profissionalLogado").value;
@@ -515,11 +491,7 @@ async function salvarAvaliacao() {
     const pacienteId = modal.dataset.pacienteId || "";
     const agendamentoId = modal.dataset.agendamentoId || "";
     const naoSeAplica = document.getElementById('naoSeAplicaAvaliacao').checked;
-    console.log("IDs capturados:", {
-        pacienteId: pacienteId,
-        agendamentoId: agendamentoId,
-        profissionalId: profissionalId
-    });
+
 
     // Verificar se tem paciente_id (obrigatório)
     if (!pacienteId) {
@@ -669,7 +641,7 @@ async function salvarAvaliacao() {
         dados.observacoes_finais = document.getElementById('observacoesFinais').value;
     };
 
-    console.log("Enviando dados da avaliação:", dados);
+
 
     const res = await apiRequest('/api/salvar-avaliacao/', dados);
     if (res.success) {
@@ -682,7 +654,7 @@ async function salvarAvaliacao() {
 }
 
 async function listarProntuarios(pacienteId = null, agendamentoId = null) {
-    console.log("listarProntuarios chamada com:", { pacienteId, agendamentoId });
+
 
     // CORREÇÃO: Buscar os IDs corretamente dos campos hidden
     if (!pacienteId) {
@@ -695,10 +667,6 @@ async function listarProntuarios(pacienteId = null, agendamentoId = null) {
         agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
     }
 
-    console.log("IDs encontrados:", {
-        pacienteId: pacienteId,
-        agendamentoId: agendamentoId
-    });
 
     // CORREÇÃO: Verificar se os IDs são válidos e diferentes
     if (!pacienteId || pacienteId === 'undefined' || pacienteId === 'null') {
@@ -724,7 +692,7 @@ async function listarProntuarios(pacienteId = null, agendamentoId = null) {
 
         // DEBUG: Verificar a URL que será chamada
         const url = `/api/listar-prontuarios/${pacienteId}`;
-        console.log("Fazendo requisição para:", url);
+
 
         const response = await fetch(url, {
             method: 'GET',
@@ -739,19 +707,13 @@ async function listarProntuarios(pacienteId = null, agendamentoId = null) {
         }
 
         const data = await response.json();
-        console.log("Resposta completa da API:", data);
 
-        // DEBUG mais detalhado
-        console.log("Success:", data.success);
-        console.log("Prontuários array:", data.prontuarios);
-        console.log("Total de prontuários:", data.total);
-        console.log("Tipo de prontuários:", typeof data.prontuarios);
 
         if (data.success && data.prontuarios && Array.isArray(data.prontuarios) && data.prontuarios.length > 0) {
-            console.log("Chamando renderizarListaProntuarios com:", data.prontuarios);
+
             renderizarListaProntuarios(data.prontuarios);
         } else {
-            console.log('Nenhum prontuário encontrado ou array vazio');
+
             container.innerHTML = `
                 <div class="empty-state">
                      <p>Nenhum prontuário encontrado para este paciente.</p>
@@ -771,19 +733,13 @@ async function listarProntuarios(pacienteId = null, agendamentoId = null) {
 
 function renderizarListaProntuarios(prontuarios) {
     const container = document.getElementById('listProntuarios');
-
-    console.log("=== RENDERIZAR LISTA ===");
-    console.log("Container encontrado:", !!container);
-    console.log("Prontuários recebidos:", prontuarios);
-    console.log("Número de prontuários:", prontuarios.length);
-
     if (!container) {
         console.error('Container listProntuarios não encontrado!');
         return;
     }
 
     if (!prontuarios || !Array.isArray(prontuarios) || prontuarios.length === 0) {
-        console.log('Renderizando estado vazio');
+
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-file-medical fa-2x mb-2 text-muted"></i>
@@ -793,7 +749,7 @@ function renderizarListaProntuarios(prontuarios) {
         return;
     }
 
-    console.log("Gerando HTML para", prontuarios.length, "prontuários");
+
 
     const html = prontuarios.map(prontuario => `
         <div class="prontuario-item">
@@ -803,22 +759,22 @@ function renderizarListaProntuarios(prontuarios) {
                     <span class="text-muted small">Registrado por: ${prontuario.profissional_nome}</span>
                     <span class="text-muted small">Agendamento Nº ${prontuario.agendamento_atual_id} - ${prontuario.agendamento_atual}</span>
                 </div>
-                <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(${prontuario.id})">
+                <button class="btn btn-sm btn-outline-primary" onclick="renderizarDetalhesProntuario(${prontuario.id})">
                     <i class="fas fa-eye me-1"></i> Leia Mais
                 </button>
             </div>
         </div>
     `).join('');
 
-    console.log("HTML gerado:", html);
+
     container.innerHTML = html;
-    console.log("HTML inserido no container");
+
 }
 
 
 
 async function listarEvolucoes(pacienteId = null, agendamentoId = null) {
-    console.log("listarEvolucoes chamada com:", { pacienteId, agendamentoId });
+
 
     // Buscar os IDs corretamente dos campos hidden
     if (!pacienteId) {
@@ -831,10 +787,7 @@ async function listarEvolucoes(pacienteId = null, agendamentoId = null) {
         agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
     }
 
-    console.log("IDs encontrados:", {
-        pacienteId: pacienteId,
-        agendamentoId: agendamentoId
-    });
+
 
     if (!pacienteId || pacienteId === 'undefined' || pacienteId === 'null') {
         console.error('Paciente ID inválido:', pacienteId);
@@ -860,7 +813,7 @@ async function listarEvolucoes(pacienteId = null, agendamentoId = null) {
 
         // CORREÇÃO: URL correta para evoluções
         const url = `/api/listar-evolucoes/${pacienteId}`;
-        console.log("Fazendo requisição para:", url);
+
 
         const response = await fetch(url, {
             method: 'GET',
@@ -875,19 +828,14 @@ async function listarEvolucoes(pacienteId = null, agendamentoId = null) {
         }
 
         const data = await response.json();
-        console.log("Resposta completa da API:", data);
 
-        // CORREÇÃO: Logs corretos para evoluções
-        console.log("Success:", data.success);
-        console.log("Evoluções array:", data.evolucoes);
-        console.log("Total de evoluções:", data.total);
 
         // CORREÇÃO: Verificar array de evoluções
         if (data.success && data.evolucoes && Array.isArray(data.evolucoes) && data.evolucoes.length > 0) {
-            console.log("Chamando renderizarListaEvolucoes com:", data.evolucoes);
+
             renderizarListaEvolucoes(data.evolucoes);
         } else {
-            console.log('Nenhuma evolução encontrada ou array vazio');
+
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-chart-line fa-2x mb-2 text-muted"></i>
@@ -910,10 +858,6 @@ function renderizarListaEvolucoes(evolucoes) {
     // CORREÇÃO: Container correto para evoluções
     const container = document.getElementById('listEvolucoes');
 
-    console.log("=== RENDERIZAR LISTA EVOLUÇÕES ===");
-    console.log("Container encontrado:", !!container);
-    console.log("Evoluções recebidas:", evolucoes);
-    console.log("Número de evoluções:", evolucoes.length);
 
     if (!container) {
         console.error('Container listEvolucoes não encontrado!');
@@ -921,7 +865,7 @@ function renderizarListaEvolucoes(evolucoes) {
     }
 
     if (!evolucoes || !Array.isArray(evolucoes) || evolucoes.length === 0) {
-        console.log('Renderizando estado vazio para evoluções');
+
         container.innerHTML = `
             <div class="empty-state">
                  
@@ -931,7 +875,7 @@ function renderizarListaEvolucoes(evolucoes) {
         return;
     }
 
-    console.log("Gerando HTML para", evolucoes.length, "evoluções");
+
 
     // CORREÇÃO: HTML específico para evoluções
     const html = evolucoes.map(evolucao => `
@@ -952,7 +896,168 @@ function renderizarListaEvolucoes(evolucoes) {
         </div>
     `).join('');
 
-    console.log("HTML gerado:", html);
+
     container.innerHTML = html;
-    console.log("HTML inserido no container");
+
+}
+
+
+
+async function listarAvaliacoes(pacienteId = null, agendamentoId = null) {
+
+
+    // Buscar os IDs corretamente dos campos hidden
+    if (!pacienteId) {
+        const pacienteIdField = document.getElementById('pacienteId');
+        pacienteId = pacienteIdField ? pacienteIdField.value : null;
+    }
+
+    if (!agendamentoId) {
+        const agendamentoIdField = document.getElementById('agendamentoId');
+        agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
+    }
+
+
+
+    if (!pacienteId || pacienteId === 'undefined' || pacienteId === 'null') {
+        console.error('Paciente ID inválido:', pacienteId);
+        mostrarMensagem('Erro: Paciente não identificado', 'error');
+        return;
+    }
+
+    // CORREÇÃO: Container correto para evoluções
+    const container = document.getElementById('listAvaliacoes');
+    if (!container) {
+        console.error('Container de avaliações não encontrado');
+        return;
+    }
+
+    try {
+        // Mostrar loading
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                Carregando avaliações...
+            </div>
+        `;
+
+        // CORREÇÃO: URL correta para evoluções
+        const url = `/api/listar-avaliacoes/${pacienteId}`;
+
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // CORREÇÃO: Verificar array de evoluções
+        if (data.success && data.avaliacoes && Array.isArray(data.avaliacoes) && data.avaliacoes.length > 0) {
+            renderizarListaAvaliacoes(data.avaliacoes);
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-chart-line fa-2x mb-2 text-muted"></i>
+                    <p>Nenhuma avaliação encontrada para este paciente.</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Erro ao listar evoluções:', error);
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                Erro de conexão ao carregar evoluções: ${error.message}
+            </div>
+        `;
+    }
+}
+function renderizarListaAvaliacoes(avaliacoes) {
+    // ✅ CORREÇÃO: Container correto para AVALIAÇÕES
+    const container = document.getElementById('listAvaliacoes');
+
+    if (!container) {
+        console.error('Container listAvaliacoes não encontrado!');
+        return;
+    }
+
+    if (!avaliacoes || !Array.isArray(avaliacoes) || avaliacoes.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-clipboard-check fa-2x mb-2 text-muted"></i>
+                <p>Nenhuma avaliação encontrada para este paciente.</p>
+            </div>
+        `;
+        return;
+    }
+
+
+ 
+    const html = avaliacoes.map(avaliacao => `
+        <div class="prontuario-item">
+            <div class="prontuario-header">
+                <div class="prontuario-info">
+                    <h6>Avaliação - ${avaliacao.data_completa}</h6> <!-- ✅ "Avaliação" em vez de "Evolução" -->
+                    <span class="text-muted small">Registrado por: ${avaliacao.profissional_nome}</span>
+                    <span class="text-muted small">Agendamento Nº ${avaliacao.agendamento_atual_id} - ${avaliacao.agendamento_atual}</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="openAvaliacaoModal(${avaliacao.id})"> <!-- ✅ Função correta -->
+                    <i class="fas fa-eye me-1"></i> Leia Mais
+                </button>
+            </div>
+            <div class="prontuario-preview">
+                <p><strong>Queixa Principal:</strong> ${avaliacao.queixa_principal || 'Sem informação'}</p>
+            </div>
+        </div>
+    `).join('');
+
+    container.innerHTML = html;
+
+}
+
+
+async function renderizarDetalhesProntuario(agendamentoId = null) {
+
+    console.log('abriu aqui')
+    openModal('viewProntuarioModal');
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+ 
+    if (!agendamentoId) {
+        const agendamentoIdField = document.getElementById('agendamentoId');
+        agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
+    }
+ 
+    // CORREÇÃO: Container correto para evoluções
+    const container = document.getElementById('prontuarioDetalhes');
+    if (!container) {
+        console.error('Container de avaliações não encontrado');
+        return;
+    }
+
+    container.innerHTML = `<div class="prontuario-meta mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Data:</strong> <span id="viewProntuarioData">15/05/2023</span></p>
+                                <p><strong>Registrado por:</strong> <span id="viewProntuarioAutor">cudefrango</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Paciente:</strong> <span id="viewProntuarioPaciente">${pacienteId} ${agendamentoId}Maria Oliveira</span>
+                                </p>
+                                <p><strong>ID:</strong> <span id="viewProntuarioId">#PRT001</span></p>
+                            </div>
+                        </div>
+                    </div>`
+
 }

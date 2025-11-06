@@ -9,6 +9,7 @@ from core.models import Paciente, Pagamento
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.test import RequestFactory
 import json
 from core.models import Pagamento
 # core/views/api_views.py
@@ -623,8 +624,78 @@ def salvar_avaliacao(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
     
 def listar_avaliacoes(request, paciente_id):
-    ...
-    
+    try:
+        avaliacoes = AvaliacaoFisioterapeutica.objects.filter(
+            paciente_id=paciente_id
+        ).select_related('profissional', 'agendamento').exclude(nao_se_aplica=True).order_by('-data_avaliacao')[:3]
+        
+        avaliacoes_data = []
+        for avaliacao in avaliacoes:
+            avaliacoes_data.append({
+                'id': avaliacao.id,
+                'data': avaliacao.data_avaliacao.strftime('%d/%m/%Y'),
+                'data_completa': avaliacao.data_avaliacao.strftime('%d/%m/%Y - %H:%M'),
+                'agendamento_atual_id':avaliacao.agendamento.id,
+                'agendamento_atual': avaliacao.agendamento.data.strftime('%d/%m/%Y') if avaliacao.agendamento else 'Não informado',
+                'profissional_nome': avaliacao.profissional.nome if avaliacao.profissional else 'Não informado',
+                'profissional_id': avaliacao.profissional.id if avaliacao.profissional else None,
+                 
+ 
+            })
+             
+        return JsonResponse({
+            'success': True,
+            'avaliacoes': avaliacoes_data,
+            'total': len(avaliacoes_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'avaliacoes': []
+        }, status=500)
+
+
+def detalhes_prontuario(request, agendamento_id):
+    try:
+        prontuarios = Prontuario.objects.filter(
+            agendamento_id=agendamento_id
+        ).select_related('profissional', 'agendamento').exclude(nao_se_aplica=True).order_by('-data_criacao')[:3]
+        
+        prontuarios_data = []
+        for prontuario in prontuarios:
+            prontuarios_data.append({
+                'id': prontuario.id,
+                'data': prontuario.data_criacao.strftime('%d/%m/%Y'),
+                'data_completa': prontuario.data_criacao.strftime('%d/%m/%Y - %H:%M'),
+                'pacote':prontuario.agendamento.pacote.codigo,
+                'agendamento_atual_id':prontuario.agendamento.id,
+                
+                'agendamento_atual': prontuario.agendamento.data.strftime('%d/%m/%Y') if prontuario.agendamento else 'Não informado',
+                'profissional_nome': prontuario.profissional.nome if prontuario.profissional else 'Não informado',
+                'profissional_id': prontuario.profissional.id if prontuario.profissional else None,
+                'queixa_principal': prontuario.queixa_principal or '',
+                'feedback_paciente': prontuario.feedback_paciente or '',
+                'evolucao': prontuario.evolucao or '',
+                'conduta': prontuario.conduta or '',
+                'diagnostico': prontuario.diagnostico or '',
+                'observacoes': prontuario.observacoes or '',
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'prontuarios': prontuarios_data,
+            'total': len(prontuarios_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'prontuarios': []
+        }, status=500)
+
 def salvar_imagem(request):
     ...
     
