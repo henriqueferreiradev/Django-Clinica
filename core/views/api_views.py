@@ -695,6 +695,115 @@ def detalhes_prontuario(request, agendamento_id):
             'prontuarios': []
         }, status=500)
 
+
+def detalhes_evolucao(request, agendamento_id):
+    try:
+        evolucoes = Evolucao.objects.filter(
+            agendamento_id=agendamento_id
+        ).select_related('profissional', 'agendamento').exclude(nao_se_aplica=True).order_by('-data_criacao')[:3]
+        
+        evolucao_data = []
+        for evolucao in evolucoes:
+            evolucao_data.append({
+                'id': evolucao.id,
+                'data': evolucao.data_criacao.strftime('%d/%m/%Y'),
+                'data_completa': evolucao.data_criacao.strftime('%d/%m/%Y - %H:%M'),
+                'pacote':evolucao.agendamento.pacote.codigo,
+                'agendamento_atual_id':evolucao.agendamento.id,
+                'nome_paciente':f'{evolucao.paciente.nome} {evolucao.paciente.sobrenome}',
+                'agendamento_atual': evolucao.agendamento.data.strftime('%d/%m/%Y') if evolucao.agendamento else 'Não informado',
+                'profissional_nome': evolucao.profissional.nome if evolucao.profissional else 'Não informado',
+                'profissional_id': evolucao.profissional.id if evolucao.profissional else None,
+                'queixa_principal_inicial':evolucao.queixa_principal_inicial,
+                'processo_terapeutico':evolucao.processo_terapeutico,
+                'condutas_tecnicas':evolucao.condutas_tecnicas,
+                'resposta_paciente':evolucao.resposta_paciente,
+                'intercorrencias':evolucao.intercorrencias,
+                # Dores (tudo junto)
+                'dor_inicio':evolucao.dor_inicio,
+                'dor_atual':evolucao.dor_atual,
+                'dor_observacoes':evolucao.dor_observacoes,
+                # Amplitude  (tudo junto)
+                'amplitude_inicio':evolucao.amplitude_inicio,
+                'amplitude_atual':evolucao.amplitude_atual,
+                'amplitude_observacoes':evolucao.amplitude_observacoes,
+                # Força  (tudo junto)
+                'forca_inicio':evolucao.forca_inicio,
+                'forca_atual':evolucao.forca_atual,
+                'forca_observacoes':evolucao.forca_observacoes,
+                # Postura  (tudo junto)
+                'postura_inicio':evolucao.postura_inicio,
+                'postura_atual':evolucao.postura_atual,
+                'postura_observacoes':evolucao.postura_observacoes,
+                # Edema  (tudo junto)
+                'edema_inicio':evolucao.edema_inicio,
+                'edema_atual':evolucao.edema_atual,
+                'edema_observacoes':evolucao.edema_observacoes,
+                # AVDS  (tudo junto)
+                'avds_inicio':evolucao.avds_inicio,
+                'avds_atual':evolucao.avds_atual,
+                'avds_observacoes':evolucao.avds_observacoes,
+                # Emocionais  (tudo junto)
+                'emocionais_inicio':evolucao.emocionais_inicio,
+                'emocionais_atual':evolucao.emocionais_atual,
+                'emocionais_observacoes':evolucao.emocionais_observacoes,
+                
+                'sintese_evolucao':evolucao.sintese_evolucao,
+                'mensagem_paciente':evolucao.mensagem_paciente,
+                'explicacao_continuidade':evolucao.explicacao_continuidade,
+                'reacoes_paciente':evolucao.reacoes_paciente,
+                # Expectativa x Realidade - dor
+                'dor_expectativa':evolucao.dor_expectativa,
+                'dor_realidade':evolucao.dor_realidade,
+                
+                # Expectativa x Realidade - mobilidade
+                'mobilidade_expectativa':evolucao.mobilidade_expectativa,
+                'mobilidade_realidade':evolucao.mobilidade_realidade,
+                # Expectativa x Realidade - energia
+                'energia_expectativa':evolucao.energia_expectativa,
+                'energia_realidade':evolucao.energia_realidade,
+                # Expectativa x Realidade - consciencia
+                'consciencia_expectativa':evolucao.consciencia_expectativa,
+                'consciencia_realidade':evolucao.consciencia_realidade,
+                # Expectativa x Realidade - emocao
+                'emocao_expectativa':evolucao.emocao_expectativa,
+                'emocao_realidade':evolucao.emocao_realidade,
+                
+                # Próximos passos
+                'objetivos_ciclo':evolucao.objetivos_ciclo,
+                'condutas_mantidas':evolucao.condutas_mantidas,
+                'ajustes_plano':evolucao.ajustes_plano,
+                
+                # Sugestões complementares
+                'treino_funcional':evolucao.treino_funcional,
+                'pilates_clinico':evolucao.pilates_clinico,
+                'recovery':evolucao.recovery,
+                'rpg':evolucao.rpg,
+                'nutricao':evolucao.nutricao,
+                'psicoterapia':evolucao.psicoterapia,
+                'estetica':evolucao.estetica,
+                'outro_complementar':evolucao.outro_complementar,
+                'outro_complementar_texto':evolucao.outro_complementar_texto,
+                # Registro interno
+                'observacoes_internas':evolucao.observacoes_internas,
+                'orientacoes_grupo':evolucao.orientacoes_grupo,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'evolucoes': evolucao_data,
+            'total': len(evolucao_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'prontuarios': []
+        }, status=500)
+
+
+
 def salvar_imagem(request):
     ...
     

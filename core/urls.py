@@ -32,6 +32,7 @@ urlpatterns = [
     path('api/salvar-prontuario/', api_views.salvar_prontuario, name='salvar_prontuario'),
     path('api/listar-prontuarios/<int:paciente_id>/', api_views.listar_prontuarios, name='listar_prontuarios'),
     path('api/detalhe-prontuarios/<int:agendamento_id>/', api_views.detalhes_prontuario, name='detalhe_prontuarios'),
+    path('api/detalhe-evolucoes/<int:agendamento_id>/', api_views.detalhes_evolucao, name='detalhe_prontuarios'),
     
     path('api/verificar-prontuario/<int:agendamento_id>/', api_views.verificar_prontuario, name='verificar_prontuario' ),
     

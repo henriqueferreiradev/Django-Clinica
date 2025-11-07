@@ -886,7 +886,7 @@ function renderizarListaEvolucoes(evolucoes) {
                     <span class="text-muted small">Registrado por: ${evolucao.profissional_nome}</span>
                     <span class="text-muted small">Agendamento Nº ${evolucao.agendamento_atual_id} - ${evolucao.agendamento_atual}</span>
                 </div>
-                <button class="btn btn-sm btn-outline-primary" onclick="openEvolucaoModal(${evolucao.id})">
+                <button class="btn btn-sm btn-outline-primary" onclick="renderizarDetalhesEvolucao(${evolucao.agendamento_atual_id})">
                     <i class="fas fa-eye me-1"></i> Leia Mais
                 </button>
             </div>
@@ -1126,6 +1126,265 @@ async function renderizarDetalhesProntuario(agendamentoId = null) {
                         </div>
                     </div>
                 </div>`
+
+    }
+
+}
+
+
+
+
+
+
+async function renderizarDetalhesEvolucao(agendamentoId = null) {
+
+    console.log('abriu aqui')
+    openModal('viewEvolutionModal');
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+
+    if (!agendamentoId) {
+        const agendamentoIdField = document.getElementById('agendamentoId');
+        agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
+    }
+
+    // CORREÇÃO: Container correto para evoluções
+    const container = document.getElementById('evolucaoDetalhes');
+    if (!container) {
+        console.error('Container de avaliações não encontrado');
+        return;
+    }
+
+    const res = await apiRequest(`/api/detalhe-evolucoes/${agendamentoId}/`);
+    if (res.success && res.evolucoes && res.evolucoes.length > 0) {
+        const evolucao = res.evolucoes[0]
+        console.log(res, agendamentoId)
+        container.innerHTML = `
+                    <div class="habitos-grid">
+                        <h6 class="section-title habitos-col">2. Evolução do estado de saúde e tratamento</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Queixa principal inicial</label>
+                            <div class="section-content" id="viewQueixaPrincipalEvolucao">
+                            ${evolucao.queixa_principal_inicial ? evolucao.queixa_principal_inicial : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Resumo do processo terapêutico até o momento</label>
+                            <div class="section-content" id="viewProcessoTerapeutico">
+                            ${evolucao.processo_terapeutico ? evolucao.processo_terapeutico : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Condutas e técnicas aplicadas neste atendimento</label>
+                            <div class="section-content" id="viewCondutasTecnicas">
+                            ${evolucao.condutas_tecnicas ? evolucao.condutas_tecnicas : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Resposta do paciente ao tratamento</label>
+                            <div class="section-content" id="viewRespostaPaciente">
+                            ${evolucao.resposta_paciente ? evolucao.resposta_paciente : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Intercorrências observadas</label>
+                            <div class="section-content" id="viewIntercorrencias">
+                            ${evolucao.intercorrencias ? evolucao.intercorrencias : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Avaliação parcial do progresso -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">3. Avaliação parcial do progresso (Mini reavaliação)</h6>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Dor (0-10)</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewDorInicio">${evolucao.dor_inicio ? evolucao.dor_inicio : '<span class="text-muted">Não informado</span>' }</span> | 
+                                    <strong>Atual:</strong> <span id="viewDorAtual">${evolucao.dor_atual ? evolucao.dor_atual : '<span class="text-muted">Não informado</span>' }</span>
+                                    <div class="mt-1" id="viewDorObservacoes">${evolucao.dor_observacoes ? evolucao.dor_observacoes : '<span class="text-muted">Não informado</span>' }</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Amplitude de movimento</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewAmplitudeInicio">${evolucao.amplitude_inicio ? evolucao.amplitude_inicio : '<span class="text-muted">Não informado</span>' }</span> | 
+                                    <strong>Atual:</strong> <span id="viewAmplitudeAtual">${evolucao.amplitude_atual ? evolucao.amplitude_atual : '<span class="text-muted">Não informado</span>' }</span>
+                                    <div class="mt-1" id="viewAmplitudeObservacoes">${evolucao.amplitude_observacoes ? evolucao.amplitude_observacoes : '<span class="text-muted">Não informado</span>' }</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Força muscular (0-5)</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewForcaInicio">${evolucao.forca_inicio ? evolucao.forca_inicio : '<span class="text-muted">Não informado</span>' }</span> | 
+                                    <strong>Atual:</strong> <span id="viewForcaAtual">${evolucao.forca_atual ? evolucao.forca_atual : '<span class="text-muted">Não informado</span>' }</span>
+                                    <div class="mt-1" id="viewForcaObservacoes">${evolucao.forca_observacoes ? evolucao.forca_observacoes : '<span class="text-muted">Não informado</span>' }</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Postura e controle motor (0-5)</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewPosturaInicio">${evolucao.postura_inicio ? evolucao.postura_inicio : '<span class="text-muted">Não informado</span>' }</span> | 
+                                    <strong>Atual:</strong> <span id="viewPosturaAtual">${evolucao.postura_atual ? evolucao.postura_atual : '<span class="text-muted">Não informado</span>' }</span>
+                                    <div class="mt-1" id="viewPosturaObservacoes">${evolucao.postura_observacoes ? evolucao.postura_observacoes : '<span class="text-muted">Não informado</span>' }</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Edema (0-5)</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewEdemaInicio">${evolucao.edema_inicio ? evolucao.edema_inicio : '<span class="text-muted">Não informado</span>' }</span> | 
+                                    <strong>Atual:</strong> <span id="viewEdemaAtual">${evolucao.edema_atual ? evolucao.edema_atual : '<span class="text-muted">Não informado</span>' }</span>
+                                    <div class="mt-1" id="viewEdemaObservacoes">${evolucao.edema_observacoes ? evolucao.edema_observacoes : '<span class="text-muted">Não informado</span>' }</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">AVDS (0-5)</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewEdemaInicio">${evolucao.avds_inicio ? evolucao.avds_inicio : '<span class="text-muted">Não informado</span>' }</span> | 
+                                    <strong>Atual:</strong> <span id="viewEdemaAtual">${evolucao.avds_atual ? evolucao.avds_atual : '<span class="text-muted">Não informado</span>' }</span>
+                                    <div class="mt-1" id="viewEdemaObservacoes">${evolucao.avds_observacoes ? evolucao.avds_observacoes : '<span class="text-muted">Não informado</span>' }</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Síntese da evolução</label>
+                            <div class="section-content" id="viewSinteseEvolucao">
+                            ${evolucao.sintese_evolucao ? evolucao.sintese_evolucao : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Orientação ao Paciente -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">4. Orientação ao Paciente</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Mensagem técnica e emocional transmitida</label>
+                            <div class="section-content" id="viewMensagemPaciente">
+                            ${evolucao.mensagem_paciente ? evolucao.mensagem_paciente : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Explicação sobre continuidade</label>
+                            <div class="section-content" id="viewExplicacaoContinuidade">
+                            ${evolucao.explicacao_continuidade ? evolucao.explicacao_continuidade : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Reações e entendimento do paciente</label>
+                            <div class="section-content" id="viewExplicacaoContinuidade">
+                            ${evolucao.reacoes_paciente ? evolucao.reacoes_paciente : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Expectativa x Realidade -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">5. Expectativa x Realidade da Fisioterapeuta</h6>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Nível de dor e conforto</label>
+                                <div class="section-content">
+                                    <strong>Expectativa:</strong> <span id="viewDorExpectativa">${evolucao.dor_expectativa ? evolucao.dor_expectativa : '<span class="text-muted">Não informado</span>' }</span><br>
+                                    <strong>Realidade:</strong> <span id="viewDorRealidade">${evolucao.dor_realidade ? evolucao.dor_realidade : '<span class="text-muted">Não informado</span>' }</span>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Mobilidade e função</label>
+                                <div class="section-content">
+                                    <strong>Expectativa:</strong> <span id="viewMobilidadeExpectativa">${evolucao.mobilidade_expectativa ? evolucao.mobilidade_expectativa : '<span class="text-muted">Não informado</span>' }</span><br>
+                                    <strong>Realidade:</strong> <span id="viewMobilidadeRealidade">${evolucao.mobilidade_realidade ? evolucao.mobilidade_realidade : '<span class="text-muted">Não informado</span>' }</span>
+                                </div>
+                            </div>
+                         
+
+                            <div class="habitos-col">
+                                <label class="form-label">Energia e disposição</label>
+                                <div class="section-content">
+                                    <strong>Expectativa:</strong> <span id="viewEnergiaExpectativa">${evolucao.energia_expectativa ? evolucao.energia_expectativa : '<span class="text-muted">Não informado</span>' }</span><br>
+                                    <strong>Realidade:</strong> <span id="viewEnergiaRealidade">${evolucao.energia_realidade ? evolucao.energia_realidade : '<span class="text-muted">Não informado</span>' }</span>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Consciência corporal / postura</label>
+                                <div class="section-content">
+                                    <strong>Expectativa:</strong> <span id="viewConscienciaExpectativa">${evolucao.consciencia_expectativa ? evolucao.consciencia_expectativa : '<span class="text-muted">Não informado</span>' }</span><br>
+                                    <strong>Realidade:</strong> <span id="viewConscienciaRealidade">${evolucao.consciencia_realidade ? evolucao.consciencia_realidade : '<span class="text-muted">Não informado</span>' }</span>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Emoção / confiança / autoestima</label>
+                                <div class="section-content">
+                                    <strong>Expectativa:</strong> <span id="viewEmocaoExpectativa">${evolucao.emocao_expectativa ? evolucao.emocao_expectativa : '<span class="text-muted">Não informado</span>' }</span><br>
+                                    <strong>Realidade:</strong> <span id="viewEmocaoRealidade">emocao_realidade</span>
+                                </div>
+                            </div>
+                        
+                    </div>
+
+                    <!-- 6. Próximos passos -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">6. Próximos passos e novo Plano Terapêutico</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Objetivos para o novo ciclo</label>
+                            <div class="section-content" id="viewObjetivosCiclo">
+                            ${evolucao.objetivos_ciclo ? evolucao.objetivos_ciclo : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Condutas a serem mantidas</label>
+                            <div class="section-content" id="viewCondutasMantidas">
+                            ${evolucao.condutas_mantidas ? evolucao.condutas_mantidas : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Ajustes necessários no plano terapêutico</label>
+                            <div class="section-content" id="viewAjustesMantidas">
+                            ${evolucao.ajustes_plano ? evolucao.ajustes_plano : '<span class="text-muted">Não informado</span>' }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações do profissional -->
+                    <div class="habitos-grid-2">
+                        <div class="habitos-col">
+                            <label class="form-label">Fisioterapeuta responsável</label>
+                            <div class="section-content" id="viewFisioterapeutaResponsavel">
+                                Dra. Ana Silva
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">CREFITO</label>
+                            <div class="section-content" id="viewCrefito">
+                                123456-F
+                            </div>
+                        </div>
+                    </div>`
 
     }
 

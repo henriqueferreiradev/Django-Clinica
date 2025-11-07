@@ -1077,7 +1077,195 @@
         </div>
     </div>
 
+    <div class="modal" id="viewEvolutionModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Visualizar Evolução - Estado de Saúde e Tratamento</h5>
+                    <button type="button" class="btn-close" onclick="closeModal('viewEvolutionModal')" aria-label="Close"></button>
+                </div>
+                <div id='evolucaoDetalhes' class="modal-body">
+                    
+                    <div class="habitos-grid">
+                        <h6 class="section-title habitos-col">2. Evolução do estado de saúde e tratamento</h6>
 
+                        <div class="habitos-col">
+                            <label class="form-label">Queixa principal inicial</label>
+                            <div class="section-content" id="viewQueixaPrincipalEvolucao">
+                                Dor lombar há 3 meses com irradiação para perna direita
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Resumo do processo terapêutico até o momento</label>
+                            <div class="section-content" id="viewProcessoTerapeutico">
+                                Foram realizadas 8 sessões de fisioterapia com exercícios de fortalecimento do core e alongamentos. Paciente apresentou melhora progressiva.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Condutas e técnicas aplicadas neste atendimento</label>
+                            <div class="section-content" id="viewCondutasTecnicas">
+                                Mobilização articular, exercícios de estabilização lombar e orientação postural
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Resposta do paciente ao tratamento</label>
+                            <div class="section-content" id="viewRespostaPaciente">
+                                Paciente relatou melhora de 70% na dor e maior facilidade para realizar atividades diárias
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Intercorrências observadas</label>
+                            <div class="section-content" id="viewIntercorrencias">
+                                Nenhuma intercorrência relatada
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Avaliação parcial do progresso -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">3. Avaliação parcial do progresso (Mini reavaliação)</h6>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Dor (0-10)</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewDorInicio">8</span> | 
+                                    <strong>Atual:</strong> <span id="viewDorAtual">3</span>
+                                    <div class="mt-1" id="viewDorObservacoes">Dor reduzida significativamente</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Amplitude de movimento</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewAmplitudeInicio">50%</span> | 
+                                    <strong>Atual:</strong> <span id="viewAmplitudeAtual">85%</span>
+                                    <div class="mt-1" id="viewAmplitudeObservacoes">Melhora na flexão anterior</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Força muscular (0-5)</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewForcaInicio">3</span> | 
+                                    <strong>Atual:</strong> <span id="viewForcaAtual">4</span>
+                                    <div class="mt-1" id="viewForcaObservacoes">Fortalecimento progressivo</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Postura e controle motor (0-5)</label>
+                                <div class="section-content">
+                                    <strong>Início:</strong> <span id="viewPosturaInicio">2</span> | 
+                                    <strong>Atual:</strong> <span id="viewPosturaAtual">4</span>
+                                    <div class="mt-1" id="viewPosturaObservacoes">Melhor consciência corporal</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Síntese da evolução</label>
+                            <div class="section-content" id="viewSinteseEvolucao">
+                                Paciente apresenta evolução satisfatória com ganhos significativos em mobilidade e redução da dor
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Orientação ao Paciente -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">4. Orientação ao Paciente</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Mensagem técnica e emocional transmitida</label>
+                            <div class="section-content" id="viewMensagemPaciente">
+                                Parabenizado pelo progresso e orientado sobre a importância da continuidade dos exercícios
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Explicação sobre continuidade</label>
+                            <div class="section-content" id="viewExplicacaoContinuidade">
+                                Explicada a necessidade de manter os exercícios em casa para consolidação dos ganhos
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Expectativa x Realidade -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">5. Expectativa x Realidade da Fisioterapeuta</h6>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Nível de dor e conforto</label>
+                                <div class="section-content">
+                                    <strong>Expectativa:</strong> <span id="viewDorExpectativa">Redução para 4</span><br>
+                                    <strong>Realidade:</strong> <span id="viewDorRealidade">Redução para 3</span>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Mobilidade e função</label>
+                                <div class="section-content">
+                                    <strong>Expectativa:</strong> <span id="viewMobilidadeExpectativa">80%</span><br>
+                                    <strong>Realidade:</strong> <span id="viewMobilidadeRealidade">85%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. Próximos passos -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">6. Próximos passos e novo Plano Terapêutico</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Objetivos para o novo ciclo</label>
+                            <div class="section-content" id="viewObjetivosCiclo">
+                                Manutenção dos ganhos e introdução de exercícios funcionais mais complexos
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Condutas a serem mantidas</label>
+                            <div class="section-content" id="viewCondutasMantidas">
+                                Exercícios de estabilização e alongamentos diários
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações do profissional -->
+                    <div class="habitos-grid-2">
+                        <div class="habitos-col">
+                            <label class="form-label">Fisioterapeuta responsável</label>
+                            <div class="section-content" id="viewFisioterapeutaResponsavel">
+                                Dra. Ana Silva
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">CREFITO</label>
+                            <div class="section-content" id="viewCrefito">
+                                123456-F
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('viewEvolutionModal')">Fechar</button>
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="fas fa-print me-1"></i> Imprimir
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Modal Avaliação Fisioterapêutica -->
     <div class="modal" id="newAvaliacaoModal">
         <div class="modal-dialog modal-xl">
@@ -2142,98 +2330,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Visualizar Prontuário Completo -->
-    <div class="modal" id="viewProntuarioModal">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Prontuário Completo</h5>
-                    <button type="button" class="btn-close" onclick="closeModal('viewProntuarioModal')"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Cabeçalho com informações do prontuário -->
-                    <div class="prontuario-meta mb-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Data:</strong> <span id="viewProntuarioData">15/05/2023</span></p>
-                                <p><strong>Registrado por:</strong> <span id="viewProntuarioAutor">Dra. Ana Silva</span>
-                                </p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Paciente:</strong> <span id="viewProntuarioPaciente">Maria Oliveira</span>
-                                </p>
-                                <p><strong>ID:</strong> <span id="viewProntuarioId">#PRT001</span></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Conteúdo do prontuário (mesma estrutura do novo prontuário, mas em modo leitura) -->
-                    <form>
-                        <div class="habitos-grid-2">
-                            <div class="habitos-col">
-                                <label class="form-label">Queixa Principal</label>
-                                <div class="form-control-view" id="viewQueixaPrincipal">
-                                    Dor lombar há 6 meses, com irradiação para membro inferior direito...
-                                </div>
-                            </div>
-                            <div class="habitos-col">
-                                <label class="form-label">Conduta durante a sessão</label>
-                                <div class="form-control-view" id="viewConduta">
-                                    Exercícios de fortalecimento do core, alongamento de cadeia posterior...
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="habitos-grid-2">
-                            <div class="habitos-col">
-                                <label class="form-label">Feedback do paciente</label>
-                                <div class="form-control-view" id="viewHistoriaDoenca">
-                                    Paciente relata início dos sintomas após mudança de trabalho...
-                                </div>
-                            </div>
-                            <div class="habitos-col">
-                                <label class="form-label">Evolução</label>
-                                <div class="form-control-view" id="viewExameFisico">
-                                    Amplitude de movimento diminuída na flexão anterior...
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Diagnóstico</label>
-                            <div class="form-control-view" id="viewDiagnostico">
-                                Lombalgia crônica com componente radicular.
-                            </div>
-                        </div>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Observações Adicionais / Comunicação</label>
-                            <div class="form-control-view" id="viewObservacoes">
-                                Paciente orientado sobre postura e ergonomia. Retorno em 15 dias...
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                        onclick="closeModal('viewProntuarioModal')">Fechar</button>
-                    <button type="button" class="btn btn-outline-primary">
-                        <i class="fas fa-print me-1"></i> Imprimir
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="editarProntuario()">
-                        <i class="fas fa-edit me-1"></i> Editar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-
+ 
 
 
 
@@ -2246,7 +2343,7 @@
                     <button type="button" class="btn-close" onclick="closeModal('viewAvaliacaoModal')"
                         aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div id='detalhesEvolucao' class="modal-body">
                     <!-- Cabeçalho com informações da avaliação -->
                     <div class="prontuario-meta mb-4">
                         <div class="row">
