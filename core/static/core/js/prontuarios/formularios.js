@@ -759,7 +759,7 @@ function renderizarListaProntuarios(prontuarios) {
                     <span class="text-muted small">Registrado por: ${prontuario.profissional_nome}</span>
                     <span class="text-muted small">Agendamento Nº ${prontuario.agendamento_atual_id} - ${prontuario.agendamento_atual}</span>
                 </div>
-                <button class="btn btn-sm btn-outline-primary" onclick="renderizarDetalhesProntuario(${prontuario.id})">
+                <button class="btn btn-sm btn-outline-primary" onclick="renderizarDetalhesProntuario(${prontuario.agendamento_atual_id})">
                     <i class="fas fa-eye me-1"></i> Leia Mais
                 </button>
             </div>
@@ -1001,7 +1001,7 @@ function renderizarListaAvaliacoes(avaliacoes) {
     }
 
 
- 
+
     const html = avaliacoes.map(avaliacao => `
         <div class="prontuario-item">
             <div class="prontuario-header">
@@ -1032,12 +1032,12 @@ async function renderizarDetalhesProntuario(agendamentoId = null) {
 
     await new Promise(resolve => setTimeout(resolve, 100));
 
- 
+
     if (!agendamentoId) {
         const agendamentoIdField = document.getElementById('agendamentoId');
         agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
     }
- 
+
     // CORREÇÃO: Container correto para evoluções
     const container = document.getElementById('prontuarioDetalhes');
     if (!container) {
@@ -1045,19 +1045,88 @@ async function renderizarDetalhesProntuario(agendamentoId = null) {
         return;
     }
 
-    container.innerHTML = `<div class="prontuario-meta mb-4">
+    const res = await apiRequest(`/api/detalhe-prontuarios/${agendamentoId}/`);
+    if (res.success && res.prontuarios && res.prontuarios.length > 0) {
+        const prontuario = res.prontuarios[0]
+        console.log(res, agendamentoId)
+        container.innerHTML = `<div class="prontuario-meta mb-4">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Data:</strong> <span id="viewProntuarioData">15/05/2023</span></p>
-                                <p><strong>Registrado por:</strong> <span id="viewProntuarioAutor">cudefrango</span>
+                                <p><strong>Data:</strong> <span>${prontuario.data}</span>
+                                <strong>Pacote:</strong> <span">${prontuario.pacote}</span=></p>
+                                <p><strong>Registrado por:</strong> <span id="viewProntuarioAutor">${prontuario.profissional_nome}</span>
                                 </p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Paciente:</strong> <span id="viewProntuarioPaciente">${pacienteId} ${agendamentoId}Maria Oliveira</span>
+                                <p><strong>Paciente:</strong> <span id="viewProntuarioPaciente">${prontuario.nome_paciente}</span>
                                 </p>
-                                <p><strong>ID:</strong> <span id="viewProntuarioId">#PRT001</span></p>
                             </div>
                         </div>
-                    </div>`
+                    </div>
+  
+                    <div class="prontuario-content">
+                        <div class="info-section mb-4">
+                            <h6 class="section-title habitos-col">Queixa Principal</h6>
+                            <div class="section-content" id="viewQueixaPrincipal">
+                                        ${prontuario.queixa_principal
+                ? prontuario.queixa_principal
+                : '<span class="text-muted">Não informado</span>'
+            }
+                            </div>
+                        </div>
+
+                        <div class="info-section mb-4">
+                            <h6 class="section-title habitos-col">Conduta durante a sessão</h6>
+                            <div class="section-content" id="viewHistoriaDoenca">
+                                                                        ${prontuario.conduta
+                ? prontuario.conduta
+                : '<span class="text-muted">Não informado</span>'
+            }
+                            </div>
+                        </div>
+
+                        <div class="info-section mb-4">
+                            <h6 class="section-title habitos-col">Feedback do Paciente</h6>
+                            <div class="section-content" id="viewExameFisico">
+                                                                        ${prontuario.feedback_paciente
+                ? prontuario.feedback_paciente
+                : '<span class="text-muted">Não informado</span>'
+            }
+                            </div>
+                        </div>
+
+                        <div class="info-section mb-4">
+                            <h6 class="section-title habitos-col">Evolução</h6>
+                            <div class="section-content" id="viewConduta">
+                                                                                                        ${prontuario.evolucao
+                ? prontuario.evolucao
+                : '<span class="text-muted">Não informado</span>'
+            }
+                            </div>
+                        </div>
+
+                        <div class="info-section mb-4">
+                            <h6 class="section-title habitos-col">Diagnóstico</h6>
+                            <div class="section-content" id="viewDiagnostico">
+                                                                                                        ${prontuario.diagnostico
+                ? prontuario.diagnostico
+                : '<span class="text-muted">Não informado</span>'
+            }
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <h6 class="section-title habitos-col">Observações</h6>
+                            <div class="section-content" id="viewObservacoes">
+                                                                                                    ${prontuario.observacoes
+                ? prontuario.observacoes
+                : '<span class="text-muted">Não informado</span>'
+            }
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+
+    }
 
 }

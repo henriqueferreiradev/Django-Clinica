@@ -656,7 +656,6 @@ def listar_avaliacoes(request, paciente_id):
             'avaliacoes': []
         }, status=500)
 
-
 def detalhes_prontuario(request, agendamento_id):
     try:
         prontuarios = Prontuario.objects.filter(
@@ -671,7 +670,7 @@ def detalhes_prontuario(request, agendamento_id):
                 'data_completa': prontuario.data_criacao.strftime('%d/%m/%Y - %H:%M'),
                 'pacote':prontuario.agendamento.pacote.codigo,
                 'agendamento_atual_id':prontuario.agendamento.id,
-                
+                'nome_paciente':f'{prontuario.paciente.nome} {prontuario.paciente.sobrenome}',
                 'agendamento_atual': prontuario.agendamento.data.strftime('%d/%m/%Y') if prontuario.agendamento else 'Não informado',
                 'profissional_nome': prontuario.profissional.nome if prontuario.profissional else 'Não informado',
                 'profissional_id': prontuario.profissional.id if prontuario.profissional else None,
