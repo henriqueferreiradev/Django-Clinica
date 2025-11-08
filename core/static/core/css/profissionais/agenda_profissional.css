@@ -932,11 +932,19 @@ PRONTUÁRIOS LIST
 }
 
 .section-content {
+    display: flex;
+    flex-direction: column;
     background-color: white;
     padding: 15px;
     border-radius: 8px;
     border: 1px solid #e9ecef;
     line-height: 1.6;
+
+
+    word-wrap: break-word;
+    /* quebra palavras grandes */
+    overflow-wrap: break-word;
+
 
 }
 
@@ -1518,5 +1526,237 @@ textarea.form-control {
 @media (max-width: 400px) {
     .status-badges {
         grid-template-columns: 1fr;
+    }
+}
+
+.sugestoes-list .sugestao-item {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.sugestoes-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.habitos-grid,
+.habitos-grid-2,
+.habitos-grid-3,
+.habitos-grid-4 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* ========================
+   LAYOUT MELHORADO PARA MÉTRICAS
+======================== */
+
+.metrica-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px !important;
+}
+
+.valores-linha {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.valor-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+}
+
+.valor-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.valor-numero {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--roxoPrincipal);
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.valor-numero .text-muted {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #6c757d !important;
+}
+
+.observacoes-box {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 4px;
+}
+
+.observacoes-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed #dee2e6;
+}
+
+.observacoes-conteudo {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #333;
+    min-height: 20px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.observacoes-conteudo .text-muted {
+    font-style: italic;
+    color: #6c757d !important;
+}
+
+/* ========================
+   MELHORIAS VISUAIS
+======================== */
+
+.habitos-col {
+    transition: all 0.3s ease;
+}
+
+.habitos-col:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Destaque para valores numéricos */
+.valor-numero:not(.text-muted) {
+    background: linear-gradient(135deg, var(--roxoPrincipal), #8a5cb6);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    min-width: 50px;
+}
+
+/* Indicador visual de progresso */
+.valor-item:last-child .valor-numero:not(.text-muted) {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+/* ========================
+   RESPONSIVIDADE
+======================== */
+
+@media (max-width: 768px) {
+    .valores-linha {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .valor-item {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        padding: 8px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+    }
+
+    .valor-label {
+        font-size: 0.8rem;
+        min-width: 60px;
+    }
+
+    .valor-numero {
+        font-size: 1.25rem;
+        min-height: auto;
+    }
+
+    .metrica-container {
+        padding: 12px !important;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .habitos-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .valor-numero {
+        font-size: 1.1rem;
+    }
+
+    .valor-numero:not(.text-muted) {
+        padding: 3px 10px;
+        min-width: 45px;
+    }
+}
+
+/* ========================
+   ANIMAÇÕES SUAVES
+======================== */
+
+.valor-numero:not(.text-muted) {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ========================
+   ESTADOS DE FOCO
+======================== */
+
+.metrica-container:focus-within {
+    border-color: var(--roxoPrincipal);
+    box-shadow: 0 0 0 2px rgba(109, 57, 142, 0.1);
+}
+
+/* ========================
+   ACESSIBILIDADE
+======================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .habitos-col,
+    .valor-numero:not(.text-muted) {
+        transition: none;
+        animation: none;
+    }
+
+    .habitos-col:hover {
+        transform: none;
     }
 }
