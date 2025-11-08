@@ -802,6 +802,105 @@ def detalhes_evolucao(request, agendamento_id):
             'prontuarios': []
         }, status=500)
 
+def detalhes_avaliacao(request, agendamento_id):
+    try:
+        avaliacoes = AvaliacaoFisioterapeutica.objects.filter(
+            agendamento_id=agendamento_id
+        ).select_related('profissional', 'agendamento').exclude(nao_se_aplica=True).order_by('-data_avaliacao')[:3]
+        
+        avaliacoes_data = []
+        for avaliacao in avaliacoes:
+            avaliacoes_data.append({
+                'id': avaliacao.id,
+                'data': avaliacao.data_avaliacao.strftime('%d/%m/%Y'),
+                'data_completa': avaliacao.data_avaliacao.strftime('%d/%m/%Y - %H:%M'),
+                'pacote':avaliacao.agendamento.pacote.codigo,
+                'agendamento_atual_id':avaliacao.agendamento.id,
+                'nome_paciente':f'{avaliacao.paciente.nome} {avaliacao.paciente.sobrenome}',
+                'agendamento_atual': avaliacao.agendamento.data.strftime('%d/%m/%Y') if avaliacao.agendamento else 'Não informado',
+                'profissional_nome': avaliacao.profissional.nome if avaliacao.profissional else 'Não informado',
+                'profissional_id': avaliacao.profissional.id if avaliacao.profissional else None,
+                'queixa_principal': avaliacao.queixa_principal,
+                'inicio_problema': avaliacao.inicio_problema,
+                'causa_problema': avaliacao.causa_problema,
+                
+                'dor_recente_antiga': avaliacao.dor_recente_antiga,
+                'episodios_anteriores': avaliacao.episodios_anteriores,
+                'tratamento_anterior': "Sim" if avaliacao.tratamento_anterior else 'Não',
+                'qual_tratamento': "Não informado" if avaliacao.tratamento_anterior == False else avaliacao.qual_tratamento or 'Não especificado.',
+                'cirurgia_procedimento': avaliacao.cirurgia_procedimento,
+                'acompanhamento_medico': "Sim" if avaliacao.acompanhamento_medico else 'Não',
+                'medico_especialidade': "Não informado" if avaliacao.medico_especialidade == False else avaliacao.medico_especialidade or 'Não especificado.',
+                'diagnostico_medico': avaliacao.diagnostico_medico,
+                'uso_medicamentos': avaliacao.uso_medicamentos,
+                'exames_trazidos': "Sim" if avaliacao.exames_trazidos else 'Não',
+                'tipo_exame': "Não informado" if avaliacao.tipo_exame == False else avaliacao.tipo_exame or 'Não especificado.',
+                'historico_lesoes': avaliacao.historico_lesoes,
+                'doencas_previas': avaliacao.doencas_previas,
+                'cirurgias_previas': avaliacao.cirurgias_previas,
+                'condicoes_geneticas': avaliacao.condicoes_geneticas,
+                'historico_familiar': avaliacao.historico_familiar,
+                'qualidade_sono': avaliacao.qualidade_sono.capitalize(),
+                'horas_sono': avaliacao.horas_sono.capitalize(),
+                'alimentacao': avaliacao.alimentacao.capitalize(),
+                'nivel_atividade': avaliacao.nivel_atividade.capitalize(),
+                'tipo_exercicio': avaliacao.tipo_exercicio.capitalize(),
+                'nivel_estresse': avaliacao.nivel_estresse,
+                'rotina_trabalho': avaliacao.rotina_trabalho,
+                'aspectos_emocionais': avaliacao.aspectos_emocionais,
+                'localizacao_dor': avaliacao.localizacao_dor,
+                'tipo_dor_pontada': avaliacao.tipo_dor_pontada,
+                'tipo_dor_queimacao': avaliacao.tipo_dor_queimacao,
+                'tipo_dor_peso': avaliacao.tipo_dor_peso,
+                'tipo_dor_choque': avaliacao.tipo_dor_choque,
+                'tipo_dor_outra': avaliacao.tipo_dor_outra,
+                'tipo_dor_outra_texto': avaliacao.tipo_dor_outra_texto,
+                
+                'intensidade_repouso': avaliacao.intensidade_repouso,
+                'intensidade_movimento': avaliacao.intensidade_movimento,
+                'intensidade_pior': avaliacao.intensidade_pior,
+                
+                'fatores_agravam': avaliacao.fatores_agravam,
+                'fatores_aliviam': avaliacao.fatores_aliviam,
+                
+                'sinal_edema': avaliacao.sinal_edema,
+                'sinal_parestesia': avaliacao.sinal_parestesia,
+                'sinal_rigidez': avaliacao.sinal_rigidez,
+                'sinal_fraqueza': avaliacao.sinal_fraqueza,
+                'sinal_compensacoes': avaliacao.sinal_compensacoes,
+                'sinal_outro': avaliacao.sinal_outro,
+                'sinal_outro_texto': avaliacao.sinal_outro_texto,
+                
+                'grau_inflamacao': avaliacao.grau_inflamacao,
+                
+                'inspecao_postura': avaliacao.inspecao_postura,
+                'compensacoes_corporais': avaliacao.compensacoes_corporais,
+                'padrao_respiratorio': avaliacao.padrao_respiratorio,
+                'palpacao': avaliacao.palpacao,
+                'pontos_dor': avaliacao.pontos_dor,
+                'testes_funcionais': avaliacao.testes_funcionais,
+                'outras_observacoes': avaliacao.outras_observacoes,
+                'outras_observacoes': avaliacao.outras_observacoes,
+                
+                
+                
+
+                
+            
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'avaliacoes': avaliacoes_data,
+            'total': len(avaliacoes_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'avaliacoes': []
+        }, status=500)
 
 
 def salvar_imagem(request):

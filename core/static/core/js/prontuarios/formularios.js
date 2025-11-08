@@ -1010,7 +1010,7 @@ function renderizarListaAvaliacoes(avaliacoes) {
                     <span class="text-muted small">Registrado por: ${avaliacao.profissional_nome}</span>
                     <span class="text-muted small">Agendamento Nº ${avaliacao.agendamento_atual_id} - ${avaliacao.agendamento_atual}</span>
                 </div>
-                <button class="btn btn-sm btn-outline-primary" onclick="openAvaliacaoModal(${avaliacao.id})"> <!-- ✅ Função correta -->
+                <button class="btn btn-sm btn-outline-primary" onclick="renderizarDetalhesAvaliacao(${avaliacao.agendamento_atual_id})">  
                     <i class="fas fa-eye me-1"></i> Leia Mais
                 </button>
             </div>
@@ -1132,10 +1132,6 @@ async function renderizarDetalhesProntuario(agendamentoId = null) {
 }
 
 
-
-
-
-
 async function renderizarDetalhesEvolucao(agendamentoId = null) {
 
     console.log('abriu aqui')
@@ -1161,237 +1157,805 @@ async function renderizarDetalhesEvolucao(agendamentoId = null) {
         const evolucao = res.evolucoes[0]
         console.log(res, agendamentoId)
         container.innerHTML = `
+        <h6 class="section-title habitos-col">1. Evolução do estado de saúde e tratamento</h6>
                     <div class="habitos-grid">
-                        <h6 class="section-title habitos-col">2. Evolução do estado de saúde e tratamento</h6>
+    
 
-                        <div class="habitos-col">
-                            <label class="form-label">Queixa principal inicial</label>
-                            <div class="section-content" id="viewQueixaPrincipalEvolucao">
+                    <div class="habitos-col">
+                        <label class="form-label">Queixa principal inicial</label>
+                        <div class="section-content" id="viewQueixaPrincipalEvolucao">
                             ${evolucao.queixa_principal_inicial ? evolucao.queixa_principal_inicial : '<span class="text-muted">Não informado</span>'}
-                            </div>
                         </div>
+                    </div>
 
-                        <div class="habitos-col">
-                            <label class="form-label">Resumo do processo terapêutico até o momento</label>
-                            <div class="section-content" id="viewProcessoTerapeutico">
+                    <div class="habitos-col">
+                        <label class="form-label">Resumo do processo terapêutico até o momento</label>
+                        <div class="section-content" id="viewProcessoTerapeutico">
                             ${evolucao.processo_terapeutico ? evolucao.processo_terapeutico : '<span class="text-muted">Não informado</span>'}
-                            </div>
                         </div>
+                    </div>
 
-                        <div class="habitos-col">
-                            <label class="form-label">Condutas e técnicas aplicadas neste atendimento</label>
-                            <div class="section-content" id="viewCondutasTecnicas">
+                    <div class="habitos-col">
+                        <label class="form-label">Condutas e técnicas aplicadas neste atendimento</label>
+                        <div class="section-content" id="viewCondutasTecnicas">
                             ${evolucao.condutas_tecnicas ? evolucao.condutas_tecnicas : '<span class="text-muted">Não informado</span>'}
-                            </div>
                         </div>
+                    </div>
 
-                        <div class="habitos-col">
-                            <label class="form-label">Resposta do paciente ao tratamento</label>
-                            <div class="section-content" id="viewRespostaPaciente">
+                    <div class="habitos-col">
+                        <label class="form-label">Resposta do paciente ao tratamento</label>
+                        <div class="section-content" id="viewRespostaPaciente">
                             ${evolucao.resposta_paciente ? evolucao.resposta_paciente : '<span class="text-muted">Não informado</span>'}
-                            </div>
                         </div>
+                    </div>
 
-                        <div class="habitos-col">
-                            <label class="form-label">Intercorrências observadas</label>
-                            <div class="section-content" id="viewIntercorrencias">
+                    <div class="habitos-col">
+                        <label class="form-label">Intercorrências observadas</label>
+                        <div class="section-content" id="viewIntercorrencias">
                             ${evolucao.intercorrencias ? evolucao.intercorrencias : '<span class="text-muted">Não informado</span>'}
-                            </div>
                         </div>
                     </div>
-
-                    <!-- 3. Avaliação parcial do progresso -->
-                    <div class="mb-4">
-                        <h6 class="section-title habitos-col">3. Avaliação parcial do progresso (Mini reavaliação)</h6>
-
-                        <div class="habitos-grid-2">
-                            <div class="habitos-col">
-                                <label class="form-label">Dor (0-10)</label>
-                                <div class="section-content">
-                                    <div><strong>Início:</strong> <span id="viewDorInicio">${evolucao.dor_inicio ? evolucao.dor_inicio : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Atual:</strong> <span id="viewDorAtual">${evolucao.dor_atual ? evolucao.dor_atual : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Observações:</strong> <span id="viewDorAtual">${evolucao.dor_observacoes ? evolucao.dor_observacoes : '<span class="text-muted">Não informado</span>'}</span></div>
-                                 </div>
-                            </div>
-
-                            <div class="habitos-col">
-                                <label class="form-label">Amplitude de movimento</label>
-                                <div class="section-content">
-                                    <div><strong>Início:</strong> <span id="viewAmplitudeInicio">${evolucao.amplitude_inicio ? evolucao.amplitude_inicio : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Atual:</strong> <span id="viewAmplitudeAtual">${evolucao.amplitude_atual ? evolucao.amplitude_atual : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Observações:</strong> <span id="viewAmplitudeAtual">${evolucao.amplitude_observacoes ? evolucao.amplitude_observacoes : '<span class="text-muted">Não informado</span>'}</span></div>
-                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="habitos-grid-2">
-                            <div class="habitos-col">
-                                <label class="form-label">Força muscular (0-5)</label>
-                                <div class="section-content">
-                                    <div><strong>Início:</strong> <span id="viewForcaInicio">${evolucao.forca_inicio ? evolucao.forca_inicio : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Atual:</strong> <span id="viewForcaAtual">${evolucao.forca_atual ? evolucao.forca_atual : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Observações:</strong> <span id="viewForcaAtual">${evolucao.forca_observacoes ? evolucao.forca_observacoes : '<span class="text-muted">Não informado</span>'}</span></div>
-                                 </div>
-                            </div>
-
-                            <div class="habitos-col">
-                                <label class="form-label">Postura e controle motor (0-5)</label>
-                                <div class="section-content">
-                                    <div><strong>Início:</strong> <span id="viewPosturaInicio">${evolucao.postura_inicio ? evolucao.postura_inicio : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Atual:</strong> <span id="viewPosturaAtual">${evolucao.postura_atual ? evolucao.postura_atual : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Observações:</strong> <span id="viewPosturaAtual">${evolucao.postura_observacoes ? evolucao.postura_observacoes : '<span class="text-muted">Não informado</span>'}</span></div>
-                                </div>
-                            </div>
-
-                            <div class="habitos-col">
-                                <label class="form-label">Edema (0-5)</label>
-                                <div class="section-content">
-                                    <div><strong>Início:</strong> <span id="viewEdemaInicio">${evolucao.edema_inicio ? evolucao.edema_inicio : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Atual:</strong> <span id="viewEdemaAtual">${evolucao.edema_atual ? evolucao.edema_atual : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Observações:</strong> <span id="viewEdemaAtual">${evolucao.edema_observacoes ? evolucao.edema_observacoes : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    
-                                     
-                                </div>
-                            </div>
-
-                            <div class="habitos-col">
-                                <label class="form-label">AVDS (0-5)</label>
-                                <div class="section-content">
-                                    <div><strong>Início:</strong> <span id="viewEdemaInicio">${evolucao.avds_inicio ? evolucao.avds_inicio : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Atual:</strong> <span id="viewEdemaAtual">${evolucao.avds_atual ? evolucao.avds_atual : '<span class="text-muted">Não informado</span>'}</span></div>
-                                    <div><strong>Observacoes:</strong> <span id="viewEdemaAtual">${evolucao.avds_observacoes ? evolucao.avds_observacoes : '<span class="text-muted">Não informado</span>'}</span></div>
-                                     
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Síntese da evolução</label>
-                            <div class="section-content" id="viewSinteseEvolucao">
-                            ${evolucao.sintese_evolucao ? evolucao.sintese_evolucao : '<span class="text-muted">Não informado</span>'}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 4. Orientação ao Paciente -->
-                    <div class="mb-4">
-                        <h6 class="section-title habitos-col">4. Orientação ao Paciente</h6>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Mensagem técnica e emocional transmitida</label>
-                            <div class="section-content" id="viewMensagemPaciente">
-                            ${evolucao.mensagem_paciente ? evolucao.mensagem_paciente : '<span class="text-muted">Não informado</span>'}
-                            </div>
-                        </div>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Explicação sobre continuidade</label>
-                            <div class="section-content" id="viewExplicacaoContinuidade">
-                            ${evolucao.explicacao_continuidade ? evolucao.explicacao_continuidade : '<span class="text-muted">Não informado</span>'}
-                            </div>
-                        </div>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Reações e entendimento do paciente</label>
-                            <div class="section-content" id="viewExplicacaoContinuidade">
-                            ${evolucao.reacoes_paciente ? evolucao.reacoes_paciente : '<span class="text-muted">Não informado</span>'}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 5. Expectativa x Realidade -->
-                    <div class="mb-4">
-                        <h6 class="section-title habitos-col">5. Expectativa x Realidade da Fisioterapeuta</h6>
-
-                        <div class="habitos-grid-2">
-                            <div class="habitos-col">
-                                <label class="form-label">Nível de dor e conforto</label>
-                                <div class="section-content">
-                                    <strong>Expectativa:</strong> <span id="viewDorExpectativa">${evolucao.dor_expectativa ? evolucao.dor_expectativa : '<span class="text-muted">Não informado</span>'}</span><br>
-                                    <strong>Realidade:</strong> <span id="viewDorRealidade">${evolucao.dor_realidade ? evolucao.dor_realidade : '<span class="text-muted">Não informado</span>'}</span>
-                                </div>
-                            </div>
-
-                            <div class="habitos-col">
-                                <label class="form-label">Mobilidade e função</label>
-                                <div class="section-content">
-                                    <strong>Expectativa:</strong> <span id="viewMobilidadeExpectativa">${evolucao.mobilidade_expectativa ? evolucao.mobilidade_expectativa : '<span class="text-muted">Não informado</span>'}</span><br>
-                                    <strong>Realidade:</strong> <span id="viewMobilidadeRealidade">${evolucao.mobilidade_realidade ? evolucao.mobilidade_realidade : '<span class="text-muted">Não informado</span>'}</span>
-                                </div>
-                            </div>
-                         
-
-                            <div class="habitos-col">
-                                <label class="form-label">Energia e disposição</label>
-                                <div class="section-content">
-                                    <strong>Expectativa:</strong> <span id="viewEnergiaExpectativa">${evolucao.energia_expectativa ? evolucao.energia_expectativa : '<span class="text-muted">Não informado</span>'}</span><br>
-                                    <strong>Realidade:</strong> <span id="viewEnergiaRealidade">${evolucao.energia_realidade ? evolucao.energia_realidade : '<span class="text-muted">Não informado</span>'}</span>
-                                </div>
-                            </div>
-
-                            <div class="habitos-col">
-                                <label class="form-label">Consciência corporal / postura</label>
-                                <div class="section-content">
-                                    <strong>Expectativa:</strong> <span id="viewConscienciaExpectativa">${evolucao.consciencia_expectativa ? evolucao.consciencia_expectativa : '<span class="text-muted">Não informado</span>'}</span><br>
-                                    <strong>Realidade:</strong> <span id="viewConscienciaRealidade">${evolucao.consciencia_realidade ? evolucao.consciencia_realidade : '<span class="text-muted">Não informado</span>'}</span>
-                                </div>
-                            </div>
-
-                            <div class="habitos-col">
-                                <label class="form-label">Emoção / confiança / autoestima</label>
-                                <div class="section-content">
-                                    <strong>Expectativa:</strong> <span id="viewEmocaoExpectativa">${evolucao.emocao_expectativa ? evolucao.emocao_expectativa : '<span class="text-muted">Não informado</span>'}</span><br>
-                                    <strong>Realidade:</strong> <span id="viewEmocaoRealidade">${evolucao.emocao_realidade ? evolucao.emocao_realidade : '<span class="text-muted">Não informado</span>'}</span>
-                                </div>
-                            </div>
-                        
-                    </div>
-
-                    <!-- 6. Próximos passos -->
-                    <div class="mb-4">
-                        <h6 class="section-title habitos-col">6. Próximos passos e novo Plano Terapêutico</h6>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Objetivos para o novo ciclo</label>
-                            <div class="section-content" id="viewObjetivosCiclo">
-                            ${evolucao.objetivos_ciclo ? evolucao.objetivos_ciclo : '<span class="text-muted">Não informado</span>'}
-                            </div>
-                        </div>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Condutas a serem mantidas</label>
-                            <div class="section-content" id="viewCondutasMantidas">
-                            ${evolucao.condutas_mantidas ? evolucao.condutas_mantidas : '<span class="text-muted">Não informado</span>'}
-                            </div>
-                        </div>
-
-                        <div class="habitos-col">
-                            <label class="form-label">Ajustes necessários no plano terapêutico</label>
-                            <div class="section-content" id="viewAjustesMantidas">
-                            ${evolucao.ajustes_plano ? evolucao.ajustes_plano : '<span class="text-muted">Não informado</span>'}
-                            </div>
-                        </div>
-                    </div>
-
- 
-            <div class="habitos-col">
-                <label class="form-label">Sugestões Complementares</label>
-                <div class="section-content">
-                    <div class="sugestoes-badges">
-                        ${evolucao.treino_funcional ? '<span class="badge bg-success me-2 mb-2">Treino Funcional</span>' : ''}
-                        ${evolucao.pilates_clinico ? '<span class="badge bg-success me-2 mb-2">Pilates Clínico</span>' : ''}
-                        ${evolucao.recovery ? '<span class="badge bg-success me-2 mb-2">Recovery</span>' : ''}
-                        ${evolucao.rpg ? '<span class="badge bg-success me-2 mb-2">RPG</span>' : ''}
-                        ${evolucao.nutricao ? '<span class="badge bg-success me-2 mb-2">Nutrição</span>' : ''}
-                        ${evolucao.psicoterapia ? '<span class="badge bg-success me-2 mb-2">Psicoterapia</span>' : ''}
-                        ${evolucao.estetica ? '<span class="badge bg-success me-2 mb-2">Estética</span>' : ''}
-                        ${evolucao.outro_complementar ? `<span class="badge bg-info me-2 mb-2">Outro: ${evolucao.outro_complementar_texto || ''}</span>` : ''}
-                    </div>
-                    ${Object.values(evolucao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
                 </div>
-            </div>
- 
-    </div>`
+
+                
+                <h6 class="section-title habitos-col">2. Avaliação parcial do progresso (Mini reavaliação)</h6>
+                <div class="habitos-grid-2">
+                    
+
+                    <div class="habitos-col">
+                        <label class="form-label">Dor (0-10)</label>
+                        <div class="section-content">
+                            <div><strong>Início:</strong> <span id="viewDorInicio">${evolucao.dor_inicio ? evolucao.dor_inicio : 'Não informado'}</span></div>
+                            <div><strong>Atual:</strong> <span id="viewDorAtual">${evolucao.dor_atual ? evolucao.dor_atual : 'Não informado'}</span></div>
+                            <div><strong>Observações:</strong> <span id="viewDorObservacoes">${evolucao.dor_observacoes ? evolucao.dor_observacoes : 'Não informado'}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Amplitude de movimento</label>
+                        <div class="section-content">
+                            <div><strong>Início:</strong> <span id="viewAmplitudeInicio">${evolucao.amplitude_inicio ? evolucao.amplitude_inicio : 'Não informado'}</span></div>
+                            <div><strong>Atual:</strong> <span id="viewAmplitudeAtual">${evolucao.amplitude_atual ? evolucao.amplitude_atual : 'Não informado'}</span></div>
+                            <div><strong>Observações:</strong> <span id="viewAmplitudeObservacoes">${evolucao.amplitude_observacoes ? evolucao.amplitude_observacoes : 'Não informado'}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Força muscular (0-5)</label>
+                        <div class="section-content">
+                            <div><strong>Início:</strong> <span id="viewForcaInicio">${evolucao.forca_inicio ? evolucao.forca_inicio : 'Não informado'}</span></div>
+                            <div><strong>Atual:</strong> <span id="viewForcaAtual">${evolucao.forca_atual ? evolucao.forca_atual : 'Não informado'}</span></div>
+                            <div><strong>Observações:</strong> <span id="viewForcaObservacoes">${evolucao.forca_observacoes ? evolucao.forca_observacoes : 'Não informado'}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Postura e controle motor (0-5)</label>
+                        <div class="section-content">
+                            <div><strong>Início:</strong> <span id="viewPosturaInicio">${evolucao.postura_inicio ? evolucao.postura_inicio : 'Não informado'}</span></div>
+                            <div><strong>Atual:</strong> <span id="viewPosturaAtual">${evolucao.postura_atual ? evolucao.postura_atual : 'Não informado'}</span></div>
+                            <div><strong>Observações:</strong> <span id="viewPosturaObservacoes">${evolucao.postura_observacoes ? evolucao.postura_observacoes : 'Não informado'}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Edema (0-5)</label>
+                        <div class="section-content">
+                            <div><strong>Início:</strong> <span id="viewEdemaInicio">${evolucao.edema_inicio ? evolucao.edema_inicio : 'Não informado'}</span></div>
+                            <div><strong>Atual:</strong> <span id="viewEdemaAtual">${evolucao.edema_atual ? evolucao.edema_atual : 'Não informado'}</span></div>
+                            <div><strong>Observações:</strong> <span id="viewEdemaObservacoes">${evolucao.edema_observacoes ? evolucao.edema_observacoes : 'Não informado'}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">AVDS (0-5)</label>
+                        <div class="section-content">
+                            <div><strong>Início:</strong> <span id="viewAvdsInicio">${evolucao.avds_inicio ? evolucao.avds_inicio : 'Não informado'}</span></div>
+                            <div><strong>Atual:</strong> <span id="viewAvdsAtual">${evolucao.avds_atual ? evolucao.avds_atual : 'Não informado'}</span></div>
+                            <div><strong>Observações:</strong> <span id="viewAvdsObservacoes">${evolucao.avds_observacoes ? evolucao.avds_observacoes : 'Não informado'}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col full-width">
+                        <label class="form-label">Síntese da evolução</label>
+                        <div class="section-content" id="viewSinteseEvolucao">
+                            ${evolucao.sintese_evolucao ? evolucao.sintese_evolucao : '<span class="text-muted">Não informado</span>'}
+                        </div>
+                    </div>
+                </div>
+
+                
+                <h6 class="section-title habitos-col">3. Orientação ao Paciente</h6>
+                <div class="habitos-grid">
+                    
+
+                    <div class="habitos-col">
+                        <label class="form-label">Mensagem técnica e emocional transmitida</label>
+                        <div class="section-content" id="viewMensagemPaciente">
+                            ${evolucao.mensagem_paciente ? evolucao.mensagem_paciente : '<span class="text-muted">Não informado</span>'}
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Explicação sobre continuidade</label>
+                        <div class="section-content" id="viewExplicacaoContinuidade">
+                            ${evolucao.explicacao_continuidade ? evolucao.explicacao_continuidade : '<span class="text-muted">Não informado</span>'}
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Reações e entendimento do paciente</label>
+                        <div class="section-content" id="viewReacoesPaciente">
+                            ${evolucao.reacoes_paciente ? evolucao.reacoes_paciente : '<span class="text-muted">Não informado</span>'}
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="section-title habitos-col">4. Expectativa x Realidade da Fisioterapeuta</h6>
+                <div class="habitos-grid-3">
+                    
+
+                    <div class="habitos-col">
+                        <label class="form-label">Nível de dor e conforto</label>
+                        <div class="section-content">
+                            <strong>Expectativa:</strong> <span id="viewDorExpectativa">${evolucao.dor_expectativa ? evolucao.dor_expectativa : 'Não informado'}</span><br>
+                            <strong>Realidade:</strong> <span id="viewDorRealidade">${evolucao.dor_realidade ? evolucao.dor_realidade : 'Não informado'}</span>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Mobilidade e função</label>
+                        <div class="section-content">
+                            <strong>Expectativa:</strong> <span id="viewMobilidadeExpectativa">${evolucao.mobilidade_expectativa ? evolucao.mobilidade_expectativa : 'Não informado'}</span><br>
+                            <strong>Realidade:</strong> <span id="viewMobilidadeRealidade">${evolucao.mobilidade_realidade ? evolucao.mobilidade_realidade : 'Não informado'}</span>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Energia e disposição</label>
+                        <div class="section-content">
+                            <strong>Expectativa:</strong> <span id="viewEnergiaExpectativa">${evolucao.energia_expectativa ? evolucao.energia_expectativa : 'Não informado'}</span><br>
+                            <strong>Realidade:</strong> <span id="viewEnergiaRealidade">${evolucao.energia_realidade ? evolucao.energia_realidade : 'Não informado'}</span>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Consciência corporal / postura</label>
+                        <div class="section-content">
+                            <strong>Expectativa:</strong> <span id="viewConscienciaExpectativa">${evolucao.consciencia_expectativa ? evolucao.consciencia_expectativa : 'Não informado'}</span><br>
+                            <strong>Realidade:</strong> <span id="viewConscienciaRealidade">${evolucao.consciencia_realidade ? evolucao.consciencia_realidade : 'Não informado'}</span>
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Emoção / confiança / autoestima</label>
+                        <div class="section-content">
+                            <strong>Expectativa:</strong> <span id="viewEmocaoExpectativa">${evolucao.emocao_expectativa ? evolucao.emocao_expectativa : 'Não informado'}</span><br>
+                            <strong>Realidade:</strong> <span id="viewEmocaoRealidade">${evolucao.emocao_realidade ? evolucao.emocao_realidade : 'Não informado'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Próximos passos -->
+                <div class="habitos-grid">
+                    <h6 class="section-title habitos-col">5. Próximos passos e novo Plano Terapêutico</h6>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Objetivos para o novo ciclo</label>
+                        <div class="section-content" id="viewObjetivosCiclo">
+                            ${evolucao.objetivos_ciclo ? evolucao.objetivos_ciclo : '<span class="text-muted">Não informado</span>'}
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Condutas a serem mantidas</label>
+                        <div class="section-content" id="viewCondutasMantidas">
+                            ${evolucao.condutas_mantidas ? evolucao.condutas_mantidas : '<span class="text-muted">Não informado</span>'}
+                        </div>
+                    </div>
+
+                    <div class="habitos-col">
+                        <label class="form-label">Ajustes necessários no plano terapêutico</label>
+                        <div class="section-content" id="viewAjustesPlano">
+                            ${evolucao.ajustes_plano ? evolucao.ajustes_plano : '<span class="text-muted">Não informado</span>'}
+                        </div>
+                    </div>
+
+                    <div class="habitos-col full-width">
+                        <label class="form-label">Sugestões Complementares</label>
+                        <div class="section-content">
+                            <div class="sugestoes-badges">
+                                ${evolucao.treino_funcional ? '<span class="badge bg-success me-2 mb-2">Treino Funcional</span>' : ''}
+                                ${evolucao.pilates_clinico ? '<span class="badge bg-success me-2 mb-2">Pilates Clínico</span>' : ''}
+                                ${evolucao.recovery ? '<span class="badge bg-success me-2 mb-2">Recovery</span>' : ''}
+                                ${evolucao.rpg ? '<span class="badge bg-success me-2 mb-2">RPG</span>' : ''}
+                                ${evolucao.nutricao ? '<span class="badge bg-success me-2 mb-2">Nutrição</span>' : ''}
+                                ${evolucao.psicoterapia ? '<span class="badge bg-success me-2 mb-2">Psicoterapia</span>' : ''}
+                                ${evolucao.estetica ? '<span class="badge bg-success me-2 mb-2">Estética</span>' : ''}
+                                ${evolucao.outro_complementar ? `<span class="badge bg-info me-2 mb-2">Outro: ${evolucao.outro_complementar_texto || ''}</span>` : ''}
+                            </div>
+                            ${Object.values(evolucao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
+                        </div>
+                    </div>
+                </div>`
+
+    }
+
+}
+
+
+
+async function renderizarDetalhesAvaliacao(agendamentoId = null) {
+
+    console.log('abriu aqui')
+    openModal('viewAvaliacaoModal');
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+
+    if (!agendamentoId) {
+        const agendamentoIdField = document.getElementById('agendamentoId');
+        agendamentoId = agendamentoIdField ? agendamentoIdField.value : null;
+    }
+
+    // CORREÇÃO: Container correto para evoluções
+    const container = document.getElementById('avaliacaoDetalhes');
+    if (!container) {
+        console.error('Container de avaliações não encontrado');
+        return;
+    }
+
+    const res = await apiRequest(`/api/detalhe-avaliacoes/${agendamentoId}/`);
+    if (res.success && res.avaliacoes && res.avaliacoes.length > 0) {
+        const avaliacao = res.avaliacoes[0]
+        console.log(res, agendamentoId)
+        container.innerHTML = `
+                    <div class="prontuario-meta mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Data:</strong> <span id="viewAvaliacaoData">15/05/2023</span></p>
+                                <p><strong>Avaliador:</strong> <span id="viewAvaliacaoAutor">Dra. Ana Silva</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Paciente:</strong> <span id="viewAvaliacaoPaciente">Maria Oliveira</span></p>
+                                <p><strong>ID:</strong> <span id="viewAvaliacaoId">#AVA001</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1. Anamnese / Histórico Clínico -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">1. Anamnese / Histórico Clínico</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Queixa principal (nas palavras do paciente)</label>
+                            <div class="form-control-view" id="viewQueixaPrincipalAvaliacao">
+                            ${avaliacao.queixa_principal ? avaliacao.queixa_principal : '<span class="text-muted">Não informado</span>'}
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Como o problema começou e há quanto tempo?</label>
+                                <div class="form-control-view" id="viewInicioProblema">
+                            ${avaliacao.inicio_problema ? avaliacao.inicio_problema : '<span class="text-muted">Não informado</span>'}
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">O que acredita ter causado o problema?</label>
+                                <div class="form-control-view" id="viewCausaProblema">
+                            ${avaliacao.causa_problema ? avaliacao.causa_problema : '<span class="text-muted">Não informado</span>'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- a) Histórico da doença atual -->
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h6 class="section-title habitos-col">a) Histórico da doença atual</h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Dor ou limitação é recente ou antiga?</label>
+                                    <div class="form-control-view" id="viewDorRecenteAntiga">
+                            ${avaliacao.dor_recente_antiga ? avaliacao.dor_recente_antiga : '<span class="text-muted">Não informado</span>'}
+
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Episódios anteriores semelhantes?</label>
+                                    <div class="form-control-view" id="viewEpisodiosAnteriores">
+                            ${avaliacao.episodios_anteriores ? avaliacao.episodios_anteriores : '<span class="text-muted">Não informado</span>'}
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Tratamento fisioterapêutico anterior?</label>
+                                    <div class="form-control-view" id="viewTratamentoAnterior">
+                                ${avaliacao.tratamento_anterior ? avaliacao.tratamento_anterior : '<span class="text-muted">Não informado</span>'}
+                                    <label class="form-label">Qual?</label>
+                                ${avaliacao.qual_tratamento ? avaliacao.qual_tratamento : '<span class="text-muted">Não informado</span>'}
+
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Cirurgia ou procedimento relacionado?</label>
+                                    <div class="form-control-view" id="viewCirurgiaProcedimento">
+                                ${avaliacao.cirurgia_procedimento ? avaliacao.cirurgia_procedimento : '<span class="text-muted">Não informado</span>'}
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Acompanhamento médico?</label>
+                                    <div class="form-control-view" id="viewAcompanhamentoMedico">Sim - Dr. Carlos
+                                        Ortopeida</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Diagnóstico médico (se houver)</label>
+                                    <div class="form-control-view" id="viewDiagnosticoMedico">Lombalgia crônica</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Uso de medicamentos? Quais?</label>
+                                    <div class="form-control-view" id="viewUsoMedicamentos">Anti-inflamatórios
+                                        ocasionais</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Exames trazidos?</label>
+                                    <div class="form-control-view" id="viewExamesTrazidos">Sim - Raio-X lombar</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Histórico de outras lesões?</label>
+                                <div class="form-control-view" id="viewHistoricoLesoes">
+                                    Lesão no tornozelo direito em 2018, tratada com fisioterapia por 2 meses.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- b) Histórico pessoal e familiar -->
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h6 class="section-title habitos-col">b) Histórico pessoal e familiar</h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Doenças prévias / crônicas</label>
+                                    <div class="form-control-view" id="viewDoencasPrevias">Hipertensão controlada</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Cirurgias prévias</label>
+                                    <div class="form-control-view" id="viewCirurgiasPrevias">Apêndice (2010)</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Condições genéticas / reumatológicas / metabólicas</label>
+                                    <div class="form-control-view" id="viewCondicoesGeneticas">Nenhuma</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Histórico familiar relevante</label>
+                                    <div class="form-control-view" id="viewHistoricoFamiliar">Mãe com artrose</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- c) Hábitos e estilo de vida -->
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h6 class="section-title habitos-col">c) Hábitos e estilo de vida</h6>
+
+                            <div class="habitos-grid-3">
+                                <div class="habitos-col">
+                                    <label class="form-label">Qualidade do sono</label>
+                                    <div class="form-control-view" id="viewQualidadeSono">Regular - 6 horas/noite</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Alimentação</label>
+                                    <div class="form-control-view" id="viewAlimentacao">Irregular</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Nível de atividade física</label>
+                                    <div class="form-control-view" id="viewNivelAtividade">Sedentário</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Tipo de exercício</label>
+                                    <div class="form-control-view" id="viewTipoExercicio">Caminhadas ocasionais</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Nível de estresse (0-10)</label>
+                                    <div class="form-control-view" id="viewNivelEstresse">7</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Rotina de trabalho / posturas</label>
+                                    <div class="form-control-view" id="viewRotinaTrabalho">
+                                        Trabalha como recepcionista, fica 8h em pé. Postura com peso mais na perna
+                                        direita.
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Aspectos emocionais</label>
+                                    <div class="form-control-view" id="viewAspectosEmocionais">
+                                        Ansiosa com a dor, preocupada com o trabalho.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- d) Sinais, sintomas e dor -->
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h6 class="section-title habitos-col">d) Sinais, sintomas e dor</h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Localização da dor / sintoma</label>
+                                    <div class="form-control-view" id="viewLocalizacaoDor">
+                                        Região lombar baixa, com irradiação para glúteo direito e face posterior da
+                                        coxa.
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Tipo de dor</label>
+                                    <div class="form-control-view" id="viewTipoDor">Pontada, Queimação</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-3">
+                                <div class="habitos-col">
+                                    <label class="form-label">Intensidade (0-10) - Repouso</label>
+                                    <div class="form-control-view" id="viewIntensidadeRepouso">3</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Intensidade (0-10) - Movimento</label>
+                                    <div class="form-control-view" id="viewIntensidadeMovimento">7</div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Intensidade (0-10) - Pior momento</label>
+                                    <div class="form-control-view" id="viewIntensidadePior">8</div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Fatores que agravam</label>
+                                    <div class="form-control-view" id="viewFatoresAgravam">
+                                        Ficar em pé por longos períodos, levantar peso, dirigir.
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Fatores que aliviam</label>
+                                    <div class="form-control-view" id="viewFatoresAliviam">
+                                        Repouso, deitar de lado com travesseiro entre os joelhos.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <div class="habitos-col">
+                                        <label class="form-label">Sinais associados</label>
+                                        <div class="form-control-view" id="viewSinaisAssociados">Rigidez, Compensações
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="habitos-col">
+                                        <label class="form-label">Grau de inflamação</label>
+                                        <div class="form-control-view" id="viewGrauInflamacao">Leve</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Exame físico e funcional -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">3. Exame físico e funcional</h6>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Inspeção e postura</label>
+                                <div class="form-control-view" id="viewInspecaoPostura">
+                                    Hiperlordose lombar, ombro direito mais elevado, pelve anteroversa.
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Compensações corporais</label>
+                                <div class="form-control-view" id="viewCompensacoesCorporais">
+                                    Compensação com rotação pélvica à direita durante a marcha.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Padrão respiratório / controle motor</label>
+                                <div class="form-control-view" id="viewPadraoRespiratorio">
+                                    Respiração torácica predominante, dificuldade de ativação do transverso abdominal.
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Palpação</label>
+                                <div class="form-control-view" id="viewPalpacao">
+                                    Dor à palpação em L4-L5, pontos gatilho em quadrado lombar direito.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Pontos de dor / rigidez / edema</label>
+                            <div class="form-control-view" id="viewPontosDor">
+                                L4-L5, SI direita, músculo piriforme direito.
+                            </div>
+                        </div>
+
+                        <!-- Tabela para Mobilidade e Força -->
+                        <div class="habitos-col">
+                            <label class="form-label">Mobilidade (ADM) e Força muscular (MMT 0-5)</label>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Região/Grupo</th>
+                                            <th>ADM Ativa (°)</th>
+                                            <th>ADM Passiva (°)</th>
+                                            <th>Dor ADM</th>
+                                            <th>Força (0-5)</th>
+                                            <th>Dor Força</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Quadril D - Flexão</td>
+                                            <td>90°</td>
+                                            <td>110°</td>
+                                            <td>✓</td>
+                                            <td>4</td>
+                                            <td>✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Coluna Lombar - Flexão</td>
+                                            <td>40°</td>
+                                            <td>50°</td>
+                                            <td>✓</td>
+                                            <td>3</td>
+                                            <td>✓</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Testes funcionais / compensações observadas</label>
+                            <div class="form-control-view" id="viewTestesFuncionais">
+                                Teste de elevação da perna reta positivo à direita (45°). Teste de Thomas positivo para
+                                retração de iliopsoas.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Outras observações</label>
+                            <div class="form-control-view" id="viewOutrasObservacoes">
+                                Marcha antálgica leve, dificuldade para calçar sapatos.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Continua com as outras seções seguindo o mesmo padrão... -->
+                    <!-- 4. Diagnóstico Fisioterapêutico -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">4. Diagnóstico Fisioterapêutico</h6>
+
+                        <div class="mb-3">
+                            <label class="form-label">Diagnóstico Completo</label>
+                            <div class="form-control-view" id="viewDiagnosticoCompleto">
+                                Paciente de 45 anos com queixa de dor lombar há 6 meses com irradiação para membro
+                                inferior direito, apresenta limitação funcional em atividades de vida diária como
+                                permanecer em pé por longos períodos e dirigir, demonstra postura compensatória em pelve
+                                anteroversa e rotação pélvica direita. Tensão muscular em quadrado lombar e piriforme
+                                direito. Compensações em padrão respiratório torácico e fatores emocionais relacionados
+                                a ansiedade com a dor. Rotina impactada por trabalho em pé. Diagnóstico funcional indica
+                                síndrome dolorosa miofascial com componente de disfunção sacroilíaca.
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-4">
+                            <div class="habitos-col">
+                                <label class="form-label">Grau de dor (0-10)</label>
+                                <div class="form-control-view" id="viewGrauDor">7</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Limitação funcional (0-10)</label>
+                                <div class="form-control-view" id="viewLimitacaoFuncional">6</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Inflamação (0-3)</label>
+                                <div class="form-control-view" id="viewGrauInflamacaoGeral">1</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Edema (0-3)</label>
+                                <div class="form-control-view" id="viewGrauEdema">0</div>
+                            </div>
+                        </div>
+
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label class="form-label">Receptividade</label>
+                                <div class="form-control-view" id="viewReceptividade">Alta</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Autonomia AVD</label>
+                                <div class="form-control-view" id="viewAutonomiaAVD">Independente</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Plano Terapêutico -->
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">5. Plano Terapêutico</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Objetivo geral</label>
+                            <div class="form-control-view" id="viewObjetivoGeral">
+                                Redução da dor lombar e melhora da função para retorno às atividades laborais sem
+                                limitações.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Objetivo principal</label>
+                            <div class="form-control-view" id="viewObjetivoPrincipal">
+                                Reduzir dor para 3/10 em 4 semanas.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Objetivo secundário</label>
+                            <div class="form-control-view" id="viewObjetivoSecundario">
+                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Pontos de atenção (sobre o planejamento do tratamento, resistência do paciente, limitações...)</label>
+                            <div class="form-control-view" id="viewObjetivoSecundario">
+                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Técnicas manuais</label>
+                            <div class="form-control-view" id="viewTecnicasSelecionadas">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                        
+                        <div class="habitos-col">
+                            <label class="form-label">Recursos eletrofísicos</label>
+                            <div class="form-control-view" id="viewTecnicasSelecionadas">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Cinesioterapia</label>
+                            <div class="form-control-view" id="viewTecnicasSelecionadas">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                        
+
+                        <div class="habitos-grid-3">
+                            <div class="habitos-col">
+                                <label class="form-label">Medo de agulha?</label>
+                                <div class="form-control-view" id="viewFrequencia">3</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Limiar de dor baixo?</label>
+                                <div class="form-control-view" id="viewDuracao">60</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Fragilidade?</label>
+                                <div class="form-control-view" id="viewReavaliacaoSessao">8ª sessão</div>
+                            </div>
+                        </div>
+                        <div class="habitos-grid-3">
+                            <div class="habitos-col">
+                                <label class="form-label">Frequência (x/semana)</label>
+                                <div class="form-control-view" id="viewFrequencia">3</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Duração (min)</label>
+                                <div class="form-control-view" id="viewDuracao">60</div>
+                            </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Reavaliação na sessão</label>
+                                <div class="form-control-view" id="viewReavaliacaoSessao">8ª sessão</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="section-title habitos-col">6. Prognóstico e orientações</h6>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Evolução esperada na primeira sessão</label>
+                            <div class="form-control-view">
+                                Redução da dor lombar e melhora da função para retorno às atividades laborais sem
+                                limitações.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Evolução esperada nas próximas sessões</label>
+                            <div class="form-control-view">
+                                Reduzir dor para 3/10 em 4 semanas.
+                            </div>
+                        </div>
+
+                        <div class="habitos-col">
+                            <label class="form-label">Expectativas sobre a primeira etapa do tratamento</label>
+                            <div class="form-control-view">
+                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Próximos passos</label>
+                            <div class="form-control-view">
+                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Sobre as orientações</label>
+                            <div class="form-control-view">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                        
+                        <div class="habitos-col">
+                            <label class="form-label">Postura / ergonomia</label>
+                            <div class="form-control-view">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Alimentação / hidratação</label>
+                            <div class="form-control-view">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Exercícios em casa (dever)</label>
+                            <div class="form-control-view">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Aspectos emocionais / espiritualidade</label>
+                            <div class="form-control-view">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                        <div class="habitos-col">
+                            <label class="form-label">Observações finais</label>
+                            <div class="form-control-view">
+                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            </div>
+                        </div>
+                         
+                    </div>
+ `
 
     }
 

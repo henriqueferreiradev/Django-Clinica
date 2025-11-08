@@ -1067,8 +1067,10 @@ class AvaliacaoFisioterapeutica(models.Model):
     tratamento_anterior = models.BooleanField(null=True)
     qual_tratamento = models.TextField(blank=True)
     cirurgia_procedimento = models.TextField(blank=True)
+    
     acompanhamento_medico = models.BooleanField(null=True)
     medico_especialidade = models.CharField(max_length=100, blank=True)
+    
     diagnostico_medico = models.CharField(max_length=200, blank=True)
     uso_medicamentos = models.TextField(blank=True)
     exames_trazidos = models.BooleanField(null=True)
@@ -1096,6 +1098,7 @@ class AvaliacaoFisioterapeutica(models.Model):
     
     # Sinais, sintomas e dor
     localizacao_dor = models.TextField(blank=True)
+    
     tipo_dor_pontada = models.BooleanField(default=False)
     tipo_dor_queimacao = models.BooleanField(default=False)
     tipo_dor_peso = models.BooleanField(default=False)
