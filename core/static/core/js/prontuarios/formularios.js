@@ -359,6 +359,35 @@ async function atualizarStatusProntuarios() {
         }
     }
 }
+
+// Função para coletar dados da tabela de mobilidade
+function coletarDadosMobilidade() {
+    const items = [];
+    const rows = document.querySelectorAll('#mobilidadeTable tbody tr');
+
+    rows.forEach(row => {
+        const regiao = row.querySelector('input[placeholder="Ex: Ombro D"]')?.value.trim();
+        const admAtiva = row.querySelector('input[placeholder="°"]')?.value;
+        const admPassiva = row.querySelectorAll('input[placeholder="°"]')[1]?.value;
+        const dorAdm = row.querySelectorAll('.form-check-input')[0]?.checked;
+        const forcaMuscular = row.querySelector('input[placeholder="0-5"]')?.value;
+        const dorForca = row.querySelectorAll('.form-check-input')[1]?.checked;
+
+        // Só adiciona se tiver pelo menos a região preenchida
+        if (regiao) {
+            items.push({
+                regiao_grupo: regiao,
+                adm_ativa: admAtiva ? parseInt(admAtiva) : null,
+                adm_passiva: admPassiva ? parseInt(admPassiva) : null,
+                dor_adm: dorAdm || false,
+                forca_muscular: forcaMuscular ? parseInt(forcaMuscular) : null,
+                dor_forca: dorForca || false
+            });
+        }
+    });
+
+    return items;
+}
 async function salvarProntuario() {
     const modal = document.getElementById('newProntuarioModal');
     const profissionalId = document.getElementById("profissionalLogado").value;
@@ -575,7 +604,7 @@ async function salvarAvaliacao() {
         dados.pontos_dor = document.getElementById('pontosDor').value;
         dados.testes_funcionais = document.getElementById('testesFuncionais').value;
         dados.outras_observacoes = document.getElementById('outrasObservacoes').value;
-
+        dados.mobilidade_items = coletarDadosMobilidade();
         // Diagnóstico Fisioterapêutico
         dados.diagnostico_completo = document.getElementById('diagnosticoCompleto').value;
         dados.grau_dor = document.getElementById('grauDor').value;

@@ -1140,7 +1140,7 @@ class AvaliacaoFisioterapeutica(models.Model):
     pontos_dor = models.TextField(blank=True)
     testes_funcionais = models.TextField(blank=True)
     outras_observacoes = models.TextField(blank=True)
-    
+    mobilidade_forca_items = models.JSONField(default=list, blank=True)
     # Diagnóstico Fisioterapêutico
     diagnostico_completo = models.TextField(blank=True)
     grau_dor = models.IntegerField(

@@ -330,11 +330,11 @@
                                             Não foi necessário prontuário.
                                         </label>
                                         <div>
-                                        <button type="button" class="btn btn-secondary"
-                                            onclick="closeModal('newProntuarioModal')">Cancelar</button>
-                                        <button type="button" class="btn btn-primary" id='btn-salvar-prontuario'
-                                            onclick="salvarProntuario()">Salvar Prontuário</button>
-                                            </div>
+                                            <button type="button" class="btn btn-secondary"
+                                                onclick="closeModal('newProntuarioModal')">Cancelar</button>
+                                            <button type="button" class="btn btn-primary" id='btn-salvar-prontuario'
+                                                onclick="salvarProntuario()">Salvar Prontuário</button>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -350,73 +350,8 @@
                                         <button type="button" class="btn-close"
                                             onclick="closeModal('viewProntuarioModal')" aria-label="Close"></button>
                                     </div>
-                                    <div id='prontuarioDetalhes'class="modal-body">
-                                        <div class="prontuario-meta mb-4">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <p><strong>Data:</strong> <span
-                                                            id="prontuarioData">15/05/2023</span></p>
-                                                    <p><strong>Registrado por:</strong> <span id="prontuarioAutor">Dra.
-                                                            Ana Silva</span></p>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p><strong>Paciente:</strong> <span id="prontuarioPaciente">Maria
-                                                            Oliveira</span></p>
-                                                    <p><strong>ID:</strong> <span id="prontuarioId">#PRT001</span></p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div id='prontuarioDetalhes' class="modal-body">
 
-                                        <div class="prontuario-content">
-                                            <div class="info-section mb-4">
-                                                <h6 class="section-title habitos-col">Queixa Principal</h6>
-                                                <div class="section-content" id="viewQueixaPrincipal">
-                                                    Dor lombar há 6 meses, com irradiação para membro inferior direito.
-                                                    Relata piora ao ficar em pé por longos períodos.
-                                                </div>
-                                            </div>
-
-                                            <div class="info-section mb-4">
-                                                <h6 class="section-title habitos-col">História da Doença Atual</h6>
-                                                <div class="section-content" id="viewHistoriaDoenca">
-                                                    Paciente relata início dos sintomas após mudança de trabalho, onde
-                                                    passou a ficar mais tempo em pé. Já realizou tratamento com
-                                                    anti-inflamatórios com melhora parcial.
-                                                </div>
-                                            </div>
-
-                                            <div class="info-section mb-4">
-                                                <h6 class="section-title habitos-col">Exame Físico</h6>
-                                                <div class="section-content" id="viewExameFisico">
-                                                    Amplitude de movimento diminuída na flexão anterior. Dor à palpação
-                                                    em L4-L5. Teste de elevação da perna reta positivo à direita. Força
-                                                    muscular preservada.
-                                                </div>
-                                            </div>
-
-                                            <div class="info-section mb-4">
-                                                <h6 class="section-title habitos-col">Conduta</h6>
-                                                <div class="section-content" id="viewConduta">
-                                                    Exercícios de fortalecimento do core alongamento de cadeia
-                                                    posterior. Orientação postural. TENS para alívio da dor.
-                                                </div>
-                                            </div>
-
-                                            <div class="info-section mb-4">
-                                                <h6 class="section-title habitos-col">Diagnóstico</h6>
-                                                <div class="section-content" id="viewDiagnostico">
-                                                    Lombalgia crônica com componente radicular.
-                                                </div>
-                                            </div>
-
-                                            <div class="info-section">
-                                                <h6 class="section-title habitos-col">Observações</h6>
-                                                <div class="section-content" id="viewObservacoes">
-                                                    Paciente orientado sobre postura e ergonomia. Retorno em 15 dias
-                                                    para reavaliação.
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
@@ -1067,11 +1002,11 @@
                         Não foi necessário evolução.
                     </label>
                     <div>
-                    <button type="button" class="btn btn-secondary"
-                        onclick="closeModal('newEvolutionModal')">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id='btn-salvar-evolucao'
-                        onclick="salvarEvolucao()">Salvar Evolução</button>
-                        </div>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeModal('newEvolutionModal')">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id='btn-salvar-evolucao'
+                            onclick="salvarEvolucao()">Salvar Evolução</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1082,19 +1017,21 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Visualizar Evolução - Estado de Saúde e Tratamento</h5>
-                    <button type="button" class="btn-close" onclick="closeModal('viewEvolutionModal')" aria-label="Close"></button>
+                    <button type="button" class="btn-close" onclick="closeModal('viewEvolutionModal')"
+                        aria-label="Close"></button>
                 </div>
-                    <div id='evolucaoDetalhes' class="modal-body">
-                    </div>
+                <div id='evolucaoDetalhes' class="modal-body">
+                </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('viewEvolutionModal')">Fechar</button>
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('viewEvolutionModal')">Fechar</button>
                     <button type="button" class="btn btn-outline-primary">
                         <i class="fas fa-print me-1"></i> Imprimir
                     </button>
                     <button type="button" class="btn btn-primary">
                         <i class="fas fa-edit me-1"></i> Editar
                     </button>
-            </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1609,95 +1546,62 @@
                                 <textarea class="form-control" id="pontosDor" rows="3"
                                     placeholder="Pontos específicos de dor..."></textarea>
                             </div>
-
-                            <!-- Tabela para Mobilidade e Força -->
+                            <!-- MOBILIDADE (ADM) -->
                             <div class="habitos-col">
-                                <label class="form-label">Mobilidade (ADM) e Força muscular (MMT 0-5)</label>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Região/Grupo</th>
-                                                <th>ADM Ativa (°)</th>
-                                                <th>ADM Passiva (°)</th>
-                                                <th>Dor ADM</th>
-                                                <th>Força (0-5)</th>
-                                                <th>Dor Força</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><input type="text" class="form-control form-control-sm"
-                                                        placeholder="Ex: Ombro D"></td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="°"></td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="°"></td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <label class="checkbox-option">
-                                                            <input class="form-check-input" type="checkbox">
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="0-5" min="0" max="5"></td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <label class="checkbox-option">
-                                                            <input class="form-check-input" type="checkbox">
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control form-control-sm"
-                                                        placeholder="Ex: Joelho E"></td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="°"></td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="°"></td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <label class="checkbox-option">
-                                                            <input class="form-check-input" type="checkbox">
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="0-5" min="0" max="5"></td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <label class="checkbox-option">
-                                                            <input class="form-check-input" type="checkbox">
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control form-control-sm"
-                                                        placeholder="Ex: Coluna Lombar"></td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="°"></td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="°"></td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox">
-                                                    </div>
-                                                </td>
-                                                <td><input type="number" class="form-control form-control-sm"
-                                                        placeholder="0-5" min="0" max="5"></td>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <label class="form-label">Mobilidade (ADM)</label>
+                                <div class="habitos-grid-4">
+                                    <div class="habitos-col">
+                                        <label for="mobilidadeRegiao" class="form-label">Região/Grupo</label>
+                                        <input type="text" class="form-control" id="mobilidadeRegiao"
+                                            placeholder="Ex: Ombro D">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="mobilidadeAtiva" class="form-label">ADM Ativa (°)</label>
+                                        <input type="number" class="form-control" id="mobilidadeAtiva" placeholder="°">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="mobilidadePassiva" class="form-label">ADM Passiva (°)</label>
+                                        <input type="number" class="form-control" id="mobilidadePassiva"
+                                            placeholder="°">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label class="form-label">Dor ADM</label>
+                                        <div class="form-check mt-2">
+                                            <label class="checkbox-option" for="mobilidadeDor">
+                                                <input class="form-check-input" type="checkbox" id="mobilidadeDor">
+                                                Presente
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- FORÇA MUSCULAR (MMT) -->
+                            <div class="habitos-col">
+                                <label class="form-label">Força muscular (MMT 0-5)</label>
+                                <div class="habitos-grid-3">
+                                    <div class="habitos-col">
+                                        <label for="forcaGrupo" class="form-label">Grupo muscular</label>
+                                        <input type="text" class="form-control" id="forcaGrupo"
+                                            placeholder="Ex: Deltóide">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="forcaGrau" class="form-label">Força (0-5)</label>
+                                        <input type="number" class="form-control" id="forcaGrau" placeholder="0-5"
+                                            min="0" max="5">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label class="form-label">Dor Força</label>
+                                        <div class="form-check mt-2">
+                                            <label class="checkbox-option" for="forcaDor">
+                                                <input class="form-check-input" type="checkbox" id="forcaDor">
+                                                Presente
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <div class="habitos-col">
                                 <label for="testesFuncionais" class="form-label">Testes funcionais / compensações
@@ -2153,16 +2057,16 @@
                         Não foi necessário avaliação.
                     </label>
                     <div>
-                    <button type="button" class="btn btn-secondary"
-                        onclick="closeModal('newAvaliacaoModal')">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="btn-salvar-avaliacao"
-                        onclick="salvarAvaliacao()">Salvar Avaliação</button>
-                        </div>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeModal('newAvaliacaoModal')">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btn-salvar-avaliacao"
+                            onclick="salvarAvaliacao()">Salvar Avaliação</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
- 
+
 
 
 
@@ -2176,7 +2080,7 @@
                         aria-label="Close"></button>
                 </div>
                 <div id='avaliacaoDetalhes' class="modal-body">
- 
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"

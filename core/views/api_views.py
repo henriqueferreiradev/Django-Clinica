@@ -500,6 +500,28 @@ def salvar_avaliacao(request):
                 )
             
             else:
+                   # Coletar dados da tabela de mobilidade
+                mobilidade_items = []
+                mobilidade_data = data.get('mobilidade_items', [])
+                
+                # Se vier como string (JSON), converter para lista
+                if isinstance(mobilidade_data, str):
+                    try:
+                        mobilidade_data = json.loads(mobilidade_data)
+                    except json.JSONDecodeError:
+                        mobilidade_data = []
+                
+                for item in mobilidade_data:
+                    if item.get('regiao_grupo'):  # Só adiciona se tiver região
+                        mobilidade_items.append({
+                            'regiao_grupo': item.get('regiao_grupo', ''),
+                            'adm_ativa': int(item.get('adm_ativa', 0)) if item.get('adm_ativa') else None,
+                            'adm_passiva': int(item.get('adm_passiva', 0)) if item.get('adm_passiva') else None,
+                            'dor_adm': bool(item.get('dor_adm', False)),
+                            'forca_muscular': int(item.get('forca_muscular', 0)) if item.get('forca_muscular') else None,
+                            'dor_forca': bool(item.get('dor_forca', False))
+                        })
+
                 avaliacao = AvaliacaoFisioterapeutica.objects.create(
                     paciente_id=data['paciente_id'],
                     profissional_id=data['profissional_id'],
@@ -607,6 +629,7 @@ def salvar_avaliacao(request):
                     exercicios_casa=data.get('exercicios_casa', ""),
                     aspectos_emocionais_espirituais=data.get('aspectos_emocionais_espirituais', ""),
                     observacoes_finais=data.get('observacoes_finais', ""),
+                    mobilidade_forca_items=mobilidade_items,
                     foi_preenchido=True,
                 )
             
@@ -880,7 +903,8 @@ def detalhes_avaliacao(request, agendamento_id):
                 'pontos_dor': avaliacao.pontos_dor,
                 'testes_funcionais': avaliacao.testes_funcionais,
                 'outras_observacoes': avaliacao.outras_observacoes,
-                'outras_observacoes': avaliacao.outras_observacoes,
+
+                'mobilidade_forca_items': avaliacao.mobilidade_forca_items,
                 
                 
                 
