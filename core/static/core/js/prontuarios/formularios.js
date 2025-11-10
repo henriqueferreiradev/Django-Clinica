@@ -485,6 +485,22 @@ async function salvarEvolucao() {
     }
 }
 
+function gerarDiagnostivoCompleto() {
+    const campos = {
+        idade: document.getElementById('diagnosticoIdade').value,
+        queixa: document.getElementById('diagnosticoQueixa').value,
+        limitacao: document.getElementById('diagnosticoLimitacao').value,
+        postura: document.getElementById('diagnosticoPostura').value,
+        tensao: document.getElementById('diagnosticoTensao').value,
+        compensacoes: document.getElementById('diagnosticoCompensacoes').value,
+        emocionais: document.getElementById('diagnosticoEmocionais').value,
+        rotina: document.getElementById('diagnosticoRotina').value,
+        funcional: document.getElementById('diagnosticoFuncional').value,
+    }
+
+    return `Paciente de ${campos.idade} com queixa de  ${campos.queixa}, apresenta limitação funcional em  ${campos.limitacao}, demonstra postura compensatória em ${campos.postura}. Tensão muscular em ${campos.tensao}. Compensações ${campos.compensacoes} e fatores emocionais relacionados a ${campos.emocionais}. Rotina impactada por ${campos.rotina}. Diagnóstico funcional indica ${campos.funcional}.`
+}
+
 async function salvarAvaliacao() {
     const modal = document.getElementById('newAvaliacaoModal');
     const profissionalId = document.getElementById("profissionalLogado").value;
@@ -584,9 +600,15 @@ async function salvarAvaliacao() {
         dados.mobilidade_ativa = document.getElementById('mobilidadeAtiva').value;
         dados.mobilidade_passiva = document.getElementById('mobilidadePassiva').value;
         dados.mobilidade_dor = document.getElementById('mobilidadeDor').checked;
+        
+        // Força muscular MMT
+        dados.forca_grupo = document.getElementById('forcaGrupo').value;
+        dados.forca_grau = document.getElementById('forcaGrau').value;
+        dados.forca_dor = document.getElementById('forcaDor').checked;
 
+        
         // Diagnóstico Fisioterapêutico
-        dados.diagnostico_completo = document.getElementById('diagnosticoCompleto').value;
+        dados.diagnostico_completo = gerarDiagnostivoCompleto()
         dados.grau_dor = document.getElementById('grauDor').value;
         dados.limitacao_funcional = document.getElementById('limitaçãoFuncional').value;
         dados.grau_inflamacao_num = document.getElementById('grauInflamacao').value;
@@ -780,8 +802,6 @@ function renderizarListaProntuarios(prontuarios) {
 
 }
 
-
-
 async function listarEvolucoes(pacienteId = null, agendamentoId = null) {
 
 
@@ -910,8 +930,6 @@ function renderizarListaEvolucoes(evolucoes) {
 
 }
 
-
-
 async function listarAvaliacoes(pacienteId = null, agendamentoId = null) {
 
 
@@ -989,6 +1007,7 @@ async function listarAvaliacoes(pacienteId = null, agendamentoId = null) {
         `;
     }
 }
+
 function renderizarListaAvaliacoes(avaliacoes) {
     // ✅ CORREÇÃO: Container correto para AVALIAÇÕES
     const container = document.getElementById('listAvaliacoes');
@@ -1032,7 +1051,6 @@ function renderizarListaAvaliacoes(avaliacoes) {
     container.innerHTML = html;
 
 }
-
 
 async function renderizarDetalhesProntuario(agendamentoId = null) {
 
@@ -1139,7 +1157,6 @@ async function renderizarDetalhesProntuario(agendamentoId = null) {
     }
 
 }
-
 
 async function renderizarDetalhesEvolucao(agendamentoId = null) {
 
@@ -1501,31 +1518,44 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
                                     <label class="form-label">Acompanhamento médico?</label>
-                                    <div class="form-control-view" id="viewAcompanhamentoMedico">Sim - Dr. Carlos
-                                        Ortopeida</div>
+                                    <div class="form-control-view" id="viewAcompanhamentoMedico">
+                                ${avaliacao.acompanhamento_medico ? avaliacao.acompanhamento_medico : '<span class="text-muted">Não informado</span>'}, 
+                                ${avaliacao.medico_especialidade ? avaliacao.medico_especialidade : '<span class="text-muted">Não informado</span>'}
+
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Diagnóstico médico (se houver)</label>
-                                    <div class="form-control-view" id="viewDiagnosticoMedico">Lombalgia crônica</div>
+                                    <div class="form-control-view" id="viewDiagnosticoMedico">
+                                ${avaliacao.diagnostico_medico ? avaliacao.diagnostico_medico : '<span class="text-muted">Não informado</span>'}
+
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
                                     <label class="form-label">Uso de medicamentos? Quais?</label>
-                                    <div class="form-control-view" id="viewUsoMedicamentos">Anti-inflamatórios
-                                        ocasionais</div>
+                                    <div class="form-control-view" id="viewUsoMedicamentos">
+                                ${avaliacao.uso_medicamentos ? avaliacao.uso_medicamentos : '<span class="text-muted">Não informado</span>'}, 
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
-                                    <label class="form-label">Exames trazidos?</label>
-                                    <div class="form-control-view" id="viewExamesTrazidos">Sim - Raio-X lombar</div>
+                                    <label class="form-label">Exames trazidos? Quais?</label>
+                                    <div class="form-control-view" id="viewExamesTrazidos">
+                                ${avaliacao.exames_trazidos ? avaliacao.exames_trazidos : '<span class="text-muted">Não informado</span>'}, 
+
+                                ${avaliacao.tipo_exame ? avaliacao.tipo_exame : '<span class="text-muted">Não informado</span>'}
+
+
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="habitos-col">
                                 <label class="form-label">Histórico de outras lesões?</label>
                                 <div class="form-control-view" id="viewHistoricoLesoes">
-                                    Lesão no tornozelo direito em 2018, tratada com fisioterapia por 2 meses.
+                                ${avaliacao.historico_lesoes ? avaliacao.historico_lesoes : '<span class="text-muted">Não informado</span>'}
                                 </div>
                             </div>
                         </div>
@@ -1537,22 +1567,30 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
                                     <label class="form-label">Doenças prévias / crônicas</label>
-                                    <div class="form-control-view" id="viewDoencasPrevias">Hipertensão controlada</div>
+                                    <div class="form-control-view" id="viewDoencasPrevias">
+                                ${avaliacao.doencas_previas ? avaliacao.doencas_previas : '<span class="text-muted">Não informado</span>'}, 
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Cirurgias prévias</label>
-                                    <div class="form-control-view" id="viewCirurgiasPrevias">Apêndice (2010)</div>
+                                    <div class="form-control-view" id="viewCirurgiasPrevias">
+                                ${avaliacao.cirurgias_previas ? avaliacao.cirurgias_previas : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
                                     <label class="form-label">Condições genéticas / reumatológicas / metabólicas</label>
-                                    <div class="form-control-view" id="viewCondicoesGeneticas">Nenhuma</div>
+                                    <div class="form-control-view" id="viewCondicoesGeneticas">
+                                ${avaliacao.condicoes_geneticas ? avaliacao.condicoes_geneticas : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Histórico familiar relevante</label>
-                                    <div class="form-control-view" id="viewHistoricoFamiliar">Mãe com artrose</div>
+                                    <div class="form-control-view" id="viewHistoricoFamiliar">
+                                ${avaliacao.historico_familiar ? avaliacao.historico_familiar : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1564,26 +1602,37 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                             <div class="habitos-grid-3">
                                 <div class="habitos-col">
                                     <label class="form-label">Qualidade do sono</label>
-                                    <div class="form-control-view" id="viewQualidadeSono">Regular - 6 horas/noite</div>
+                                    <div class="form-control-view" id="viewQualidadeSono">
+                                    ${avaliacao.qualidade_sono ? avaliacao.qualidade_sono : '<span class="text-muted">Não informado</span>'}, - 
+                                    ${avaliacao.horas_sono ? avaliacao.horas_sono : '<span class="text-muted">Não informado</span>'}, hora(s).
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Alimentação</label>
-                                    <div class="form-control-view" id="viewAlimentacao">Irregular</div>
+                                    <div class="form-control-view" id="viewAlimentacao">
+                                    ${avaliacao.alimentacao ? avaliacao.alimentacao : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Nível de atividade física</label>
-                                    <div class="form-control-view" id="viewNivelAtividade">Sedentário</div>
+                                    <div class="form-control-view" id="viewNivelAtividade">
+                                    ${avaliacao.nivel_atividade ? avaliacao.nivel_atividade : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="habitos-grid-2">
                                 <div class="habitos-col">
                                     <label class="form-label">Tipo de exercício</label>
-                                    <div class="form-control-view" id="viewTipoExercicio">Caminhadas ocasionais</div>
+                                    <div class="form-control-view" id="viewTipoExercicio">
+                                    ${avaliacao.tipo_exercicio ? avaliacao.tipo_exercicio : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Nível de estresse (0-10)</label>
-                                    <div class="form-control-view" id="viewNivelEstresse">7</div>
+                                    <div class="form-control-view" id="viewNivelEstresse">
+                                    ${avaliacao.nivel_estresse ? avaliacao.nivel_estresse : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                             </div>
 
@@ -1591,14 +1640,13 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                                 <div class="habitos-col">
                                     <label class="form-label">Rotina de trabalho / posturas</label>
                                     <div class="form-control-view" id="viewRotinaTrabalho">
-                                        Trabalha como recepcionista, fica 8h em pé. Postura com peso mais na perna
-                                        direita.
+                                    ${avaliacao.rotina_trabalho ? avaliacao.rotina_trabalho : '<span class="text-muted">Não informado</span>'},
                                     </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Aspectos emocionais</label>
                                     <div class="form-control-view" id="viewAspectosEmocionais">
-                                        Ansiosa com a dor, preocupada com o trabalho.
+                                    ${avaliacao.aspectos_emocionais ? avaliacao.aspectos_emocionais : '<span class="text-muted">Não informado</span>'},
                                     </div>
                                 </div>
                             </div>
@@ -1612,28 +1660,43 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                                 <div class="habitos-col">
                                     <label class="form-label">Localização da dor / sintoma</label>
                                     <div class="form-control-view" id="viewLocalizacaoDor">
-                                        Região lombar baixa, com irradiação para glúteo direito e face posterior da
-                                        coxa.
+                                    ${avaliacao.localizacao_dor ? avaliacao.localizacao_dor : '<span class="text-muted">Não informado</span>'},
                                     </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Tipo de dor</label>
-                                    <div class="form-control-view" id="viewTipoDor">Pontada, Queimação</div>
+                                     <div class="section-content">
+                                        <div class="sugestoes-badges">
+                                            ${avaliacao.tipo_dor_pontada ? '<span class="badge bg-success me-2 mb-2">Pontada</span>' : ''}
+                                            ${avaliacao.tipo_dor_queimacao ? '<span class="badge bg-success me-2 mb-2">Queimação</span>' : ''}
+                                            ${avaliacao.tipo_dor_peso ? '<span class="badge bg-success me-2 mb-2">Peso</span>' : ''}
+                                            ${avaliacao.tipo_dor_choque ? '<span class="badge bg-success me-2 mb-2">Choque</span>' : ''}
+                                            ${avaliacao.tipo_dor_outra ? `<span class="badge bg-info me-2 mb-2">Outro: ${avaliacao.tipo_dor_outra_texto || ''}</span>` : ''}
+                                        </div>
+                                        ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="habitos-grid-3">
                                 <div class="habitos-col">
                                     <label class="form-label">Intensidade (0-10) - Repouso</label>
-                                    <div class="form-control-view" id="viewIntensidadeRepouso">3</div>
+                                    <div class="form-control-view" id="viewIntensidadeRepouso">
+                                    ${avaliacao.intensidade_repouso ? avaliacao.intensidade_repouso : '<span class="text-muted">Não informado</span>'},
+
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Intensidade (0-10) - Movimento</label>
-                                    <div class="form-control-view" id="viewIntensidadeMovimento">7</div>
+                                    <div class="form-control-view" id="viewIntensidadeMovimento">
+                                    ${avaliacao.intensidade_movimento ? avaliacao.intensidade_movimento : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Intensidade (0-10) - Pior momento</label>
-                                    <div class="form-control-view" id="viewIntensidadePior">8</div>
+                                    <div class="form-control-view" id="viewIntensidadePior">
+                                    ${avaliacao.intensidade_pior ? avaliacao.intensidade_pior : '<span class="text-muted">Não informado</span>'},
+                                    </div>
                                 </div>
                             </div>
 
@@ -1641,13 +1704,14 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                                 <div class="habitos-col">
                                     <label class="form-label">Fatores que agravam</label>
                                     <div class="form-control-view" id="viewFatoresAgravam">
-                                        Ficar em pé por longos períodos, levantar peso, dirigir.
+                                    ${avaliacao.fatores_agravam ? avaliacao.fatores_agravam : '<span class="text-muted">Não informado</span>'},
+
                                     </div>
                                 </div>
                                 <div class="habitos-col">
                                     <label class="form-label">Fatores que aliviam</label>
                                     <div class="form-control-view" id="viewFatoresAliviam">
-                                        Repouso, deitar de lado com travesseiro entre os joelhos.
+                                    ${avaliacao.fatores_aliviam ? avaliacao.fatores_aliviam : '<span class="text-muted">Não informado</span>'},
                                     </div>
                                 </div>
                             </div>
@@ -1656,14 +1720,26 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                                 <div class="col-md-6">
                                     <div class="habitos-col">
                                         <label class="form-label">Sinais associados</label>
-                                        <div class="form-control-view" id="viewSinaisAssociados">Rigidez, Compensações
+                                        <div class="section-content">
+                                            <div class="sugestoes-badges">
+                                                ${avaliacao.sinal_edema ? '<span class="badge bg-success me-2 mb-2">Edema</span>' : ''}
+                                                ${avaliacao.sinal_parestesia ? '<span class="badge bg-success me-2 mb-2">Parestesia</span>' : ''}
+                                                ${avaliacao.sinal_rigidez ? '<span class="badge bg-success me-2 mb-2">Rigidez</span>' : ''}
+                                                ${avaliacao.sinal_fraqueza ? '<span class="badge bg-success me-2 mb-2">Fraqueza</span>' : ''}
+                                                ${avaliacao.sinal_compensacoes ? '<span class="badge bg-success me-2 mb-2">Compensações</span>' : ''}
+                                                ${avaliacao.sinal_outro ? `<span class="badge bg-info me-2 mb-2">Outro: ${avaliacao.sinal_outro_texto || ''}</span>` : ''}
+                                            </div>
+                                            ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="habitos-col">
                                         <label class="form-label">Grau de inflamação</label>
-                                        <div class="form-control-view" id="viewGrauInflamacao">Leve</div>
+                                        <div class="form-control-view" id="viewGrauInflamacao">
+                                    ${avaliacao.grau_inflamacao ? avaliacao.grau_inflamacao : '<span class="text-muted">Não informado</span>'},
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1671,20 +1747,20 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                     </div>
 
                     <!-- 3. Exame físico e funcional -->
-                    <div class="mb-4">
+                    < class="mb-4">
                         <h6 class="section-title habitos-col">3. Exame físico e funcional</h6>
 
                         <div class="habitos-grid-2">
                             <div class="habitos-col">
                                 <label class="form-label">Inspeção e postura</label>
                                 <div class="form-control-view" id="viewInspecaoPostura">
-                                    Hiperlordose lombar, ombro direito mais elevado, pelve anteroversa.
+                                 ${avaliacao.inspecao_postura ? avaliacao.inspecao_postura : '<span class="text-muted">Não informado</span>'},
                                 </div>
                             </div>
                             <div class="habitos-col">
                                 <label class="form-label">Compensações corporais</label>
                                 <div class="form-control-view" id="viewCompensacoesCorporais">
-                                    Compensação com rotação pélvica à direita durante a marcha.
+                                 ${avaliacao.compensacoes_corporais ? avaliacao.compensacoes_corporais : '<span class="text-muted">Não informado</span>'},
                                 </div>
                             </div>
                         </div>
@@ -1693,13 +1769,13 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                             <div class="habitos-col">
                                 <label class="form-label">Padrão respiratório / controle motor</label>
                                 <div class="form-control-view" id="viewPadraoRespiratorio">
-                                    Respiração torácica predominante, dificuldade de ativação do transverso abdominal.
+                                    ${avaliacao.padrao_respiratorio ? avaliacao.padrao_respiratorio : '<span class="text-muted">Não informado</span>'},
                                 </div>
                             </div>
                             <div class="habitos-col">
                                 <label class="form-label">Palpação</label>
                                 <div class="form-control-view" id="viewPalpacao">
-                                    Dor à palpação em L4-L5, pontos gatilho em quadrado lombar direito.
+                                ${avaliacao.palpacao ? avaliacao.palpacao : '<span class="text-muted">Não informado</span>'},
                                 </div>
                             </div>
                         </div>
@@ -1707,59 +1783,86 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                         <div class="habitos-col">
                             <label class="form-label">Pontos de dor / rigidez / edema</label>
                             <div class="form-control-view" id="viewPontosDor">
-                                L4-L5, SI direita, músculo piriforme direito.
+                            ${avaliacao.pontos_dor ? avaliacao.pontos_dor : '<span class="text-muted">Não informado</span>'},
                             </div>
                         </div>
-
-                        <!-- Tabela para Mobilidade e Força -->
-                        <div class="habitos-col">
-                            <label class="form-label">Mobilidade (ADM) e Força muscular (MMT 0-5)</label>
-                            <div class="table-responsive">
-                                <table class="table table-sm table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Região/Grupo</th>
-                                            <th>ADM Ativa (°)</th>
-                                            <th>ADM Passiva (°)</th>
-                                            <th>Dor ADM</th>
-                                            <th>Força (0-5)</th>
-                                            <th>Dor Força</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Quadril D - Flexão</td>
-                                            <td>90°</td>
-                                            <td>110°</td>
-                                            <td>✓</td>
-                                            <td>4</td>
-                                            <td>✓</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Coluna Lombar - Flexão</td>
-                                            <td>40°</td>
-                                            <td>50°</td>
-                                            <td>✓</td>
-                                            <td>3</td>
-                                            <td>✓</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        
+                            <div class="habitos-col">
+                                <label class="form-label">Mobilidade (ADM)</label>
+                                
+                                    <div class="habitos-col">
+                                        <label for="mobilidadeRegiao" class="form-label">Região/Grupo</label>
+                                        <div class="form-control-view" >
+                                        ${avaliacao.mobilidade_regiao ? avaliacao.mobilidade_regiao : '<span class="text-muted">Não informado</span>'},
+                                        </div>
+                                    <div class="habitos-col">
+                                        <label for="mobilidadeAtiva" class="form-label">ADM Ativa (°)</label>
+                                        <div class="form-control-view" >
+                                        ${avaliacao.mobilidade_ativa ? avaliacao.mobilidade_ativa : '<span class="text-muted">Não informado</span>'},
+                                        </div>   
+                                    <div class="habitos-col">
+                                        <label for="mobilidadePassiva" class="form-label">ADM Passiva (°)</label>
+                                        <div class="form-control-view" >
+                                        ${avaliacao.mobilidade_passiva ? avaliacao.mobilidade_passiva : '<span class="text-muted">Não informado</span>'},
+                                        </div>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label class="form-label">Dor ADM</label>
+                                        <div class="form-check mt-2">
+                                            <label class="checkbox-option" for="mobilidadeDor"></label>
+                                        <div class="section-content">
+                                            <div class="sugestoes-badges">
+                                                ${avaliacao.mobilidade_dor ? '<span class="badge bg-success me-2 mb-2">Presente</span>' : ''}
+                                                
+                                            </div>
+                                            ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
+                                        </div>
+                                            
+                                        </div>
+                                   
+                                </div>
                             </div>
-                        </div>
 
+                            <!-- FORÇA MUSCULAR (MMT) -->
+                            <div class="habitos-col">
+                                <label class="form-label">Força muscular (MMT 0-5)</label>
+                                <div class="habitos-grid-3">
+                                    <div class="habitos-col">
+                                        <label for="forcaGrupo" class="form-label">Grupo muscular</label>
+                                        <div class="form-control-view" >
+                                        ${avaliacao.forca_grupo ? avaliacao.forca_grupo : '<span class="text-muted">Não informado</span>'},
+                                        </div>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="forcaGrau" class="form-label">Força (0-5)</label>
+                                        <div class="form-control-view" >
+                                        ${avaliacao.forca_grau ? avaliacao.forca_grau : '<span class="text-muted">Não informado</span>'},
+                                        </div>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label class="form-label">Dor Força</label>
+                                        <div class="section-content">
+                                            <div class="sugestoes-badges">
+                                                ${avaliacao.forca_dor ? '<span class="badge bg-success me-2 mb-2">Presente</span>' : ''}
+                                                
+                                            </div>
+                                            ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
                         <div class="habitos-col">
                             <label class="form-label">Testes funcionais / compensações observadas</label>
                             <div class="form-control-view" id="viewTestesFuncionais">
-                                Teste de elevação da perna reta positivo à direita (45°). Teste de Thomas positivo para
-                                retração de iliopsoas.
+                            ${avaliacao.testes_funcionais ? avaliacao.testes_funcionais : '<span class="text-muted">Não informado</span>'},
                             </div>
                         </div>
 
                         <div class="habitos-col">
                             <label class="form-label">Outras observações</label>
                             <div class="form-control-view" id="viewOutrasObservacoes">
-                                Marcha antálgica leve, dificuldade para calçar sapatos.
+                                ${avaliacao.outras_observacoes ? avaliacao.outras_observacoes : '<span class="text-muted">Não informado</span>'},
                             </div>
                         </div>
                     </div>
@@ -1772,34 +1875,40 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                         <div class="mb-3">
                             <label class="form-label">Diagnóstico Completo</label>
                             <div class="form-control-view" id="viewDiagnosticoCompleto">
-                                Paciente de 45 anos com queixa de dor lombar há 6 meses com irradiação para membro
-                                inferior direito, apresenta limitação funcional em atividades de vida diária como
-                                permanecer em pé por longos períodos e dirigir, demonstra postura compensatória em pelve
-                                anteroversa e rotação pélvica direita. Tensão muscular em quadrado lombar e piriforme
-                                direito. Compensações em padrão respiratório torácico e fatores emocionais relacionados
-                                a ansiedade com a dor. Rotina impactada por trabalho em pé. Diagnóstico funcional indica
-                                síndrome dolorosa miofascial com componente de disfunção sacroilíaca.
+                                 ${avaliacao.diagnostico_completo ? avaliacao.diagnostico_completo : '<span class="text-muted">Não informado</span>'},
                             </div>
                         </div>
 
-                        <div class="habitos-grid-4">
+                        <div class="habitos-grid-">
                             <div class="habitos-col">
                                 <label class="form-label">Grau de dor (0-10)</label>
-                                <div class="form-control-view" id="viewGrauDor">7</div>
+                                <div class="form-control-view" id="viewGrauDor">
+                                    ${avaliacao.grau_dor ? avaliacao.grau_dor : '<span class="text-muted">Não informado</span>'},
+                                </div>
                             </div>
+
                             <div class="habitos-col">
                                 <label class="form-label">Limitação funcional (0-10)</label>
-                                <div class="form-control-view" id="viewLimitacaoFuncional">6</div>
-                            </div>
-                            <div class="habitos-col">
-                                <label class="form-label">Inflamação (0-3)</label>
-                                <div class="form-control-view" id="viewGrauInflamacaoGeral">1</div>
-                            </div>
-                            <div class="habitos-col">
-                                <label class="form-label">Edema (0-3)</label>
-                                <div class="form-control-view" id="viewGrauEdema">0</div>
+                                <div class="form-control-view" id="viewLimitacaoFuncional">
+                                    ${avaliacao.limitacao_funcional ? avaliacao.limitacao_funcional : '<span class="text-muted">Não informado</span>'},
+                                </div>
                             </div>
                         </div>
+                            <div class="habitos-col">
+                                <label class="form-label">Inflamação (0-3)</label>
+                                <div class="form-control-view" id="viewGrauInflamacaoGeral">
+                                    ${avaliacao.grau_inflamacao_num ? avaliacao.grau_inflamacao_num : '<span class="text-muted">Não informado</span>'},
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Edema (0-3)</label>
+                                <div class="form-control-view" id="viewGrauEdema">
+                                    ${avaliacao.grau_edema ? avaliacao.grau_edema : '<span class="text-muted">Não informado</span>'},
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div class="habitos-grid-2">
                             <div class="habitos-col">

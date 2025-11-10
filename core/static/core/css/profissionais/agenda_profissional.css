@@ -1608,3 +1608,45 @@ textarea.form-control {
     grid-column: 1 / -1;
     width: 100%;
 }
+
+.diagnostico-template {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    line-height: 2;
+}
+
+.template-text {
+    font-size: 16px;
+    color: #495057;
+}
+.template-text-example {
+    font-size: 14px;
+    color: #495057;
+}
+.template-input {
+ 
+    display: inline-block;
+
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.template-input:focus {
+    border-color: #6D398E;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(109, 57, 142, 0.25);
+}
+
+.template-input::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}

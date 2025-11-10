@@ -629,7 +629,14 @@ def salvar_avaliacao(request):
                     exercicios_casa=data.get('exercicios_casa', ""),
                     aspectos_emocionais_espirituais=data.get('aspectos_emocionais_espirituais', ""),
                     observacoes_finais=data.get('observacoes_finais', ""),
-                    mobilidade_forca_items=mobilidade_items,
+                    mobilidade_regiao=data.get('mobilidade_regiao', ""),
+                    mobilidade_ativa=data.get('mobilidade_ativa', ""),
+                    mobilidade_passiva=data.get('mobilidade_passiva', ""),
+                    mobilidade_dor=data.get('mobilidade_dor', ""),
+                    forca_grupo=data.get('forca_grupo', ""),
+                    forca_grau=data.get('forca_grau', ""),
+                    forca_dor=data.get('forca_dor', ""),
+                     
                     foi_preenchido=True,
                 )
             
@@ -901,15 +908,73 @@ def detalhes_avaliacao(request, agendamento_id):
                 'padrao_respiratorio': avaliacao.padrao_respiratorio,
                 'palpacao': avaliacao.palpacao,
                 'pontos_dor': avaliacao.pontos_dor,
+                
+                
+                'mobilidade_regiao': avaliacao.mobilidade_regiao,
+                'mobilidade_ativa': avaliacao.mobilidade_ativa,
+                'mobilidade_passiva': avaliacao.mobilidade_passiva,
+                'mobilidade_dor': avaliacao.mobilidade_dor,
+                'forca_grupo': avaliacao.forca_grupo,
+                'forca_grau': avaliacao.forca_grau,
+                'forca_dor': avaliacao.forca_dor,
+                
                 'testes_funcionais': avaliacao.testes_funcionais,
                 'outras_observacoes': avaliacao.outras_observacoes,
+                
+                'diagnostico_completo': avaliacao.diagnostico_completo,
+                'grau_dor': avaliacao.grau_dor,
+                'limitacao_funcional': avaliacao.limitacao_funcional,
+                'grau_inflamacao_num': avaliacao.grau_inflamacao_num,
+                'grau_edema': avaliacao.grau_edema,
+                
+                'receptividade': avaliacao.receptividade,
+                'autonomia_avd': avaliacao.autonomia_avd,
+                'objetivo_geral': avaliacao.objetivo_geral,
+                'objetivo_principal': avaliacao.objetivo_principal,
+                'objetivo_secundario': avaliacao.objetivo_secundario,
+                'pontos_atencao': avaliacao.pontos_atencao,
+                'tecnica_liberacao': avaliacao.tecnica_liberacao,
+                'tecnica_mobilizacao': avaliacao.tecnica_mobilizacao,
+                'tecnica_dry_needling': avaliacao.tecnica_dry_needling,
+                'tecnica_ventosa': avaliacao.tecnica_ventosa,
+                'tecnica_manipulacoes': avaliacao.tecnica_manipulacoes,
+                'tecnica_outras': avaliacao.tecnica_outras,
+                'tecnica_outras_texto': avaliacao.tecnica_outras_texto,
+                
+                'recurso_aussie': avaliacao.recurso_aussie,
+                'recurso_russa': avaliacao.recurso_russa,
+                'recurso_aussie_tens': avaliacao.recurso_aussie_tens,
+                'recurso_us': avaliacao.recurso_us,
+                'recurso_termo': avaliacao.recurso_termo,
+                'recurso_outro': avaliacao.recurso_outro,
+                'recurso_outro_texto': avaliacao.recurso_outro_texto,
+                
+                'cinesio_fortalecimento': avaliacao.cinesio_fortalecimento,
+                'cinesio_alongamento': avaliacao.cinesio_alongamento,
+                'cinesio_postural': avaliacao.cinesio_postural,
+                'cinesio_respiracao': avaliacao.cinesio_respiracao,
+                'cinesio_mobilidade': avaliacao.cinesio_mobilidade,
+                'cinesio_funcional': avaliacao.cinesio_funcional,
+                
+                'descricao_plano': avaliacao.descricao_plano,
+                'medo_agulha': avaliacao.medo_agulha,
+                'limiar_dor_baixo': avaliacao.limiar_dor_baixo,
+                'fragilidade': avaliacao.fragilidade,
+                'frequencia': avaliacao.frequencia,
+                'duracao': avaliacao.duracao,
+                'reavaliacao_sessao': avaliacao.reavaliacao_sessao,
+                'evolucao_primeira_sessao': avaliacao.evolucao_primeira_sessao,
+                'evolucao_proximas_sessoes': avaliacao.evolucao_proximas_sessoes,
+                'expectativas_primeira_etapa': avaliacao.expectativas_primeira_etapa,
+                'proximos_passos': avaliacao.proximos_passos,
+                'sobre_orientacoes': avaliacao.sobre_orientacoes,
+                'sono_rotina': avaliacao.sono_rotina,
+                'postura_ergonomia': avaliacao.postura_ergonomia,
+                'alimentacao_hidratacao': avaliacao.alimentacao_hidratacao,
+                'exercicios_casa': avaliacao.exercicios_casa,
+                'aspectos_emocionais_espirituais': avaliacao.aspectos_emocionais_espirituais,
+                'observacoes_finais': avaliacao.observacoes_finais,
 
-                'mobilidade_forca_items': avaliacao.mobilidade_forca_items,
-                
-                
-                
-
-                
             
             })
         
