@@ -212,7 +212,6 @@ def listar_prontuarios(request, paciente_id):
             'prontuarios': []
         }, status=500)
         
-        
 def salvar_evolucao(request):
 
     try:

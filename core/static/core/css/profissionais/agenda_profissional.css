@@ -1655,3 +1655,24 @@ textarea.form-control {
     color: #6c757d;
     font-style: italic;
 }
+
+.consultas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.consulta-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.consulta-item:hover {
+    border-color: var(--roxoPrincipal);
+    box-shadow: 0 2px 8px rgba(109, 57, 142, 0.1);
+    transform: translateY(-2px);
+}

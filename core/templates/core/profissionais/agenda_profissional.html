@@ -240,7 +240,7 @@
 
                     <div class="tab-content" id="patientTabContent">
                         <!-- Aba Prontuário -->
-                        <!-- Aba Prontuário -->
+                      
                         <div class="tab-pane active" id="prontuario">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5>Prontuários do Paciente</h5>
@@ -540,58 +540,8 @@
                             <input type="hidden" id="agendamentoIdAtual" value="">
                             <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
                             <div id='listAvaliacoes' class="prontuarios-list">
-                                <div class="prontuario-item">
-                                    <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Avaliação - 15/05/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openAvaliacaoModal(1)">
-                                            <i class="fas fa-eye me-1"></i> Leia Mais
-                                        </button>
-                                    </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Dor lombar há 6 meses, com irradiação para
-                                            membro inferior direito...</p>
-                                    </div>
-                                </div>
-
-                                <div class="prontuario-item">
-                                    <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Avaliação - 08/05/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dr. Carlos Santos</span>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openAvaliacaoModal(2)">
-                                            <i class="fas fa-eye me-1"></i> Leia Mais
-                                        </button>
-                                    </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Dor cervical com limitação de movimento...
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="prontuario-item">
-                                    <div class="prontuario-header">
-                                        <div class="prontuario-info">
-                                            <h6>Avaliação - 01/05/2023</h6>
-                                            <span class="text-muted small">Registrado por: Dra. Ana Silva</span>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="openAvaliacaoModal(3)">
-                                            <i class="fas fa-eye me-1"></i> Leia Mais
-                                        </button>
-                                    </div>
-                                    <div class="prontuario-preview">
-                                        <p><strong>Queixa Principal:</strong> Pós-operatório de artroplastia de
-                                            quadril...</p>
-                                    </div>
-                                </div>
                             </div>
-
                         </div>
-
-
                     </div>
                 </div>
             </div>
@@ -1029,9 +979,7 @@
                     <button type="button" class="btn btn-outline-primary">
                         <i class="fas fa-print me-1"></i> Imprimir
                     </button>
-                    <button type="button" class="btn btn-primary">
-                        <i class="fas fa-edit me-1"></i> Editar
-                    </button>
+ 
                 </div>
             </div>
         </div>
@@ -2128,9 +2076,6 @@
                     <button type="button" class="btn btn-outline-primary">
                         <i class="fas fa-print me-1"></i> Imprimir
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="editarAvaliacao()">
-                        <i class="fas fa-edit me-1"></i> Editar
-                    </button>
                 </div>
             </div>
         </div>
@@ -2227,78 +2172,7 @@
             // Aqui você processaria os arquivos para upload
             alert(`${files.length} arquivo(s) selecionado(s) para upload`);
         }
-        // Função para abrir o modal de visualização do prontuário
-        function openProntuarioModal(prontuarioId) {
-            // Simulação de dados - substitua por chamada AJAX real
-            const prontuarios = {
-                1: {
-                    data: "15/05/2023",
-                    autor: "Dra. Ana Silva",
-                    paciente: "Maria Oliveira",
-                    id: "#PRT001",
-                    queixaPrincipal: "Dor lombar há 6 meses, com irradiação para membro inferior direito. Relata piora ao ficar em pé por longos períodos.",
-                    conduta: "Exercícios de fortalecimento do core, alongamento de cadeia posterior. Orientação postural. TENS para alívio da dor.",
-                    historiaDoenca: "Paciente relata início dos sintomas após mudança de trabalho, onde passou a ficar mais tempo em pé. Já realizou tratamento com anti-inflamatórios com melhora parcial.",
-                    exameFisico: "Amplitude de movimento diminuída na flexão anterior. Dor à palpação em L4-L5. Teste de elevação da perna reta positivo à direita. Força muscular preservada.",
-                    diagnostico: "Lombalgia crônica com componente radicular.",
-                    observacoes: "Paciente orientado sobre postura e ergonomia. Retorno em 15 dias para reavaliação. Demonstrou boa adesão ao tratamento."
-                },
-                2: {
-                    data: "08/05/2023",
-                    autor: "Dr. Carlos Santos",
-                    paciente: "Maria Oliveira",
-                    id: "#PRT002",
-                    queixaPrincipal: "Dor cervical com limitação de movimento. Relata dificuldade para dirigir por longos períodos.",
-                    conduta: "Mobilização cervical, exercícios de fortalecimento para musculatura cervical, alongamentos.",
-                    historiaDoenca: "Sintomas iniciados após viagem longa de carro. História prévia de hérnia de disco cervical.",
-                    exameFisico: "Limitação de 30% na rotação cervical. Dor à palpação em C5-C6. Força muscular 4/5 em flexores cervicais.",
-                    diagnostico: "Cervicalgia mecânica.",
-                    observacoes: "Paciente orientado sobre ergonomia no trabalho. Exercícios domiciliares prescritos."
-                },
-                3: {
-                    data: "01/05/2023",
-                    autor: "Dra. Ana Silva",
-                    paciente: "Maria Oliveira",
-                    id: "#PRT003",
-                    queixaPrincipal: "Pós-operatório de artroplastia de quadril direito. Relata dor e dificuldade para deambular.",
-                    conduta: "Exercícios de fortalecimento de quadril, treino de marcha com andador, crioterapia.",
-                    historiaDoenca: "Cirurgia realizada há 3 semanas devido a artrose grave. Evolução dentro do esperado.",
-                    exameFisico: "Edema moderado no quadril direito. Amplitude de movimento: flexão 60°, abdução 20°. Marcha com andador.",
-                    diagnostico: "Pós-operatório de artroplastia total de quadril direito.",
-                    observacoes: "Evolução satisfatória. Paciente motivada com a reabilitação."
-                }
-            };
-
-            const prontuario = prontuarios[prontuarioId];
-
-            if (prontuario) {
-                // Preencher metadados
-                document.getElementById('viewProntuarioData').textContent = prontuario.data;
-                document.getElementById('viewProntuarioAutor').textContent = prontuario.autor;
-                document.getElementById('viewProntuarioPaciente').textContent = prontuario.paciente;
-                document.getElementById('viewProntuarioId').textContent = prontuario.id;
-
-                // Preencher conteúdo
-                document.getElementById('viewQueixaPrincipal').textContent = prontuario.queixaPrincipal;
-                document.getElementById('viewConduta').textContent = prontuario.conduta;
-                document.getElementById('viewHistoriaDoenca').textContent = prontuario.historiaDoenca;
-                document.getElementById('viewExameFisico').textContent = prontuario.exameFisico;
-                document.getElementById('viewDiagnostico').textContent = prontuario.diagnostico;
-                document.getElementById('viewObservacoes').textContent = prontuario.observacoes;
-
-                // Abrir modal
-                openModal('viewProntuarioModal');
-            } else {
-                alert('Prontuário não encontrado!');
-            }
-        }
-
-        // Função para editar prontuário (futura implementação)
-        function editarProntuario() {
-            const prontuarioId = document.getElementById('viewProntuarioId').textContent;
-            alert(`Abrir edição do prontuário ${prontuarioId}`);
-            // Aqui você pode implementar a lógica para abrir o modal de edição
-        }
+ 
     </script>
 </body>
 
