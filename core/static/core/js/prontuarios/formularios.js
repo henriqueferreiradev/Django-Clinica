@@ -600,13 +600,13 @@ async function salvarAvaliacao() {
         dados.mobilidade_ativa = document.getElementById('mobilidadeAtiva').value;
         dados.mobilidade_passiva = document.getElementById('mobilidadePassiva').value;
         dados.mobilidade_dor = document.getElementById('mobilidadeDor').checked;
-        
+
         // Força muscular MMT
         dados.forca_grupo = document.getElementById('forcaGrupo').value;
         dados.forca_grau = document.getElementById('forcaGrau').value;
         dados.forca_dor = document.getElementById('forcaDor').checked;
 
-        
+
         // Diagnóstico Fisioterapêutico
         dados.diagnostico_completo = gerarDiagnostivoCompleto()
         dados.grau_dor = document.getElementById('grauDor').value;
@@ -1747,7 +1747,7 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                     </div>
 
                     <!-- 3. Exame físico e funcional -->
-                    < class="mb-4">
+                    <div class="mb-4">
                         <h6 class="section-title habitos-col">3. Exame físico e funcional</h6>
 
                         <div class="habitos-grid-2">
@@ -1789,37 +1789,32 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                         
                             <div class="habitos-col">
                                 <label class="form-label">Mobilidade (ADM)</label>
-                                
+                                <div class="habitos-grid-4">
                                     <div class="habitos-col">
                                         <label for="mobilidadeRegiao" class="form-label">Região/Grupo</label>
                                         <div class="form-control-view" >
                                         ${avaliacao.mobilidade_regiao ? avaliacao.mobilidade_regiao : '<span class="text-muted">Não informado</span>'},
                                         </div>
+                                    </div>
                                     <div class="habitos-col">
                                         <label for="mobilidadeAtiva" class="form-label">ADM Ativa (°)</label>
                                         <div class="form-control-view" >
                                         ${avaliacao.mobilidade_ativa ? avaliacao.mobilidade_ativa : '<span class="text-muted">Não informado</span>'},
-                                        </div>   
+                                        </div>
+                                    </div>   
                                     <div class="habitos-col">
                                         <label for="mobilidadePassiva" class="form-label">ADM Passiva (°)</label>
                                         <div class="form-control-view" >
                                         ${avaliacao.mobilidade_passiva ? avaliacao.mobilidade_passiva : '<span class="text-muted">Não informado</span>'},
                                         </div>
                                     </div>
+                                     
                                     <div class="habitos-col">
                                         <label class="form-label">Dor ADM</label>
-                                        <div class="form-check mt-2">
-                                            <label class="checkbox-option" for="mobilidadeDor"></label>
-                                        <div class="section-content">
-                                            <div class="sugestoes-badges">
-                                                ${avaliacao.mobilidade_dor ? '<span class="badge bg-success me-2 mb-2">Presente</span>' : ''}
-                                                
-                                            </div>
-                                            ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
+                                                                                <div class="form-control-view" >
+                                        ${avaliacao.mobilidade_dor ? avaliacao.mobilidade_dor : '<span class="text-muted">Não informado</span>'},
                                         </div>
-                                            
-                                        </div>
-                                   
+                                   </div>
                                 </div>
                             </div>
 
@@ -1830,23 +1825,19 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                                     <div class="habitos-col">
                                         <label for="forcaGrupo" class="form-label">Grupo muscular</label>
                                         <div class="form-control-view" >
-                                        ${avaliacao.forca_grupo ? avaliacao.forca_grupo : '<span class="text-muted">Não informado</span>'},
+                                        ${avaliacao.forca_grupo ? avaliacao.forca_grupo : '<span class="text-muted">Não informado</span>'}
                                         </div>
                                     </div>
                                     <div class="habitos-col">
                                         <label for="forcaGrau" class="form-label">Força (0-5)</label>
                                         <div class="form-control-view" >
-                                        ${avaliacao.forca_grau ? avaliacao.forca_grau : '<span class="text-muted">Não informado</span>'},
+                                        ${avaliacao.forca_grau ? avaliacao.forca_grau : '<span class="text-muted">Não informado</span>'}
                                         </div>
                                     </div>
                                     <div class="habitos-col">
                                         <label class="form-label">Dor Força</label>
-                                        <div class="section-content">
-                                            <div class="sugestoes-badges">
-                                                ${avaliacao.forca_dor ? '<span class="badge bg-success me-2 mb-2">Presente</span>' : ''}
-                                                
-                                            </div>
-                                            ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
+                                                                                <div class="form-control-view" >
+                                        ${avaliacao.forca_dor ? avaliacao.forca_dor : '<span class="text-muted">Não informado</span>'}
                                         </div>
                                     </div>
                                 </div>
@@ -1855,14 +1846,14 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                         <div class="habitos-col">
                             <label class="form-label">Testes funcionais / compensações observadas</label>
                             <div class="form-control-view" id="viewTestesFuncionais">
-                            ${avaliacao.testes_funcionais ? avaliacao.testes_funcionais : '<span class="text-muted">Não informado</span>'},
+                            ${avaliacao.testes_funcionais ? avaliacao.testes_funcionais : '<span class="text-muted">Não informado</span>'}
                             </div>
                         </div>
 
                         <div class="habitos-col">
                             <label class="form-label">Outras observações</label>
                             <div class="form-control-view" id="viewOutrasObservacoes">
-                                ${avaliacao.outras_observacoes ? avaliacao.outras_observacoes : '<span class="text-muted">Não informado</span>'},
+                                ${avaliacao.outras_observacoes ? avaliacao.outras_observacoes : '<span class="text-muted">Não informado</span>'}
                             </div>
                         </div>
                     </div>
@@ -1872,18 +1863,18 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                     <div class="mb-4">
                         <h6 class="section-title habitos-col">4. Diagnóstico Fisioterapêutico</h6>
 
-                        <div class="mb-3">
+                        <div class="habitos-col">
                             <label class="form-label">Diagnóstico Completo</label>
                             <div class="form-control-view" id="viewDiagnosticoCompleto">
-                                 ${avaliacao.diagnostico_completo ? avaliacao.diagnostico_completo : '<span class="text-muted">Não informado</span>'},
+                                 ${avaliacao.diagnostico_completo ? avaliacao.diagnostico_completo : '<span class="text-muted">Não informado</span>'}
                             </div>
                         </div>
 
-                        <div class="habitos-grid-">
+                        <div class="habitos-grid-4">
                             <div class="habitos-col">
                                 <label class="form-label">Grau de dor (0-10)</label>
                                 <div class="form-control-view" id="viewGrauDor">
-                                    ${avaliacao.grau_dor ? avaliacao.grau_dor : '<span class="text-muted">Não informado</span>'},
+                                    ${avaliacao.grau_dor ? avaliacao.grau_dor : '<span class="text-muted">Não informado</span>'}
                                 </div>
                             </div>
 
@@ -1913,11 +1904,16 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                         <div class="habitos-grid-2">
                             <div class="habitos-col">
                                 <label class="form-label">Receptividade</label>
-                                <div class="form-control-view" id="viewReceptividade">Alta</div>
+                                <div class="form-control-view" id="viewReceptividade">
+                                    ${avaliacao.receptividade ? avaliacao.receptividade : '<span class="text-muted">Não informado</span>'}
+
+                                </div>
                             </div>
                             <div class="habitos-col">
                                 <label class="form-label">Autonomia AVD</label>
-                                <div class="form-control-view" id="viewAutonomiaAVD">Independente</div>
+                                <div class="form-control-view" id="viewAutonomiaAVD">
+                                ${avaliacao.autonomia_avd ? avaliacao.autonomia_avd : '<span class="text-muted">Não informado</span>'}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1929,77 +1925,126 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                         <div class="habitos-col">
                             <label class="form-label">Objetivo geral</label>
                             <div class="form-control-view" id="viewObjetivoGeral">
-                                Redução da dor lombar e melhora da função para retorno às atividades laborais sem
-                                limitações.
+                                ${avaliacao.objetivo_geral ? avaliacao.objetivo_geral : '<span class="text-muted">Não informado</span>'}
                             </div>
                         </div>
 
                         <div class="habitos-col">
                             <label class="form-label">Objetivo principal</label>
                             <div class="form-control-view" id="viewObjetivoPrincipal">
-                                Reduzir dor para 3/10 em 4 semanas.
+                                ${avaliacao.objetivo_principal ? avaliacao.objetivo_principal : '<span class="text-muted">Não informado</span>'}
                             </div>
                         </div>
 
                         <div class="habitos-col">
                             <label class="form-label">Objetivo secundário</label>
                             <div class="form-control-view" id="viewObjetivoSecundario">
-                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                                ${avaliacao.objetivo_secundario ? avaliacao.objetivo_secundario : '<span class="text-muted">Não informado</span>'}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Pontos de atenção (sobre o planejamento do tratamento, resistência do paciente, limitações...)</label>
                             <div class="form-control-view" id="viewObjetivoSecundario">
-                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                                ${avaliacao.pontos_atencao ? avaliacao.pontos_atencao : '<span class="text-muted">Não informado</span>'}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Técnicas manuais</label>
-                            <div class="form-control-view" id="viewTecnicasSelecionadas">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            <div class="section-content">
+                                <div class="sugestoes-badges">
+                                    ${avaliacao.tecnica_liberacao ? '<span class="badge bg-success me-2 mb-2">Liberação</span>' : ''}
+                                    ${avaliacao.tecnica_mobilizacao ? '<span class="badge bg-success me-2 mb-2">Mobilização</span>' : ''}
+                                    ${avaliacao.tecnica_dry_needling ? '<span class="badge bg-success me-2 mb-2">Dry Needling</span>' : ''}
+                                    ${avaliacao.tecnica_ventosa ? '<span class="badge bg-success me-2 mb-2">Ventosa</span>' : ''}
+                                    ${avaliacao.tecnica_manipulacoes ? '<span class="badge bg-success me-2 mb-2">Manipulações</span>' : ''}
+                                    ${avaliacao.tecnica_outras ? `<span class="badge bg-info me-2 mb-2">Outro: ${avaliacao.tecnica_outras_texto || ''}</span>` : ''}
+                                </div>
+                                ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
                             </div>
                         </div>
                         
                         <div class="habitos-col">
                             <label class="form-label">Recursos eletrofísicos</label>
-                            <div class="form-control-view" id="viewTecnicasSelecionadas">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            <div class="section-content">
+                                <div class="sugestoes-badges">
+                                    ${avaliacao.recurso_aussie ? '<span class="badge bg-success me-2 mb-2">Corrente Aussie</span>' : ''}
+                                    ${avaliacao.recurso_russa ? '<span class="badge bg-success me-2 mb-2">Corrente Russa</span>' : ''}
+                                    ${avaliacao.recurso_aussie_tens ? '<span class="badge bg-success me-2 mb-2">Corrente Aussie Tens</span>' : ''}
+                                    ${avaliacao.recurso_us ? '<span class="badge bg-success me-2 mb-2">US</span>' : ''}
+                                    ${avaliacao.recurso_termo ? '<span class="badge bg-success me-2 mb-2">Termo</span>' : ''}
+                                    ${avaliacao.recurso_outro ? `<span class="badge bg-info me-2 mb-2">Outro: ${avaliacao.recurso_outro_texto || ''}</span>` : ''}
+                                </div>
+                                ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Cinesioterapia</label>
                             <div class="form-control-view" id="viewTecnicasSelecionadas">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                            <div class="section-content">
+                                <div class="sugestoes-badges">
+                                    ${avaliacao.cinesio_fortalecimento ? '<span class="badge bg-success me-2 mb-2">Corrente Aussie</span>' : ''}
+                                    ${avaliacao.cinesio_alongamento ? '<span class="badge bg-success me-2 mb-2">Corrente Russa</span>' : ''}
+                                    ${avaliacao.cinesio_postural ? '<span class="badge bg-success me-2 mb-2">Corrente Aussie Tens</span>' : ''}
+                                    ${avaliacao.cinesio_respiracao ? '<span class="badge bg-success me-2 mb-2">US</span>' : ''}
+                                    ${avaliacao.cinesio_mobilidade ? '<span class="badge bg-success me-2 mb-2">Termo</span>' : ''}
+                                    ${avaliacao.cinesio_funcional ? '<span class="badge bg-success me-2 mb-2">Termo</span>' : ''}
+                                 </div>
+                                ${Object.values(avaliacao).filter(val => typeof val === 'boolean' && val).length === 0 ? '<span class="text-muted">Nenhuma sugestão complementar</span>' : ''}
+                            </div>
                             </div>
                         </div>
-                        
+                        <div class="habitos-grid>
+                            <div class="habitos-col">
+                                <label class="form-label">Breve descrição sobre o plano de tratamento</label>
+                                <div class="form-control-view">
+
+                                </div>
+                            </div>
+                            </div>
 
                         <div class="habitos-grid-3">
                             <div class="habitos-col">
                                 <label class="form-label">Medo de agulha?</label>
-                                <div class="form-control-view" id="viewFrequencia">3</div>
+                                <div class="form-control-view" id="viewFrequencia">
+                                ${avaliacao.medo_agulha ? avaliacao.medo_agulha : '<span class="text-muted">Não, </span>'}
+
+                                </div>
                             </div>
                             <div class="habitos-col">
                                 <label class="form-label">Limiar de dor baixo?</label>
-                                <div class="form-control-view" id="viewDuracao">60</div>
+                                <div class="form-control-view" id="viewDuracao">
+                                ${avaliacao.limiar_dor_baixo ? avaliacao.limiar_dor_baixo : '<span class="text-muted">Não, </span>'}
+                                </div>
                             </div>
                             <div class="habitos-col">
                                 <label class="form-label">Fragilidade?</label>
-                                <div class="form-control-view" id="viewReavaliacaoSessao">8ª sessão</div>
+                                <div class="form-control-view" id="viewReavaliacaoSessao">
+                                ${avaliacao.fragilidade ? avaliacao.fragilidade : '<span class="text-muted">Não </span>'}
+
+                                </div>
                             </div>
                         </div>
                         <div class="habitos-grid-3">
                             <div class="habitos-col">
                                 <label class="form-label">Frequência (x/semana)</label>
-                                <div class="form-control-view" id="viewFrequencia">3</div>
+                                <div class="form-control-view" id="viewFrequencia">
+                                ${avaliacao.frequencia ? avaliacao.frequencia : '<span class="text-muted">Não informado. </span>'}
+
+                                </div>
                             </div>
                             <div class="habitos-col">
                                 <label class="form-label">Duração (min)</label>
-                                <div class="form-control-view" id="viewDuracao">60</div>
+                                <div class="form-control-view" id="viewDuracao">
+                                ${avaliacao.duracao ? avaliacao.duracao : '<span class="text-muted">Não informado. </span>'}
+
+                                </div>
                             </div>
                             <div class="habitos-col">
                                 <label class="form-label">Reavaliação na sessão</label>
-                                <div class="form-control-view" id="viewReavaliacaoSessao">8ª sessão</div>
+                                <div class="form-control-view" id="viewReavaliacaoSessao">
+                                ${avaliacao.reavaliacao_sessao ? avaliacao.reavaliacao_sessao : '<span class="text-muted">Não informado. </span>'}
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2010,65 +2055,71 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
                         <div class="habitos-col">
                             <label class="form-label">Evolução esperada na primeira sessão</label>
                             <div class="form-control-view">
-                                Redução da dor lombar e melhora da função para retorno às atividades laborais sem
-                                limitações.
+                                ${avaliacao.evolucao_primeira_sessao ? avaliacao.evolucao_primeira_sessao : '<span class="text-muted">Não informado. </span>'}
+
                             </div>
                         </div>
 
                         <div class="habitos-col">
                             <label class="form-label">Evolução esperada nas próximas sessões</label>
                             <div class="form-control-view">
-                                Reduzir dor para 3/10 em 4 semanas.
+                                ${avaliacao.evolucao_proximas_sessoes ? avaliacao.evolucao_proximas_sessoes : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
 
                         <div class="habitos-col">
                             <label class="form-label">Expectativas sobre a primeira etapa do tratamento</label>
                             <div class="form-control-view">
-                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                                ${avaliacao.expectativas_primeira_etapa ? avaliacao.expectativas_primeira_etapa : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Próximos passos</label>
                             <div class="form-control-view">
-                                Melhorar amplitude de movimento da coluna lombar em 30%.
+                                ${avaliacao.proximos_passos ? avaliacao.proximos_passos : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Sobre as orientações</label>
                             <div class="form-control-view">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                                ${avaliacao.sobre_orientacoes ? avaliacao.sobre_orientacoes : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
                         
                         <div class="habitos-col">
+                            <label class="form-label"Sono / rotinas / pausas</label>
+                            <div class="form-control-view">
+                                ${avaliacao.sono_rotina ? avaliacao.sono_rotina : '<span class="text-muted">Não informado. </span>'}
+                            </div>
+                        </div>
+                        <div class="habitos-col">
                             <label class="form-label">Postura / ergonomia</label>
                             <div class="form-control-view">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                                ${avaliacao.postura_ergonomia ? avaliacao.postura_ergonomia : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Alimentação / hidratação</label>
                             <div class="form-control-view">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                                ${avaliacao.alimentacao_hidratacao ? avaliacao.alimentacao_hidratacao : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Exercícios em casa (dever)</label>
                             <div class="form-control-view">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                                ${avaliacao.exercicios_casa ? avaliacao.exercicios_casa : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Aspectos emocionais / espiritualidade</label>
                             <div class="form-control-view">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                                ${avaliacao.aspectos_emocionais_espirituais ? avaliacao.aspectos_emocionais_espirituais : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
                         <div class="habitos-col">
                             <label class="form-label">Observações finais</label>
                             <div class="form-control-view">
-                                Liberação miofascial, Mobilização, Fortalecimento, Alongamento
+                                ${avaliacao.observacoes_finais ? avaliacao.observacoes_finais : '<span class="text-muted">Não informado. </span>'}
                             </div>
                         </div>
                          

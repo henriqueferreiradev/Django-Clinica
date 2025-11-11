@@ -933,6 +933,7 @@ def detalhes_avaliacao(request, agendamento_id):
                 'objetivo_principal': avaliacao.objetivo_principal,
                 'objetivo_secundario': avaliacao.objetivo_secundario,
                 'pontos_atencao': avaliacao.pontos_atencao,
+
                 'tecnica_liberacao': avaliacao.tecnica_liberacao,
                 'tecnica_mobilizacao': avaliacao.tecnica_mobilizacao,
                 'tecnica_dry_needling': avaliacao.tecnica_dry_needling,
@@ -963,6 +964,7 @@ def detalhes_avaliacao(request, agendamento_id):
                 'frequencia': avaliacao.frequencia,
                 'duracao': avaliacao.duracao,
                 'reavaliacao_sessao': avaliacao.reavaliacao_sessao,
+                
                 'evolucao_primeira_sessao': avaliacao.evolucao_primeira_sessao,
                 'evolucao_proximas_sessoes': avaliacao.evolucao_proximas_sessoes,
                 'expectativas_primeira_etapa': avaliacao.expectativas_primeira_etapa,

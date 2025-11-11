@@ -110,13 +110,6 @@
                                                 <i class="fas fa-chart-line"></i>
                                                 <span class="status-text">Evolução</span>
                                             </span>
-                                            <span class="status-badge imagens" data-status="false"
-                                                data-tab-target="imagens" data-agendamento-id="{{ag.id}}"
-                                                data-paciente-id="{{ag.paciente.id}}"
-                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
-                                                <i class="fas fa-images"></i>
-                                                <span class="status-text">Imagens</span>
-                                            </span>
                                             <span class="status-badge avaliacao" data-status="false"
                                                 data-tab-target="analisefisio" data-agendamento-id="{{ag.id}}"
                                                 data-paciente-id="{{ag.paciente.id}}"
@@ -124,6 +117,14 @@
                                                 <i class="fas fa-clipboard-check"></i>
                                                 <span class="status-text">Avaliação</span>
                                             </span>
+                                            <span class="status-badge imagens" data-status="false"
+                                                data-tab-target="imagens" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
+                                                <i class="fas fa-images"></i>
+                                                <span class="status-text">Imagens</span>
+                                            </span>
+
                                         </div>
                                     </div>
                                 </div>
@@ -1621,35 +1622,52 @@
                         <div class="mb-4">
                             <h6 class="section-title habitos-col">4. Diagnóstico Fisioterapêutico</h6>
 
-                            <div class="habitos-col" >
+                            <div class="habitos-col">
                                 <label class="form-label">Diagnóstico Completo</label>
-                                <div class="diagnostico-template"style='margin-bottom: 1.5em;'>
+                                <div class="diagnostico-template" style='margin-bottom: 1.5em;'>
                                     <div class="template-text">Exemplo</div>
-                                        <div class="template-text-example">
-                                            Paciente de <strong>45 anos</strong> com queixa de <strong>"dor lombar crônica"</strong>, apresenta limitação funcional em <strong>"agachar e levantar pesos"</strong>, demonstra postura compensatória em <strong>"coluna lombar"</strong>. Tensão muscular em <strong>"músculos paravertebrais"</strong>. Compensações <strong>"marcha antálgica"</strong> e fatores emocionais relacionados a <strong>"estresse no trabalho"</strong>. Rotina impactada por <strong>"dificuldade para dirigir"</strong>. Diagnóstico funcional indica <strong>"síndrome dolorosa miofascial com alterações posturais"</strong>.
-                                        </div>
+                                    <div class="template-text-example">
+                                        Paciente de <strong>45 anos</strong> com queixa de <strong>"dor lombar
+                                            crônica"</strong>, apresenta limitação funcional em <strong>"agachar e
+                                            levantar pesos"</strong>, demonstra postura compensatória em <strong>"coluna
+                                            lombar"</strong>. Tensão muscular em <strong>"músculos
+                                            paravertebrais"</strong>. Compensações <strong>"marcha antálgica"</strong> e
+                                        fatores emocionais relacionados a <strong>"estresse no trabalho"</strong>.
+                                        Rotina impactada por <strong>"dificuldade para dirigir"</strong>. Diagnóstico
+                                        funcional indica <strong>"síndrome dolorosa miofascial com alterações
+                                            posturais"</strong>.
                                     </div>
+                                </div>
                                 <div>
 
                                     <div class="template-text">
-                                        Paciente de 
-                                        <input type="number" class="template-input" id="diagnosticoIdade" placeholder="idade" min="0" max="120" style="width: 80px;">
-                                        anos com queixa de 
-                                        <input type="text" class="template-input" id="diagnosticoQueixa" placeholder="queixa principal" style="width: 200px;">
-                                        , apresenta limitação funcional em 
-                                        <input type="text" class="template-input" id="diagnosticoLimitacao" placeholder="limitação funcional" style="width: 180px;">
-                                        , demonstra postura compensatória em 
-                                        <input type="text" class="template-input" id="diagnosticoPostura" placeholder="área postural" style="width: 150px;">
-                                        . Tensão muscular em 
-                                        <input type="text" class="template-input" id="diagnosticoTensao" placeholder="grupo muscular" style="width: 140px;">
-                                        . Compensações 
-                                        <input type="text" class="template-input" id="diagnosticoCompensacoes" placeholder="tipo de compensações" style="width: 160px;">
-                                        e fatores emocionais relacionados a 
-                                        <input type="text" class="template-input" id="diagnosticoEmocionais" placeholder="fatores emocionais" style="width: 150px;">
-                                        . Rotina impactada por 
-                                        <input type="text" class="template-input" id="diagnosticoRotina" placeholder="impacto na rotina" style="width: 170px;">
-                                        . Diagnóstico funcional indica 
-                                        <input type="text" class="template-input" id="diagnosticoFuncional" placeholder="diagnóstico final" style="width: 200px;">
+                                        Paciente de
+                                        <input type="number" class="template-input" id="diagnosticoIdade"
+                                            placeholder="idade" min="0" max="120" style="width: 80px;">
+                                        anos com queixa de
+                                        <input type="text" class="template-input" id="diagnosticoQueixa"
+                                            placeholder="queixa principal" style="width: 200px;">
+                                        , apresenta limitação funcional em
+                                        <input type="text" class="template-input" id="diagnosticoLimitacao"
+                                            placeholder="limitação funcional" style="width: 180px;">
+                                        , demonstra postura compensatória em
+                                        <input type="text" class="template-input" id="diagnosticoPostura"
+                                            placeholder="área postural" style="width: 150px;">
+                                        . Tensão muscular em
+                                        <input type="text" class="template-input" id="diagnosticoTensao"
+                                            placeholder="grupo muscular" style="width: 140px;">
+                                        . Compensações
+                                        <input type="text" class="template-input" id="diagnosticoCompensacoes"
+                                            placeholder="tipo de compensações" style="width: 160px;">
+                                        e fatores emocionais relacionados a
+                                        <input type="text" class="template-input" id="diagnosticoEmocionais"
+                                            placeholder="fatores emocionais" style="width: 150px;">
+                                        . Rotina impactada por
+                                        <input type="text" class="template-input" id="diagnosticoRotina"
+                                            placeholder="impacto na rotina" style="width: 170px;">
+                                        . Diagnóstico funcional indica
+                                        <input type="text" class="template-input" id="diagnosticoFuncional"
+                                            placeholder="diagnóstico final" style="width: 200px;">
                                         .
                                     </div>
                                 </div>
