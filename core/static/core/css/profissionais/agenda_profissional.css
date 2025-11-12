@@ -345,13 +345,19 @@ body {
 }
 
 .patient-img {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     object-fit: cover;
     margin-right: 15px;
 }
-
+.img-paciente {
+    width: 150px;
+    height: 150px;
+    border-radius: 1.5em;
+    object-fit: cover;
+    margin-right: 15px;
+}
 .flex-grow-1 {
     flex-grow: 1;
 }
@@ -1684,4 +1690,6 @@ textarea.form-control {
     padding: 12px 14px;
     margin-bottom: .5em;
     display: flex;
+    justify-content: start;
+
 }

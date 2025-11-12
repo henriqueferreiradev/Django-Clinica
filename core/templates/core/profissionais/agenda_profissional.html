@@ -78,8 +78,12 @@
 
                             <div class="d-flex align-items-center">
                                 <div class="patient-header">
-                                    <img src="https://i.pravatar.cc/50?img=5" class="patient-img" alt="Paciente">
-                                    <div class="flex-grow-1">
+                                    {% if ag.paciente.foto %}
+                                    <img  class="patient-img" src="{{ ag.paciente.foto.url }}" alt="Foto de {{ ag.paciente.nome }}">
+                                    {% else %}
+                                    <img class="patient-img" src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
+                                    {% endif %}   
+                                     <div class="flex-grow-1">
                                         <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}} {{ag.paciente.id}}</h5>
                                         <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
                                         <span class="badge badge-status bg-success">Agendamento Nº {{ ag.id }} -
@@ -87,13 +91,7 @@
                                     </div>
                                 </div>
                                 <div>
-
-                                    <!-- REMOVA ESTE BOTÃO -->
-                                    <!-- <button class="btn btn-sm btn-outline-primary me-1" onclick="openPatientModal(...)">
-                <i class="fas fa-eye"></i>
-            </button> -->
-
-                                    <!-- Status simplificado dos modais -->
+ 
                                     <div class="status-simple" data-agendamento-id="{{ag.id}}">
                                         <div class="status-badges">
                                             <span class="status-badge prontuario" data-status="false"
@@ -165,26 +163,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">Ações Rápidas</div>
-                    <div class="card-body">
-                        <div class="quick-actions">
-                            <button class="btn btn-outline-primary">
-                                <i class="fas fa-user-plus me-2"></i>Novo Paciente
-                            </button>
-                            <button class="btn btn-outline-primary">
-                                <i class="fas fa-file-medical me-2"></i>Prontuário Rápido
-                            </button>
-                            <button class="btn btn-outline-primary">
-                                <i class="fas fa-paper-plane me-2"></i>Enviar Laudo
-                            </button>
-                            <button class="btn btn-outline-primary">
-                                <i class="fas fa-chart-bar me-2"></i>Relatórios
-                            </button>
-                        </div>
-                    </div>
-                </div>
+ 
             </div>
         </div>
     </div>
@@ -200,19 +179,17 @@
                         aria-label="Close">X</button>
                 </div>
                 <div class="modal-body">
-                    <div class="row mb-4">
-                        <div class="col-md-2 text-center">
-                            <img src="https://i.pravatar.cc/100" class="rounded-circle mb-2" alt="Paciente">
-                            <h5 id="patientName">Maria Oliveira</h5>
-                            <p class="text-muted">45 anos</p>
+                    <div class="perfil">
+                        <div class="">
+                            <img id='patientPhoto' src="" class="img-paciente" alt="Paciente">
                         </div>
                         <div class="col-md-5">
-                            <p><strong>Início do Tratamento:</strong> 10/03/2023</p>
-                            <p><strong>Próxima Consulta:</strong> 22/05/2023 - 10:00</p>
-                        </div>
-                        <div class="col-md-5">
-                            <p><strong>Telefone:</strong> (11) 99999-9999</p>
-                            <p><strong>E-mail:</strong> maria.oliveira@email.com</p>
+                            <p id="patientName"></p>
+                            <p id="patientAge"></p>
+                            <p id='patientInicio'></p>
+                            <p id='patientNext'></p>
+ 
+                     
                         </div>
                     </div>
 

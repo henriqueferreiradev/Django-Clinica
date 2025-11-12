@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
 from core.models import AvaliacaoFisioterapeutica, Evolucao, Paciente, Pagamento, PacotePaciente, Agendamento,Prontuario
 from django.utils import timezone
-
+from django.templatetags.static import static
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from core.models import Paciente, Pagamento
@@ -68,8 +68,15 @@ def paciente_detalhes_basicos(request, paciente_id):
     try:
         paciente = Paciente.objects.get(id=paciente_id)
 
-        proxima_consulta = Agendamento.objects.filter(paciente=paciente, data__gte=timezone.now()).order_by('data')
-        
+        proxima_consulta = (
+    Agendamento.objects.filter(paciente=paciente, data__gte=timezone.now()).order_by('data').first()
+)
+
+        foto_url = (
+        paciente.foto.url
+        if (paciente.foto and paciente.foto.name)       
+        else static('core/img/defaultPerfil.png')       
+)
         dados = {
             'success': True,
             'paciente': {
@@ -78,9 +85,9 @@ def paciente_detalhes_basicos(request, paciente_id):
                 'idade': paciente.idade_formatada,
                 'telefone': paciente.telefone,
                 'email':paciente.email,
-                'foto':paciente.foto.url,
+                'foto': request.build_absolute_uri(foto_url), 
                 'inicio_tratamento':paciente.data_cadastro.strftime('%d/%m/%Y'),
-                'proxima_consulta':proxima_consulta.data.strftime('%d/%m/%Y - %H:%M') if proxima_consulta else 'Sem próximo agendamento',
+                'proxima_consulta':f"{proxima_consulta.data.strftime('%d/%m/%Y')} às {proxima_consulta.hora_inicio.strftime('%H:%M')} com {proxima_consulta.profissional_1}" if proxima_consulta  else 'Sem próximo agendamento',
 
             }
         }

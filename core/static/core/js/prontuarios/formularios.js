@@ -19,34 +19,36 @@ async function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, 
         document.getElementById('patientModalLabel').textContent = 'Carregando...';
         document.getElementById('patientName').textContent = 'Carregando...';
 
-        // ✅ ABRIR MODAL PRIMEIRO (experiência mais rápida)
+       
         openModal('patientModal');
-
-        // ✅ CORREÇÃO: URL correta - usar pacienteId, não agendamentoId
+ 
         const res = await apiRequest(`/api/paciente/${pacienteId}/detalhe/`);
 
         if (res.success && res.paciente) {
-            const paciente = res.paciente; // ✅ CORREÇÃO: não é array, é objeto direto
+            const paciente = res.paciente; 
 
-            // ✅ PREENCHER DADOS DO PACIENTE
+            
             document.getElementById('patientModalLabel').textContent = `Prontuário de ${paciente.nome}`;
-            document.getElementById('patientName').textContent = paciente.nome;
+            document.getElementById('patientPhoto').src = paciente.foto || '/static/images/default-avatar.png';
+            document.getElementById('patientName').innerHTML = `<p id='patientName'><strong>Nome completo:</strong> ${paciente.nome}</p>`;
+            document.getElementById('patientAge').innerHTML = `<p id='patientAge'><strong>Idade:</strong> ${paciente.idade} anos</p> `;
+            document.getElementById('patientInicio').innerHTML = `<p id='patientInicio'><strong>Início do Tratamento:</strong> ${paciente.inicio_tratamento}</p>`;
+            document.getElementById('patientNext').innerHTML = `<p id='patientNext'><strong>Próxima Consulta:</strong> ${paciente.proxima_consulta}</p>`;
+            
 
-            // ✅ PREENCHER OUTROS CAMPOS (se tiver os elementos no HTML)
+
             preencherDadosPaciente(paciente);
 
-        } else {
-            // ✅ FALLBACK: usar o nome que veio como parâmetro
+        } else { 
             document.getElementById('patientModalLabel').textContent = `Prontuário de ${pacienteNome}`;
             document.getElementById('patientName').textContent = pacienteNome;
             console.warn('API não retornou dados do paciente, usando fallback');
         }
 
-        // ✅ ATUALIZAR OS CAMPOS HIDDEN COM OS IDs CORRETOS
+       
         document.getElementById('pacienteId').value = pacienteId;
         document.getElementById('agendamentoId').value = agendamentoId;
-
-        // ✅ GUARDAR OS IDs DENTRO DE ATRIBUTOS DATA DOS MODAIS
+ 
         const modal = document.getElementById('newProntuarioModal');
         const evolutionModal = document.getElementById('newEvolutionModal');
         const avaliacaoModal = document.getElementById('newAvaliacaoModal');
@@ -92,7 +94,7 @@ async function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, 
         }
 
     } catch (error) {
-        // ✅ TRATAMENTO DE ERRO
+        
         console.error('Erro ao abrir modal do paciente:', error);
         document.getElementById('patientModalLabel').textContent = `Prontuário de ${pacienteNome}`;
         document.getElementById('patientName').textContent = pacienteNome;
@@ -834,7 +836,7 @@ function renderizarListaProntuarios(prontuarios) {
 
         container.innerHTML = `
             <div class="empty-state">
-                <i class="fas fa-file-medical fa-2x mb-2 text-muted"></i>
+                
                 <p>Nenhum prontuário encontrado para este paciente.</p>
             </div>
         `;
@@ -928,7 +930,7 @@ async function listarEvolucoes(pacienteId = null, agendamentoId = null) {
 
             container.innerHTML = `
                 <div class="empty-state">
-                    <i class="fas fa-chart-line fa-2x mb-2 text-muted"></i>
+                     
                     <p>Nenhuma evolução encontrada para este paciente.</p>
                 </div>
             `;
@@ -1053,7 +1055,7 @@ async function listarAvaliacoes(pacienteId = null, agendamentoId = null) {
         } else {
             container.innerHTML = `
                 <div class="empty-state">
-                    <i class="fas fa-chart-line fa-2x mb-2 text-muted"></i>
+                     
                     <p>Nenhuma avaliação encontrada para este paciente.</p>
                 </div>
             `;
@@ -1082,7 +1084,7 @@ function renderizarListaAvaliacoes(avaliacoes) {
 
         container.innerHTML = `
             <div class="empty-state">
-                <i class="fas fa-clipboard-check fa-2x mb-2 text-muted"></i>
+                
                 <p>Nenhuma avaliação encontrada para este paciente.</p>
             </div>
         `;
