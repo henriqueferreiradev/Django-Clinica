@@ -13,60 +13,123 @@ function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('show');
 }
 // Função principal para abrir modal e navegar para a aba específica
-function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab = null) {
-    // Abre o modal do paciente
-    openModal('patientModal');
+async function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab = null) {
+    try {
+        // ✅ MOSTRAR LOADING
+        document.getElementById('patientModalLabel').textContent = 'Carregando...';
+        document.getElementById('patientName').textContent = 'Carregando...';
 
-    // Atualiza o nome do paciente
-    document.getElementById("patientName").textContent = pacienteNome;
+        // ✅ ABRIR MODAL PRIMEIRO (experiência mais rápida)
+        openModal('patientModal');
 
-    // Atualiza os campos hidden com os IDs corretos
-    document.getElementById('pacienteId').value = pacienteId;
-    document.getElementById('agendamentoId').value = agendamentoId;
+        // ✅ CORREÇÃO: URL correta - usar pacienteId, não agendamentoId
+        const res = await apiRequest(`/api/paciente/${pacienteId}/detalhe/`);
 
-    // Guarda os IDs dentro de atributos data dos modais
-    const modal = document.getElementById('newProntuarioModal');
-    const evolutionModal = document.getElementById('newEvolutionModal');
-    const avaliacaoModal = document.getElementById('newAvaliacaoModal');
+        if (res.success && res.paciente) {
+            const paciente = res.paciente; // ✅ CORREÇÃO: não é array, é objeto direto
 
-    if (modal) {
-        modal.dataset.pacienteId = pacienteId;
-        modal.dataset.agendamentoId = agendamentoId;
-    }
+            // ✅ PREENCHER DADOS DO PACIENTE
+            document.getElementById('patientModalLabel').textContent = `Prontuário de ${paciente.nome}`;
+            document.getElementById('patientName').textContent = paciente.nome;
 
-    if (evolutionModal) {
-        evolutionModal.dataset.pacienteId = pacienteId;
-        evolutionModal.dataset.agendamentoId = agendamentoId;
-    }
+            // ✅ PREENCHER OUTROS CAMPOS (se tiver os elementos no HTML)
+            preencherDadosPaciente(paciente);
 
-    if (avaliacaoModal) {
-        avaliacaoModal.dataset.pacienteId = pacienteId;
-        avaliacaoModal.dataset.agendamentoId = agendamentoId;
-    }
+        } else {
+            // ✅ FALLBACK: usar o nome que veio como parâmetro
+            document.getElementById('patientModalLabel').textContent = `Prontuário de ${pacienteNome}`;
+            document.getElementById('patientName').textContent = pacienteNome;
+            console.warn('API não retornou dados do paciente, usando fallback');
+        }
 
-    // Se uma aba específica foi solicitada, navega para ela
-    if (targetTab) {
-        setTimeout(() => {
-            switchTab(targetTab);
+        // ✅ ATUALIZAR OS CAMPOS HIDDEN COM OS IDs CORRETOS
+        document.getElementById('pacienteId').value = pacienteId;
+        document.getElementById('agendamentoId').value = agendamentoId;
 
-            // Chama a função correspondente baseada na aba
-            if (targetTab === 'prontuario') {
+        // ✅ GUARDAR OS IDs DENTRO DE ATRIBUTOS DATA DOS MODAIS
+        const modal = document.getElementById('newProntuarioModal');
+        const evolutionModal = document.getElementById('newEvolutionModal');
+        const avaliacaoModal = document.getElementById('newAvaliacaoModal');
+
+        if (modal) {
+            modal.dataset.pacienteId = pacienteId;
+            modal.dataset.agendamentoId = agendamentoId;
+        }
+
+        if (evolutionModal) {
+            evolutionModal.dataset.pacienteId = pacienteId;
+            evolutionModal.dataset.agendamentoId = agendamentoId;
+        }
+
+        if (avaliacaoModal) {
+            avaliacaoModal.dataset.pacienteId = pacienteId;
+            avaliacaoModal.dataset.agendamentoId = agendamentoId;
+        }
+
+        // ✅ SE UMA ABA ESPECÍFICA FOI SOLICITADA, NAVEGAR PARA ELA
+        if (targetTab) {
+            setTimeout(() => {
+                switchTab(targetTab);
+
+                // Chama a função correspondente baseada na aba
+                if (targetTab === 'prontuario') {
+                    listarProntuarios(pacienteId, agendamentoId);
+                }
+                if (targetTab === 'evolucao') {
+                    listarEvolucoes(pacienteId, agendamentoId);
+                }
+                if (targetTab === 'analisefisio') {
+                    listarAvaliacoes(pacienteId, agendamentoId);
+                }
+
+            }, 100);
+        } else {
+            // ✅ SE NÃO ESPECIFICOU ABA, VAI PARA PRONTUÁRIO E CARREGA OS DADOS
+            setTimeout(() => {
+                switchTab('prontuario');
                 listarProntuarios(pacienteId, agendamentoId);
-            }
-            if (targetTab === 'evolucao') {
-                listarEvolucoes(pacienteId, agendamentoId);
-            }
-            if (targetTab === 'analisefisio') {
-                listarAvaliacoes(pacienteId, agendamentoId);
-            }
+            }, 100);
+        }
 
-        }, 100);
-    } else {
-        // Se não especificou aba, vai para prontuário e carrega os dados
-        setTimeout(() => {
-            switchTab('prontuario');
-            listarProntuarios(pacienteId, agendamentoId);
-        }, 100);
+    } catch (error) {
+        // ✅ TRATAMENTO DE ERRO
+        console.error('Erro ao abrir modal do paciente:', error);
+        document.getElementById('patientModalLabel').textContent = `Prontuário de ${pacienteNome}`;
+        document.getElementById('patientName').textContent = pacienteNome;
+        mostrarMensagem('Erro ao carregar dados do paciente', 'error');
+    }
+}
+
+// ✅ FUNÇÃO AUXILIAR PARA PREENCHER DADOS EXTRAS
+function preencherDadosPaciente(paciente) {
+    // Mapear campos do paciente para elementos HTML
+    const campos = {
+
+        'Início do Tratamento:': paciente.inicio_tratamento,
+        'Próxima Consulta:': paciente.proxima_consulta,
+        'Telefone:': paciente.telefone,
+        'E-mail:': paciente.email
+    };
+
+    // Procurar e preencher cada campo
+    Object.entries(campos).forEach(([texto, valor]) => {
+        const elementos = document.querySelectorAll('p');
+        elementos.forEach(elemento => {
+            if (elemento.textContent.includes(texto)) {
+                const span = elemento.querySelector('span');
+                if (span) {
+                    span.textContent = valor;
+                }
+            }
+        });
+    });
+
+    // Atualizar foto se existir
+    if (paciente.foto) {
+        const img = document.querySelector('.patient-modal img.rounded-circle');
+        if (img) {
+            img.src = paciente.foto;
+        }
     }
 }
 
@@ -81,12 +144,10 @@ function setupBadgeClickHandlers() {
             const agendamentoId = badge.getAttribute('data-agendamento-id');
             const targetTab = badge.getAttribute('data-tab-target');
 
-            // Encontra o paciente ID e nome a partir do agendamento
+
             const consultationItem = badge.closest('.consultation-item');
             const pacienteNome = consultationItem.querySelector('h5').textContent;
 
-            // Aqui você precisaria obter o pacienteId real - ajuste conforme sua estrutura de dados
-            // Por enquanto, usando um valor padrão ou do data-attribute se disponível
             const pacienteId = badge.getAttribute('data-paciente-id') || agendamentoId;
 
             // Abre o modal navegando diretamente para a aba desejada

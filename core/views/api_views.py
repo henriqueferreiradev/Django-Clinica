@@ -2,6 +2,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
 from core.models import AvaliacaoFisioterapeutica, Evolucao, Paciente, Pagamento, PacotePaciente, Agendamento,Prontuario
+from django.utils import timezone
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -63,7 +64,30 @@ def verificar_prontuario(request, agendamento_id):
         print("Erro ao verificar prontuário:", e)
         raise Http404
     
-    
+def paciente_detalhes_basicos(request, paciente_id):
+    try:
+        paciente = Paciente.objects.get(id=paciente_id)
+
+        proxima_consulta = Agendamento.objects.filter(paciente=paciente, data__gte=timezone.now()).order_by('data')
+        
+        dados = {
+            'success': True,
+            'paciente': {
+                'id': paciente.id,
+                'nome':f'{paciente.nome} {paciente.sobrenome}',
+                'idade': paciente.idade_formatada,
+                'telefone': paciente.telefone,
+                'email':paciente.email,
+                'foto':paciente.foto.url,
+                'inicio_tratamento':paciente.data_cadastro.strftime('%d/%m/%Y'),
+                'proxima_consulta':proxima_consulta.data.strftime('%d/%m/%Y - %H:%M') if proxima_consulta else 'Sem próximo agendamento',
+
+            }
+        }
+        return JsonResponse(dados)
+    except Paciente.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Paciente não encontrado'})
+
 @login_required
 @require_POST
 def registrar_recebimento(request, pagamento_id):
@@ -112,6 +136,8 @@ def registrar_recebimento(request, pagamento_id):
         return JsonResponse({'ok': False, 'erro': 'Pagamento não encontrado.'}, status=404)
     except Exception as e:
         return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
+
+ 
 
 def salvar_prontuario(request):
     try:
