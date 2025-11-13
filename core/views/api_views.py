@@ -1,13 +1,14 @@
+from datetime import date
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
-from core.models import AvaliacaoFisioterapeutica, Evolucao, Paciente, Pagamento, PacotePaciente, Agendamento,Prontuario
+from core.models import Agendamento, AvaliacaoFisioterapeutica, Evolucao, Paciente, PacotePaciente, Pagamento, Profissional, Prontuario
 from django.utils import timezone
 from django.templatetags.static import static
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from core.models import Paciente, Pagamento
-
+from core.utils import registrar_log
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.test import RequestFactory
@@ -37,7 +38,7 @@ def verificar_cpf(request):
 
 def verificar_prontuario(request, agendamento_id):
     try:
-        # Verifica se existe um prontuário vinculado a esse agendamento
+        
         prontuario = Prontuario.objects.filter(agendamento_id=agendamento_id).first()
         evolucao = Evolucao.objects.filter(agendamento_id=agendamento_id).first()
         avaliacao = AvaliacaoFisioterapeutica.objects.filter(agendamento_id=agendamento_id).first()
@@ -63,7 +64,52 @@ def verificar_prontuario(request, agendamento_id):
     except Exception as e:
         print("Erro ao verificar prontuário:", e)
         raise Http404
-    
+
+
+def contar_pendencias_dia(request):
+    """Conta pendências totais do dia para a agenda do profissional"""
+    try:
+        dia_str = request.GET.get('dia')
+        try:
+            dia = date.fromisoformat(dia_str) if dia_str else date.today()
+        except ValueError:
+            dia = date.today()
+
+        profissional_id = request.GET.get('profissional_id', 1)  # Ou pega do user logado
+        profissional = Profissional.objects.filter(id=profissional_id).first()
+        
+        agendamentos = Agendamento.objects.filter(
+            profissional_1=profissional,
+            data=dia
+        )
+        
+        prontuarios_pendente = 0
+        evolucoes_pendente = 0
+        avaliacoes_pendente = 0
+        
+        for agendamento in agendamentos:
+            prontuario = Prontuario.objects.filter(agendamento=agendamento).first()
+            if not prontuario or (not prontuario.foi_preenchido and not prontuario.nao_se_aplica):
+                prontuarios_pendente += 1
+                
+            evolucao = Evolucao.objects.filter(agendamento=agendamento).first()
+            if not evolucao or (not evolucao.foi_preenchido and not evolucao.nao_se_aplica):
+                evolucoes_pendente += 1
+                
+            avaliacao = AvaliacaoFisioterapeutica.objects.filter(agendamento=agendamento).first()
+            if not avaliacao or (not avaliacao.foi_preenchido and not avaliacao.nao_se_aplica):
+                avaliacoes_pendente += 1
+
+        return JsonResponse({
+            'prontuarios_pendente': prontuarios_pendente,
+            'evolucoes_pendente': evolucoes_pendente,
+            'avaliacoes_pendente': avaliacoes_pendente,
+            'total_agendamentos': agendamentos.count(),
+            'dia': dia.isoformat()
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 def paciente_detalhes_basicos(request, paciente_id):
     try:
         paciente = Paciente.objects.get(id=paciente_id)
@@ -190,9 +236,12 @@ def salvar_prontuario(request):
                 observacoes=data.get('observacoes', ''),
                 foi_preenchido=True,
             )
-        prontuarios = Prontuario.objects.all()
-        for p in prontuarios:
-            print(p.foi_preenchido)
+            
+            registrar_log(usuario=request.user,
+                acao='Criação',
+                modelo='Prontuario',
+                objeto_id=prontuario.id,
+                descricao=f'Novo prontuário criado para {prontuario.paciente.nome}')
  
         return JsonResponse({
             'success': True,

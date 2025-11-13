@@ -36,8 +36,7 @@ async function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, 
             document.getElementById('patientNext').innerHTML = `<p id='patientNext'><strong>Próxima Consulta:</strong> ${paciente.proxima_consulta}</p>`;
             
 
-
-            preencherDadosPaciente(paciente);
+ 
 
         } else { 
             document.getElementById('patientModalLabel').textContent = `Prontuário de ${pacienteNome}`;
@@ -101,43 +100,10 @@ async function openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, 
         mostrarMensagem('Erro ao carregar dados do paciente', 'error');
     }
 }
-
-// ✅ FUNÇÃO AUXILIAR PARA PREENCHER DADOS EXTRAS
-function preencherDadosPaciente(paciente) {
-    // Mapear campos do paciente para elementos HTML
-    const campos = {
-
-        'Início do Tratamento:': paciente.inicio_tratamento,
-        'Próxima Consulta:': paciente.proxima_consulta,
-        'Telefone:': paciente.telefone,
-        'E-mail:': paciente.email
-    };
-
-    // Procurar e preencher cada campo
-    Object.entries(campos).forEach(([texto, valor]) => {
-        const elementos = document.querySelectorAll('p');
-        elementos.forEach(elemento => {
-            if (elemento.textContent.includes(texto)) {
-                const span = elemento.querySelector('span');
-                if (span) {
-                    span.textContent = valor;
-                }
-            }
-        });
-    });
-
-    // Atualizar foto se existir
-    if (paciente.foto) {
-        const img = document.querySelector('.patient-modal img.rounded-circle');
-        if (img) {
-            img.src = paciente.foto;
-        }
-    }
-}
-
+ 
 function setupBadgeClickHandlers() {
     document.addEventListener('click', function (e) {
-        // Verifica se o clique foi em uma badge
+ 
         const badge = e.target.closest('.status-badge');
         if (badge) {
             e.preventDefault();
@@ -151,25 +117,23 @@ function setupBadgeClickHandlers() {
             const pacienteNome = consultationItem.querySelector('h5').textContent;
 
             const pacienteId = badge.getAttribute('data-paciente-id') || agendamentoId;
-
-            // Abre o modal navegando diretamente para a aba desejada
+ 
             openPatientModalWithTab(pacienteId, agendamentoId, pacienteNome, targetTab);
         }
     });
 }
 
-// Versão alternativa mais específica para cada tipo de badge
+ 
 function setupIndividualBadgeHandlers() {
-    // Handler para badge de Prontuário
+ 
     document.querySelectorAll('.status-badge.prontuario').forEach(badge => {
         badge.addEventListener('click', function () {
             const agendamentoId = this.getAttribute('data-agendamento-id');
-            // Sua lógica para obter pacienteId e nome
+ 
             openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'prontuario');
         });
     });
-
-    // Handler para badge de Evolução
+ 
     document.querySelectorAll('.status-badge.evolucao').forEach(badge => {
         badge.addEventListener('click', function () {
             const agendamentoId = this.getAttribute('data-agendamento-id');
@@ -177,15 +141,13 @@ function setupIndividualBadgeHandlers() {
         });
     });
 
-    // Handler para badge de Imagens
+ 
     document.querySelectorAll('.status-badge.imagens').forEach(badge => {
         badge.addEventListener('click', function () {
             const agendamentoId = this.getAttribute('data-agendamento-id');
             openPatientModalWithTab(agendamentoId, agendamentoId, 'Nome do Paciente', 'imagens');
         });
     });
-
-    // Handler para badge de Avaliação
     document.querySelectorAll('.status-badge.avaliacao').forEach(badge => {
         badge.addEventListener('click', function () {
             const agendamentoId = this.getAttribute('data-agendamento-id');
@@ -194,39 +156,33 @@ function setupIndividualBadgeHandlers() {
     });
 }
 
-// Função melhorada para alternar entre abas E carregar dados
+ 
 function switchTab(tabId) {
-
-
-    // Esconde todas as abas
+ 
     const tabPanes = document.querySelectorAll('.tab-pane');
     tabPanes.forEach(tab => {
         tab.classList.remove('active');
     });
-
-    // Remove a classe active de todos os botões de aba
+ 
     const tabButtons = document.querySelectorAll('.nav-link');
     tabButtons.forEach(button => {
         button.classList.remove('active');
     });
 
-    // Ativa a aba selecionada
+ 
     const targetTab = document.getElementById(tabId);
     if (targetTab) {
         targetTab.classList.add('active');
     }
-
-    // Ativa o botão correspondente
+ 
     const correspondingButton = document.querySelector(`[onclick="switchTab('${tabId}')"]`);
     if (correspondingButton) {
         correspondingButton.classList.add('active');
     }
-
-    // ✅ NOVO: Carrega os dados da aba quando ela é ativada
+ 
     carregarDadosAba(tabId);
 }
-
-// ✅ NOVA FUNÇÃO: Carrega dados específicos de cada aba
+ 
 function carregarDadosAba(tabId) {
 
     // Pega os IDs do paciente e agendamento
@@ -316,21 +272,67 @@ async function apiRequest(url, data, method = 'POST') {
 
 // Função para mostrar mensagens
 function mostrarMensagem(mensagem, tipo = 'success') {
-    // Você pode usar um toast library ou criar seu próprio sistema
+    const toastContainer = document.getElementById('toast-container') || criarToastContainer();
+    
     const toast = document.createElement('div');
-    toast.className = `alert alert-${tipo} alert-dismissible fade show`;
+    toast.className = `toast toast-${tipo} toast-slide-in`;
     toast.innerHTML = `
-        ${mensagem}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="toast-content">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    ${getIcon(tipo)}
+                </div>
+                <div class="toast-title">
+                    ${getTitle(tipo)}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div>${mensagem}</div>
+        </div>
     `;
-
-    document.body.appendChild(toast);
-
+    
+    toastContainer.appendChild(toast);
+    
     // Remove após 5 segundos
     setTimeout(() => {
-        toast.remove();
+        if (toast.parentElement) {
+            toast.classList.add('toast-slide-out');
+            setTimeout(() => toast.remove(), 500);
+        }
     }, 5000);
 }
+
+// Funções auxiliares
+function criarToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+function getIcon(tipo) {
+    const icons = {
+        'success': '<i class="fas fa-check-circle"></i>',
+        'warning': '<i class="fas fa-exclamation-triangle"></i>',
+        'error': '<i class="fas fa-exclamation-circle"></i>',
+        'info': '<i class="fas fa-info-circle"></i>'
+    };
+    return icons[tipo] || icons['info'];
+}
+
+function getTitle(tipo) {
+    const titles = {
+        'success': 'Sucesso',
+        'warning': 'Aviso', 
+        'error': 'Erro',
+        'info': 'Informação'
+    };
+    return titles[tipo] || 'Mensagem';
+}
+
 
 async function travarBotoes() {
     const btnProntuario = document.getElementById('btn-salvar-prontuario')
@@ -453,6 +455,7 @@ async function salvarProntuario() {
         closeModal('newProntuarioModal');
 
         atualizarStatusProntuarios();
+        setTimeout(atualizarContagens, 500);
         document.getElementById('prontuarioForm').reset();
     } else {
         mostrarMensagem('Erro ao salvar prontuário: ' + res.error, 'error');
@@ -543,6 +546,7 @@ async function salvarEvolucao() {
         mostrarMensagem('Evolução salva com sucesso');
         closeModal('newEvolutionModal');
         atualizarStatusProntuarios();
+        setTimeout(atualizarContagens, 500);
     } else {
         mostrarMensagem('Erro ao salvar evolução: ' + res.error, 'error');
     }
@@ -561,7 +565,7 @@ function gerarDiagnostivoCompleto() {
         funcional: document.getElementById('diagnosticoFuncional').value,
     }
 
-    return `Paciente de ${campos.idade} com queixa de  ${campos.queixa}, apresenta limitação funcional em  ${campos.limitacao}, demonstra postura compensatória em ${campos.postura}. Tensão muscular em ${campos.tensao}. Compensações ${campos.compensacoes} e fatores emocionais relacionados a ${campos.emocionais}. Rotina impactada por ${campos.rotina}. Diagnóstico funcional indica ${campos.funcional}.`
+    return `Paciente de ${campos.idade} anos com queixa de  ${campos.queixa}, apresenta limitação funcional em  ${campos.limitacao}, demonstra postura compensatória em ${campos.postura}. Tensão muscular em ${campos.tensao}. Compensações ${campos.compensacoes} e fatores emocionais relacionados a ${campos.emocionais}. Rotina impactada por ${campos.rotina}. Diagnóstico funcional indica ${campos.funcional}.`
 }
 
 async function salvarAvaliacao() {
@@ -742,6 +746,7 @@ async function salvarAvaliacao() {
         mostrarMensagem('Avaliação salva com sucesso');
         closeModal('newAvaliacaoModal');
         atualizarStatusProntuarios();
+        setTimeout(atualizarContagens, 500);
     } else {
         mostrarMensagem('Erro ao salvar evolução: ' + res.error, 'error');
     }
@@ -2192,3 +2197,36 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
     }
 
 }
+
+function atualizarContagens() {
+    // Pega a data atual da URL ou do elemento ativo
+    const urlParams = new URLSearchParams(window.location.search);
+    const dia = urlParams.get('dia') || new Date().toISOString().split('T')[0];
+    
+    // Pega o profissional (ajuste conforme seu código)
+    const profissionalId = 1; // Ou pega de onde você armazena
+    
+    fetch(`/api/contar-pendencias-dia/?dia=${dia}&profissional_id=${profissionalId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Atualiza os números na página
+            document.getElementById('atendimentos-dia').textContent = data.total_agendamentos;
+            document.getElementById('prontuarios-pendente').textContent = data.prontuarios_pendente;
+            document.getElementById('evolucoes-pendente').textContent = data.evolucoes_pendente;
+            document.getElementById('avaliacoes-pendente').textContent = data.avaliacoes_pendente;
+        })
+        .catch(error => console.error('Erro ao atualizar contagens:', error));
+}
+
+// Chama a função quando:
+// 1. A página carrega
+document.addEventListener('DOMContentLoaded', atualizarContagens);
+
+// 2. Quando muda de dia (next/prev)
+document.addEventListener('click', function(e) {
+    if (e.target.closest('[href*="dia="]')) {
+        // Espera a navegação acontecer e atualiza
+        setTimeout(atualizarContagens, 100);
+    }
+});
+ 

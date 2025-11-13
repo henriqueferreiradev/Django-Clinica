@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from core.models import Paciente, Especialidade,Prontuario,Profissional, Evolucao,Agendamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import AvaliacaoFisioterapeutica, Paciente, Especialidade,Prontuario,Profissional, Evolucao,Agendamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
@@ -398,29 +398,36 @@ def agenda_profissional(request):
  
     profissional = Profissional.objects.filter(id=1).first()  
 
- 
-    agendamentos = Agendamento.objects.filter(profissional_1=profissional)
-    prontuarios = Prontuario.objects.all()
-    evolucoes = Evolucao.objects.all()
- 
-    agendamentos = agendamentos.filter(data=dia)
+    
+    agendamentos = Agendamento.objects.filter(
+        profissional_1=profissional,
+        data=dia
+    )
 
-    prontuarios_pendente = prontuarios.filter(
-        data_criacao__date=dia,
-        foi_preenchido=False
-    ).count()
 
-    # Para evoluções
-    evolucoes_pendente = evolucoes.filter(
-        data_criacao__date=dia,
-        foi_preenchido=False
-    ).count()
-    print(evolucoes_pendente, prontuarios_pendente)
-    print(f"Dia: {dia}")
-    print(f"Total agendamentos: {agendamentos.count()}")
-    print(f"Prontuários encontrados: {prontuarios.filter(agendamento__in=agendamentos).count()}")
+    prontuarios_pendente = 0
+    evolucoes_pendente = 0
+    avaliacoes_pendente = 0
+    
+    for agendamento in agendamentos:
+        # PRONTUÁRIO
+        prontuario = Prontuario.objects.filter(agendamento=agendamento).first()
+        if not prontuario or (not prontuario.foi_preenchido and not prontuario.nao_se_aplica):
+            prontuarios_pendente += 1
+            
+        # EVOLUÇÃO (mesma lógica)
+        evolucao = Evolucao.objects.filter(agendamento=agendamento).first()
+        if not evolucao or (not evolucao.foi_preenchido and not evolucao.nao_se_aplica):
+            evolucoes_pendente += 1
+            
+        # AVALIAÇÃO (mesma lógica)
+        avaliacao = AvaliacaoFisioterapeutica.objects.filter(agendamento=agendamento).first()
+        if not avaliacao or (not avaliacao.foi_preenchido and not avaliacao.nao_se_aplica):
+            avaliacoes_pendente += 1
+    
+    print(f"Pendências - Prontuários: {prontuarios_pendente}, Evoluções: {evolucoes_pendente}, Avaliações: {avaliacoes_pendente}")
+    
     atendimentos_dia = agendamentos.count()
-  
 
     # --- demais filtros (opcionais) ---
     if data_inicio:
@@ -439,25 +446,27 @@ def agenda_profissional(request):
     agendamentos = agendamentos.select_related('paciente','profissional_1','servico') \
                                 .order_by('hora_inicio')
 
-    # --- construir prev/next preservando filtros atuais ---
+ 
     base_params = {
         'q': query or '',
-        'data_inicio': data_inicio or '',
-        'data_fim': data_fim or '',
-        'especialidade_id': especialidade_id or '',
+        'di': data_inicio or '',
+        'df': data_fim or '',
+        'eid': especialidade_id or '',
         'status': status or '',
     }
-    prev_params = base_params | {'dia': (dia - timedelta(days=1)).isoformat()}
-    next_params = base_params | {'dia': (dia + timedelta(days=1)).isoformat()}
+    prev_params = {'dia': (dia - timedelta(days=1)).isoformat()}
+    next_params = {'dia': (dia + timedelta(days=1)).isoformat()}
     
     context = {
         'agendamentos': agendamentos,
         'profissional': profissional,
-        'atendimentos_dia':atendimentos_dia,
-        'dia': dia,  # para exibir formatado
+        'atendimentos_dia': atendimentos_dia,
+        'prontuarios_pendente': prontuarios_pendente,
+        'evolucoes_pendente': evolucoes_pendente,
+        'avaliacoes_pendente':avaliacoes_pendente,
+        'dia': dia,
         'prev_url': f"?{urlencode(prev_params)}",
         'next_url': f"?{urlencode(next_params)}",
-        'hoje_url': f"?{urlencode(base_params | {'dia': date.today().isoformat()})}",
+        'hoje_url': f"?{urlencode({'dia': date.today().isoformat()})}",
     }
     return render(request, 'core/profissionais/agenda_profissional.html', context)
-

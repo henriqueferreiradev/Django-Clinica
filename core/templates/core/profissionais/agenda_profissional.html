@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda - Ponto de Equilíbrio</title>
+    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/profissionais/agenda_profissional.css' %}">
 
@@ -144,21 +145,22 @@
                     <div class="card-header">Resumo do Dia</div>
                     <div class="card-body">
                         <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-number">{{atendimentos_dia}}</div>
-                                <div class="stat-label">Consultas</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">3</div>
-                                <div class="stat-label">Prontuários Pendentes</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">1</div>
-                                <div class="stat-label">Evoluções Pendentes</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">1</div>
-                                <div class="stat-label">Avaliações Pendentes</div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="atendimentos-dia">{{atendimentos_dia}}</div>
+                                    <div class="stat-label">Consultas</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="prontuarios-pendente">{{prontuarios_pendente}}</div>
+                                    <div class="stat-label">Prontuários Pendentes</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="evolucoes-pendente">{{evolucoes_pendente}}</div>
+                                    <div class="stat-label">Evoluções Pendentes</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="avaliacoes-pendente">{{avaliacoes_pendente}}</div>
+                                    <div class="stat-label">Avaliações Pendentes</div>
+                                </div>
                             </div>
                         </div>
                     </div>

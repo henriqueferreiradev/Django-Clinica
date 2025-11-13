@@ -13,6 +13,7 @@ from .models import Agendamento, LogAcao
 from django.contrib import messages
 
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+
 def criar_pasta_foto_paciente(id_paciente, nome_paciente):
     nome = slugify(nome_paciente)
     caminho = os.path.join(settings.MEDIA_ROOT, f'imagens/pacientes/{id_paciente}_{nome}')

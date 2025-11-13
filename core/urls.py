@@ -39,6 +39,7 @@ urlpatterns = [
     
     
     
+    path('api/contar-pendencias-dia/', api_views.contar_pendencias_dia, name='contar_pendencias_dia'),
     
     path('api/salvar-evolucao/', api_views.salvar_evolucao, name='salvar_evolucao'),
     path('api/listar-evolucoes/<int:paciente_id>/', api_views.listar_evolucoes, name='listar_evolucoes'),
