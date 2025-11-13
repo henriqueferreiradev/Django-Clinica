@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from core.models import Paciente, Especialidade,Prontuario,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Paciente, Especialidade,Prontuario,Profissional, Evolucao,Agendamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
@@ -395,19 +395,32 @@ def agenda_profissional(request):
         dia = date.fromisoformat(dia_str) if dia_str else date.today()
     except ValueError:
         dia = date.today()
+ 
+    profissional = Profissional.objects.filter(id=1).first()  
 
-    # --- descobrir profissional (ou forçar id=1 se ainda estiver testando) ---
-    # profissional = getattr(request.user, 'profissional', None) or Profissional.objects.filter(user=request.user).first()
-    profissional = Profissional.objects.filter(id=1).first()  # <- seu teste atual
-
-    # base por profissional_1
+ 
     agendamentos = Agendamento.objects.filter(profissional_1=profissional)
-
-    # --- filtro do DIA ---
+    prontuarios = Prontuario.objects.all()
+    evolucoes = Evolucao.objects.all()
+ 
     agendamentos = agendamentos.filter(data=dia)
 
+    prontuarios_pendente = prontuarios.filter(
+        data_criacao__date=dia,
+        foi_preenchido=False
+    ).count()
+
+    # Para evoluções
+    evolucoes_pendente = evolucoes.filter(
+        data_criacao__date=dia,
+        foi_preenchido=False
+    ).count()
+    print(evolucoes_pendente, prontuarios_pendente)
+    print(f"Dia: {dia}")
+    print(f"Total agendamentos: {agendamentos.count()}")
+    print(f"Prontuários encontrados: {prontuarios.filter(agendamento__in=agendamentos).count()}")
     atendimentos_dia = agendamentos.count()
-    print(atendimentos_dia)
+  
 
     # --- demais filtros (opcionais) ---
     if data_inicio:

@@ -351,6 +351,7 @@ body {
     object-fit: cover;
     margin-right: 15px;
 }
+
 .img-paciente {
     width: 150px;
     height: 150px;
@@ -358,6 +359,7 @@ body {
     object-fit: cover;
     margin-right: 15px;
 }
+
 .flex-grow-1 {
     flex-grow: 1;
 }
@@ -558,6 +560,7 @@ body {
     margin-bottom: 0;
     list-style: none;
     border-bottom: 1px solid #dee2e6;
+    background-color: #fff;
 }
 
 .nav-tabs .nav-item {
