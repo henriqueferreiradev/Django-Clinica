@@ -57,19 +57,17 @@
             </a>
         </div>
 
-        <div class="text-center mt-2">
-            <a class="btn btn-sm btn-outline-light" href="{{ hoje_url }}">Hoje</a>
-        </div>
+
 
         <div class="agenda-grid">
             <!-- Consultas do Dia -->
             <div class="agenda-principal">
                 <div class="card agenda-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <span>Agenda de Hoje</span>
+                    <div class="card-header">
+                        <span>Agenda</span>
                         <div>
-                            <button class="btn btn-sm btn-light me-2"><i class="fas fa-filter"></i> Filtrar</button>
-                            <button class="btn btn-sm btn-light"><i class="fas fa-sync-alt"></i> Atualizar</button>
+                        
+                            <a class="btn btn-sm btn-light" href="{{ hoje_url }}">Hoje</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -87,8 +85,7 @@
                                      <div class="flex-grow-1">
                                         <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}} {{ag.paciente.id}}</h5>
                                         <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
-                                        <span class="badge badge-status bg-success">Agendamento Nº {{ ag.id }} -
-                                            Confirmado</span>
+                                        <p class="mb-1">Agendamento Nº {{ ag.id }}</p>
                                     </div>
                                 </div>
                                 <div>

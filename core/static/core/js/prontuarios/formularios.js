@@ -987,9 +987,7 @@ function renderizarListaEvolucoes(evolucoes) {
                     <i class="fas fa-eye me-1"></i> Leia Mais
                 </button>
             </div>
-            <div class="prontuario-preview">
-                <p><strong>Resumo:</strong> ${evolucao.sintese_evolucao || 'Sem resumo disponível'}</p>
-            </div>
+ 
         </div>
     `).join('');
 
@@ -1110,9 +1108,7 @@ function renderizarListaAvaliacoes(avaliacoes) {
                     <i class="fas fa-eye me-1"></i> Leia Mais
                 </button>
             </div>
-            <div class="prontuario-preview">
-                <p><strong>Queixa Principal:</strong> ${avaliacao.queixa_principal || 'Sem informação'}</p>
-            </div>
+ 
         </div>
     `).join('');
 
