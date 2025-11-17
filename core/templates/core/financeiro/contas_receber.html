@@ -212,12 +212,9 @@
 
     /* Enhanced Table */
     .table-container {
-        background: var(--backgroundCard);
-        border: 1px solid var(--cinza-borda);
-        border-radius: 16px;
         overflow: hidden;
         box-shadow: var(--card-shadow);
-        margin-bottom: 2rem;
+        
     }
 
     .table-header {
@@ -226,13 +223,13 @@
         align-items: center;
         padding: 1.25rem 1.5rem;
         border-bottom: 1px solid var(--cinza-borda);
-        background: var(--cinza-claro);
+        
     }
 
     .table-title {
         font-size: 1.1rem;
         font-weight: 700;
-        color: var(--titulo-perfil);
+        color: var(--preto);
         margin: 0;
         display: flex;
         align-items: center;
@@ -260,8 +257,8 @@
     }
 
     .table th {
-        background: var(--cinza-claro);
-        padding: 1rem 1.25rem;
+        background: var(--roxoPrincipal);
+        padding: 1em;
         text-align: left;
         font-size: 0.8rem;
         color: var(--cinza-escuro);
@@ -272,7 +269,7 @@
     }
 
     .table td {
-        padding: 1rem 1.25rem;
+        padding: .5em;
         border-bottom: 1px solid var(--cinza-borda);
         transition: background-color 0.2s ease;
     }
@@ -281,34 +278,9 @@
         border-bottom: none;
     }
 
-    .table tbody tr:hover {
-        background: var(--hover-dropdown);
-    }
+ 
 
-    /* Enhanced Status Rows */
-    .row-status {
-        border-left: 4px solid transparent;
-    }
-
-    .row-status.atrasado {
-        border-left-color: var(--erro);
-        background: rgba(255, 107, 107, 0.05);
-    }
-
-    .row-status.hoje {
-        border-left-color: #f39c12;
-        background: rgba(243, 156, 18, 0.05);
-    }
-
-    .row-status.pendente {
-        border-left-color: var(--roxoPrincipal);
-        background: rgba(109, 57, 142, 0.05);
-    }
-
-    .row-status.pago {
-        border-left-color: var(--verdePrincipal);
-        background: rgba(146, 203, 173, 0.1);
-    }
+ 
 
     /* Enhanced Badges */
     .badge {
@@ -387,9 +359,11 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1.25rem 1.5rem;
+        padding: 1em;
+        margin-top: 1em;
         border-top: 1px solid var(--cinza-borda);
-        background: var(--cinza-claro);
+        background: var(--backgroundCard);
+        border-radius: 1em;
     }
 
     .pagination-info {
@@ -850,20 +824,7 @@
                 <i class="fas fa-list"></i>
                 Lançamentos
             </h3>
-            <div class="table-actions">
-                <div class="dropdown">
-                    <button class="btn btn-outline btn-sm dropdown-toggle">
-                        <i class="fas fa-list-check"></i> Ações em Lote
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="#" class="dropdown-item"><i class="fas fa-cash-register"></i> Marcar como Recebido</a>
-                        <a href="#" class="dropdown-item"><i class="fas fa-envelope"></i> Enviar Lembretes</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item"><i class="fas fa-barcode"></i> Gerar Boletos</a>
-                        <a href="#" class="dropdown-item"><i class="fas fa-file-pdf"></i> Exportar PDF</a>
-                    </div>
-                </div>
-            </div>
+            
         </div>
 
         <div class="table-content">
@@ -871,9 +832,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th width="50">
-                                <label class='checkbox-option'><input type="checkbox" id="selectAll" class="checkbox-option"></label>
-                            </th>
+ 
                             <th>Vencimento</th>
                             <th>Paciente</th>
                              
@@ -887,7 +846,6 @@
                        {% for p in page_obj %}
 
                         <tr class="row-status {% if p.status_calculado == 'Atrasado' %}atrasado{% elif p.status_calculado == 'Vence Hoje' %}hoje{% elif p.status_calculado == 'Pago' %}pago{% else %}pendente{% endif %}">
-                            <td><label class='checkbox-option'><input type="checkbox" {% if p.status_calculado == 'Pago' %}disabled{% endif %}></label></td>
                             <td>{{ p.vencimento|date:"d/m/Y" }}</td>
                             <td><strong>{{ p.paciente.nome }} {{ p.paciente.sobrenome }}</strong></td>
                             <td>{{ p.descricao }}</td>
