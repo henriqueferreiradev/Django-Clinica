@@ -862,7 +862,7 @@
                             <td class="text-center">
                                 <div class="action-buttons">
                                     {% if p.status_calculado != 'Pago' %}
-                                        <button class="btn btn-success btn-icon" title="Registrar Recebimento">
+                                        <button class="btn btn-success btn-icon" onclick='openReceitaPayment({{ p.id }})' title="Registrar Recebimento">
                                             <i class="fas fa-cash-register"></i>
                                         </button>
                                         <button class="btn btn-outline btn-icon" title="Emitir Boleto">
@@ -1128,6 +1128,20 @@
 
 {% block scripts %}
 <script>
+
+async function openReceitaPayment(receitaId) {
+    console.log('Abrindo receita:', receitaId);
+    
+    // Busca dados da receita (que inclui informações para pagamento)
+    const resp = await fetch(`/receita/${receitaId}/dados-pagamento/`);
+    const data = await resp.json();
+    console.log(data)
+
+}
+
+</script>
+<script>
+
     document.addEventListener('DOMContentLoaded', function () {
         // Bulk selection functionality
         const selectAll = document.getElementById('selectAll');

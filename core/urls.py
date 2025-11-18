@@ -51,7 +51,8 @@ urlpatterns = [
     path('api/listar-imagens/<int:paciente_id>/', api_views.listar_imagens, name='listar_imagens'),
     path('api/criar-pasta/', api_views.criar_pasta_imagem, name='criar_pasta_imagem'),
     
-    
+ 
+    path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_receita_pagamento, name='dados_receita_pagamento'),
     path('login/', auth_views.login_view, name='login'),
     path('logout/', auth_views.logout_view, name='logout'), 
     

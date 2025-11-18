@@ -107,6 +107,7 @@ def contas_a_receber_view(request):
 
         lancamentos.append({
             'tipo': 'pagamento',
+            'id': p.receita.id, 
             'paciente': p.paciente,
             'descricao': p.descricao or (p.agendamento and f"Sessão {p.agendamento.id}") or 'Pagamento',
             'valor': p.valor,
@@ -128,6 +129,7 @@ def contas_a_receber_view(request):
 
         lancamentos.append({
             'tipo': 'pacote',
+            'id':pac.id,
             'paciente': pac.paciente,
             'descricao': f"Pacote {pac.codigo} ({pac.servico.nome if pac.servico else '—'})",
             'valor': saldo,
@@ -136,7 +138,21 @@ def contas_a_receber_view(request):
         })
 
     lancamentos.sort(key=lambda x: x['vencimento'] or date(9999, 12, 31))
-
+    print("=== DEBUG RECEITAS NOS PAGAMENTOS ===")
+    for p in pagamentos[:3]:  # Primeiros 3 pagamentos
+        print(f"Pagamento {p.id}: Tem receita? {hasattr(p, 'receita')}")
+        if hasattr(p, 'receita') and p.receita:
+            print(f"  → Receita ID: {p.receita.id}")
+        else:
+            print(f"  → SEM RECEITA VINCULADA")
+    
+    print("=== DEBUG RECEITAS NOS PACOTES ===")
+    for pac in pacotes_pendentes[:3]:  # Primeiros 3 pacotes
+        print(f"Pacote {pac.id}: Tem receita? {hasattr(pac, 'receita')}")
+        if hasattr(pac, 'receita') and pac.receita:
+            print(f"  → Receita ID: {pac.receita.id}")
+        else:
+            print(f"  → SEM RECEITA VINCULADA")
     # ---- PAGINAÇÃO ----
     paginator = Paginator(lancamentos,10)   
     page_number = request.GET.get('page')

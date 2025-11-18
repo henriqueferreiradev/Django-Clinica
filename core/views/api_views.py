@@ -2,7 +2,7 @@ from datetime import date
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
-from core.models import Agendamento, AvaliacaoFisioterapeutica, Evolucao, Paciente, PacotePaciente, Pagamento, Profissional, Prontuario
+from core.models import Agendamento, AvaliacaoFisioterapeutica, Evolucao, Paciente, PacotePaciente, Pagamento, Profissional, Prontuario, Receita
 from django.utils import timezone
 from django.templatetags.static import static
 from django.http import JsonResponse
@@ -15,7 +15,7 @@ from django.test import RequestFactory
 import json
 from core.models import Pagamento
 # core/views/api_views.py
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
 from core.services.financeiro import registrar_pagamento
@@ -190,8 +190,32 @@ def registrar_recebimento(request, pagamento_id):
     except Exception as e:
         return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
 
- 
+@require_GET
 
+def dados_receita_pagamento(request, receita_id):
+    try:
+        receita = Receita.objects.select_related('paciente').get(pk=receita_id)
+        
+        dados = {
+            'success': True,
+            'receita': {
+                'id': receita.id,
+                'descricao': receita.descricao,
+                'valor': str(receita.valor),
+                'vencimento': receita.vencimento.strftime('%Y-%m-%d'),
+                'saldo': str(receita.saldo),
+            },
+            'paciente': {
+                'id': receita.paciente.id,
+                'nome': f"{receita.paciente.nome} {receita.paciente.sobrenome}",
+            }
+        }
+        
+        return JsonResponse(dados)
+        
+    except Receita.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Receita não encontrada'}, status=404)
+    
 def salvar_prontuario(request):
     try:
  
