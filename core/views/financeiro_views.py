@@ -46,10 +46,11 @@ def contas_a_receber_view(request):
     # ---- PAGAMENTOS EM ABERTO ----
     pagamentos = (
         Pagamento.objects
-        .select_related('paciente', 'agendamento', 'pacote')
+        .select_related('paciente', 'agendamento', 'pacote', 'receita')
         .exclude(status='pago')
         .order_by('vencimento')
     )
+
 
     # ---- CARREGA PACOTES + SESSÕES ----
     agqs = Agendamento.objects.filter(
@@ -64,7 +65,6 @@ def contas_a_receber_view(request):
     )
 
     pacotes_pendentes = [p for p in pacotes_todos if p.valor_restante and p.valor_restante > Decimal('0.00')]
-
     # ---- KPIs ----
     total_pendente = Pagamento.objects.filter(status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
     total_atrasado = Pagamento.objects.filter(
@@ -93,7 +93,7 @@ def contas_a_receber_view(request):
 
     # ---- MONTAGEM DOS LANÇAMENTOS ----
     lancamentos = []
-
+    
     for p in pagamentos:
         if p.vencimento:
             if p.vencimento < hoje:
@@ -105,9 +105,28 @@ def contas_a_receber_view(request):
         else:
             status_calc = 'Pendente'
 
+        # BUSCAR RECEITA PARA PAGAMENTOS
+        receita_id = None
+        
+        # 1. Se já tem receita vinculada
+        if p.receita:
+            receita_id = p.receita.id
+            
+        # 2. Se é pagamento de pacote, buscar receita do pacote
+        elif p.pacote:
+            receita_pacote = Receita.objects.filter(
+                paciente=p.paciente,
+                descricao__icontains=p.pacote.codigo
+            ).first()
+            if receita_pacote:
+                receita_id = receita_pacote.id
+                # Atualiza o pagamento com a receita encontrada
+                p.receita = receita_pacote
+                p.save()
+
         lancamentos.append({
             'tipo': 'pagamento',
-            'id': p.receita.id, 
+            'id': receita_id,
             'paciente': p.paciente,
             'descricao': p.descricao or (p.agendamento and f"Sessão {p.agendamento.id}") or 'Pagamento',
             'valor': p.valor,
@@ -127,9 +146,17 @@ def contas_a_receber_view(request):
         else:
             status_calc = 'Pendente'
 
+        # BUSCAR RECEITA DO PACOTE (AGORA FUNCIONA!)
+        receita_pacote = Receita.objects.filter(
+            paciente=pac.paciente,
+            descricao__icontains=pac.codigo  # Busca pelo código do pacote
+        ).first()
+        
+        receita_id = receita_pacote.id if receita_pacote else None
+
         lancamentos.append({
             'tipo': 'pacote',
-            'id':pac.id,
+            'id': receita_id,  # Agora vai encontrar a receita!
             'paciente': pac.paciente,
             'descricao': f"Pacote {pac.codigo} ({pac.servico.nome if pac.servico else '—'})",
             'valor': saldo,
@@ -138,21 +165,7 @@ def contas_a_receber_view(request):
         })
 
     lancamentos.sort(key=lambda x: x['vencimento'] or date(9999, 12, 31))
-    print("=== DEBUG RECEITAS NOS PAGAMENTOS ===")
-    for p in pagamentos[:3]:  # Primeiros 3 pagamentos
-        print(f"Pagamento {p.id}: Tem receita? {hasattr(p, 'receita')}")
-        if hasattr(p, 'receita') and p.receita:
-            print(f"  → Receita ID: {p.receita.id}")
-        else:
-            print(f"  → SEM RECEITA VINCULADA")
-    
-    print("=== DEBUG RECEITAS NOS PACOTES ===")
-    for pac in pacotes_pendentes[:3]:  # Primeiros 3 pacotes
-        print(f"Pacote {pac.id}: Tem receita? {hasattr(pac, 'receita')}")
-        if hasattr(pac, 'receita') and pac.receita:
-            print(f"  → Receita ID: {pac.receita.id}")
-        else:
-            print(f"  → SEM RECEITA VINCULADA")
+ 
     # ---- PAGINAÇÃO ----
     paginator = Paginator(lancamentos,10)   
     page_number = request.GET.get('page')
