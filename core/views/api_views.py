@@ -1,4 +1,6 @@
-from datetime import date
+from datetime import date,datetime
+from decimal import Decimal
+
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
@@ -190,27 +192,148 @@ def registrar_recebimento(request, pagamento_id):
     except Exception as e:
         return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
 
-@require_GET
 
+
+
+ 
+ 
+@require_POST
+@csrf_exempt
+def registrar_pagamento(request, receita_id):
+    try:
+        data = json.loads(request.body)
+        print("Dados recebidos:", data)
+        
+        receita = Receita.objects.get(id=receita_id)
+        print("Receita encontrada:", receita.id)
+        
+        # Pega os dados do formulário
+        data_pagamento = data.get('data_pagamento') or timezone.now().date()
+        valor_pago = Decimal(str(data.get('valor_pago')))
+        forma_pagamento = data.get('forma_pagamento')
+        
+        print(f"Criando pagamento: Paciente={receita.paciente.id}, Valor={valor_pago}, Data={data_pagamento}")
+        
+        # BUSCAR AGENDAMENTO E PACOTE VINCULADOS À RECEITA
+        agendamento = None
+        pacote = None
+        
+        # Tenta encontrar agendamento pelo código
+        if receita.agendamento_codigo:
+            try:
+               
+                agendamento = Agendamento.objects.get(codigo=receita.agendamento_codigo)
+                print(f"Agendamento encontrado: {agendamento.id}")
+                
+                # Se tem agendamento, pega o pacote dele
+                if agendamento.pacote:
+                    pacote = agendamento.pacote
+                    print(f"Pacote do agendamento: {pacote.id}")
+                    
+            except Agendamento.DoesNotExist:
+                print(f"Agendamento não encontrado para código: {receita.agendamento_codigo}")
+        
+        # Se não encontrou agendamento, tenta encontrar pacote diretamente
+        if not pacote:
+            # Verifica se há pagamentos anteriores com pacote
+            pagamentos_anteriores = Pagamento.objects.filter(receita=receita).exclude(pacote=None)
+            if pagamentos_anteriores.exists():
+                pacote = pagamentos_anteriores.first().pacote
+                print(f"Pacote de pagamento anterior: {pacote.id}")
+        
+        print(f"Agendamento: {agendamento.id if agendamento else 'None'}")
+        print(f"Pacote: {pacote.id if pacote else 'None'}")
+        
+        # CRIA O PAGAMENTO com agendamento e pacote
+        pagamento_data = {
+            'paciente': receita.paciente,
+            'receita': receita,
+            'valor': valor_pago,
+            'data': data_pagamento,
+            'forma_pagamento': forma_pagamento,
+            'status': 'pago',
+            'vencimento': receita.vencimento
+        }
+        
+        # Adiciona agendamento e pacote se encontrados
+        if agendamento:
+            pagamento_data['agendamento'] = agendamento
+        if pacote:
+            pagamento_data['pacote'] = pacote
+            
+        pagamento = Pagamento.objects.create(**pagamento_data)
+        
+        print(f"Pagamento criado com ID: {pagamento.id}")
+        print(f"Agendamento no pagamento: {pagamento.agendamento}")
+        print(f"Pacote no pagamento: {pagamento.pacote}")
+        
+        # ATUALIZA STATUS DA RECEITA
+        receita.atualizar_status_por_pagamentos()
+        print(f"Status da receita atualizado: {receita.status}")
+        print(f"Saldo da receita: {receita.saldo}")
+        
+        return JsonResponse({
+            'success': True, 
+            'message': 'Recebimento registrado com sucesso!',
+            'pagamento_id': pagamento.id,
+            'receita_id': receita.id,
+            'agendamento_id': agendamento.id if agendamento else None,
+            'pacote_id': pacote.id if pacote else None
+        })
+        
+    except Exception as e:
+        print("ERRO:", str(e))
+        import traceback
+        print("TRACEBACK:", traceback.format_exc())
+        return JsonResponse({'success': False, 'message': f'Erro: {str(e)}'})
+
+
+
+@require_GET
 def dados_receita_pagamento(request, receita_id):
     try:
-        receita = Receita.objects.select_related('paciente').get(pk=receita_id)
+        receita = get_object_or_404(Receita, id=receita_id)
         
+        # ⭐ BUSCA PACOTE PELO CÓDIGO NA DESCRIÇÃO (igual na view que funciona) ⭐
+        import re
+        match = re.search(r'Pacote\s+(\w+)', receita.descricao)
+        if not match:
+            return JsonResponse({'success': False, 'error': 'Pacote não encontrado na descrição'})
+        
+        pacote_codigo = match.group(1)
+        pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
+        
+        if not pacote:
+            import re
+            match = re.search(r'Pacote\s+(\w+)', receita.descricao)
+            if match:
+                pacote_codigo = match.group(1)
+                pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
+            else:
+                return JsonResponse({'success': False, 'error': 'Pacote não encontrado'})
+
+        agqs = Agendamento.objects.filter(
+            pacote=pacote,
+            status__in=['agendado', 'finalizado', 'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
+        ).order_by('data', 'hora_inicio', 'id')
+        
+        primeira_sessao = agqs.first() if agqs.exists() else None
+        vencimento = primeira_sessao.data if primeira_sessao else pacote.data_inicio
+ 
         dados = {
             'success': True,
             'receita': {
                 'id': receita.id,
                 'descricao': receita.descricao,
-                'valor': str(receita.valor),
-                'vencimento': receita.vencimento.strftime('%Y-%m-%d'),
-                'saldo': str(receita.saldo),
+                'valor': str(pacote.valor_total),
+                'vencimento': vencimento.strftime("%Y-%m-%d") if vencimento else None,
+                'saldo': str(pacote.valor_restante)
             },
             'paciente': {
-                'id': receita.paciente.id,
-                'nome': f"{receita.paciente.nome} {receita.paciente.sobrenome}",
+                'id': pacote.paciente.id,
+                'nome': pacote.paciente.nome
             }
         }
-        
         return JsonResponse(dados)
         
     except Receita.DoesNotExist:

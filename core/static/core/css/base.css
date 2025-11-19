@@ -537,6 +537,7 @@ textarea {
   margin-right: 24px;
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 9999;
 }
 
 .notification:hover {
@@ -600,12 +601,14 @@ textarea {
   opacity: 0;
   transform: translateY(-10px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none; 
 }
 
 .notification:hover .notification-dropdown {
   display: block;
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto; 
 }
 
 /* Header do dropdown */

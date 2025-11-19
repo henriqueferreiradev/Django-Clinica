@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
 from core.services.financeiro import criar_receita_pacote, registrar_pagamento
 from core.utils import gerar_horarios,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
-from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, STATUS_CHOICES,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse
 from django.db.models import Sum, Q, Count
@@ -616,7 +616,6 @@ def confirmacao_agendamento(request, agendamento_id):
     response['Content-Type'] = 'text/html; charset=utf-8'
     return response
 
-    
 def enviar_email_agendamento(request, agendamento_id):
     if request.method == "POST":
         agendamento = get_object_or_404(Agendamento, id=agendamento_id)
@@ -646,8 +645,6 @@ def enviar_email_agendamento(request, agendamento_id):
 
     return JsonResponse({'status': 'erro', 'mensagem': 'Requisição inválida'}, status=400)
 
-
-
 def alterar_status_agenda(request, pk):
     response = alterar_status_agendamento(request, pk, redirect_para='agenda')
 
@@ -660,6 +657,7 @@ def alterar_status_agenda(request, pk):
     )
     
     return response
+
 def remarcar_agendamento(request, pk):
     if request.method == "POST":
         agendamento_original = get_object_or_404(Agendamento, pk=pk)
@@ -793,27 +791,40 @@ def editar_agendamento(request, agendamento_id):
                 objeto_id=agendamento.id,
                 descricao=f'Agendamento de {agendamento.paciente.nome} editado para a data {agendamento.data}.'
             )
-                        # Pagamento 
+            # Pagamento 
             if agendamento.pacote and data.get('valor_pago'):
                 valor_pago = float(data.get('valor_pago'))
                 forma_pagamento = data.get('forma_pagamento')
-                Pagamento.objects.create(
+                
+                # BUSCAR A RECEITA DO PACOTE
+                receita = Receita.objects.filter(
                     paciente=agendamento.paciente,
-                    pacote=agendamento.pacote,
-                    agendamento=agendamento,
-                    valor=valor_pago,
-                    forma_pagamento=forma_pagamento,
-                    status='pago',
-
+                    descricao__icontains=agendamento.pacote.codigo
+                ).first()
+                
+                if receita:
+                    Pagamento.objects.create(
+                        paciente=agendamento.paciente,
+                        pacote=agendamento.pacote,
+                        agendamento=agendamento,
+                        valor=valor_pago,
+                        forma_pagamento=forma_pagamento,
+                        status='pago',
+                        receita=receita,   
+                    )
                     
-                )
-                registrar_log(
-                    usuario=request.user,
-                    acao='Criação',
-                    modelo='Pagamento',
-                    objeto_id=agendamento.id,
-                    descricao=f'Pagamento de R${valor_pago:.2f} registrado para {agendamento.paciente.nome}.'
-                )
+                    # ATUALIZA O STATUS DA RECEITA
+                    receita.atualizar_status_por_pagamentos()
+                    
+                    registrar_log(
+                        usuario=request.user,
+                        acao='Criação',
+                        modelo='Pagamento',
+                        objeto_id=agendamento.id,
+                        descricao=f'Pagamento de R${valor_pago:.2f} registrado para {agendamento.paciente.nome}.'
+                    )
+                else:
+                    messages.warning(request, 'Receita não encontrada para vincular o pagamento')
 
             print('POST recebido:', request.POST)
             messages.success(request, 'Agendamento editado com sucesso!')
