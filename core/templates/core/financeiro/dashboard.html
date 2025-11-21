@@ -578,6 +578,7 @@
           <i class="fa-solid fa-list"></i> Ver Todos
         </a>
       </div>
+      
       <div class="table-content">
         <div class="tabela-scroll">
           <table class="tabela">
@@ -590,24 +591,14 @@
               </tr>
             </thead>
             <tbody>
+            {% for recebimento in ultimos_recebimentos %}
               <tr>
-                <td>15/05/2023</td>
-                <td>Maria Silva</td>
-                <td class="text-right">R$ 350,00</td>
+                <td>{{ recebimento.data|date:"d/m/Y" }}</td>
+                <td>{{ recebimento.paciente.nome }} {{ recebimento.paciente.sobrenome }}</td>
+                <td class="text-right">R$ {{ recebimento.valor }}</td>
                 <td><span class="badge badge-pago"><i class="fa-solid fa-check"></i> Pago</span></td>
               </tr>
-              <tr>
-                <td>14/05/2023</td>
-                <td>João Santos</td>
-                <td class="text-right">R$ 280,00</td>
-                <td><span class="badge badge-pago"><i class="fa-solid fa-check"></i> Pago</span></td>
-              </tr>
-              <tr>
-                <td>13/05/2023</td>
-                <td>Ana Oliveira</td>
-                <td class="text-right">R$ 420,00</td>
-                <td><span class="badge badge-pendente"><i class="fa-solid fa-clock"></i> Pendente</span></td>
-              </tr>
+            {% endfor %}
             </tbody>
           </table>
         </div>

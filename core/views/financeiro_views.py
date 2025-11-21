@@ -13,15 +13,21 @@ def financeiro_view(request):
     if request.user.tipo == 'profissional':
         return HttpResponseForbidden("Acesso negado.")
     
-
+    
+    
+    
     total_receitas = Pagamento.objects.aggregate(todas_receitas=(Sum('valor')))
-    print(total_receitas)
-
+   
+    ultimos_recebimentos = Pagamento.objects.filter(status="pago").order_by('-id')[:3]
+ 
+    for u in ultimos_recebimentos:
+        print(u.paciente.nome)
     
 
 
     context = {
         'total_receitas': total_receitas,
+        'ultimos_recebimentos': ultimos_recebimentos,
     }
 
     return render(request, 'core/financeiro/dashboard.html', context)
