@@ -57,7 +57,7 @@
 
     /* Enhanced Filter Section */
     .filters-section {
-        background: var(--backgroundCard);
+        background: var(--branco);
         border: 1px solid var(--cinza-borda);
         border-radius: 16px;
         padding: 1.5rem;
@@ -119,7 +119,7 @@
     }
 
     .kpi-card {
-        background: var(--backgroundCard);
+        background: var(--branco);
         border: 1px solid var(--cinza-borda);
         border-radius: 16px;
         padding: 1.5rem;
@@ -362,7 +362,7 @@
         padding: 1em;
         margin-top: 1em;
         border-top: 1px solid var(--cinza-borda);
-        background: var(--backgroundCard);
+        background: var(--branco);
         border-radius: 1em;
     }
 
@@ -457,7 +457,7 @@
         border: 1px solid var(--cinzaBorda);
         border-radius: 8px;
         font-size: 0.95rem;
-        background: var(--backgroundCard);
+        background: var(--branco);
         color: var(--preto);
         transition: all 0.2s ease;
     }
@@ -470,7 +470,7 @@
     }
 
     .form-control:read-only {
-        background: var(--backgroundCard);
+        background: var(--branco);
         color: var(--cinza-medio);
         border-color: var(--roxoPrincipal);
         box-shadow: 0 0 0 3px rgba(109, 57, 142, 0.1);
@@ -499,7 +499,7 @@
     }
 
     .action-card {
-        background: var(--backgroundCard);
+        background: var(--branco);
         border: 1px solid var(--cinza-borda);
         border-radius: 12px;
         padding: 1.5rem;
@@ -633,7 +633,7 @@
     /* HEADER FIXO */
     .modal-header {
         flex-shrink: 0;
- background: var(--branco);
+        background: var(--branco);
         padding: 1rem 1.5rem;
         border-bottom: 1px solid var(--roxoPrincipal);
         display: flex;
@@ -650,7 +650,7 @@
         overflow-y: auto;
         padding: 1.5rem;
         background: var(--branco);
-        
+
         scrollbar-width: thin;
         scrollbar-color: var(--primary-color, #6D398E) transparent;
     }
@@ -659,8 +659,8 @@
     .modal-footer {
         flex-shrink: 0;
         background: var(--branco);
-         padding: 1rem 1.5rem;
-        border-top:1px solid var(--roxoPrincipal);
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--roxoPrincipal);
         display: flex;
         justify-content: flex-end;
         gap: 10px;
@@ -1071,18 +1071,18 @@
 {% endblock %}
 
 {% block scripts %}
- 
+
 <script>
-async function openReceitaPayment(receitaId) {
-    console.log('Abrindo receita:', receitaId);
+    async function openReceitaPayment(receitaId) {
+        console.log('Abrindo receita:', receitaId);
 
-    const container = document.getElementById('modalPagamento')
-    const resp = await fetch(`/receita/${receitaId}/dados-pagamento/`);
-    const data = await resp.json();
-    console.log(data)
+        const container = document.getElementById('modalPagamento')
+        const resp = await fetch(`/receita/${receitaId}/dados-pagamento/`);
+        const data = await resp.json();
+        console.log(data)
 
-    if (data.success) {
-        container.innerHTML = `
+        if (data.success) {
+            container.innerHTML = `
         <div class="modal-container">
             <div class="modal-header">
                 <h3 class="modal-title">
@@ -1154,241 +1154,240 @@ async function openReceitaPayment(receitaId) {
             </div>
         </div>`;
 
-        // Mostra o modal usando o sistema do segundo script
-        container.classList.add('active');
-        
-        // Configura os eventos específicos deste modal
-        setupPaymentModal();
-    }
-}
+            // Mostra o modal usando o sistema do segundo script
+            container.classList.add('active');
 
-// Função para configurar os eventos do modal de pagamento
-function setupPaymentModal() {
-    const closeBtn = document.getElementById('closePaymentModal');
-    const cancelBtn = document.getElementById('cancelPaymentModal');
-    const saveBtn = document.getElementById('savePagamento');
-
-    // Fechar modal
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-            document.getElementById('modalPagamento').classList.remove('active');
-        });
-    }
-    
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
-            document.getElementById('modalPagamento').classList.remove('active');
-        });
-    }
-
-    // Salvar recebimento
-    if (saveBtn) {
-        saveBtn.addEventListener('click', processarRecebimento);
-    }
-
-    // Preenche data atual como padrão
-    const dataInput = document.getElementById('dataPagamento');
-    if (dataInput) {
-        dataInput.valueAsDate = new Date();
-    }
-}
-
-// Função para processar o recebimento
-async function processarRecebimento() {
-    const receitaId = document.getElementById('receitaId').value;
-    const dataPagamento = document.getElementById('dataPagamento').value;
-    const formaPagamento = document.getElementById('formaPagamento').value;
-    const valorPago = parseFloat(document.getElementById('valorPago').value);
-    const gerarRecibo = document.getElementById('gerarRecibo').checked;
-
-    // Validação básica
-    if (!dataPagamento || !formaPagamento || !valorPago || valorPago <= 0) {
-        alert('Por favor, preencha todos os campos obrigatórios com valores válidos.');
-        return;
-    }
-
-    try {
-        const response = await fetch(`/receita/${receitaId}/registrar-pagamento/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-            },
-            body: JSON.stringify({
-                data_pagamento: dataPagamento,
-                forma_pagamento: formaPagamento,
-                valor_pago: valorPago,
-                gerar_recibo: gerarRecibo
-            })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert('Recebimento registrado com sucesso!');
-            // Fecha o modal usando o sistema do segundo script
-            document.getElementById('modalPagamento').classList.remove('active');
-            
-            // Recarrega a página para ver as mudanças
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-        } else {
-            alert('Erro ao registrar recebimento: ' + (result.message || 'Erro desconhecido'));
-        }
-    } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao processar recebimento.');
-    }
-}
-
-// Função para obter token CSRF
-function getCSRFToken() {
-    const cookieValue = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('csrftoken='))
-        ?.split('=')[1];
-    return cookieValue || '';
-}
-
-// Sistema de modais do segundo script (mantido intacto)
-document.addEventListener('DOMContentLoaded', function () {
-    // Bulk selection functionality
-    const selectAll = document.getElementById('selectAll');
-    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
-    const bulkActions = document.getElementById('bulkActions');
-    const selectedCount = document.getElementById('selectedCount');
-
-    function updateBulkActions() {
-        const selected = document.querySelectorAll('.row-checkbox:checked').length;
-        selectedCount.textContent = selected;
-
-        if (selected > 0) {
-            bulkActions.classList.add('active');
-        } else {
-            bulkActions.classList.remove('active');
+            // Configura os eventos específicos deste modal
+            setupPaymentModal();
         }
     }
 
-    selectAll?.addEventListener('change', function () {
-        const isChecked = this.checked;
-        rowCheckboxes.forEach(checkbox => {
-            if (!checkbox.disabled) {
-                checkbox.checked = isChecked;
-            }
-        });
-        updateBulkActions();
-    });
+    // Função para configurar os eventos do modal de pagamento
+    function setupPaymentModal() {
+        const closeBtn = document.getElementById('closePaymentModal');
+        const cancelBtn = document.getElementById('cancelPaymentModal');
+        const saveBtn = document.getElementById('savePagamento');
 
-    rowCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateBulkActions);
-    });
-
-    // Bulk action buttons
-    document.getElementById('btnBulkReceive')?.addEventListener('click', function () {
-        const selected = Array.from(document.querySelectorAll('.row-checkbox:checked'))
-            .map(cb => cb.closest('tr').querySelector('td:nth-child(3)').textContent);
-        alert(`Marcar como recebido: ${selected.join(', ')}`);
-    });
-
-    document.getElementById('btnBulkDeselect')?.addEventListener('click', function () {
-        rowCheckboxes.forEach(cb => cb.checked = false);
-        selectAll.checked = false;
-        updateBulkActions();
-    });
-
-    // Filter functionality
-    document.getElementById('btnFiltrar')?.addEventListener('click', function () {
-        console.log('Aplicando filtros...');
-    });
-
-    document.getElementById('btnLimparFiltros')?.addEventListener('click', function () {
-        document.querySelectorAll('.filter-select, .filter-input').forEach(el => {
-            if (el.tagName === 'SELECT') {
-                el.selectedIndex = 0;
-            } else {
-                el.value = '';
-            }
-        });
-    });
-
-    // Modal functionality - SISTEMA ORIGINAL MANTIDO
-    const modals = {
-        recebimento: document.getElementById('modalRecebimento'),
-        pagamento: document.getElementById('modalPagamento')
-    };
-
-    // Open modals
-    document.getElementById('openModalRecebimento')?.addEventListener('click',
-        () => modals.recebimento.classList.add('active'));
-
-    // REMOVI esta linha pois conflita com nosso sistema
-    // document.querySelectorAll('.btn-success.btn-icon').forEach(btn => {
-    //     btn.addEventListener('click', () => modals.pagamento.classList.add('active'));
-    // });
-
-    // Close modals
-    document.getElementById('closeModal')?.addEventListener('click',
-        () => modals.recebimento.classList.remove('active'));
-    document.getElementById('cancelModal')?.addEventListener('click',
-        () => modals.recebimento.classList.remove('active'));
-
-    // REMOVI estas linhas pois usamos setupPaymentModal
-    // document.getElementById('closePaymentModal')?.addEventListener('click',
-    //     () => modals.pagamento.classList.remove('active'));
-    // document.getElementById('cancelPaymentModal')?.addEventListener('click',
-    //     () => modals.pagamento.classList.remove('active'));
-
-    // Close modals on outside click
-    Object.values(modals).forEach(modal => {
-        modal?.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('active');
-        });
-    });
-
-    // Form submission
-    document.getElementById('saveRecebimento')?.addEventListener('click', function (e) {
-        e.preventDefault();
-        const form = document.getElementById('formRecebimento');
-        // Add form validation and submission logic here
-        modals.recebimento.classList.remove('active');
-    });
-
-    // REMOVI esta linha pois usamos processarRecebimento
-    // document.getElementById('savePagamento')?.addEventListener('click', function (e) {
-    //     e.preventDefault();
-    //     const form = document.getElementById('formPagamento');
-    //     modals.pagamento.classList.remove('active');
-    // });
-
-    // Export functionality
-    document.getElementById('btnExport')?.addEventListener('click', function () {
-        alert('Exportando dados...');
-    });
-
-    // Print functionality
-    document.getElementById('btnPrint')?.addEventListener('click', function () {
-        window.print();
-    });
-
-    // Dropdown functionality
-    document.addEventListener('click', function (e) {
-        const toggle = e.target.closest('.dropdown-toggle');
-        const openMenus = document.querySelectorAll('.dropdown-menu.show');
-
-        if (toggle) {
-            e.preventDefault();
-            const menu = toggle.parentElement.querySelector('.dropdown-menu');
-            if (menu) menu.classList.toggle('show');
-
-            openMenus.forEach(m => {
-                if (m !== menu) m.classList.remove('show');
+        // Fechar modal
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                document.getElementById('modalPagamento').classList.remove('active');
             });
-        } else {
-            openMenus.forEach(m => m.classList.remove('show'));
         }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function () {
+                document.getElementById('modalPagamento').classList.remove('active');
+            });
+        }
+
+        // Salvar recebimento
+        if (saveBtn) {
+            saveBtn.addEventListener('click', processarRecebimento);
+        }
+
+        // Preenche data atual como padrão
+        const dataInput = document.getElementById('dataPagamento');
+        if (dataInput) {
+            dataInput.valueAsDate = new Date();
+        }
+    }
+
+    // Função para processar o recebimento
+    async function processarRecebimento() {
+        const receitaId = document.getElementById('receitaId').value;
+        const dataPagamento = document.getElementById('dataPagamento').value;
+        const formaPagamento = document.getElementById('formaPagamento').value;
+        const valorPago = parseFloat(document.getElementById('valorPago').value);
+        const gerarRecibo = document.getElementById('gerarRecibo').checked;
+
+        // Validação básica
+        if (!dataPagamento || !formaPagamento || !valorPago || valorPago <= 0) {
+            alert('Por favor, preencha todos os campos obrigatórios com valores válidos.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/receita/${receitaId}/registrar-pagamento/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    data_pagamento: dataPagamento,
+                    forma_pagamento: formaPagamento,
+                    valor_pago: valorPago,
+                    gerar_recibo: gerarRecibo
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Recebimento registrado com sucesso!');
+                // Fecha o modal usando o sistema do segundo script
+                document.getElementById('modalPagamento').classList.remove('active');
+
+                // Recarrega a página para ver as mudanças
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alert('Erro ao registrar recebimento: ' + (result.message || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao processar recebimento.');
+        }
+    }
+
+    // Função para obter token CSRF
+    function getCSRFToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        return cookieValue || '';
+    }
+
+    // Sistema de modais do segundo script (mantido intacto)
+    document.addEventListener('DOMContentLoaded', function () {
+        // Bulk selection functionality
+        const selectAll = document.getElementById('selectAll');
+        const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+        const bulkActions = document.getElementById('bulkActions');
+        const selectedCount = document.getElementById('selectedCount');
+
+        function updateBulkActions() {
+            const selected = document.querySelectorAll('.row-checkbox:checked').length;
+            selectedCount.textContent = selected;
+
+            if (selected > 0) {
+                bulkActions.classList.add('active');
+            } else {
+                bulkActions.classList.remove('active');
+            }
+        }
+
+        selectAll?.addEventListener('change', function () {
+            const isChecked = this.checked;
+            rowCheckboxes.forEach(checkbox => {
+                if (!checkbox.disabled) {
+                    checkbox.checked = isChecked;
+                }
+            });
+            updateBulkActions();
+        });
+
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateBulkActions);
+        });
+
+        // Bulk action buttons
+        document.getElementById('btnBulkReceive')?.addEventListener('click', function () {
+            const selected = Array.from(document.querySelectorAll('.row-checkbox:checked'))
+                .map(cb => cb.closest('tr').querySelector('td:nth-child(3)').textContent);
+            alert(`Marcar como recebido: ${selected.join(', ')}`);
+        });
+
+        document.getElementById('btnBulkDeselect')?.addEventListener('click', function () {
+            rowCheckboxes.forEach(cb => cb.checked = false);
+            selectAll.checked = false;
+            updateBulkActions();
+        });
+
+        // Filter functionality
+        document.getElementById('btnFiltrar')?.addEventListener('click', function () {
+            console.log('Aplicando filtros...');
+        });
+
+        document.getElementById('btnLimparFiltros')?.addEventListener('click', function () {
+            document.querySelectorAll('.filter-select, .filter-input').forEach(el => {
+                if (el.tagName === 'SELECT') {
+                    el.selectedIndex = 0;
+                } else {
+                    el.value = '';
+                }
+            });
+        });
+
+        // Modal functionality - SISTEMA ORIGINAL MANTIDO
+        const modals = {
+            recebimento: document.getElementById('modalRecebimento'),
+            pagamento: document.getElementById('modalPagamento')
+        };
+
+        // Open modals
+        document.getElementById('openModalRecebimento')?.addEventListener('click',
+            () => modals.recebimento.classList.add('active'));
+
+        // REMOVI esta linha pois conflita com nosso sistema
+        // document.querySelectorAll('.btn-success.btn-icon').forEach(btn => {
+        //     btn.addEventListener('click', () => modals.pagamento.classList.add('active'));
+        // });
+
+        // Close modals
+        document.getElementById('closeModal')?.addEventListener('click',
+            () => modals.recebimento.classList.remove('active'));
+        document.getElementById('cancelModal')?.addEventListener('click',
+            () => modals.recebimento.classList.remove('active'));
+
+        // REMOVI estas linhas pois usamos setupPaymentModal
+        // document.getElementById('closePaymentModal')?.addEventListener('click',
+        //     () => modals.pagamento.classList.remove('active'));
+        // document.getElementById('cancelPaymentModal')?.addEventListener('click',
+        //     () => modals.pagamento.classList.remove('active'));
+
+        // Close modals on outside click
+        Object.values(modals).forEach(modal => {
+            modal?.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+        });
+
+        // Form submission
+        document.getElementById('saveRecebimento')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            const form = document.getElementById('formRecebimento');
+            // Add form validation and submission logic here
+            modals.recebimento.classList.remove('active');
+        });
+
+        // REMOVI esta linha pois usamos processarRecebimento
+        // document.getElementById('savePagamento')?.addEventListener('click', function (e) {
+        //     e.preventDefault();
+        //     const form = document.getElementById('formPagamento');
+        //     modals.pagamento.classList.remove('active');
+        // });
+
+        // Export functionality
+        document.getElementById('btnExport')?.addEventListener('click', function () {
+            alert('Exportando dados...');
+        });
+
+        // Print functionality
+        document.getElementById('btnPrint')?.addEventListener('click', function () {
+            window.print();
+        });
+
+        // Dropdown functionality
+        document.addEventListener('click', function (e) {
+            const toggle = e.target.closest('.dropdown-toggle');
+            const openMenus = document.querySelectorAll('.dropdown-menu.show');
+
+            if (toggle) {
+                e.preventDefault();
+                const menu = toggle.parentElement.querySelector('.dropdown-menu');
+                if (menu) menu.classList.toggle('show');
+
+                openMenus.forEach(m => {
+                    if (m !== menu) m.classList.remove('show');
+                });
+            } else {
+                openMenus.forEach(m => m.classList.remove('show'));
+            }
+        });
     });
-});
 </script>
 {% endblock %}
- 
