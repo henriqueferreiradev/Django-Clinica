@@ -417,3 +417,55 @@ select::-ms-expand {
 .radio-option:hover input[type="radio"]:checked {
   background: var(--roxoPrincipal-hover);
 }
+
+
+
+/* Enhanced Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  margin-top: 1em;
+  border: 1px solid var(--cinza-borda);
+  background: var(--branco);
+  border-radius: 1em;
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: var(--cinza-escuro);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--cinzaBorda);
+  border-radius: 6px;
+  background: var(--branco);
+  color: var(--roxoPrincipal);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover {
+  background: var(--roxoPrincipal);
+  color: var(--branco);
+}
+
+.pagination-btn.active {
+  background: var(--roxoPrincipal);
+  color: var(--branco);
+}
+
+.pagination-btn.disabled {
+  color: var(--cinza-medio);
+  pointer-events: none;
+  opacity: 0.6;
+}

@@ -19,6 +19,8 @@ import base64
 from io import BytesIO
 from core.views.frequencia_views import sync_frequencias_mes
  
+ 
+
 def pacientes_view(request):
     if request.method == 'POST':
         pac_id = request.POST.get('delete_id') or request.POST.get('inativar_id')
@@ -27,9 +29,7 @@ def pacientes_view(request):
 
             if paciente.ativo:
                 paciente.ativo = False
-                # opcional se tiver esse campo no model:
-                # paciente.data_inativacao = timezone.now()
-                paciente.save(update_fields=['ativo'])  # inclua 'data_inativacao' se usar
+                paciente.save(update_fields=['ativo'])
                 messages.success(request, f'Paciente {paciente.nome} inativado.')
                 try:
                     registrar_log(
@@ -45,11 +45,13 @@ def pacientes_view(request):
                 messages.info(request, f'{paciente.nome} já está inativo.')
 
         return redirect('pacientes')
+    
     query = request.GET.get('q', '').strip()
     status = request.GET.get('status', '').strip()
     data_inicio = request.GET.get('data_inicio')
     data_fim = request.GET.get('data_fim')
-    filtrar = request.GET.get('filtrar')
+    mostrar_todos = request.GET.get('mostrar_todos')
+    filtra_inativo = request.GET.get('filtra_inativo')
 
     hoje = timezone.now().date()
     mes, ano = hoje.month, hoje.year
@@ -57,9 +59,12 @@ def pacientes_view(request):
 
     pacientes = Paciente.objects.all()
 
-    for p in pacientes:
-        p.status_mes = p.get_status_mes(mes, ano)
-        print(f"[VIEW] {p.nome} => {p.status_mes}")
+    # Aplicar filtros
+    if not mostrar_todos:
+        pacientes = pacientes.filter(ativo=True)
+    
+    if filtra_inativo:
+        pacientes = pacientes.filter(ativo=False)
 
     # Filtro por status
     if status == 'ativo':
@@ -84,20 +89,33 @@ def pacientes_view(request):
     # Ordenação final
     pacientes = pacientes.order_by('-id')
 
-    # Totais
+    # Totais (antes da paginação)
     total_ativos = Paciente.objects.filter(ativo=True).count()
     total_filtrados = pacientes.count()
 
+    # PAGINAÇÃO - EXATAMENTE COMO NO CONTAS A RECEBER
+    paginator = Paginator(pacientes, 10)  # 10 pacientes por página
+    page_number = request.GET.get('page')
+    
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
+
     return render(request, 'core/pacientes/pacientes.html', {
-        'pacientes': pacientes,
+        'page_obj': page_obj,
         'query': query,
         'status': status,
         'data_inicio': data_inicio,
         'data_fim': data_fim,
+        'mostrar_todos': mostrar_todos,
+        'filtra_inativo': filtra_inativo,
         'total_ativos': total_ativos,
         'total_filtrados': total_filtrados,
     })
-    
+ 
     
 @login_required(login_url='login')
 def cadastrar_pacientes_view(request):
