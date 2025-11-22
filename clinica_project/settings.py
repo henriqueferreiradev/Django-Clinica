@@ -29,8 +29,13 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['192.168.1.2','pontoeqsys.onrender.com']
-CSRF_TRUSTED_ORIGINS = ['http://192.168.1.2']
+ALLOWED_HOSTS = [
+    '192.168.1.2',
+    'henriquef501.pythonanywhere.com',
+    'localhost',
+    '127.0.0.1'
+]
+CSRF_TRUSTED_ORIGINS = ['http://192.168.1.2','https://henriquef501.pythonanywhere.com']
 
 
 
@@ -47,8 +52,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+     
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -64,11 +70,13 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'core' / 'templates',
-            BASE_DIR / 'templates'],
+            BASE_DIR / 'templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.request',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',  # CORREÇÃO: debug antes do request
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -81,12 +89,8 @@ WSGI_APPLICATION = 'clinica_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'clinica',
-        'USER': 'henri',
-        'PASSWORD': '5224',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # CORREÇÃO: Path moderno
     }
 }
 
@@ -108,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -146,17 +150,4 @@ DEFAULT_FROM_EMAIL = 'Ponto de Equilibrio <notificacao.pontodeequilibrio@gmail.c
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
-
-import django
-from django.contrib.auth import get_user_model
-
-if os.environ.get('RENDER'):
-    django.setup()
-    User = get_user_model()
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser(
-            username='admin',
-            email='admin@admin.com',
-            password='admin123'
-        )
+ 
