@@ -129,12 +129,6 @@ urlpatterns = [
     
  
  
-<<<<<<< HEAD
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-=======
     path('politica-de-privacidade/', pacientes_views.politica_privacidade, name='politica-de-privacidade'),
     path('gestao-equipamentos/', equipamentos_views.gestao_equipamentos, name='politica-de-privacidade'),
  
@@ -147,4 +141,3 @@ if settings.DEBUG:
       
 
 ]
->>>>>>> origin/main

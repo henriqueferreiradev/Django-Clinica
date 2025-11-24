@@ -30,7 +30,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    '192.168.1.2',
     'henriquef501.pythonanywhere.com',
     'localhost',
     '127.0.0.1'
