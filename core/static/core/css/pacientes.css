@@ -198,12 +198,11 @@ body {
 
 
 /*==========TABELA============================TABELA===========================TABELA==========*/
-.tabela-container {
-    background: var(--branco);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    padding: 1em;
+.table-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100vh - 180px);
 }
 
 table {
@@ -229,7 +228,7 @@ th {
     padding: 1em;
 }
 
- 
+
 
 thead tr th:first-child {
     border-top-left-radius: 12px;
@@ -239,7 +238,7 @@ thead tr th:last-child {
     border-top-right-radius: 12px;
 }
 
- 
+
 .action-btn {
     cursor: pointer;
     background: transparent;
@@ -276,24 +275,28 @@ thead tr th:last-child {
     display: inline-block;
     text-align: center;
     min-width: 90px;
-  }
+}
 
-  .badge-premium {
+.badge-premium {
     background-color: #f59e0b;
-  }
-  .badge-vip {
+}
+
+.badge-vip {
     background-color: #4338CA;
-  }
-  .badge-plus {
+}
+
+.badge-plus {
     background-color: #2AC4CF;
-  }
-  .badge-primeiro_mes {
+}
+
+.badge-primeiro_mes {
     background-color: #31BA7A;
-  }
-  .badge-indefinido {
+}
+
+.badge-indefinido {
     background-color: #797979ff;
-  }
- 
+}
+
 
 
 

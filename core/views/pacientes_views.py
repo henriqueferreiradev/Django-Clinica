@@ -70,9 +70,9 @@ def pacientes_view(request):
     if status == 'ativo':
         pacientes = pacientes.filter(ativo=True)
     elif status == 'inativo':
-        pacientes = pacientes.filter(ativo=False)
+        pacientes = pacientes.filter(ativo=False, pre_cadastro=False)
     elif status == 'pendente':
-        pacientes = pacientes.filter(pre_cadastro=True)   
+        pacientes = pacientes.filter(pre_cadastro=True, ativo=False)   
 
     # Filtro por nome ou CPF
     if query:
