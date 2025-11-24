@@ -4,6 +4,7 @@
 {% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
  
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,27 +19,6 @@
 
    
 {% block content %}
-{% if messages %}
-<div class="messages-container" id="alert-container">
-    {% for message in messages %}
-    <div class="alert {{ message.tags }}">
-        <span class="icon">
-            {% if message.tags == 'success' %}
-            ✅
-            {% elif message.tags == 'warning' %}
-            ⚠️
-            {% elif message.tags == 'error' %}
-            ❌
-            {% elif message.tags == 'info' %}
-            ℹ️
-            {% endif %}
-        </span>
-        {{ message }}
-
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
 <div class="content">
 
   <div class="cards-grid">
@@ -46,13 +26,17 @@
     <div class="card card-blue">
         <div class="card-content">
             <div class="card-text">
+                        <div class="card-icon" style='display:flex; align-items:center; gap:1em;'>
+                <i class="fas fa-users"></i>
                 <p>Pacientes ativos</p>
+            </div>
+                
                 <h3>{{ total_pacientes_ativos }}</h3>
-                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> 12% desde a semana passada</p>
+               
+                <p class="trend trend-up"><i class="fas fa-arrow-down"></i> {{variacao_pacientes_ativos}}</p>
+ 
             </div>
-            <div class="card-icon">
-                <i class="fas fa-user-injured"></i>
-            </div>
+ 
         </div>
     </div>
     
@@ -60,13 +44,15 @@
     <div class="card card-green">
         <div class="card-content">
             <div class="card-text">
+            <div class="card-icon" style='display:flex; align-items:center; gap:1em;'>
+                <i class="fas fa-user-doctor"></i>
                 <p>Profissionais ativos</p>
+            </div>
+                
                 <h3>{{ total_profissionais_ativos }}</h3>
-                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> 2 novos este mês</p>
+                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> {{variacao_profissionais_ativos}}</p>
             </div>
-            <div class="card-icon">
-                <i class="fas fa-user-md"></i>
-            </div>
+ 
         </div>
     </div>
     
@@ -74,40 +60,53 @@
     <div class="card card-purple">
         <div class="card-content">
             <div class="card-text">
+            <div class="card-icon" style='display:flex; align-items:center; gap:1em;'>
+               <i class="fas fa-calendar-week"></i>
                 <p>Atendimentos semana</p>
+            </div>
+                
+                
                 <h3>{{ agendamentos_semana }}</h3>
-                <p class="trend trend-down"><i class="fas fa-arrow-down"></i> 5% menos que semana passada</p>
+                {% if variacao_pacientes_ativos <= 0 %}
+                <p class="trend trend-up"><i class="fas fa-arrow-down"></i> {{variacao_agendamentos}}% a menos que semana passada</p>
+                {% else %}
+                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> {{variacao_agendamentos}}% a mais que semana passada</p>
+                {% endif %}
+               
             </div>
-            <div class="card-icon">
-                <i class="fas fa-calendar-check"></i>
-            </div>
+ 
         </div>
     </div>
         <div class="card card-yellow">
         <div class="card-content">
             <div class="card-text">
+            <div class="card-icon" style='display:flex; align-items:center; gap:1em;'>
+                <i class="fas fa-calendar-day"></i>
                 <p>Sessões hoje</p>
-                <h3>{{ agendamentos_dia }}</h3>
-                <p> {% if agendamentos_dia_finalizados > 1 %}
-                {{ agendamentos_dia_finalizados }} finalizados {% else %}  {{ agendamentos_dia_finalizados }} finalizado, {% endif %}
-                {% if agendamentos_dia_pendentes > 0 %}
-                {{ agendamentos_dia_pendentes }} pendentes {% else %} {{ agendamentos_dia_pendentes }} pendente  {% endif %}</p>
             </div>
-            <div class="card-icon">
-                <i class="fas fa-clock"></i>
+                
+                <h3>{{ agendamentos_dia }}</h3>
+                {% if variacao_sessao <= 0 %}
+                <p class="trend trend-up"><i class="fas fa-arrow-down"></i> {{variacao_sessao}}% a menos que ontem</p>
+                {% else %}
+                <p class="trend trend-up"><i class="fas fa-arrow-up"></i> {{variacao_sessao}}% a mais que ontem</p>
+                {% endif %}
+               
             </div>
         </div>
     </div>
     <div class="card card-red">
         <div class="card-content">
             <div class="card-text">
+            <div class="card-icon" style='display:flex; align-items:center; gap:1em;'>
+                <i class="fas fa-circle-check"></i>
                 <p>Sessões finalizadas</p>
-                <h3>3</h3>
-                <p>25% do total de hoje</p>
             </div>
-            <div class="card-icon">
-                <i class="fas fa-check-circle"></i>
+                
+                <h3>{{agendamentos_dia_finalizados}}</h3>
+                <p>{{variacao_finalizadas}}% do total de hoje</p>
             </div>
+ 
         </div>
     </div>
     
@@ -115,13 +114,15 @@
     <div class="card card-orange">
         <div class="card-content">
             <div class="card-text">
+            <div class="card-icon" style='display:flex; align-items:center; gap:1em;'>
+                <i class="fas fa-calendar-xmark"></i>
                 <p>Faltas hoje</p>
-                <h3>1</h3>
-                <p>8% do total de hoje</p>
             </div>
-            <div class="card-icon">
-                <i class="fas fa-user-slash"></i>
+                
+                <h3>{{faltas_dia}}</h3>
+                <p>{{variacao_pendentes}}% do total de hoje</p>
             </div>
+
         </div>
     </div>
 
@@ -153,9 +154,11 @@
               <td>
                 {% if agendamento.sessao_atual %}
                   {% if agendamento.codigo|slice:":3" == "REP" %}
-                    <span class="sessao vermelho">Sessão de Reposição | {{ agendamento.codigo }}</span>
+                    <span class="sessao reposicao">Sessão de Reposição | {{ agendamento.codigo }}</span>
+                  {% elif agendamento.codigo|slice:":3" == "BEN" %}
+                    <span class="sessao beneficio">Sessão de Benefício | {{ agendamento.codigo }}</span>
                   {% else %}
-                    <span class="sessao verde">
+                    <span class="sessao normal">
                       Sessão {{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} | {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}
                     </span>
                   {% endif %}
@@ -202,6 +205,7 @@
     
 </div> -->
 
+  <div class="section">
   <h2>Visão Geral dos Atendimentos</h2>
 <div class="charts-row charts-row-1">
  
@@ -280,7 +284,7 @@
         </div>
     </div>
 </div>
-
+</div>
 
   <div class="section">
     <h2>Avisos</h2>

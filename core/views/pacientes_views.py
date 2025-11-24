@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import User, Paciente,Agendamento,Pagamento,PacotePaciente, Pendencia,Especialidade,ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import HistoricoStatus, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -11,136 +11,123 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
+from django.template.context_processors import request
 from core.tokens import gerar_token_acesso_unico, verificar_token_acesso
 
 import qrcode
 import base64
 from io import BytesIO
-
-
-
-
-
+from core.views.frequencia_views import sync_frequencias_mes
+ 
+ 
 
 def pacientes_view(request):
-    
-    # Opções de filtro
-    mostrar_todos = request.GET.get('mostrar_todos') == 'on'
-    filtra_inativo = request.GET.get('filtra_inativo') == 'on'
-    query = request.GET.get('q', '').strip()
-    periodo = request.GET.get('periodo', '')
-    hoje = timezone.now().date()
-
-    # Processa submissão de formulário (POST)
     if request.method == 'POST':
-        if 'delete_id' in request.POST:
-            paciente = Paciente.objects.get(id=request.POST['delete_id'])
-            paciente.ativo = False
-            paciente.save()
-            messages.warning(request, f'Paciente {paciente.nome} inativado') 
-            registrar_log(usuario=request.user,
-                acao='Inativação',
-                modelo='Paciente',
-                objeto_id=paciente.id,
-                descricao=f'Paciente {paciente.nome} inativado.')
-            return redirect('pacientes')
+        pac_id = request.POST.get('delete_id') or request.POST.get('inativar_id')
+        if pac_id:
+            paciente = get_object_or_404(Paciente, id=pac_id)
 
-        paciente_id = request.POST.get('paciente_id')
-        dados = {
-            'nome': request.POST.get('nome'),
-            'cpf': request.POST.get('cpf'),
-            'telefone': request.POST.get('telefone'),
-            'rg': request.POST.get('rg'),
-            'data_nascimento': request.POST.get('nascimento'),
-            'cor_raca': request.POST.get('cor'),
-            'sexo': request.POST.get('sexo'),
-            'naturalidade': request.POST.get('naturalidade'),
-            'uf': request.POST.get('uf'),
-            'nomeSocial': request.POST.get('nomeSocial'),
-            'estado_civil': request.POST.get('estado_civil'),
-            'midia': request.POST.get('midia'),
-            'cep': request.POST.get('cep'),
-            'rua': request.POST.get('rua'),
-            'numero': request.POST.get('numero'),
-            'bairro': request.POST.get('bairro'),
-            'cidade': request.POST.get('cidade'),
-            'estado': request.POST.get('estado'),
-            'celular': request.POST.get('celular'),
-            'telEmergencia': request.POST.get('telEmergencia'),
-            'email': request.POST.get('email'),
-            'observacao': request.POST.get('observacao'),
-            'ativo': True,
-        }
+            if paciente.ativo:
+                paciente.ativo = False
+                paciente.save(update_fields=['ativo'])
+                messages.success(request, f'Paciente {paciente.nome} inativado.')
+                try:
+                    registrar_log(
+                        usuario=request.user,
+                        acao='Inativação',
+                        modelo='Paciente',
+                        objeto_id=paciente.id,
+                        descricao=f'Paciente {paciente.nome} inativado.'
+                    )
+                except Exception:
+                    pass
+            else:
+                messages.info(request, f'{paciente.nome} já está inativo.')
 
-        if paciente_id:
-            Paciente.objects.filter(id=paciente_id).update(**dados)
-            messages.success(request, 'Paciente atualizado com sucesso!')
-        elif dados['nome']:
-            Paciente.objects.create(**dados)
-            messages.success(request, 'Paciente cadastrado com sucesso!')
         return redirect('pacientes')
+    
+    query = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '').strip()
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
+    mostrar_todos = request.GET.get('mostrar_todos')
+    filtra_inativo = request.GET.get('filtra_inativo')
 
-    # Inicia o queryset
-    if mostrar_todos:
-        pacientes = Paciente.objects.all()
-    elif filtra_inativo:
-        pacientes = Paciente.objects.filter(ativo=False)
-    else:
-        pacientes = Paciente.objects.filter(ativo=True)
+    hoje = timezone.now().date()
+    mes, ano = hoje.month, hoje.year
+    sync_frequencias_mes(mes, ano)
 
-    # Filtro por texto (nome ou CPF)
+    pacientes = Paciente.objects.all()
+
+    # Aplicar filtros
+    if not mostrar_todos:
+        pacientes = pacientes.filter(ativo=True)
+    
+    if filtra_inativo:
+        pacientes = pacientes.filter(ativo=False)
+
+    # Filtro por status
+    if status == 'ativo':
+        pacientes = pacientes.filter(ativo=True)
+    elif status == 'inativo':
+        pacientes = pacientes.filter(ativo=False, pre_cadastro=False)
+    elif status == 'pendente':
+        pacientes = pacientes.filter(pre_cadastro=True, ativo=False)   
+
+    # Filtro por nome ou CPF
     if query:
-        pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf__icontains=query))
+        pacientes = pacientes.filter(
+            Q(nome__icontains=query) | Q(cpf__icontains=query)
+        )
 
-    # Filtro por período de data de cadastro
-    if periodo:
-        dias = {
-            'semana': 7,
-            'mes': 30,
-            'semestre': 180,
-            'ano': 365
-        }.get(periodo)
-        if dias:
-            data_inicio = hoje - timedelta(days=dias)
-            pacientes = pacientes.filter(data_cadastro__gte=data_inicio)
+    # Filtro por período de datas
+    if data_inicio:
+        pacientes = pacientes.filter(data_cadastro__gte=data_inicio)
+    if data_fim:
+        pacientes = pacientes.filter(data_cadastro__lte=data_fim)
 
     # Ordenação final
     pacientes = pacientes.order_by('-id')
 
-    # Total de pacientes ativos (independente do filtro atual)
+    # Totais (antes da paginação)
     total_ativos = Paciente.objects.filter(ativo=True).count()
     total_filtrados = pacientes.count()
 
+    # PAGINAÇÃO - EXATAMENTE COMO NO CONTAS A RECEBER
+    paginator = Paginator(pacientes, 10)  # 10 pacientes por página
+    page_number = request.GET.get('page')
+    
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
+
     return render(request, 'core/pacientes/pacientes.html', {
-        'pacientes': pacientes,
+        'page_obj': page_obj,
         'query': query,
-        'total_ativos': total_ativos,
-         'total_filtrados': total_filtrados,
+        'status': status,
+        'data_inicio': data_inicio,
+        'data_fim': data_fim,
         'mostrar_todos': mostrar_todos,
         'filtra_inativo': filtra_inativo,
-        'estado_civil_choices': ESTADO_CIVIL,
-        'midia_choices': MIDIA_ESCOLHA,
-        'sexo_choices': SEXO_ESCOLHA,
-        'uf_choices': UF_ESCOLHA,
-        'cor_choices': COR_RACA,
+        'total_ativos': total_ativos,
+        'total_filtrados': total_filtrados,
     })
-    
+ 
     
 @login_required(login_url='login')
-
-
-
 def cadastrar_pacientes_view(request):
-    mostrar_todos = request.GET.get('mostrar_todos') == 'on'
-    filtra_inativo = request.GET.get('filtra_inativo') == 'on'
-    situacao = request.GET.get('situacao') == True
-    
-
-
-
     if request.method == 'POST':
- 
-        # Edição ou criação
+         
+        consent_marketing = bool(request.POST.get('consentimento_marketing'))
+        politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
+        nf_nao_aplica = request.POST.get('nf_nao_aplica')
+        nf_imposto_renda =request.POST.get('nf_imposto_renda')
+        nf_reembolso_plano =request.POST.get('nf_reembolso_plano')
+        
+        
         paciente_id = request.POST.get('paciente_id')
         nome = request.POST.get('nome')
         cpf = request.POST.get('cpf')
@@ -188,52 +175,41 @@ def cadastrar_pacientes_view(request):
                 telEmergencia=request.POST.get('telEmergencia'),
                 email=request.POST.get('email'),
                 observacao=request.POST.get('observacao'),
-                ativo=True
+                consentimento_lgpd=True,
+                consentimento_marketing=consent_marketing,
+                politica_privacidade_versao=politica_ver,
+                data_consentimento=timezone.now(),
+                ip_consentimento=request.META.get('REMOTE_ADDR'),
+                nf_nao_aplica = True,
+                nf_imposto_renda = True,
+                nf_reembolso_plano = True,
+                pre_cadastro=False,         
+                conferido=True,
+                ativo=True,
             )
             print(request.POST.get("cor_raca"))
+            
+            
             if foto:
                 paciente.foto = foto
-                paciente.save()
+                paciente.save() 
                 messages.info(request, 'Foto do paciente atualizada')
-            messages.success(request, f'✅ Paciente {paciente.nome} cadastrado com sucesso!')
+            messages.success(request, f'Paciente {paciente.nome} cadastrado com sucesso!')
+            
             registrar_log(usuario=request.user,
                         acao='Criação',
                         modelo='Paciente',
                         objeto_id=paciente.id,
                         descricao=f'Paciente {paciente.nome} cadastrado.')
-            return redirect('cadastrar_paciente')
+            return redirect('pacientes')
 
 
-    query = request.GET.get('q', '').strip()
-
-    if mostrar_todos:
-        pacientes = Paciente.objects.all().order_by('-id')
-    elif filtra_inativo:
-        pacientes = Paciente.objects.filter(ativo=False)
-    else:
-        pacientes = Paciente.objects.filter(ativo=True).order_by('-id')
-
-    total_ativos = Paciente.objects.filter(ativo=True).count()
     
-
-    if query:
-        pacientes = pacientes.filter(Q(nome__icontains=query) | Q(cpf__icontains=query))
-
-    paginator = Paginator(pacientes, 12)
-    page_number = request.GET.get("page")
-    try:
-        page_obj = paginator.get_page(page_number)
-    except PageNotAnInteger:
-        page_obj = paginator.page(1)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+   
 
     return render(request, 'core/pacientes/cadastrar_paciente.html', {
-        'page_obj': page_obj,
-        'query': query,
-        'total_ativos': total_ativos,
-        'mostrar_todos': mostrar_todos,
-        'filtra_inativo': filtra_inativo,
+  
+ 
         'estado_civil_choices': ESTADO_CIVIL,
         'midia_choices': MIDIA_ESCOLHA,
         'sexo_choices': SEXO_ESCOLHA,
@@ -249,6 +225,11 @@ def editar_paciente_view(request,id):
     paciente = get_object_or_404(Paciente, id=id)
 
     if request.method == 'POST':
+        novo_cpf = request.POST.get('cpf')
+        if Paciente.objects.filter(cpf=novo_cpf).exclude(id=paciente.id).exists():
+            messages.error(request, 'CPF já cadastrado para outro paciente!')
+            return redirect('editar_paciente', id=paciente.id)
+        
         paciente.nome = request.POST.get('nome')
         paciente.sobrenome = request.POST.get('sobrenome')
         paciente.nomeSocial = request.POST.get('nomeSocial')
@@ -318,9 +299,10 @@ def editar_paciente_view(request,id):
 
 def ficha_paciente(request, id):
     paciente = get_object_or_404(Paciente, id=id)
+    
+ 
+ 
     return render(request, 'core/pacientes/ficha_paciente.html', {'paciente': paciente})
-
-
 
 @require_GET
 def buscar_pacientes(request):
@@ -386,6 +368,14 @@ def dados_paciente(request, paciente_id):
  
 def pre_cadastro(request):
     if request.method == 'POST':
+        
+        consent_trat = request.POST.get('consentimento_tratamento')
+        consent_mark = bool(request.POST.get('consentimento_marketing'))
+        politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
+        
+        if consent_trat:
+            messages.error(request, 'Você precisa aceitar o termo de consentimento (LGPD) para continuar')
+            
         nome = request.POST.get('nome')
         cpf = request.POST.get('cpf')
         nascimento = request.POST.get('nascimento')
@@ -430,6 +420,11 @@ def pre_cadastro(request):
             telEmergencia=request.POST.get('telEmergencia'),
             email=request.POST.get('email'),
             observacao=request.POST.get('observacao'),
+            consentimento_lgpd=True,
+            consentimento_marketing=consent_mark,
+            politica_privacidade_versao=politica_ver,
+            data_consentimento=timezone.now(),
+            ip_consentimento=request.META.get('REMOTE_ADDR'),
             ativo=True,
             pre_cadastro=True,         
             conferido=False            
@@ -439,16 +434,16 @@ def pre_cadastro(request):
             paciente.foto = foto
             paciente.save()
 
-        # ✅ Criar pendência para profissional responsável
+       
         Pendencia.objects.create(
             tipo='Pré-cadastro',
             descricao=f"Conferir pré-cadastro de {paciente.nome}",
             vinculado_paciente=paciente,
             resolvido=False
         )
-
-        messages.success(request, "✅ Pré-cadastro enviado com sucesso! Entraremos em contato.")
-        return redirect('pre_cadastro')
+    
+        
+        return render(request, 'core/pacientes/pre_cadastro_confirmacao.html')
 
     return render(request, 'core/pacientes/pre_cadastro.html', {
         'estado_civil_choices': ESTADO_CIVIL,
@@ -478,8 +473,10 @@ def perfil_paciente(request,paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
     pacotes = PacotePaciente.objects.filter(paciente__id=paciente_id,).order_by('-data_inicio')
  
- 
+    
     frequencia_semanal = Agendamento.objects.filter(paciente=paciente, data__range=[inicio_semana, fim_semana]).count()
+    
+    
     quantidade_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).count()
     quantidade_faltas = Agendamento.objects.filter(paciente__id=paciente_id, status__in=FINALIZADOS).count()
     quantidade_repostas = PacotePaciente.objects.filter(paciente__id=paciente_id, eh_reposicao=True).count()
@@ -552,8 +549,11 @@ def perfil_paciente(request,paciente_id):
 
     for item in prof2:
         item['tempo_sessao'] = formatar_duracao(item['total_horas'])
-        
-        
+    
+    
+    historico_status = FrequenciaMensal.objects.filter(paciente__id=paciente_id)
+    for h in historico_status:
+        print(h)
     pacotes_dados = []
 
     for pacote in pacotes:
@@ -579,6 +579,7 @@ def perfil_paciente(request,paciente_id):
             'sessoes_realizadas': sessoes_realizadas,
             'qtd_total': qtd_total,
             'status': status,
+            
         })
     
     #PAGAMENTOS
@@ -611,13 +612,17 @@ def perfil_paciente(request,paciente_id):
 
         messages.success(request, 'Observação salva com sucesso.')
         return redirect(request.path)
-    print('')
+     
 
-    print(todos_agendamentos)
+     
  
     tres_ultimos_agendamentos = Agendamento.objects.filter(paciente__id=paciente_id).order_by('-data')[:3]
         
+    respostas_formularios = RespostaFormulario.objects.filter(
+        paciente_id=paciente_id
+    ).select_related('formulario').order_by('-enviado_em')
     
+ 
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
@@ -641,6 +646,8 @@ def perfil_paciente(request,paciente_id):
                 'ultimos_agendamentos':agendamentos_select,
                 'todos_agendamentos':todos_agendamentos,
                 'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
+                'respostas_formularios':respostas_formularios,
+                'historico_status':historico_status,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
 
@@ -648,7 +655,7 @@ def perfil_paciente(request,paciente_id):
 def gerar_link_publico_precadastro(request):
     token = gerar_token_acesso_unico()
     link = request.build_absolute_uri(f"/pacientes/link/{token}/")
-    
+
     qr = qrcode.make(link)
     buffer = BytesIO()
     qr.save(buffer, format='PNG')
@@ -656,15 +663,66 @@ def gerar_link_publico_precadastro(request):
 
     
     
-    pacientes = Paciente.objects.filter(pre_cadastro=True)
+    pacientes = Paciente.objects.filter(pre_cadastro=True, ativo=True)
     print(pacientes)
     
     return render(request, 'core/pacientes/link_gerado.html', {
-        'link_tokenizado': link,
+        'link_tokenizado':link,
         'qrcode_base64':img_base64,
-        'pacientes' : pacientes
+        'pacientes':pacientes
     })
 
 
  
 
+
+
+def visualizar_respostas_formulario(request, resposta_id):
+    resposta = get_object_or_404(RespostaFormulario, id=resposta_id)
+    respostas_perguntas = RespostaPergunta.objects.filter(resposta=resposta).select_related('pergunta')
+    
+    respostas_preparadas = []
+    for rp in respostas_perguntas:
+        print(rp.valor)
+        respostas_preparadas.append({
+            'pergunta': rp.pergunta,
+            'valor': rp.valor,  # Mantém o valor original
+            'tipo': rp.pergunta.tipo
+        })
+    
+    context = {
+        'formulario': resposta.formulario,
+        'respostas_preparadas': respostas_preparadas,
+        'paciente': resposta.paciente,
+        'data_resposta': resposta.enviado_em,
+    }
+    
+    return render(request, 'core/pacientes/respostas_formulario.html', context)
+
+def politica_privacidade(request):
+    return render(request, 'core/juridico/politica_privacidade.html')
+
+def paciente_status(request):
+    pacientes = Paciente.objects.all()
+
+    context = {
+        'pacientes':pacientes,
+         
+    }
+    return render(request, 'core/pacientes/status-mensal/status_mensal.html', context)
+
+ 
+def lista_status(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    historicos = HistoricoStatus.objects.filter(paciente=paciente).order_by('-ano', '-mes')
+
+    data = [{
+        'mes': historico.mes,
+        'ano': historico.ano,
+        'status': historico.status,
+        'freq_sistema': historico.freq_sistema,
+        'freq_programada': historico.freq_programada,
+        'ganhou_beneficio': historico.ganhou_beneficio,
+    } for historico in historicos]
+
+    return JsonResponse(data, safe=False)

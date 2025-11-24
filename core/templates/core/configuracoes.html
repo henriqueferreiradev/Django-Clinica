@@ -1,324 +1,2236 @@
-{% extends 'core/base.html' %} {% load static %} {% block title %}Configurações
-- Ponto de Equilíbrio{% endblock %} {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/configuracoes.css' %}" />
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Configurações - Ponto de Equilíbrio{% endblock %}
+
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
-{% endblock %}
-<span class="text">{% block topbar_title %}Configurações{% endblock %}</span>
-{% block content %}
-<div class="content">
-  <div class="grid-config">
-    <div class="form form-1">
-      <h2 class="form_titulo">Especialidades</h2>
-      <form class="formField" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="tipo" value="especialidade" />
-        <input
-          class="input-s capitalize-input"
-          name="nome"
-          placeholder="Nova especialidade"
-          type="text"
-        />
-        <input
-          class=""
-          type="color"
-          id="cor"
-          name="cor"
-          value="#4a90e2"
-        /><br /><br />
-        <button type="submit">Salvar</button>
-      </form>
-      <div class="tabela-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Serviço</th>
-              <th>Cor</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for especialidade in especialidades %}
-            <tr class="{% if not especialidade.ativo %} inativo {% endif %}">
-              <td>{{ especialidade.nome }}</td>
-              <td
-                onclick="copiarTexto('{{ especialidade.cor }}')"
-                style="background-color: {{ especialidade.cor }}; color: #fff; padding: 5px; border-radius: 4px; cursor: pointer;"
-                title="Clique para copiar"
-              ></td>
-              <span
-                id="feedback"
-                style="
-                  display: none;
-                  position: fixed;
-                  top: 10px;
-                  right: 10px;
-                  background: #4caf50;
-                  color: white;
-                  padding: 5px 10px;
-                  border-radius: 5px;
-                  z-index: 1000;
-                "
-              >
-                Copiado!
-              </span>
-              <td>
-                <form method="post" style="display: inline">
-                  {% csrf_token %}
-                  <input
-                    type="hidden"
-                    name="especialidade_id"
-                    value="{{ especialidade.id }}"
-                  />
+<style>
+    /* Container principal - seguindo o estilo da agenda */
 
-                  {% if filtra_inativo_especialidade %}
-                  <input
-                    type="hidden"
-                    name="tipo"
-                    value="reativar_especialidade"
-                  />
-                  <button class="btn btn_reativar" type="submit"><i class='bx  bx-rotate-ccw'  ></i> </button>
-                  {% else %}
-                  <input
-                    type="hidden"
-                    name="tipo"
-                    value="inativar_especialidade"
-                  />
-                  <button class="btn btn_excluir" type="submit"><i class='bx  bx-trash'  ></i> </button>
-                  {% endif %}
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="tabela_infos-dados">
-        <form method="get" style="display: inline">
-          <label class="label_inativos">
-            <input
-              type="checkbox"
-              name="filtra_inativo_especialidade"
-              onchange="this.form.submit()"
-              {% if filtra_inativo_especialidade %}checked{% endif %}/>
-            Mostrar apenas inativos
-          </label>
-        </form>
-      </div>
-    </div>
-    <div class="form form-2">
-      <h2 class="form_titulo">Serviços</h2>
-      <form class="formField" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="tipo" value="servico" />
-        <input
-          class="input-s capitalize-input"
-          name="nome"
-          placeholder="Novo serviço"
-          type="text"
-          required
-        />
-        <input
-          class="input_qtd_sessoes input-s capitalize-input"
-          name="qtd_sessoes"
-          placeholder="Qtd sessões"
-          type="number"
-          required
-        />
-        <input
-          class="input_valor input-s"
-          name="valor"
-          placeholder="Valor (R$)"
-          type="number"
-          step="0.01"
-          required
-        />
-        <button type="submit">Salvar</button>
-      </form>
-      <div class="tabela-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Serviço</th>
-              <th>Sessões</th>
-              <th>Valor</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for servico in servicos %}
-            <tr class="{% if not servico.ativo %} inativo {% endif %}">
-              <td>{{ servico.nome }}</td>
-              <td>{{ servico.qtd_sessoes }}</td>
-              <td>R$ {{ servico.valor }}</td>
-              <td>
-                <form method="post" style="display: inline">
-                  {% csrf_token %}
-                  <input
-                    type="hidden"
-                    name="servico_id"
-                    value="{{ servico.id }}"
-                  />
+    /* Tabs - estilo moderno igual à agenda com scroll horizontal */
+    .tabs {
+        display: flex;
+        gap: var(--espaco-xs);
+        border-bottom: 2px solid var(--roxoPrincipal);
+        margin-bottom: var(--espaco-lg);
 
-                  {% if filtra_inativo_servico %}
-                  <input type="hidden" name="tipo" value="reativar_servico" />
-                  <button class="btn_reativar" type="submit"><i class='bx  bx-undo'  ></i> </button>
-                  {% else %}
-                  <input type="hidden" name="tipo" value="inativar_servico" />
-                  <button class="btn_excluir" type="submit"><i class='bx  bx-trash'  ></i> </button>
-                  {% endif %}
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="tabela_infos-dados">
-        <form method="get" style="display: inline">
-          <label class="label_inativos">
-            <input
-              type="checkbox"
-              name="filtra_inativo_servico"
-              onchange="this.form.submit()" {% if filtra_inativo_servico %}checked{% endif %}/>
-            Mostrar apenas inativos
-          </label>
-        </form>
-      </div>
-    </div>
-    <div class="form form-3">
-      <h2 class="form_titulo">Configurações de Acesso e Valores</h2>
-      <form method="POST" action="">
-        {% csrf_token %}
-        <input type="hidden" name="tipo" value="usuario_config" />
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
 
-        <div class="formField">
-          <select
-            class="input-s"
-            name="usuario_id"
-            id="usuario-select"
-            onchange="carregarDadosUsuario()"
-          >
-            <option disabled selected value="">
-              -- Selecione um profissional --
-            </option>
-            {% for u in usuarios %}
-            <option
-              value="{{ u.id }}"
-              data-tipo="{{ u.tipo }}"
-              data-ativo="{{ u.ativo|yesno:'on,off' }}"
-              data-hora="{{ u.profissional.valor_hora|default_if_none:''}}"
-            >
-              {{ u.get_full_name }} ({{ u.username }})
-            </option>
-            {% endfor %}
-          </select>
-
-          <select disabled class="input-s" name="tipo_usuario" id="tipo-select">
-            <option disabled selected value="">
-              -- Selecione um tipo de usuário --
-            </option>
-            {% for valor, label in user_tipo_choices %}
-            <option value="{{ valor }}">{{ label }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="formField">
-          <input
-            disabled
-            class="input-s"
-            type="text"
-            step="0.01"
-            name="valor_hora"
-            id="valor-hora-input"
-            placeholder="Valor da hora"
-            autocomplete="off"
-          />
-
-          <input
-            disabled
-            class="input-s"
-            type="password"
-            id="nova_senha"
-            name="nova_senha"
-            placeholder="Digite nova senha"
-            autocomplete="off"
-          />
-          <input
-            disabled
-            class="input-s"
-            type="password"
-            id="confirma_senha"
-            name="confirma_senha"
-            placeholder="Confirme nova senha"
-            autocomplete="off"
-          />
-        </div>
-        <p id="senha-msg" style="font-size: 14px; margin-top: 5px"></p>
-
-        <button type="submit">Salvar alterações</button>
-      </form>
-    </div>
-    <div class="form form-4"></div>
-    <div class="form form-5"></div>
-    <div class="form form-6"></div>
-  </div>
-</div>
-{% include "core/partials/alertas.html" %} {% endblock %} {% block scripts %}
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const novaSenha = document.getElementById("nova_senha");
-    const confirmaSenha = document.getElementById("confirma_senha");
-    const msg = document.getElementById("senha-msg");
-
-    function verificarSenhas() {
-      if (!novaSenha.value && !confirmaSenha.value) {
-        msg.textContent = "";
-        return;
-      }
-
-      if (novaSenha.value === confirmaSenha.value) {
-        msg.textContent = "✔ Senhas coincidem";
-        msg.style.color = "green";
-      } else {
-        msg.textContent = "✖ Senhas não coincidem";
-        msg.style.color = "red";
-      }
     }
 
-    novaSenha.addEventListener("input", verificarSenhas);
-    confirmaSenha.addEventListener("input", verificarSenhas);
-  });
-</script>
+    .tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab {
+        background: transparent;
+        border: 2px solid transparent;
+        border-bottom: none;
+        padding: var(--espaco-sm) var(--espaco-md);
+        font-weight: 600;
+        font-size: 0.85rem;
+        border-radius: var(--borda-radius) var(--borda-radius) 0 0;
+        cursor: pointer;
+        color: var(--cinza-escuro);
+        transition: var(--transicao);
+        display: flex;
+        align-items: center;
+        gap: var(--espaco-xs);
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .tab.active {
+        background: var(--roxoPrincipal);
+        color: var(--branco);
+        border-color: var(--roxoPrincipal);
+        transform: translateY(1px);
+    }
+
+    .tab:hover:not(.active) {
+        background: var(--roxoPrincipal-hover);
+        color: var(--roxoPrincipal);
+        border-color: var(--roxoPrincipal);
+    }
+
+    /* Conteúdo das tabs */
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Forms - seguindo o padrão da agenda */
+    .form {
+        background: var(--branco);
+        border: 1px solid var(--cinza-borda);
+        border-radius: var(--borda-arredondada);
+        padding: var(--espaco-lg);
+        margin-bottom: var(--espaco-lg);
+        box-shadow: var(--sombra-suave);
+        position: relative;
+        overflow-y: auto;
+    }
+
+    .form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
+    }
+
+    .form_titulo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--roxoPrincipal);
+        margin-bottom: var(--espaco-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--espaco-sm);
+        padding-bottom: var(--espaco-sm);
+        border-bottom: 2px solid var(--cinza-claro);
+    }
+
+    /* Layout de formulário grid - igual à agenda */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--espaco-md);
+        margin-bottom: var(--espaco-lg);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--espaco-xs);
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        color: var(--cinza-escuro);
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: var(--espaco-xs);
+    }
+
+    /* Input fields - padrão agenda */
+    .input-field {
+        background: var(--branco);
+        border: 1px solid var(--cinza-borda);
+        border-radius: var(--borda-radius);
+        padding: 0.75rem 1rem;
+        color: var(--preto);
+        width: 100%;
+        font-size: 0.95rem;
+        transition: var(--transicao);
+        box-sizing: border-box;
+        font-family: var(--fontePrincipal);
+    }
+
+    .input-field:focus {
+        outline: none;
+        border-color: var(--roxoPrincipal);
+        box-shadow: var(--sombra-focus);
+        transform: translateY(-1px);
+    }
+
+    .input-field:disabled {
+        background-color: var(--cinza-claro);
+        border-color: var(--cinza-borda);
+        color: var(--cinza-medio);
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Textarea específico */
+    textarea.input-field {
+        resize: vertical;
+        min-height: 80px;
+        font-family: var(--fontePrincipal);
+        line-height: 1.5;
+    }
+
+    /* Select múltiplo */
+    select.input-field[multiple] {
+        height: auto;
+        min-height: 120px;
+        padding: 0.75rem;
+    }
+
+    select.input-field[multiple] option {
+        padding: 0.5rem;
+        margin: 0.25rem 0;
+        border-radius: var(--borda-radius-sm);
+        transition: var(--transicao);
+    }
+
+    select.input-field[multiple] option:hover {
+        background: var(--roxoPrincipal-hover);
+    }
+
+    select.input-field[multiple] option:checked {
+        background: var(--roxoPrincipal);
+        color: var(--branco);
+    }
+
+    /* Input de cor personalizado */
+    .color-input-wrapper {
+        display: flex;
+        align-items: center;
+        gap: var(--espaco-sm);
+    }
+
+    .color-input {
+        width: 60px !important;
+        height: 45px;
+        padding: 0.2em;
+        cursor: pointer;
+        border: 2px solid var(--cinza-borda);
+        border-radius: var(--borda-radius);
+        transition: var(--transicao);
+    }
+
+    .color-input:hover {
+        border-color: var(--roxoPrincipal);
+        transform: scale(1.05);
+    }
+
+    .color-preview {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--borda-radius);
+        border: 2px solid var(--cinza-borda);
+        box-shadow: var(--sombra-suave);
+        transition: var(--transicao);
+    }
+
+    /* Botões - estilo agenda */
+    .btn-submit {
+        background: linear-gradient(135deg, var(--roxoPrincipal), var(--roxo-primary-hover));
+        border: none;
+        padding: 0.875rem 1.75rem;
+        border-radius: var(--borda-radius);
+        font-weight: 700;
+        color: var(--branco);
+        cursor: pointer;
+        transition: var(--transicao);
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--espaco-xs);
+        box-shadow: var(--sombra-destaque);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(127, 67, 150, 0.35);
+        background: linear-gradient(135deg, var(--roxo-primary-hover), var(--roxoPrincipal));
+    }
+
+    .btn-submit:disabled {
+        background: var(--cinza-medio);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Tabelas - estilo agenda */
+    .tabela-wrapper {
+
+        border-radius: var(--borda-arredondada);
+        overflow: hidden;
+        margin-top: var(--espaco-lg);
+        box-shadow: var(--sombra-suave);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        color: var();
+    }
+
+    thead {
+        background: linear-gradient(135deg, var(--roxoPrincipal), var(--roxo-primary-hover));
+        color: var(--branco);
+    }
+
+    th {
+        padding: 1rem;
+        border-bottom: 1px solid var(--cinza-borda);
+        text-align: left;
+    }
+
+    th {
+        font-weight: 700;
+        font-size: 0.85rem;
+
+        letter-spacing: 0.5px;
+    }
+
+    td {
+        padding: .5em;
+    }
+
+    tbody tr {
+        transition: var(--transicao);
+    }
+
+
+    tbody tr:hover {
+        background: var(--roxoPrincipal-hover);
+        transform: translateX(4px);
+    }
+
+    /* Estados inativo - seguindo padrão agenda */
+    .inativo {
+        background-color: var(--vermelho-alerta) !important;
+        opacity: 0.7;
+        color: var(--preto);
+    }
+
+    .inativo td {
+        color: var(--preto);
+    }
+
+    /* Status badges - estilo agenda */
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-badge.active {
+        background: var(--verde-sucesso);
+        color: var(--branco);
+    }
+
+    .status-badge.inactive {
+        background: var(--vermelho-alerta);
+        color: var(--branco);
+    }
+
+    /* Mensagens de formulário */
+    .form-message {
+        position: absolute;
+        bottom: 1em;
+        right: 1em;
+        font-size: 0.85rem;
+        margin-top: var(--espaco-xs);
+        padding: 1.5em;
+        border-radius: var(--borda-radius);
+        display: none;
+        font-weight: 500;
+    }
+
+    .form-message.success {
+        background: var(--verde-sucesso);
+        color: var(--branco);
+        display: block;
+    }
+
+    .form-message.error {
+        background: var(--vermelho-alerta);
+        color: var(--branco);
+        display: block;
+    }
+
+    /* Select styles - igual agenda */
+    select.input-field {
+        padding-right: 2.5rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236D398E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    /* File input customizado */
+    .input-field[type="file"] {
+        padding: 0.5rem;
+        border: 2px dashed var(--cinza-borda);
+        background: var(--cinza-claro);
+    }
+
+    .input-field[type="file"]:hover {
+        border-color: var(--roxoPrincipal);
+        background: var(--roxoPrincipal-hover);
+    }
+
+    /* Checkbox e radio customizados */
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--espaco-sm);
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: var(--espaco-sm);
+        padding: var(--espaco-sm);
+        border: 1px solid var(--cinza-borda);
+        border-radius: var(--borda-radius);
+        transition: var(--transicao);
+        cursor: pointer;
+    }
+
+    .checkbox-item:hover {
+        border-color: var(--roxoPrincipal);
+        background: var(--roxoPrincipal-hover);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--roxoPrincipal);
+    }
+
+    /* Ações na tabela */
+    .acoes-cell {
+        display: flex;
+        gap: var(--espaco-xs);
+    }
+
+    .btn-acao {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: var(--borda-radius);
+        background: transparent;
+        color: var(--cinza-escuro);
+        cursor: pointer;
+        transition: var(--transicao);
+        font-size: 1.1rem;
+    }
+
+    .btn-acao:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--sombra-suave);
+    }
+
+    .btn-acao.editar:hover {
+        background: var(--verde-sucesso);
+        color: var(--branco);
+    }
+
+    .btn-acao.excluir:hover {
+        background: var(--vermelho-alerta);
+        color: var(--branco);
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .content.multipage {
+            padding: var(--espaco-sm);
+            margin-top: var(--espaco-sm);
+            border-radius: var(--borda-radius);
+        }
+
+        .tabs {
+            flex-direction: row;
+            gap: var(--espaco-xs);
+        }
+
+        .tab {
+            border-radius: var(--borda-radius);
+            border: 2px solid transparent;
+            justify-content: center;
+            font-size: 0.8rem;
+            padding: var(--espaco-sm);
+        }
+
+        .tab.active {
+            border-radius: var(--borda-radius);
+            transform: none;
+        }
+
+        .form {
+            padding: var(--espaco-md);
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: var(--espaco-sm);
+        }
+
+        .form_titulo {
+            font-size: 1.1rem;
+        }
+
+        .tabela-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            min-width: 600px;
+        }
+    }
+
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Estados vazios */
+    .empty-state {
+        text-align: center;
+        padding: var(--espaco-xl);
+        color: var(--cinza-medio);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: var(--espaco-md);
+        color: var(--cinza-borda);
+    }
+
+    /* Info boxes para configurações */
+    .config-info {
+        background: linear-gradient(to right, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+        border-left: 4px solid var(--azul);
+        padding: var(--espaco-md);
+        border-radius: var(--borda-radius);
+        margin-bottom: var(--espaco-md);
+        display: flex;
+        align-items: center;
+        gap: 1em;
+    }
+
+    .config-info.warning {
+        background: linear-gradient(to right, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+        border-left: 4px solid var(--laranja);
+    }
+
+    .config-info.success {
+        background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+        border-left: 4px solid var(--verde-sucesso);
+    }
+
+    .disp-card,
+    .week-grid {
+        display: grid;
+        grid-template-columns: 150px 100px repeat(6, 120px);
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #333;
+    }
+
+    .week-grid {
+        border: none;
+    }
+
+    /* Estilos para edição em linha */
+    .editable {
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .editable.editing {
+        background-color: var(--roxoPrincipal-hover);
+    }
+
+    .edit-input {
+        width: 100%;
+        padding: 0.25rem 0.5rem;
+        border: 2px solid var(--roxoPrincipal);
+        border-radius: var(--borda-radius);
+        background: var(--branco);
+        font-size: 0.9rem;
+    }
+
+    .editable .display-text {
+        padding: 0.25rem 0;
+    }
+
+    .btn-acao.salvar:hover {
+        background: var(--verde-sucesso);
+        color: var(--branco);
+    }
+
+    .btn-acao.cancelar:hover {
+        background: var(--vermelho-alerta);
+        color: var(--branco);
+    }
+</style>
+{% endblock %}
+
+{% block topbar_title %}<span class="text"><i class='bx bx-cog'></i>Configurações</span>{% endblock %}
+
+{% block content %}
+<div class="content multipage">
+
+    <!-- Abas -->
+    <div class="tabs">
+        <button class="tab active" data-target="especialidades" data-section="especialidades">
+            <i class='bx bx-book-content'></i> Especialidades
+        </button>
+        <button class="tab" data-target="servicos" data-section="servicos">
+            <i class='bx bx-cog'></i> Serviços
+        </button>
+        <button class="tab" data-target="acessos" data-section="acessos">
+            <i class='bx bx-user'></i> Acessos & Valores
+        </button>
+        <a href="#agenda" class="tab" data-target="agenda" data-section="agenda" role="button">
+            <i class='bx bx-calendar'></i> Agenda
+        </a>
+        <button class="tab" data-target="financeiro" data-section="financeiro">
+            <i class='bx bx-dollar-circle'></i> Financeiro
+        </button>
+        <button class="tab" data-target="notificacoes" data-section="notificacoes">
+            <i class='bx bx-bell'></i> Notificações
+        </button>
+        <button class="tab" data-target="pacotes" data-section="pacotes">
+            <i class='bx bx-gift'></i> Pacotes & Benefícios
+        </button>
+        <button class="tab" data-target="empresa" data-section="empresa">
+            <i class='bx bx-building'></i> Empresa & Franquia
+        </button>
+        <button class="tab" data-target="estoque" data-section="estoque">
+            <i class='bx bx-box'></i> Estoque
+        </button>
+        <button class="tab" data-target="sistema" data-section="sistema">
+            <i class='bx bx-paint'></i> Sistema
+        </button>
+        <button class="tab" data-target="seguranca" data-section="seguranca">
+            <i class='bx bx-shield'></i> Segurança
+        </button>
+    </div>
+
+
+    <!-- Aba Especialidades -->
+    <div class="tab-content active" id="especialidades">
+        <div class="form">
+
+            <h2 class="form_titulo"><i class='bx bx-book-content'></i> Gerenciar Especialidades</h2>
+
+            <form method="post" id="form-especialidade">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="especialidade" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="especialidade-nome"><i class='bx bx-rename'></i> Nome da Especialidade</label>
+                        <input class="input-field" id="especialidade-nome" name="nome"
+                            placeholder="Digite o nome da especialidade" type="text" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="especialidade-cor"><i class='bx bx-palette'></i> Cor de Identificação</label>
+                        <div class="color-input-wrapper">
+                            <input class="input-field color-input" id="especialidade-cor" type="color" name="cor"
+                                value="#7F4396" />
+                            <div class="color-preview" id="color-preview" style="background-color: #7F4396"></div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Especialidade</button>
+            </form>
+
+            <div class="tabela-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Especialidade</th>
+                            <th>Cor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for especialidade in especialidades %}
+                        <tr class="{% if not especialidade.ativo %}inativo{% endif %}">
+                            <td class="editable" data-field="nome" data-id="{{ especialidade.id }}"
+                                data-model="especialidade">
+                                <span class="display-text">{{ especialidade.nome }}</span>
+                                <input type="text" class="edit-input" value="{{ especialidade.nome }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="cor" data-id="{{ especialidade.id }}"
+                                data-model="especialidade">
+                                <span class="display-text">
+                                    <div
+                                        style="background-color: {{ especialidade.cor }}; width: 60px; height: 24px; border-radius: var(--borda-radius); border: 2px solid var(--cinza-borda);">
+                                    </div>
+                                </span>
+                                <input type="color" class="edit-input" value="{{ especialidade.cor }}"
+                                    style="display: none; width: 60px; height: 30px;">
+                            </td>
+                            <td>
+                                <span
+                                    class="status-badge {% if especialidade.ativo %}active{% else %}inactive{% endif %}">
+                                    {{ especialidade.ativo|yesno:"Ativo,Inativo" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="acoes-cell">
+                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                        onclick="salvarEdicao(this)">
+                                        <i class='bx bx-check'></i>
+                                    </button>
+                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                        onclick="cancelarEdicao(this)">
+                                        <i class='bx bx-x'></i>
+                                    </button>
+                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="especialidade_id" value="{{ especialidade.id }}">
+                                        <button type="submit" name="tipo" value="inativar_especialidade"
+                                            class="btn-acao excluir" title="Inativar">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <i class='bx bx-inbox'></i>
+                                <p>Nenhuma especialidade cadastrada</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aba Serviços -->
+    <div class="tab-content" id="servicos">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-cog'></i> Gerenciar Serviços</h2>
+            <form method="post" id="form-servico">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="servico" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="servico-nome"><i class='bx bx-rename'></i> Nome do Serviço</label>
+                        <input class="input-field capitalize-input" id="servico-nome" name="nome"
+                            placeholder="Digite o nome do serviço" type="text" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="servico-sessoes"><i class='bx bx-calendar'></i> Quantidade de Sessões</label>
+                        <input class="input-field" id="servico-sessoes" name="qtd_sessoes"
+                            placeholder="Número de sessões" type="number" min="1" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="servico-valor"><i class='bx bx-dollar'></i> Valor (R$)</label>
+                        <input class="input-field" id="servico-valor" name="valor" placeholder="0.00" type="number"
+                            step="0.01" min="0" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Serviço</button>
+            </form>
+
+            <div class="tabela-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>Sessões</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for servico in servicos %}
+                        <tr class="{% if not servico.ativo %} inactive{% endif %}">
+                            <td class="editable" data-field="nome" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.nome }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.nome }}" style="display: none;">
+                            </td>
+                            <td class="editable" data-field="valor" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.valor }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.valor }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="qtd_sessoes" data-id='{{servico.id}}' data-model="servico">
+                                <span class="display-text">{{ servico.qtd_sessoes }}</span>
+                                <input type="text" class="edit-input" value="{{ servico.qtd_sessoes  }}"
+                                    style="display: none;">
+                            </td>
+
+
+                            <td>
+                                <span class="status-badge {% if servico.ativo %}active{% else %}inactive{% endif %}">
+                                    {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="acoes-cell">
+                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                        onclick="salvarEdicao(this)">
+                                        <i class='bx bx-check'></i>
+                                    </button>
+                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                        onclick="cancelarEdicao(this)">
+                                        <i class='bx bx-x'></i>
+                                    </button>
+                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
+                                    <!-- Botão de inativar -->
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="servico_id" value="{{ servico.id }}">
+                                        <button type="submit" name="tipo" value="inativar_servico"
+                                            class="btn-acao excluir" title="Inativar">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class='bx bx-inbox'></i>
+                                <p>Nenhum fornecedor cadastrado</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aba Acessos -->
+    <div class="tab-content" id="acessos">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-user'></i> Gerenciar Acessos & Valores</h2>
+            <form method="POST" id="form-usuario">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="usuario_config" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="usuario-select"><i class='bx bx-user-circle'></i> Selecione o Profissional</label>
+                        <select class="input-field" name="usuario_id" id="usuario-select"
+                            onchange="carregarDadosUsuario()" required>
+                            <option value="" disabled selected>Selecione um profissional</option>
+                            {% for u in usuarios %}
+                            <option value="{{ u.id }}" data-tipo="{{ u.tipo }}"
+                                data-hora="{{ u.profissional.valor_hora|default_if_none:'' }}">
+                                {{ u.get_full_name|default:u.username }} ({{ u.username }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo-select"><i class='bx bx-cog'></i> Tipo de Usuário</label>
+                        <select class="input-field" name="tipo_usuario" id="tipo-select" disabled>
+                            <option value="" disabled selected>Selecione o tipo</option>
+                            {% for valor, label in user_tipo_choices %}
+                            <option value="{{ valor }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor-hora-input"><i class='bx bx-dollar-circle'></i> Valor da Hora (R$)</label>
+                        <input class="input-field" type="number" name="valor_hora" id="valor-hora-input"
+                            placeholder="0.00" step="0.01" min="0" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="nova_senha"><i class='bx bx-lock-alt'></i> Nova Senha</label>
+                        <input class="input-field" type="password" id="nova_senha" name="nova_senha"
+                            placeholder="Deixe em branco para manter a atual" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="confirma_senha"><i class='bx bx-lock'></i> Confirmar Senha</label>
+                        <input class="input-field" type="password" id="confirma_senha" name="confirma_senha"
+                            placeholder="Confirme a nova senha" disabled />
+                    </div>
+                </div>
+                <div id="senha-msg" class="form-message"></div>
+                <button type="submit" class="btn-submit" id="btn-salvar-usuario" disabled><i class='bx bx-save'></i>
+                    Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aba Agenda -->
+    <div class="tab-content" id="agenda">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-calendar'></i> Configurações de Agenda</h2>
+            <div class="config-info">
+                <i class='bx bx-info-circle'></i> Configure os horários padrão e dias de funcionamento da clínica.
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="config_agenda" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-time-five'></i> Horário de Abertura</label>
+                        <input class="input-field" type="time" name="hora_abertura" value="08:00" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-time'></i> Horário de Fechamento</label>
+                        <input class="input-field" type="time" name="hora_fechamento" value="18:00" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-refresh'></i> Intervalo Padrão (min)</label>
+                        <input class="input-field" type="number" name="intervalo" min="5" value="30" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class='bx bx-calendar-week'></i> Dias de Funcionamento</label>
+                        <select class="input-field" multiple name="dias_semana" required>
+                            <option value="1" selected>Segunda-feira</option>
+                            <option value="2" selected>Terça-feira</option>
+                            <option value="3" selected>Quarta-feira</option>
+                            <option value="4" selected>Quinta-feira</option>
+                            <option value="5" selected>Sexta-feira</option>
+                            <option value="6">Sábado</option>
+                            <option value="0">Domingo</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+            </form>
+        </div>
+        <div class="form mt-6">
+            <div class="form_titulo"><i class='bx bx-user-check'></i> Disponibilidade por Profissional (escala
+                base)</div>
+            <div class="config-info">
+                <i class='bx bx-info-circle'></i> Marque os dias padrão de cada profissional. Os horários por dia são
+                opcionais —
+                se deixados em branco, valem os horários gerais da clínica definidos acima.
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="escala_base" />
+
+                {% for prof in profissionais %}
+                <div class="disp-card">
+
+                    <div class="pill"><i class='bx bx-user'></i> {{ prof.nome }}</div>
+                    <div class="pill"><i class='bx bx-id-card'></i> ID: {{ prof.id }}</div>
+
+
+                    <div class="week-grid">
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][seg][ativo]">
+                                Segunda
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][seg][inicio]"
+                            placeholder="Início">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][seg][fim]" placeholder="Fim">
+                        -->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][ter][ativo]">
+                                Terça
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][ter][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][ter][fim]">
+-->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][qua][ativo]">
+                                Quarta
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][qua][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][qua][fim]">
+-->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][qui][ativo]">
+                                Quinta
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][qui][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][qui][fim]">
+-->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][sex][ativo]">
+                                Sexta
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][sex][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][sex][fim]">
+-->
+                        <div class="day-label">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="disp[{{prof.id}}][sab][ativo]">
+                                Sábado
+                            </label>
+                        </div>
+                        <!--
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][sab][inicio]">
+                        <input class="input-field" type="time" name="disp[{{prof.id}}][sab][fim]">
+-->
+
+                    </div>
+                </div>
+                {% empty %}
+                <div class="config-info"><i class='bx bx-info-circle'></i> Nenhum profissional encontrado.</div>
+                {% endfor %}
+
+                <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Escala Base</button>
+            </form>
+        </div>
+
+        <div class="form mt-6">
+            <div class="form_titulo"><i class='bx bx-calendar-plus'></i> Exceções de Disponibilidade por Data</div>
+            <div class="config-info">
+                <i class='bx bx-info-circle'></i> Use para ajustes pontuais (ex.: veio numa terça excepcionalmente ou
+                faltou num dia fixo).
+                Marque <b>Disponível</b> para forçar presença no dia; desmarcado significa <b>Indisponível</b>
+                (sobrescreve a escala).
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="excecao_add" />
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-calendar'></i> Data</label>
+                        <input class="input-field" type="date" name="exc[0][data]" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-user'></i> Profissional</label>
+                        <select class="input-field" name="exc[0][profissional_id]" required>
+                            <option value="" selected disabled>Selecione</option>
+                            {% for p in profissionais %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-toggle-left'></i> Disponível no dia?</label>
+                        <label class="pill"><input type="checkbox" name="exc[0][ativo]" checked> Disponível</label>
+                    </div>
+
+                    {# segunda linha extra opcional, sem JS #}
+                    <div class="form-group">
+                        <input class="input-field" type="date" name="exc[1][data]">
+                    </div>
+                    <div class="form-group">
+                        <select class="input-field" name="exc[1][profissional_id]">
+                            <option value="" selected disabled>Selecione</option>
+                            {% for p in profissionais %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="pill"><input type="checkbox" name="exc[1][ativo]"> Disponível</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Exceções</button>
+            </form>
+        </div>
+
+
+        <div class="form mt-6">
+            <div class="subsection-title"><i class='bx bx-calendar-event'></i> Exceções cadastradas (mês atual)</div>
+
+            <table class="table-compact">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Profissional</th>
+                        <th>Status no dia</th>
+                        <th>Observação</th>
+                        <th style="width:1%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in excecoes_mes %}
+                    <tr>
+                        <td>{{ e.data|date:"d/m/Y" }}</td>
+                        <td>{{ e.profissional.nome }}</td>
+                        <td>
+                            {% if e.ativo %}
+                            <span class="badge-on">Disponível</span>
+                            {% else %}
+                            <span class="badge-off">Indisponível</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ e.observacao }}</td>
+                        <td>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="tipo" value="excecao_delete" />
+                                <input type="hidden" name="excecao_id" value="{{ e.id }}" />
+                                <button class="btn-submit" style="padding:.35rem .6rem"><i
+                                        class='bx bx-trash'></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">Nenhuma exceção cadastrada este mês.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Aba Financeiro -->
+    <div class="tab-content" id="financeiro">
+        <!-- Seção Bancos -->
+        <div class="form">
+            <form method="post" id="form-bancos">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="cadastro_bancos" />
+                <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i> Cadastro de Bancos</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-analyse'></i> Código</label>
+                        <input class="input-field" type="number" name="codigo_banco" placeholder="Ex.: 001">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-pie-chart-alt-2'></i> Nome Banco</label>
+                        <input class="input-field" type="text" name="nome_banco" placeholder="Ex.: Banco do Brasil">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i> Agência</label>
+                        <input class="input-field" type="number" step="0.1" name="agencia_banco"
+                            placeholder="Ex.: 1234">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i> Conta</label>
+                        <input class="input-field" type="number" step="0.1" name="conta_banco" placeholder="Ex.: 56789">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i> Dígito</label>
+                        <input class="input-field" type="number" step="0.1" name="digito_banco" placeholder="Ex.: 1">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-analyse'></i> Tipo</label>
+                        <select class="input-field" name="tipo_conta_banco">
+                            <option disabled selected>-- Selecione --</option>
+                            <option value="corrente">Conta Corrente</option>
+                            <option value="poupanca">Conta Poupança</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i> Chave Pix</label>
+                        <input class="input-field" type="text" name="chave_pix_banco"
+                            placeholder="Ex.: CPF, CNPJ, telefone, e-mail ou aleatória">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Banco</button>
+            </form>
+
+            <!-- Tabela de Bancos DENTRO da div.form -->
+            <div class="tabela-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Código</th>
+                            <th>Nome</th>
+                            <th>Conta</th>
+                            <th>Digito</th>
+                            <th>Chave Pix</th>
+                            <th>Situação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for banco in bancos %}
+                        <tr class="{% if not banco.ativo %} inactive{% endif %}">
+                            <td class="editable" data-field="tipo_conta_banco" data-id='{{banco.id}}'
+                                data-model="banco">
+                                <span class="display-text">{{ banco.get_tipo_conta_banco_display }}</span>
+                                <input type="text" class="edit-input" value="{{ banco.tipo_conta_banco }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="codigo_banco" data-id='{{banco.id}}' data-model="banco">
+                                <span class="display-text">{{ banco.codigo_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ banco.codigo_banco }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="nome_banco" data-id='{{banco.id}}' data-model="banco">
+                                <span class="display-text">{{ banco.nome_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ banco.nome_banco  }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="conta_banco" data-id='{{banco.id}}' data-model="banco">
+                                <span class="display-text">{{ banco.conta_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ fbanco.conta_banco }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="digito_banco" data-id='{{banco.id}}' data-model="banco">
+                                <span class="display-text">{{ banco.digito_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ banco.digito_banco  }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="chave_pix_banco" data-id='{{banco.id}}' data-model="banco">
+                                <span class="display-text">{{ banco.chave_pix_banco }}</span>
+                                <input type="text" class="edit-input" value="{{ banco.chave_pix_banco }}"
+                                    style="display: none;">
+                            </td>
+
+                            <td>
+                                <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
+                                    {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="acoes-cell">
+                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                        onclick="salvarEdicao(this)">
+                                        <i class='bx bx-check'></i>
+                                    </button>
+                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                        onclick="cancelarEdicao(this)">
+                                        <i class='bx bx-x'></i>
+                                    </button>
+                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
+                                    <!-- Botão de inativar -->
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="banco_id" value="{{ banco.id }}">
+                                        <button type="submit" name="tipo" value="inativar_banco"
+                                            class="btn-acao excluir" title="Inativar">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class='bx bx-inbox'></i>
+                                <p>Nenhum fornecedor cadastrado</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Seção Fornecedores -->
+        <div class="form">
+            <form method="post" id="form-fornecedores">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="cadastro_fornecedores" />
+                <h2 class="form_titulo"><i class='bx bx-building'></i> Cadastro de Fornecedores</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-analyse'></i> Tipo</label>
+                        <select class="input-field" name="tipo_pessoa">
+                            <option disabled selected>-- Selecione --</option>
+                            <option value="juridica">Pessoa Jurídica</option>
+                            <option value="fisica">Pessoa Física</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-pie-chart-alt-2'></i> Documento</label>
+                        <input class="input-field" type="text" name="documento_fornecedor"
+                            placeholder="12.345.678/0000-00">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-pie-chart-alt-2'></i> Razão Social</label>
+                        <input class="input-field" type="text" name="razao_social_fornecedor"
+                            placeholder="Ex.: Empresa XYZ Ltda">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i> Nome Fantasia</label>
+                        <input class="input-field" type="text" name="fantasia_fornecedor"
+                            placeholder="Nome fantasia da empresa">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i> Telefone</label>
+                        <input class="input-field" type="text" name="telefone_fornecedor" placeholder="(11) 99999-9999">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-error'></i> Email</label>
+                        <input class="input-field" type="email" name="email_fornecedor"
+                            placeholder="exemplo@empresa.com">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Fornecedor</button>
+            </form>
+
+            <!-- Tabela de Fornecedores DENTRO da div.form -->
+            <div class="tabela-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Documento</th>
+                            <th>Razão Social</th>
+                            <th>Nome Fantasia</th>
+                            <th>Telefone</th>
+                            <th>Email</th>
+                            <th>Situação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fornecedor in fornecedores %}
+                        <tr class="{% if not fornecedor.ativo %} inactive{% endif %}">
+                            <td class="editable" data-field="tipo_pessoa" data-id='{{fornecedor.id}}'
+                                data-model="fornecedor">
+                                <span class="display-text">{{ fornecedor.tipo_pessoa }}</span>
+                                <input type="text" class="edit-input" value="{{ fornecedor.tipo_pessoa }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="documento" data-id='{{fornecedor.id}}'
+                                data-model="fornecedor">
+                                <span class="display-text">{{ fornecedor.documento }}</span>
+                                <input type="text" class="edit-input" value="{{ fornecedor.documento }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="razao_social" data-id='{{fornecedor.id}}'
+                                data-model="fornecedor">
+                                <span class="display-text">{{ fornecedor.razao_social }}</span>
+                                <input type="text" class="edit-input" value="{{ fornecedor.razao_social }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="nome_fantasia" data-id='{{fornecedor.id}}'
+                                data-model="fornecedor">
+                                <span class="display-text">{{ fornecedor.nome_fantasia }}</span>
+                                <input type="text" class="edit-input" value="{{ fornecedor.nome_fantasia }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="telefone" data-id='{{fornecedor.id}}'
+                                data-model="fornecedor">
+                                <span class="display-text">{{ fornecedor.telefone }}</span>
+                                <input type="text" class="edit-input" value="{{ fornecedor.telefone }}"
+                                    style="display: none;">
+                            </td>
+                            <td class="editable" data-field="email" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                                <span class="display-text">{{ fornecedor.email }}</span>
+                                <input type="text" class="edit-input" value="{{ fornecedor.email }}"
+                                    style="display: none;">
+                            </td>
+                            <td>
+                                <span class="status-badge {% if fornecedor.ativo %}active{% else %}inactive{% endif %}">
+                                    {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="acoes-cell">
+                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                        onclick="salvarEdicao(this)">
+                                        <i class='bx bx-check'></i>
+                                    </button>
+                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                        onclick="cancelarEdicao(this)">
+                                        <i class='bx bx-x'></i>
+                                    </button>
+                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
+                                    <!-- Botão de inativar -->
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="fornecedor_id" value="{{ fornecedor.id }}">
+                                        <button type="submit" name="tipo" value="inativar_fornecedor"
+                                            class="btn-acao excluir" title="Inativar">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class='bx bx-inbox'></i>
+                                <p>Nenhum fornecedor cadastrado</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Aba Notificações -->
+    <div class="tab-content" id="notificacoes">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-bell'></i> Configurações de Notificações</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-grid">
+
+                    <!-- Ativar envios automáticos -->
+                    <div class="form-group full-width">
+                        <label><i class='bx bx-toggle-left'></i> Envio Automático de Lembretes</label>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <label><input type="checkbox" name="envio_24h" value="1"> Enviar 24h antes</label>
+                            <label><input type="checkbox" name="envio_12h" value="1"> Enviar 12h antes</label>
+                            <label><input type="checkbox" name="envio_4h" value="1"> Enviar 4h antes</label>
+                            <label><input type="checkbox" name="envio_confirmacao" value="1"> Enviar imediatamente ao
+                                agendar</label>
+                        </div>
+                    </div>
+
+                    <!-- Escolha de canais -->
+                    <div class="form-group full-width">
+                        <label><i class='bx bx-message-dots'></i> Canais de Envio</label>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <label><input type="checkbox" name="canal_whatsapp" value="1" checked> WhatsApp</label>
+                            <label><input type="checkbox" name="canal_email" value="1"> E-mail</label>
+                            <label><input type="checkbox" name="canal_sms" value="1"> SMS</label>
+                        </div>
+                    </div>
+
+                    <!-- Mensagem WhatsApp -->
+                    <div class="form-group full-width">
+                        <label for="msg_whatsapp"><i class='bx bx-message-rounded-detail'></i> Modelo de Mensagem
+                            (WhatsApp)</label>
+                        <textarea class="input-field" rows="4" id="msg_whatsapp" name="msg_whatsapp"
+                            placeholder="Ex: Olá {{paciente}}, lembramos sua sessão dia {{data}} às {{hora}}"></textarea>
+                        <small style="color:var(--cinza-medio);">Use variáveis: <b>{{paciente}}</b>, <b>{{data}}</b>,
+                            <b>{{hora}}</b></small>
+                    </div>
+
+                    <!-- Assinatura de e-mails -->
+                    <div class="form-group full-width">
+                        <label for="assinatura_email"><i class='bx bx-envelope'></i> Assinatura nos E-mails</label>
+                        <textarea class="input-field" rows="3" id="assinatura_email" name="assinatura_email"
+                            placeholder="Equipe Clínica Ponto de Equilíbrio"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class='bx bx-save'></i> Salvar Configurações
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aba Pacotes & Benefícios -->
+    <div class="tab-content" id="pacotes">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-gift'></i> Pacotes & Benefícios</h2>
+            <div class="config-info">
+                <i class='bx bx-info-circle'></i> Configure os pacotes de sessões e benefícios para clientes.
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="config_pacotes" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-layer'></i> Nº Sessões Padrão do Pacote</label>
+                        <input class="input-field" type="number" name="qtd_sessoes" min="1" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-timer'></i> Validade do Pacote (dias)</label>
+                        <input class="input-field" type="number" name="validade_pacote" min="1" value="90">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-purchase-tag'></i> Desconto do Pacote (%)</label>
+                        <input class="input-field" type="number" step="0.1" name="desconto_pacote" value="10.0" min="0"
+                            max="50">
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class='bx bx-star'></i> Regras de Benefício VIP</label>
+                        <textarea class="input-field" rows="3" name="regras_beneficio"
+                            placeholder="Ex: Cliente VIP após 10 sessões no mês">Cliente VIP: + de 10 sessões/mês\nDesconto especial: 15%\nPrioridade em agendamentos</textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+            </form>
+        </div>
+    </div>
+    <!-- Aba Empresa & Franquia -->
+    <div class="tab-content" id="empresa">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
+
+            <form method="POST" id="form-empresa">
+                {% csrf_token %}
+                <div class="form-grid">
+
+                    <!-- Dados básicos -->
+                    <div class="form-group">
+                        <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
+                        <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
+                        <input class="input-field" id="razao_social" name="razao_social"
+                            placeholder="Nome jurídico da empresa" type="text" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
+                        <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
+                            type="text" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
+                        <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
+                            placeholder="Isento ou número da IE" type="text">
+                    </div>
+
+                    <!-- Contatos -->
+                    <div class="form-group">
+                        <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
+                        <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999"
+                            type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
+                        <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
+                            type="email">
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="form-group full-width">
+                        <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
+                        <input class="input-field" id="endereco" name="endereco"
+                            placeholder="Rua, nº, Bairro, Cidade - UF" type="text">
+                    </div>
+
+                    <!-- Franquia -->
+                    <div class="form-group">
+                        <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
+                        <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
+                            <option value="matriz">Matriz</option>
+                            <option value="franquia">Franquia</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
+                            aplicável)</label>
+                        <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
+                            <option value="">Nenhuma</option>
+                            {% for f in empresas %}
+                            <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class='bx bx-save'></i> Salvar Dados
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- Aba Empresa & Franquia -->
+    <div class="tab-content" id="empresa">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
+
+            <form method="POST" id="form-empresa">
+                {% csrf_token %}
+                <div class="form-grid">
+
+                    <!-- Dados básicos -->
+                    <div class="form-group">
+                        <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
+                        <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
+                        <input class="input-field" id="razao_social" name="razao_social"
+                            placeholder="Nome jurídico da empresa" type="text" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
+                        <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
+                            type="text" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
+                        <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
+                            placeholder="Isento ou número da IE" type="text">
+                    </div>
+
+                    <!-- Contatos -->
+                    <div class="form-group">
+                        <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
+                        <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999"
+                            type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
+                        <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
+                            type="email">
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="form-group full-width">
+                        <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
+                        <input class="input-field" id="endereco" name="endereco"
+                            placeholder="Rua, nº, Bairro, Cidade - UF" type="text">
+                    </div>
+
+                    <!-- Franquia -->
+                    <div class="form-group">
+                        <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
+                        <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
+                            <option value="matriz">Matriz</option>
+                            <option value="franquia">Franquia</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
+                            aplicável)</label>
+                        <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
+                            <option value="">Nenhuma</option>
+                            {% for f in empresas %}
+                            <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class='bx bx-save'></i> Salvar Dados
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- Aba Estoque -->
+    <div class="tab-content" id="estoque">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-box'></i> Controle de Estoque</h2>
+
+            <!-- Cadastro de Produtos -->
+            <form method="POST" id="form-produto">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="produto_cadastro" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="produto-nome"><i class='bx bx-rename'></i> Nome do Produto</label>
+                        <input class="input-field" id="produto-nome" name="nome" placeholder="Ex: Creme Hidratante"
+                            type="text" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="produto-codigo"><i class='bx bx-barcode'></i> Código / EAN</label>
+                        <input class="input-field" id="produto-codigo" name="codigo" placeholder="Código de barras"
+                            type="text" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="produto-categoria"><i class='bx bx-category'></i> Categoria</label>
+                        <input class="input-field" id="produto-categoria" name="categoria" placeholder="Ex: Cosméticos"
+                            type="text" />
+                    </div>
+                    <div class="form-group">
+                        <label for="produto-custo"><i class='bx bx-dollar'></i> Custo Unitário</label>
+                        <input class="input-field" id="produto-custo" name="custo" placeholder="0.00" type="number"
+                            step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="produto-preco"><i class='bx bx-dollar-circle'></i> Preço de Venda</label>
+                        <input class="input-field" id="produto-preco" name="preco" placeholder="0.00" type="number"
+                            step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="produto-minimo"><i class='bx bx-error-circle'></i> Estoque Mínimo</label>
+                        <input class="input-field" id="produto-minimo" name="estoque_minimo" placeholder="Qtd mínima"
+                            type="number" min="0" />
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Cadastrar Produto</button>
+            </form>
+
+            <!-- Movimentação de Estoque -->
+            <form method="POST" id="form-movimentacao" style="margin-top:2rem;">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="estoque_movimentacao" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="produto-id"><i class='bx bx-box'></i> Produto</label>
+                        <select class="input-field" id="produto-id" name="produto_id" required>
+                            <option value="" disabled selected>Selecione</option>
+                            {% for p in produtos %}
+                            <option value="{{ p.id }}">{{ p.nome }} - {{ p.codigo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mov-tipo"><i class='bx bx-transfer'></i> Tipo</label>
+                        <select class="input-field" id="mov-tipo" name="tipo_mov" required>
+                            <option value="entrada">Entrada</option>
+                            <option value="saida">Saída</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mov-quantidade"><i class='bx bx-plus-minus'></i> Quantidade</label>
+                        <input class="input-field" id="mov-quantidade" name="quantidade" type="number" min="1"
+                            required />
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="mov-observacao"><i class='bx bx-note'></i> Observação</label>
+                        <textarea class="input-field" id="mov-observacao" name="observacao" rows="2"
+                            placeholder="Motivo da movimentação"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-check'></i> Registrar Movimentação</button>
+            </form>
+
+            <!-- Tabela de Estoque -->
+            <div class="tabela-wrapper" style="margin-top:2rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Código</th>
+                            <th>Categoria</th>
+                            <th>Estoque Atual</th>
+                            <th>Custo</th>
+                            <th>Preço Venda</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in produtos %}
+                        <tr class="{% if p.estoque_atual <= p.estoque_minimo %}inativo{% endif %}">
+                            <td>{{ p.nome }}</td>
+                            <td>{{ p.codigo }}</td>
+                            <td>{{ p.categoria }}</td>
+                            <td>{{ p.estoque_atual }}</td>
+                            <td>R$ {{ p.custo|floatformat:2 }}</td>
+                            <td>R$ {{ p.preco|floatformat:2 }}</td>
+                            <td>
+                                <div class="acoes-cell">
+                                    <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
+                                    <button class="btn-acao excluir" title="Excluir"><i
+                                            class='bx bx-trash'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <i class='bx bx-package'></i>
+                                <p>Nenhum produto cadastrado</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aba Sistema -->
+    <div class="tab-content" id="sistema">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-paint'></i> Aparência do Sistema</h2>
+            <div class="config-info">
+                <i class='bx bx-info-circle'></i> Personalize a aparência e identidade visual do sistema.
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="config_sistema" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-image'></i> Logo da Clínica</label>
+                        <input class="input-field" type="file" name="logo" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-brightness'></i> Tema do Sistema</label>
+                        <select class="input-field" name="tema">
+                            <option value="claro">Claro</option>
+                            <option value="escuro" selected>Escuro</option>
+                            <option value="auto">Automático</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class='bx bx-file'></i> Cabeçalho de Relatórios</label>
+                        <textarea class="input-field" rows="3"
+                            name="cabecalho_relatorio">Clínica Ponto de Equilíbrio\nCNPJ: 12.345.678/0001-90\nTel: (11) 99999-9999 | www.pontodeequilibrio.com</textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aba Segurança -->
+    <div class="tab-content" id="seguranca">
+        <div class="form">
+            <h2 class="form_titulo"><i class='bx bx-shield'></i> Segurança</h2>
+            <div class="config-info warning">
+                <i class='bx bx-error-circle'></i> Configure as políticas de segurança e acesso ao sistema.
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="config_seguranca" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class='bx bx-lock'></i> Expiração de Sessão (minutos)</label>
+                        <input class="input-field" type="number" name="expiracao_sessao" value="30" min="5" max="480">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-key'></i> Comprimento mínimo da senha</label>
+                        <input class="input-field" type="number" name="min_senha" value="8" min="6" max="20">
+                    </div>
+                    <div class="form-group">
+                        <label><i class='bx bx-check-shield'></i> Exigir senha forte</label>
+                        <select class="input-field" name="senha_forte">
+                            <option value="1" selected>Sim - Letras + Números</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class='bx bx-history'></i> Logs de Auditoria</label>
+                        <textarea class="input-field" rows="4"
+                            disabled>Último acesso: {{ user.last_login|default:"Nunca" }}\nIP: 192.168.1.1\nNavegador: Chrome 120.0\nAtivar exibição detalhada de logs no painel administrativo</textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+
 <script>
-  document
-    .getElementById("valor-hora-input")
-    .addEventListener("input", function () {
-      this.value = this.value.replace(/[^0-9,]/g, ""); // Apenas números e vírgula
+    // Sistema de tabs com URL e persistência
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            // Prevenir comportamento padrão de links
+            if (tab.tagName === 'A') {
+                e.preventDefault();
+            }
+
+            const targetSection = tab.dataset.section || tab.dataset.target;
+
+            // Atualizar tabs ativas
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.target).classList.add('active');
+
+            // Atualizar URL sem recarregar a página
+            const newUrl = `${window.location.pathname}#${targetSection}`;
+            window.history.pushState({}, '', newUrl);
+
+            // Salvar no localStorage para persistência
+            localStorage.setItem('activeTab', targetSection);
+        });
     });
-  function carregarDadosUsuario() {
-    const select = document.getElementById("usuario-select");
-    const selectedOption = select.options[select.selectedIndex];
 
-    // Coletar os dados
-    const tipo = selectedOption.getAttribute("data-tipo");
-    const valorHora = selectedOption.getAttribute("data-hora");
+    // Restaurar tab ativa ao carregar a página
+    document.addEventListener('DOMContentLoaded', function () {
+        // Verificar hash na URL primeiro
+        const hash = window.location.hash.substring(1);
+        // Se não tiver hash, verificar localStorage
+        const savedTab = hash || localStorage.getItem('activeTab') || 'especialidades';
 
-    // Preencher os campos
-    document.getElementById("tipo-select").value = tipo;
-    document.getElementById("valor-hora-input").value = valorHora || "";
+        const targetTab = document.querySelector(`.tab[data-section="${savedTab}"]`) ||
+            document.querySelector(`.tab[data-target="${savedTab}"]`);
 
-    // Habilita o select do tipo, se estiver desativado
-    document.getElementById("tipo-select").disabled = false;
-    document.getElementById("valor-hora-input").disabled = false;
-    document.getElementById("nova_senha").disabled = false;
-    document.getElementById("confirma_senha").disabled = false;
-    console.log("Valor hora carregado:", valorHora);
-  }
+        if (targetTab) {
+            // Ativar a tab salva
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            targetTab.classList.add('active');
+            document.getElementById(targetTab.dataset.target).classList.add('active');
+
+            // Atualizar URL se necessário
+            if (!hash && savedTab !== 'especialidades') {
+                const newUrl = `${window.location.pathname}#${savedTab}`;
+                window.history.replaceState({}, '', newUrl);
+            }
+        }
+
+        // Scroll para tab ativa em mobile
+        scrollToActiveTab();
+    });
+
+    // Lidar com navegação pelo botão voltar/avancar
+    window.addEventListener('popstate', function () {
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            const targetTab = document.querySelector(`.tab[data-section="${hash}"]`) ||
+                document.querySelector(`.tab[data-target="${hash}"]`);
+            if (targetTab) {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                targetTab.classList.add('active');
+                document.getElementById(targetTab.dataset.target).classList.add('active');
+                localStorage.setItem('activeTab', hash);
+            }
+        }
+    });
+
+    function scrollToActiveTab() {
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab) {
+            activeTab.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+    }
+    // Preview de cor para especialidades
+    const colorInput = document.getElementById('especialidade-cor');
+    const colorPreview = document.getElementById('color-preview');
+
+    if (colorInput && colorPreview) {
+        colorInput.addEventListener('input', function () {
+            colorPreview.style.backgroundColor = this.value;
+        });
+    }
+
+    // Validação de formulário de usuário
+    function carregarDadosUsuario() {
+        const select = document.getElementById("usuario-select");
+        const selectedOption = select.options[select.selectedIndex];
+        const tipoSelect = document.getElementById("tipo-select");
+        const valorHoraInput = document.getElementById("valor-hora-input");
+        const novaSenhaInput = document.getElementById("nova_senha");
+        const confirmaSenhaInput = document.getElementById("confirma_senha");
+        const btnSalvar = document.getElementById("btn-salvar-usuario");
+        const senhaMsg = document.getElementById("senha-msg");
+
+        if (select.value) {
+            // Habilitar campos
+            [tipoSelect, valorHoraInput, novaSenhaInput, confirmaSenhaInput].forEach(field => {
+                field.disabled = false;
+                field.classList.remove('error');
+            });
+
+            // Preencher dados
+            tipoSelect.value = selectedOption.getAttribute("data-tipo");
+            valorHoraInput.value = selectedOption.getAttribute("data-hora") || "";
+
+            // Limpar mensagens e habilitar botão
+            senhaMsg.textContent = "";
+            senhaMsg.className = "form-message";
+            btnSalvar.disabled = false;
+
+            // Adicionar validação de senha em tempo real
+            confirmaSenhaInput.addEventListener('input', validarSenha);
+        } else {
+            // Desabilitar campos se nenhum usuário selecionado
+            [tipoSelect, valorHoraInput, novaSenhaInput, confirmaSenhaInput, btnSalvar].forEach(field => {
+                field.disabled = true;
+            });
+        }
+    }
+
+    function validarSenha() {
+        const senha = document.getElementById("nova_senha").value;
+        const confirmaSenha = document.getElementById("confirma_senha").value;
+        const senhaMsg = document.getElementById("senha-msg");
+        const btnSalvar = document.getElementById("btn-salvar-usuario");
+
+        if (!senha && !confirmaSenha) {
+            senhaMsg.textContent = "";
+            senhaMsg.className = "form-message";
+            btnSalvar.disabled = false;
+            return;
+        }
+
+        if (senha !== confirmaSenha) {
+            senhaMsg.textContent = "As senhas não coincidem!";
+            senhaMsg.className = "form-message error";
+            btnSalvar.disabled = true;
+        } else {
+            senhaMsg.textContent = "Senhas coincidem!";
+            senhaMsg.className = "form-message success";
+            btnSalvar.disabled = false;
+        }
+    }
+
+    // Validação básica de formulários
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            const requiredFields = this.querySelectorAll('[required]');
+            let valid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    valid = false;
+                    field.style.borderColor = '#EF4444';
+                } else {
+                    field.style.borderColor = '';
+                }
+            });
+
+            if (!valid) {
+                e.preventDefault();
+                const msg = document.createElement('div');
+                msg.className = 'form-message error';
+                msg.textContent = 'Por favor, preencha todos os campos obrigatórios.';
+                this.insertBefore(msg, this.firstChild);
+
+                setTimeout(() => msg.remove(), 5000);
+            }
+        });
+    });
+
+    // Efeitos hover nas linhas da tabela
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateX(4px)';
+        });
+
+        row.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+
+    // Auto-scroll para tabs ativas em mobile
+    function scrollToActiveTab() {
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab) {
+            activeTab.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+    }
+
+    // Inicializar scroll quando a página carregar
+    document.addEventListener('DOMContentLoaded', scrollToActiveTab);
+    // Sistema de edição em linha
+    let editingRow = null;
+    let originalValues = {};
+
+    function iniciarEdicao(button) {
+        const row = button.closest('tr');
+        if (editingRow && editingRow !== row) {
+            cancelarEdicao(editingRow.querySelector('.cancelar'));
+        }
+
+        editingRow = row;
+        originalValues = {};
+
+        // Esconder botão editar e mostrar salvar/cancelar
+        row.querySelector('.btn-acao.editar').style.display = 'none';
+        row.querySelector('.btn-acao.salvar').style.display = 'inline-flex';
+        row.querySelector('.btn-acao.cancelar').style.display = 'inline-flex';
+
+        // Ativar todos os campos editáveis da linha
+        const editableCells = row.querySelectorAll('.editable');
+        editableCells.forEach(cell => {
+            cell.classList.add('editing');
+            const displayText = cell.querySelector('.display-text');
+            const editInput = cell.querySelector('.edit-input');
+
+            // Salvar valor original
+            originalValues[cell.dataset.field] = editInput.value;
+
+            // Mostrar input, esconder texto
+            displayText.style.display = 'none';
+            editInput.style.display = 'block';
+            editInput.focus();
+        });
+    }
+
+    function cancelarEdicao(button) {
+        const row = button.closest('tr');
+
+        // Restaurar valores originais
+        const editableCells = row.querySelectorAll('.editable');
+        editableCells.forEach(cell => {
+            cell.classList.remove('editing');
+            const displayText = cell.querySelector('.display-text');
+            const editInput = cell.querySelector('.edit-input');
+
+            editInput.value = originalValues[cell.dataset.field];
+            displayText.style.display = 'block';
+            editInput.style.display = 'none';
+        });
+
+        // Restaurar botões
+        row.querySelector('.btn-acao.editar').style.display = 'inline-flex';
+        row.querySelector('.btn-acao.salvar').style.display = 'none';
+        row.querySelector('.btn-acao.cancelar').style.display = 'none';
+
+        editingRow = null;
+        originalValues = {};
+    }
+
+    function salvarEdicao(button) {
+        const row = button.closest('tr');
+        const model = row.querySelector('.editable').dataset.model;
+        const id = row.querySelector('.editable').dataset.id;
+
+        const formData = new FormData();
+        formData.append('tipo', `editar_${model}`);
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        formData.append(`${model}_id`, id);
+
+        // Coletar dados dos campos editáveis
+        const editableCells = row.querySelectorAll('.editable');
+        let hasChanges = false;
+
+        editableCells.forEach(cell => {
+            const field = cell.dataset.field;
+            const editInput = cell.querySelector('.edit-input');
+            const displayText = cell.querySelector('.display-text');
+
+            if (editInput.value !== originalValues[field]) {
+                hasChanges = true;
+            }
+
+            formData.append(field, editInput.value);
+
+            // Atualizar display
+            if (field === 'cor') {
+                displayText.innerHTML = `<div style="background-color: ${editInput.value}; width: 60px; height: 24px; border-radius: var(--borda-radius); border: 2px solid var(--cinza-borda);"></div>`;
+            } else if (field === 'valor') {
+                displayText.textContent = `R$ ${parseFloat(editInput.value).toFixed(2)}`;
+            } else {
+                displayText.textContent = editInput.value;
+            }
+
+            // Esconder input, mostrar texto
+            displayText.style.display = 'block';
+            editInput.style.display = 'none';
+            cell.classList.remove('editing');
+        });
+
+        if (!hasChanges) {
+            cancelarEdicao(button);
+            return;
+        }
+
+        // Enviar para o servidor
+        fetch('', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarMensagem('Alterações salvas com sucesso!', 'success');
+
+                    // Restaurar botões
+                    row.querySelector('.btn-acao.editar').style.display = 'inline-flex';
+                    row.querySelector('.btn-acao.salvar').style.display = 'none';
+                    row.querySelector('.btn-acao.cancelar').style.display = 'none';
+
+                    editingRow = null;
+                    originalValues = {};
+                } else {
+                    mostrarMensagem('Erro ao salvar alterações: ' + data.error, 'error');
+                    cancelarEdicao(button);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                mostrarMensagem('Erro ao salvar alterações', 'error');
+                cancelarEdicao(button);
+            });
+    }
+
+    // Duplo clique para editar
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.editable').forEach(cell => {
+            cell.addEventListener('dblclick', function () {
+                const row = this.closest('tr');
+                const editButton = row.querySelector('.btn-acao.editar');
+                if (editButton && editButton.style.display !== 'none') {
+                    iniciarEdicao(editButton);
+                }
+            });
+        });
+    });
+
+    // Função para mostrar mensagens
+    function mostrarMensagem(mensagem, tipo) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `form-message ${tipo}`;
+        messageDiv.textContent = mensagem;
+        messageDiv.style.position = 'fixed';
+        messageDiv.style.top = '20px';
+        messageDiv.style.right = '20px';
+        messageDiv.style.zIndex = '1000';
+
+        document.body.appendChild(messageDiv);
+
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 5000);
+    }
+
+    // Tecla ESC para cancelar edição
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && editingRow) {
+            const cancelButton = editingRow.querySelector('.btn-acao.cancelar');
+            if (cancelButton) {
+                cancelarEdicao(cancelButton);
+            }
+        }
+    });
 </script>
-<script src="https://unpkg.com/imask"></script>
-<script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
-<script src="{% static '/core/js/configuracoes/configBase.js' %}"></script>
-<script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
 {% endblock %}

@@ -1,3 +1,6 @@
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'core/css/partials/_modal_edit_agenda.css' %}">{% endblock %}
+
 
 <div id="modalEditAgenda" class="modal-att-agenda">
     <div class="modal-conteudo">
@@ -8,9 +11,8 @@
         <form id="form-edicao" method="post" action="#">
             {% csrf_token %}
             <div class='modal_subtitulo'>Editar dados da sessão</div>
-            <div class="formRow">
-          
-                <div class="formField">
+            <div class="formRow sessao-grid">
+                <div class="formField ">
                     <label>Profissional 1</label>
                     <select name="profissional1_id" id="profissional1InputEdicao" class="input-s" required>
                         <option value="" disabled selected>Selecione um profissional</option>
@@ -25,7 +27,7 @@
                     <label>Data</label>
                     <input type="date" name="data" id="dataInputEdicao">
                 </div>
-                <div class="formRow">
+              
                     <div class="formField">
                         <label>Início</label>
                         <input type="time" name="hora_inicio" id="horaInicioPrincipal" min="06:00" max="00:00"
@@ -35,11 +37,11 @@
                         <label>Fim</label>
                         <input type="time" name="hora_fim" id="horaFimPrincipal" min="06:00" max="00:00" required>
                     </div>
-                </div>
+             
             </div>
             <div class='modal_subtitulo'>Adicionar atualizações</div>
             
-            <div class="formRow">
+            <div class="formRow sessao-grid-2">
                 <div class="formField">
                     <label>Profissional 2</label>
                     <select name="profissional2_id" id="profissional2InputEdicao" class="input-s">
@@ -52,17 +54,27 @@
                     </select>
                 </div>
                 <div class="formField">
-                    <label>Horário da ajuda (Início)</label>
+                    <label>Início</label>
                     <input type="time" name="hora_inicio_aux" id="horaInicioAjuda" min="06:00" max="00:00">
                 </div>
                 <div class="formField">
-                    <label>Horário da ajuda (Fim)</label>
+                    <label>Fim</label>
                     <input type="time" name="hora_fim_aux" id="horaFimAjuda" min="06:00" max="00:00">
                 </div>
 
             </div>
+            <div class='modal_subtitulo'>Observações / Notas internas</div>
+
+            <div class="formRow">
+                <div class="formField">
+                    <label>Observações</label>
+                    <textarea class="textarea-large" name="observacoes">{{ ag.observacoes }}</textarea>
+
+                </div>
+            </div>
             <div class='modal_subtitulo'>Adicionar pagamento</div>
             <div class="formRow">
+
                 <div class="formField">
                     <label>Valor pago</label>
                     <input id="valorPagoInput" type="number" name="valor_pago" placeholder="Valor pago" step="0.01">

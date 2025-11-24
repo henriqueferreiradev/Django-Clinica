@@ -1,0 +1,321 @@
+/* ===== Base ===== */
+body {
+    font-family: var(--fontePrincipal), system-ui, -apple-system, Segoe UI,
+        Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--preto);
+}
+
+/* ===== Título ===== */
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--titulo-perfil);
+    margin: 0 0 var(--espaco-md);
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.page-title i {
+    color: var(--roxoPrincipal);
+}
+
+/* ===== Grid helpers ===== */
+.grid {
+    display: grid;
+    gap: var(--espaco-sm);
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-1 {
+    grid-template-columns: 1fr;
+}
+
+@media (max-width: 1024px) {
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Botões (padrão do sistema) ===== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s ease;
+    border: 1px solid var(--cinzaBorda);
+    background: var(--bg-btn-1);
+    color: var(--preto);
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: var(--cinza-claro);
+}
+
+.btn-sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+.btn-primary {
+    background: var(--roxoPrincipal);
+    color: var(--branco);
+    border-color: transparent;
+    box-shadow: var(--shadowRoxo);
+}
+
+.btn-primary:hover {
+    background: var(--roxo-primary-hover);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--cinza-escuro);
+    border: 1px solid var(--cinzaBorda);
+}
+
+.btn-outline:hover {
+    background: var(--hover-dropdown);
+}
+
+.btn-success {
+    background: var(--verdePrincipal);
+    color: var(--branco);
+    border-color: transparent;
+}
+
+.btn-success:hover {
+    filter: brightness(0.95);
+}
+
+/* ===== Cards KPI (Resumo) ===== */
+.resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 1024px) {
+    .resumo-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.resumo-card {
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    padding: 1.2rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.resumo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadowRoxo);
+    background: var(--backgroundCard-hover);
+}
+
+.resumo-card .kpi {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.kpi-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--cinza-escuro);
+    margin: 0 0 0.35rem;
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.kpi-sub {
+    color: var(--cinza-medio);
+    font-size: 0.9rem;
+    margin: 0.4rem 0 0;
+}
+
+.kpi-icon {
+    font-size: 2rem;
+    color: var(--roxoPrincipal);
+    opacity: 0.9;
+}
+
+.kpi-green {
+    color: var(--verdePrincipal);
+}
+
+.kpi-red {
+    color: var(--erro);
+}
+
+.kpi-purple {
+    color: var(--roxoPrincipal);
+}
+
+/* ===== Cartões padrão (gráficos, listas) ===== */
+.card {
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.card:hover {
+    background: var(--backgroundCard-hover);
+    box-shadow: var(--shadowRoxo);
+}
+
+.card-body {
+    padding: 1.2rem;
+}
+
+.card-title {
+    margin: 0 0 0.8rem;
+    font-size: 1.05rem;
+    color: var(--titulo-perfil);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+/* ===== Tabelas ===== */
+.tabela-container {
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+}
+
+.tabela-scroll {
+    overflow-x: auto;
+}
+
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+
+.tabela th {
+    background: var(--cinza-claro);
+    padding: 0.9rem 1rem;
+    text-align: left;
+    font-size: 0.85rem;
+    color: var(--cinza-escuro);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tabela td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--cinza-borda);
+}
+
+.tabela tr:last-child td {
+    border-bottom: none;
+}
+
+.tabela tbody tr:hover {
+    background: var(--hover-dropdown);
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* ===== Badges ===== */
+.badge {
+    display: inline-block;
+    padding: 0.28rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.badge-pago {
+    background: var(--verdePrincipal);
+    color: var(--branco);
+}
+
+.badge-pendente {
+    background: #f39c12;
+    color: var(--preto);
+}
+
+/* ===== Seções ===== */
+.section {
+    margin-top: var(--espaco-md);
+}
+
+/* ===== Utilitários de cor (para textos) ===== */
+.text-green {
+    color: var(--verdePrincipal);
+}
+
+.text-red {
+    color: var(--erro);
+}
+
+.text-purple {
+    color: var(--roxoPrincipal);
+}
+
+.text-muted {
+    color: var(--cinza-medio);
+}
+
+/* wrapper fixo pro canvas do Chart.js */
+.chart-box {
+    position: relative;
+    /* obrigatório p/ Chart.js v3+ */
+    height: 280px;
+    /* defina a altura que quiser */
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .chart-box {
+        height: 240px;
+    }
+}
+
+/* evitar que o canvas “puxe” o layout */
+.chart-box>canvas {
+    display: block;
+}

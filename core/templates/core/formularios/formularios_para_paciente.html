@@ -1,0 +1,443 @@
+{% extends 'core/base.html' %}
+{% block topbar_title %}Formulários para - {{ paciente.nome }}{% endblock %}
+
+{% block content %}
+<div class="content">
+  {% include "core/partials/_loader.html" %}
+  
+  <div class="form-container">
+    <!-- Cabeçalho com informações do paciente -->
+    <div class="patient-header">
+      <div class="patient-info">
+        <h1>Formulários para <span class="patient-name">{{ paciente.nome }}</span></h1>
+        <p class="patient-details">Selecione ou compartilhe um dos formulários abaixo</p>
+      </div>
+      <div class="header-actions">
+        <button class="share-all-btn" id="shareAllBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
+          </svg>
+          Compartilhar Todos
+        </button>
+      </div>
+    </div>
+    
+    <!-- Filtro e busca -->
+    <div class="form-filters">
+      <div class="search-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Buscar formulários...">
+      </div>
+    </div>
+    
+    <!-- Grid de formulários -->
+    <div class="form-grid" id="formGrid">
+      {% for item in links %}
+      <div class="form-card" data-title="{{ item.formulario.titulo|lower }}" data-desc="{{ item.formulario.descricao|lower }}">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-text">
+            <h3 class="card-title">{{ item.formulario.titulo }}</h3>
+            <p class="card-description">{{ item.formulario.descricao }}</p>
+          </div>
+          <div class="card-actions">
+            <a href="{{ item.get_url }}" target="_blank" class="access-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+                <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+              </svg>
+              Acessar
+            </a>
+            <button onclick="copyToClipboard('{{ item.get_url }}', this)" class="copy-button" title="Copiar link para área de transferência">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M10 1.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1Zm-5 0A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5v1A1.5 1.5 0 0 1 9.5 4h-3A1.5 1.5 0 0 1 5 2.5v-1Zm-2 0h1v1A2.5 2.5 0 0 0 6.5 5h3A2.5 2.5 0 0 0 12 2.5v-1h1a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3.5a2 2 0 0 1 2-2Z"/>
+              </svg>
+              Copiar
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Mensagem quando não há resultados -->
+    <div class="no-results" id="noResults" style="display: none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M7 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zM2 1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm0 8a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H2zm.854-3.646a.5.5 0 0 1-.708 0l-1-1a.5.5 0 1 1 .708-.708l1 1a.5.5 0 0 1 0 .708zm0 8a.5.5 0 0 1-.708 0l-1-1a.5.5 0 0 1 .708-.708l1 1a.5.5 0 0 1 0 .708zM7 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm0-5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+      </svg>
+      <h3>Nenhum formulário encontrado</h3>
+      <p>Tente ajustar os termos da sua busca</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  :root {
+    --primary: #7E57C2;
+    --primary-dark: #673AB7;
+    --secondary: #26A69A;
+    --light-bg: #F5F7FB;
+    --text-primary: #2D3748;
+    --text-secondary: #718096;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+    --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  
+ 
+  
+  .patient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .patient-info h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .patient-name {
+    color: var(--primary);
+  }
+  
+  .patient-details {
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .share-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.375rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .share-all-btn:hover {
+    background-color: #F7FAFC;
+    border-color: #CBD5E0;
+  }
+  
+  .form-filters {
+    margin-bottom: 1.5rem;
+  }
+  
+  .search-box {
+    position: relative;
+    max-width: 400px;
+  }
+  
+  .search-box svg {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+  }
+  
+  .search-box input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.375rem;
+    color: var(--text-primary);
+  }
+  
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(126, 87, 194, 0.1);
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .form-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .form-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  .form-card {
+    background-color: var(--branco);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 1rem;
+    border: 1px solid transparent;
+  }
+  
+  .form-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
+    border-color: rgba(126, 87, 194, 0.1);
+  }
+  
+  .card-icon {
+    display: flex;
+    align-items: flex-start;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .card-text {
+    flex: 1 1 0%;
+    margin-bottom: 1rem;
+  }
+  
+  .card-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .card-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  .card-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .access-button, .copy-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .access-button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+  }
+  
+  .access-button:hover {
+    background-color: var(--primary-dark);
+  }
+  
+  .copy-button {
+    background-color: #F7FAFC;
+    color: var(--text-primary);
+    border: 1px solid #E2E8F0;
+  }
+  
+  .copy-button:hover {
+    background-color: #EDF2F7;
+  }
+  
+  .no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-secondary);
+  }
+  
+  .no-results svg {
+    margin-bottom: 1rem;
+    color: #CBD5E0;
+  }
+  
+  .no-results h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+  }
+  
+  .no-results p {
+    margin: 0;
+  }
+  
+  /* Animações */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .form-card {
+    animation: fadeIn 0.4s ease forwards;
+  }
+  
+  /* Feedback de cópia */
+  .copied-feedback {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background-color: var(--secondary);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease forwards;
+    z-index: 1000;
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+</style>
+
+<script>
+  // Função para copiar para a área de transferência com feedback
+  function copyToClipboard(text, button) {
+    navigator.clipboard.writeText(text).then(() => {
+      // Feedback visual
+      const originalText = button.innerHTML;
+      button.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+        </svg>
+        Copiado!
+      `;
+      button.style.background = '#C8F7F0';
+      button.style.borderColor = '#26A69A';
+      button.style.color = '#26A69A';
+      
+      // Criar feedback flutuante
+      const feedback = document.createElement('div');
+      feedback.className = 'copied-feedback';
+      feedback.textContent = 'Link copiado para a área de transferência!';
+      document.body.appendChild(feedback);
+      
+      // Remover após 2 segundos
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.style.background = '';
+        button.style.borderColor = '';
+        button.style.color = '';
+        document.body.removeChild(feedback);
+      }, 2000);
+    }).catch(err => {
+      console.error('Falha ao copiar: ', err);
+    });
+  }
+  
+  // Funcionalidade de busca
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const formGrid = document.getElementById('formGrid');
+    const formCards = formGrid.querySelectorAll('.form-card');
+    const noResults = document.getElementById('noResults');
+    
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      let visibleCount = 0;
+      
+      formCards.forEach(card => {
+        const title = card.getAttribute('data-title');
+        const description = card.getAttribute('data-desc');
+        
+        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Mostrar mensagem se não houver resultados
+      if (visibleCount === 0 && searchTerm !== '') {
+        noResults.style.display = 'block';
+        formGrid.style.display = 'none';
+      } else {
+        noResults.style.display = 'none';
+        formGrid.style.display = 'grid';
+      }
+    });
+    
+    // Funcionalidade de compartilhar todos
+    const shareAllBtn = document.getElementById('shareAllBtn');
+    if (shareAllBtn) {
+      shareAllBtn.addEventListener('click', function() {
+        const allLinks = Array.from(formCards).map(card => {
+          const linkElement = card.querySelector('.access-button');
+          return linkElement ? linkElement.href : '';
+        }).filter(link => link !== '');
+        
+        if (allLinks.length > 0) {
+          const linksText = allLinks.join('\n');
+          navigator.clipboard.writeText(linksText).then(() => {
+            // Feedback visual
+            const originalText = shareAllBtn.innerHTML;
+            shareAllBtn.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+              </svg>
+              Links Copiados!
+            `;
+            shareAllBtn.style.background = '#C8F7F0';
+            shareAllBtn.style.borderColor = '#26A69A';
+            shareAllBtn.style.color = '#26A69A';
+            
+            // Criar feedback flutuante
+            const feedback = document.createElement('div');
+            feedback.className = 'copied-feedback';
+            feedback.textContent = 'Todos os links foram copiados para a área de transferência!';
+            document.body.appendChild(feedback);
+            
+            // Remover após 2 segundos
+            setTimeout(() => {
+              shareAllBtn.innerHTML = originalText;
+              shareAllBtn.style.background = '';
+              shareAllBtn.style.borderColor = '';
+              shareAllBtn.style.color = '';
+              document.body.removeChild(feedback);
+            }, 2000);
+          });
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

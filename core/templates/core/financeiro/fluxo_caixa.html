@@ -1,0 +1,555 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Fluxo de Caixa - Clínica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+<link rel="stylesheet" href="{% static 'core/css/financeiro/fluxo_caixa.css' %}" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+{% endblock %}
+
+{% block topbar_title %}<span class="text">Fluxo de Caixa</span>{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+<div class="content">
+  <div class="fluxo-caixa">
+    <!-- Cabeçalho -->
+    <div class="fluxo-header">
+      <h1 class="fluxo-title"><i class="fas fa-money-bill-wave"></i> Fluxo de Caixa</h1>
+      <div class="fluxo-botoes">
+        <button class="btn btn-primary" id="openLancamento"><i class="fas fa-plus-circle"></i> Novo Lançamento</button>
+        <button class="btn btn-outline" id="printFx"><i class="fas fa-print"></i> Imprimir</button>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-container">
+      <div class="filtros-grid">
+        <div>
+          <label class="filtro-label">Período</label>
+          <select class="filtro-select">
+            <option>Hoje</option>
+            <option selected>Este Mês</option>
+            <option>Mês Anterior</option>
+            <option>Trimestre</option>
+            <option>Semestre</option>
+            <option>Ano</option>
+            <option>Personalizado</option>
+          </select>
+        </div>
+        <div>
+          <label class="filtro-label">De</label>
+          <input type="date" class="filtro-input" value="2023-05-01">
+        </div>
+        <div>
+          <label class="filtro-label">Até</label>
+          <input type="date" class="filtro-input" value="2023-05-31">
+        </div>
+        <div>
+          <button class="filtro-button"><i class="fas fa-filter"></i> Filtrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumo -->
+    <div class="resumo-grid">
+      <div class="resumo-card receitas">
+        <div>
+          <div class="resumo-titulo">Total Receitas</div>
+          <div class="resumo-valor">R$ 28.750,00</div>
+          <div class="resumo-info">+12% em relação ao mês anterior</div>
+        </div>
+        <i class="fas fa-arrow-trend-up resumo-icon"></i>
+      </div>
+
+      <div class="resumo-card despesas">
+        <div>
+          <div class="resumo-titulo">Total Despesas</div>
+          <div class="resumo-valor">R$ 15.230,00</div>
+          <div class="resumo-info">+5% em relação ao mês anterior</div>
+        </div>
+        <i class="fas fa-arrow-trend-down resumo-icon"></i>
+      </div>
+
+      <div class="resumo-card saldo">
+        <div>
+          <div class="resumo-titulo">Saldo do Período</div>
+          <div class="resumo-valor">R$ 13.520,00</div>
+          <div class="resumo-info">+22% em relação ao mês anterior</div>
+        </div>
+        <i class="fas fa-coins resumo-icon"></i>
+      </div>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="grafico-container">
+      <h2 class="grafico-titulo">Fluxo de Caixa Diário</h2>
+      <div class="chart-box">
+        <canvas id="fluxoChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="tabela-container">
+      <div class="tabela-header">
+        <h2 class="tabela-titulo">Lançamentos</h2>
+        <div class="tabela-acoes">
+          <button class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Exportar</button>
+          <div class="dropdown">
+            <button class="btn btn-outline btn-sm dropdown-toggle"><i class="fas fa-filter"></i> Filtrar</button>
+            <div class="dropdown-menu">
+              <a href="#" class="dropdown-item">Todos</a>
+              <a href="#" class="dropdown-item">Somente Receitas</a>
+              <a href="#" class="dropdown-item">Somente Despesas</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item">Pagos</a>
+              <a href="#" class="dropdown-item">Pendentes</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabela-scroll">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th>Paciente/Fornecedor</th>
+              <th>Forma Pag.</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dia 15 -->
+            <tr class="linha-saldo">
+              <td colspan="6"><strong>15/05/2023 - Segunda-feira</strong></td>
+              <td colspan="2"><strong>Saldo do dia: R$ 2.150,00</strong></td>
+            </tr>
+            <tr class="linha-receita">
+              <td>15/05 09:00</td>
+              <td>Consulta - Dra. Ana</td>
+              <td>Atendimento</td>
+              <td>Maria Silva</td>
+              <td><span class="badge badge-pix">Pix</span></td>
+              <td class="valor-receita">R$ 350,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            <tr class="linha-receita">
+              <td>15/05 10:30</td>
+              <td>Pacote 10 sessões</td>
+              <td>Pacote</td>
+              <td>João Santos</td>
+              <td><span class="badge badge-credito">Crédito</span></td>
+              <td class="valor-receita">R$ 1.200,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            <tr class="linha-despesa">
+              <td>15/05 12:00</td>
+              <td>Material de escritório</td>
+              <td>Suprimentos</td>
+              <td>Papelaria Central</td>
+              <td><span class="badge badge-dinheiro">Dinheiro</span></td>
+              <td class="valor-despesa">R$ 420,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+
+            <!-- Dia 14 -->
+            <tr class="linha-saldo">
+              <td colspan="6"><strong>14/05/2023 - Domingo</strong></td>
+              <td colspan="2"><strong>Saldo do dia: R$ 980,00</strong></td>
+            </tr>
+            <tr class="linha-receita">
+              <td>14/05 08:00</td>
+              <td>Consulta - Dr. Carlos</td>
+              <td>Atendimento</td>
+              <td>Ana Oliveira</td>
+              <td><span class="badge badge-debito">Débito</span></td>
+              <td class="valor-receita">R$ 280,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            <tr class="linha-receita">
+              <td>14/05 10:00</td>
+              <td>Sessão de Fisioterapia</td>
+              <td>Atendimento</td>
+              <td>Pedro Costa</td>
+              <td><span class="badge badge-pix">Pix</span></td>
+              <td class="valor-receita">R$ 150,00</td>
+              <td><span class="badge badge-pendente">Pendente</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            <tr class="linha-despesa">
+              <td>14/05 15:00</td>
+              <td>Manutenção equipamentos</td>
+              <td>Manutenção</td>
+              <td>Técnicos Associados</td>
+              <td><span class="badge badge-credito">Crédito</span></td>
+              <td class="valor-despesa">R$ 650,00</td>
+              <td><span class="badge badge-pago">Pago</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-receipt"></i></button>
+                <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="paginacao">
+        <ul class="paginacao-list">
+          <li class="paginacao-item disabled"><a href="#" class="paginacao-link">Anterior</a></li>
+          <li class="paginacao-item active"><a href="#" class="paginacao-link">1</a></li>
+          <li class="paginacao-item"><a href="#" class="paginacao-link">2</a></li>
+          <li class="paginacao-item"><a href="#" class="paginacao-link">3</a></li>
+          <li class="paginacao-item"><a href="#" class="paginacao-link">Próxima</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Novo Lançamento -->
+<div class="modal-overlay" id="modalLancamento">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fas fa-plus-circle"></i> Novo Lançamento</h3>
+      <button class="modal-close" id="closeModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="alertSuccess" class="alert-success"><i class="fas fa-check-circle"></i> Lançamento cadastrado com sucesso!</div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="receita">Receita</div>
+        <div class="tab" data-tab="despesa">Despesa</div>
+      </div>
+
+      <!-- Receita -->
+      <div class="tab-content active" id="receita-form">
+        <form id="formReceita">
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Data</label>
+                <input type="date" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Hora</label>
+                <input type="time" class="form-control" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <input type="text" class="form-control" placeholder="Ex: Consulta médica" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" required>
+                  <option value="">Selecione...</option>
+                  <option>Atendimento</option>
+                  <option>Pacote de sessões</option>
+                  <option>Exames</option>
+                  <option>Procedimentos</option>
+                  <option>Outros</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Paciente</label>
+                <input type="text" class="form-control" placeholder="Nome do paciente" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Valor (R$)</label>
+                <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Forma de Pagamento</label>
+                <select class="form-select" required>
+                  <option value="">Selecione...</option>
+                  <option>Dinheiro</option>
+                  <option>Pix</option>
+                  <option>Cartão de Débito</option>
+                  <option>Cartão de Crédito</option>
+                  <option>Transferência</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <div class="form-radio-group">
+              <label class="form-radio"><input type="radio" name="status-receita" value="pago" checked> Pago</label>
+              <label class="form-radio"><input type="radio" name="status-receita" value="pendente"> Pendente</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <textarea class="form-control" rows="3" placeholder="Opcional"></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Despesa -->
+      <div class="tab-content" id="despesa-form">
+        <form id="formDespesa">
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Data</label>
+                <input type="date" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Vencimento</label>
+                <input type="date" class="form-control" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <input type="text" class="form-control" placeholder="Ex: Material de escritório" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" required>
+                  <option value="">Selecione...</option>
+                  <option>Aluguel</option>
+                  <option>Salários</option>
+                  <option>Material</option>
+                  <option>Manutenção</option>
+                  <option>Contas</option>
+                  <option>Outros</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Fornecedor</label>
+                <input type="text" class="form-control" placeholder="Nome do fornecedor">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Valor (R$)</label>
+                <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Forma de Pagamento</label>
+                <select class="form-select" required>
+                  <option value="">Selecione...</option>
+                  <option>Dinheiro</option>
+                  <option>Pix</option>
+                  <option>Cartão de Débito</option>
+                  <option>Cartão de Crédito</option>
+                  <option>Transferência</option>
+                  <option>Boleto</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <div class="form-radio-group">
+              <label class="form-radio"><input type="radio" name="status-despesa" value="pago"> Pago</label>
+              <label class="form-radio"><input type="radio" name="status-despesa" value="pendente" checked> Pendente</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <textarea class="form-control" rows="3" placeholder="Opcional"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelModal">Cancelar</button>
+      <button class="btn btn-save" id="saveLancamento"><i class="fas fa-save"></i> Salvar Lançamento</button>
+    </div>
+  </div>
+</div>
+
+{% include "core/partials/alertas.html" %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+  // ===== Utils
+  function hexToRgba(hex, alpha){
+    const h = hex.replace('#','').trim();
+    const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+    const r = (n>>16)&255, g=(n>>8)&255, b=n&255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  const css = getComputedStyle(document.documentElement);
+  const roxo = (css.getPropertyValue('--roxoPrincipal')||'#6D398E').trim();
+  const roxoHover = (css.getPropertyValue('--roxo-primary-hover')||'#9b58b4').trim();
+  const verde = (css.getPropertyValue('--verdePrincipal')||'#92cbad').trim();
+  const erro = (css.getPropertyValue('--erro')||'#ff0000').trim();
+  const cinzaMedio = (css.getPropertyValue('--cinza-medio')||'#888').trim();
+
+  // ===== Chart.js - opções comuns
+  const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: false, // usa altura do .chart-box
+    resizeDelay: 200,
+    animation: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position:'top', labels: { usePointStyle:true, padding: 18, color: cinzaMedio } },
+      tooltip: { enabled: true }
+    },
+    scales: {
+      x: { grid: { display:false }, ticks:{ color: cinzaMedio } },
+      y: { beginAtZero:true, grid:{ drawBorder:false, color: hexToRgba(cinzaMedio, .2) }, ticks:{ color: cinzaMedio } }
+    }
+  };
+
+  // ===== Gráfico de Fluxo de Caixa
+  const ctx = document.getElementById('fluxoChart').getContext('2d');
+  const fluxoChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['01/05','02/05','03/05','04/05','05/05','06/05','07/05','08/05','09/05','10/05','11/05','12/05','13/05','14/05','15/05'],
+      datasets: [
+        {
+          label: 'Receitas',
+          data: [1200,800,950,1100,1300,750,1800,950,1200,1500,1100,1400,900,980,2150],
+          borderColor: hexToRgba(verde, 1),
+          backgroundColor: hexToRgba(verde, .15),
+          pointRadius: 2, tension:.3, fill:true, borderWidth:2
+        },
+        {
+          label: 'Despesas',
+          data: [650,720,500,800,600,550,700,850,600,750,900,650,500,650,420],
+          borderColor: hexToRgba(erro, 1),
+          backgroundColor: hexToRgba(erro, .12),
+          pointRadius: 2, tension:.3, fill:true, borderWidth:2
+        },
+        {
+          label: 'Saldo Diário',
+          data: [550,80,450,300,700,200,1100,100,600,750,200,750,400,330,1730],
+          borderColor: hexToRgba(roxoHover, 1),
+          backgroundColor: hexToRgba(roxo, .12),
+          pointRadius: 2, tension:.3, fill:true, borderWidth:2
+        }
+      ]
+    },
+    options: commonOptions
+  });
+
+  // ===== Dropdown
+  const ddToggle = document.querySelector('.dropdown-toggle');
+  const ddMenu = document.querySelector('.dropdown-menu');
+  if(ddToggle){
+    ddToggle.addEventListener('click', (e)=>{ e.preventDefault(); ddMenu.classList.toggle('show'); });
+    window.addEventListener('click', (e)=>{ if(!e.target.closest('.dropdown')) ddMenu.classList.remove('show'); });
+  }
+
+  // ===== Modal Novo Lançamento
+  const modal = document.getElementById('modalLancamento');
+  const openBtn = document.getElementById('openLancamento');
+  const closeBtn = document.getElementById('closeModal');
+  const cancelBtn = document.getElementById('cancelModal');
+  const saveBtn = document.getElementById('saveLancamento');
+  const tabs = document.querySelectorAll('.tab');
+  const contents = document.querySelectorAll('.tab-content');
+  const alertSuccess = document.getElementById('alertSuccess');
+
+  function openModal(){ modal.classList.add('active'); }
+  function closeModal(){ modal.classList.remove('active'); }
+
+  openBtn?.addEventListener('click', openModal);
+  closeBtn?.addEventListener('click', closeModal);
+  cancelBtn?.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      tabs.forEach(t=>t.classList.remove('active'));
+      contents.forEach(c=>c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(`${tab.dataset.tab}-form`).classList.add('active');
+    });
+  });
+
+  // Validação simples e simulação de sucesso
+  saveBtn?.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const activeTab = document.querySelector('.tab.active').dataset.tab; // receita | despesa
+    const form = document.getElementById(`form${activeTab.charAt(0).toUpperCase()+activeTab.slice(1)}`);
+    const reqs = form.querySelectorAll('[required]');
+    let ok = true;
+    reqs.forEach(i=>{
+      if(!i.value){ i.style.borderColor = 'var(--erro)'; ok=false; }
+      else{ i.style.borderColor = 'var(--cinzaBorda)'; }
+    });
+    if(!ok){ alert('Preencha todos os campos obrigatórios!'); return; }
+
+    alertSuccess.style.display = 'block';
+    setTimeout(()=>{
+      form.reset();
+      alertSuccess.style.display='none';
+      closeModal();
+      // aqui você poderia atualizar tabela/gráfico com novos dados
+    }, 1500);
+  });
+
+  // Imprimir
+  document.getElementById('printFx')?.addEventListener('click', ()=>window.print());
+</script>
+{% endblock %}
+{% endblock %}

@@ -3,106 +3,121 @@
 <html lang="pt-br" class="light" dir="ltr">
 
 <head>
- 
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <script>
- 
-    (function() {
-      const isDark = localStorage.getItem('theme') === 'dark';
-      document.documentElement.classList.toggle('dark', isDark);
+    (function () {
+      const isDark = localStorage.getItem("theme") === "dark";
+      document.documentElement.classList.toggle("dark", isDark);
     })();
   </script>
-  <title>{% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}</title>
+  <title>
+    {% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}
+  </title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png">
-  <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
-  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
+
+  <link rel="stylesheet" href="{% static 'core/css/base.css' %}" />
+  <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+  <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
+  <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
 
 <body>
 
-
   <div class="sidebar close">
     <div class="logo-details">
-      <img class='logo_img ' src="{% static 'core/img/icons/logoRoxoFull.png' %}" alt="logo Ponto de Equilíbrio">
-  
-        <span class="logo_name">Ponto de <strong>Equilíbrio</strong></span>
- 
+      <img class="logo_img" src="{% static 'core/img/icons/logoRoxoFull.png' %}" alt="logo Ponto de Equilíbrio" />
 
-
+      <span class="logo_name">Ponto de <strong>Equilíbrio</strong></span>
     </div>
     <ul class="nav-links">
       <li>
         <a href="{% url 'dashboard' %}">
-          <i class='bx bx-grid-alt'></i>
+          <i class="bx bx-grid-alt"></i>
           <span class="link_name">Dashboard</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li>
+            <a class="link_name" href="{% url 'dashboard' %}">Dashboard</a>
+          </li>
         </ul>
       </li>
 
       <li>
         <div class="iocn-link">
           <a href="{% url 'pacientes' %}">
-            <i class='bx bx-collection'></i>
+            <i class="bx bx-collection"></i>
             <span class="link_name">Pacientes</span>
           </a>
-          <i class='bx bxs-chevron-down arrow'></i>
+          <i class="bx bxs-chevron-down arrow"></i>
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Pacientes</a></li>
           <li><a href="{% url 'pacientes' %}">Ver Pacientes</a></li>
           <li><a href="{% url 'cadastrar_paciente' %}">Novo Paciente</a></li>
+          <li><a href="{% url 'gerar_link_publico_precadastro' %}">Pré-Cadastro</a></li>
+          <li><a href="{% url 'status_pacientes' %}">Status mensal</a></li>
         </ul>
       </li>
 
       <li>
         <div class="iocn-link">
           <a href="#">
-            <i class='bx bx-book-alt'></i>
+            <i class="bx bx-book-alt"></i>
             <span class="link_name">Profissionais</span>
           </a>
-          <i class='bx bxs-chevron-down arrow'></i>
+          <i class="bx bxs-chevron-down arrow"></i>
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Profissionais</a></li>
           <li><a href="{% url 'profissionais' %}">Ver Profissionais</a></li>
           <li><a href="{% url 'cadastrar_profissional' %}">Novo Profissional</a></li>
+          <li><a href="#">Follow-Ups</a></li>
         </ul>
       </li>
 
       <li>
         <div class="iocn-link">
           <a href="#">
-            <i class='bx bx-food-menu'></i>
+            <i class="bx bx-food-menu"></i>
             <span class="link_name">Agenda</span>
           </a>
-          <i class='bx bxs-chevron-down arrow'></i>
+          <i class="bx bxs-chevron-down arrow"></i>
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Agenda</a></li>
           <li><a href="{% url 'agenda' %}">Ver agenda</a></li>
-         
         </ul>
       </li>
       {% if request.user.tipo != 'profissional' %}
+
       <li>
-        <a href="{% url 'financeiro' %}">
-          <i class='bx bx-pie-chart-alt-2'></i>
-          <span class="link_name">Financeiro</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="{% url 'financeiro' %}">Financeiro</a></li>
+        <div class="iocn-link">
+          <a href="#">
+            <i class="bx bx-pie-chart-alt-2"></i>
+            <span class="link_name">Financeiro</span>
+          </a>
+          <i class="bx bxs-chevron-down arrow"></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name">Financeiro</a></li>
+          <li><a href="{% url 'financeiro_dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'fluxo_caixa' %}">Fluxo de Caixa</a></li>
+          <li><a href="{% url 'entradas' %}">Contas a Receber</a></li>
+          <li><a href="{% url 'saidas' %}">Contas a Pagar</a></li>
+          <li><a href="{% url 'faturamento' %}">Faturamento</a></li>
+          <li><a href="{% url 'folha_pagamento' %}">Folha de pagamento</a></li>
+          <li><a href="{% url 'financeiro_relatorios' %}">Relatórios</a></li>
         </ul>
       </li>
+
       {% endif %}
       <li>
         <a href="#">
-          <i class='bx bx-bell'></i>
+          <i class="bx bx-bell"></i>
           <span class="link_name">Lembretes</span>
         </a>
         <ul class="sub-menu blank">
@@ -112,52 +127,54 @@
       {% if request.user.tipo != 'profissional' %}
       <li>
         <a href="#">
-          <i class='bx bx-line-chart'></i>
+          <i class="bx bx-line-chart"></i>
           <span class="link_name">Relatórios</span>
         </a>
         <ul class="sub-menu blank">
           <li><a class="link_name" href="#">Relatórios</a></li>
         </ul>
       </li>
-      {% endif %}
-      {% if request.user.tipo != 'profissional' %}
+      {% endif %} {% if request.user.tipo != 'profissional' %}
       <li>
         <a href="{% url 'auditoria_logs' %}">
-          <i class='bx bx-line-chart'></i>
+          <i class="bx bx-line-chart"></i>
           <span class="link_name">Logs</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="{% url 'auditoria_logs' %}">Logs</a></li>
+          <li>
+            <a class="link_name" href="{% url 'auditoria_logs' %}">Logs</a>
+          </li>
         </ul>
       </li>
-      {% endif %}
-      {% if request.user.tipo != 'profissional' %}
-      
+      {% endif %} {% if request.user.tipo != 'profissional' %}
+
       <li>
         <a href="{% url 'config' %}">
-          <i class='bx bx-cog'></i>
+          <i class="bx bx-cog"></i>
           <span class="link_name">Configurações</span>
         </a>
-        <ul class="sub-menu blank">
+        <ul class="sub-menu">
           <li><a class="link_name" href="{% url 'config' %}">Configurações</a></li>
+          <li><a href="{% url 'config' %}">Configurações Gerais</a></li>
+          <li><a href="{% url 'formularios' %}">Gerenciador de Formulários</a></li>
+
+
         </ul>
       </li>
       {% endif %}
-      
- 
-      <li>
 
+      <li>
         <div class="profile-details">
           <div class="profile-content">
             {% if user.profissional.foto %}
-            <img src="{{ user.profissional.foto.url }}" alt="Foto de {{ user.get_full_name }}">
+            <img src="{{ user.profissional.foto.url }}" alt="Foto de {{ user.get_full_name }}" />
             {% else %}
-            <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
+            <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto" />
             {% endif %}
           </div>
           <div class="name-job">
             <div class="profile_name">{{ user.get_full_name }}</div>
-            <div class="job"> {{user.get_tipo_display}}</div>
+            <div class="job">{{user.get_tipo_display}}</div>
           </div>
         </div>
       </li>
@@ -167,59 +184,98 @@
   <section class="home-section">
     <div class="home-content">
       {% block topbar %}
-<div class="topbar">
-  <div class="topbar-div">
-    <i class='bx bx-menu'></i>
+      <div class="topbar">
+        <div class="topbar-div">
+          <i class="bx bx-menu"></i>
 
-    <span class="text">
-      {% block topbar_title %}Dashboard{% endblock %}
-    </span>
+          <span class="text">
+            {% block topbar_title %}Dashboard{% endblock %}
+          </span>
 
-    {% block topbar_search %}{% endblock %}
-  </div>
+          {% block topbar_search %}{% endblock %}
+        </div>
 
-  <div class="topbar-div">
-    <!-- Ícone de notificação (sino) -->
-    <div class="notification">
-      <i class='bx bx-bell'></i>
-      <span class="badge" id="notification-count">3</span> <!-- Exemplo: 3 alertas -->
-      <div class="notification-dropdown">
-        <ul>
-          <li>🔔 Novo paciente agendado para amanhã</li>
-          <li>⚠️ Falta registrada hoje</li>
-          <li>📅 Feriado na próxima quarta-feira</li>
-        </ul>
+        <div class="topbar-div">
+          <div class="notification">
+            <i class="fas fa-bell"></i>
+            <span class="badge">3</span>
+            
+            <div class="notification-dropdown">
+              <div class="notification-header">
+                <h3><i class="fas fa-bell"></i> Notificações</h3>
+              </div>
+              
+              <ul>
+                <li>
+                  <div class="notification-item unread">
+                    <div class="notification-icon info">
+                      <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                      <div class="notification-title">Nova consulta agendada</div>
+                      <div class="notification-message">João Silva agendou para amanhã às 14:00</div>
+                      <div class="notification-time">Há 5 minutos</div>
+                    </div>
+                  </div>
+                </li>
+                
+                <li>
+                  <div class="notification-item">
+                    <div class="notification-icon success">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                      <div class="notification-title">Pagamento confirmado</div>
+                      <div class="notification-message">Maria Santos realizou o pagamento</div>
+                      <div class="notification-time">Há 2 horas</div>
+                    </div>
+                  </div>
+                </li>
+                
+                <li>
+                  <div class="notification-item">
+                    <div class="notification-icon warning">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notification-content">
+                      <div class="notification-title">Lembrete importante</div>
+                      <div class="notification-message">3 pacientes com pagamento pendente</div>
+                      <div class="notification-time">Hoje às 09:30</div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              
+              <div class="notification-footer">
+                <a href="#">Ver todas as notificações</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Perfil -->
+          <div class="dropdown">
+            <div class="profile-button">
+              {{ user.get_full_name }} <i class="bx bx-chevron-down"></i>
+            </div>
+            <div class="dropdown-content">
+              <a href="{% url 'config' %}">Ver Perfil</a>
+              <button onclick="toggleDarkMode()">Alternar Tema</button>
+              <a href="{% url 'logout' %}">Sair</a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Perfil -->
-    <div class="dropdown">
-      <div class="profile-button">
-        {{ user.get_full_name }} <i class='bx bx-chevron-down'></i>
-      </div>
-      <div class="dropdown-content">
-        <a href="{% url 'config' %}">Ver Perfil</a>
-        <button onclick="toggleDarkMode()">Alternar Tema</button>
-        <a href="{% url 'logout' %}">Sair</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-{% endblock %}
-
-      {% block content %}{% endblock %}
+      {% endblock %}
+      {% block content %}
+      {% include "core/partials/alertas.html" %} {% endblock %}
     </div>
   </section>
   {% block scripts %}{% endblock %}
-   
-  <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
-  <script src="{% static 'core/js/base/toggleMode.js' %}"></script>
- 
-  
-  {% block extra_css %}{% endblock %}
 
-  
+  <script type="module" src="{% static 'core/js/alertas/main.js' %}"></script>
+  <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
+  {% block extra_css %}{% endblock %}
 </body>
 
 </html>

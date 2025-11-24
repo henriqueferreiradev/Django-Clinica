@@ -5,17 +5,22 @@ from django.utils.text import slugify
 from django.conf import settings
 import locale
 import calendar
-from datetime import date, timedelta
+from datetime import time, datetime, timedelta, date
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect
 from .models import Agendamento, LogAcao
 from django.contrib import messages
 
+<<<<<<< HEAD
 try:
     locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 except locale.Error:
     locale.setlocale(locale.LC_TIME, 'C')  # fallback universal
+=======
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+
+>>>>>>> origin/main
 def criar_pasta_foto_paciente(id_paciente, nome_paciente):
     nome = slugify(nome_paciente)
     caminho = os.path.join(settings.MEDIA_ROOT, f'imagens/pacientes/{id_paciente}_{nome}')
@@ -55,40 +60,87 @@ def alterar_status_ativo(request, modelo, ativar=True, prefixo=''):
     else:
         print(f"ID não enviado para alteração de status em {modelo.__name__}.")
 
+# core/utils.py
+from datetime import datetime
 
+def _tipo_beneficio(ag):
+    tags = (ag.tags or '')
+    if 'beneficio:sessao_livre' in tags:
+        return 'sessao_livre'
+    if 'beneficio:relaxante' in tags:
+        return 'relaxante'
+    if 'beneficio:desconto' in tags:
+        return 'desconto'
+    if 'beneficio:brinde' in tags:
+        return 'brinde'
+    return None
+def gerar_horarios(inicio="07:00", fim="19:00"):
+    horarios = []
+    h, m = map(int, inicio.split(":"))
+    inicio_dt = datetime.combine(datetime.today(), time(h, m))
+    h, m = map(int, fim.split(":"))
+    fim_dt = datetime.combine(datetime.today(), time(h, m))
 
+    while inicio_dt <= fim_dt:
+        horarios.append(inicio_dt.strftime("%H:%M"))
+        inicio_dt += timedelta(minutes=30)
+    return horarios
+def gerar_mensagem_confirmacao(ag):
+    """
+    Mensagem de confirmação para WhatsApp/E-mail.
+    Suporta agendamentos COM pacote e SEM pacote (benefícios de status).
+    """
+    pac = ag.paciente
+    prof = getattr(ag, 'profissional_1', None)
+    serv = getattr(ag, 'servico', None)
+    especialidade = ag.especialidade
+    pac_nome = f"{getattr(pac, 'nome', '')} {getattr(pac, 'sobrenome', '')}".strip()
+    prof_nome = "A definir"
+    if prof:
+        prof_nome = f"{getattr(prof, 'nome', '')} {getattr(prof, 'sobrenome', '')}".strip() or "A definir"
 
+    data_str = ag.data.strftime('%d/%m/%Y') if getattr(ag, 'data', None) else ''
+    dia_semana = ag.data.strftime('%A').capitalize() if getattr(ag, 'data', None) else ''
+    hora_ini = ag.hora_inicio.strftime('%H:%M') if getattr(ag, 'hora_inicio', None) else ''
+    hora_fim = ag.hora_fim.strftime('%H:%M') if getattr(ag, 'hora_fim', None) else ''
+    local = ag.ambiente or 'A confirmar'
 
-def gerar_mensagem_confirmacao(agendamento):
-    paciente_nome = agendamento.paciente.nome
-    servico = agendamento.servico.nome if agendamento.servico else "Reposição"
-    especialidade = agendamento.especialidade
-    profissional = f"{agendamento.profissional_1.nome} ({agendamento.profissional_1.especialidade.nome})"
-    pacote = agendamento.pacote
+    # Bloco de sessão (pacote vs benefício)
+    sessao_info = ''
+    pacote = getattr(ag, 'pacote', None)
+    if pacote:
+        try:
+            atual = pacote.get_sessao_atual(ag)
+        except Exception:
+            atual = None
+        total = getattr(pacote, 'qtd_sessoes', 0) or 0
+        codigo = getattr(pacote, 'codigo', '') or 'Pacote'
+        if isinstance(atual, int) and total:
+            restantes = max(total - atual, 0)
+            sessao_info = f"Sessão {atual} de {total} | {restantes} restante(s) | {codigo}"
+        else:
+            sessao_info = f"Pacote: {codigo}"
+    else:
+        ben = _tipo_beneficio(ag)
+        if ben == 'sessao_livre':
+            sessao_info = "Sessão livre (benefício de status)"
+        elif ben == 'relaxante':
+            sessao_info = "Sessão relaxante (benefício de status)"
+        elif serv:
+            sessao_info = f"Serviço: {getattr(serv, 'nome', 'Atendimento')}"
+        else:
+            sessao_info = "Atendimento"
 
-    sessao_atual = pacote.get_sessao_atual(agendamento)
-    qtd_sessoes = pacote.qtd_sessoes 
-    data = agendamento.data
-    hora_inicio = agendamento.hora_inicio.strftime('%H:%M')
-    hora_fim = agendamento.hora_fim.strftime('%H:%M')
-    
-    dia_semana = calendar.day_name[data.weekday()].capitalize()
-    data_formatada = data.strftime('%d/%m/%Y')
-
-    mensagem = (
-        f"Olá, {paciente_nome}! ☺️\n"
-        f"Aqui é a Bem, IA da Ponto de Equilíbrio, tudo bem?\n\n"
-        f"Passando para deixar o lembrete de seu(s) próximo(s) horário(s) agendado(s)\n\n"
-        
-        f"🟣 *Atividade*: {especialidade}\n"
-        f"👩‍⚕️ *Profissional:* {profissional}\n"
-        f"🗓 *Data:* {data_formatada} ({dia_semana})\n"
-        f"⏰ *Horário:* {hora_inicio} às {hora_fim}\n\n"
-
-        f"Qualquer dúvida, estou por aqui.\n"
-        f"Até lá! 🌟"
-    )
+    mensagem = (f"Olá, {pac_nome}! Sua sessão está confirmada! ☺️\n"
+                f"Aqui é a Bem, IA da Ponto de Equilíbrio, tudo bem?\n\n"
+                f"Passando para deixar o lembrete de seu(s) próximo(s) horário(s) agendado(s)\n\n"
+                f"🟣 *Atividade*: {especialidade}\n"
+                f"👩‍⚕️ *Profissional:* {prof}\n"
+                f"🗓 *Data:* {data_str} ({dia_semana})\n"
+                f"⏰ *Horário:* {hora_ini} às {hora_fim}\n\n"
+                f"Qualquer dúvida, estou por aqui.\n" f"Até lá! 🌟" )
     return mensagem
+
 
 from django.core.mail import send_mail
 

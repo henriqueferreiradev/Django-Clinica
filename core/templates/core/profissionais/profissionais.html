@@ -6,8 +6,51 @@
   <span class="text">{% block topbar_title %}Profissionais{% endblock %}</span>
 
 {% block content %}
+{% include "core/partials/_confirm_modal.html" %}
   <div class="content">
     <div class="content-header">
+      <form method='GET' action="{% url 'profissionais' %}">
+        <div class="filter-container">
+          <div class="filter-container_row">
+       
+            <div class="filter_input">
+              <i class='bx bx-search'></i>
+              <input class="form-input" type="search" placeholder="Pesquisar...">
+            </div>
+            
+            
+            <div class="filter_input">
+              <i class='bx bx-calendar'></i>
+              <input class="form-input" type="date" id="start-date">
+            </div>
+            
+            <div class="filter_input">
+              <i class='bx bx-calendar'></i>
+              <input class="form-input" type="date" id="end-date">
+            </div>
+            
+            <div class="filter_input">
+              <select class="form-select" name="" id="">
+                <option value="1">Ativo</option>
+                <option value="2">Inativo</option>
+                <option value="3">Pendente</option>
+              </select>
+            </div>
+
+ 
+            <button type="submit" class="btn">
+              <i class='bx bx-filter-alt'></i>
+              <span>Filtrar</span>
+            </button>
+            
+            <button type="button" class="btn">
+              <i class='bx bx-reset'></i>
+              <span>Limpar</span>
+            </button>
+          </div>
+        </div>
+      </form>
+      <!--
       <h2>Lista de profissionais</h2>
       <form method="GET" action="{% url 'profissionais' %}" class="search-form" type="search">
         <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui" />
@@ -15,20 +58,16 @@
       <div>
         <button class="btn" onclick="window.location.href='{% url 'cadastrar_profissional' %}'">+ Add
           Profissional</button>
-      </div>
+      </div>-->
+      <button onclick="window.location.href='{% url 'cadastrar_profissional' %}'" class='btn' ><i class="fas fa-plus mr-2"></i>Novo Profissional</button>
+
     </div>
 
 <div class="card-grid">
+    
     {% for profissional in profissionais %}
       <div class="card">
-        <div class='dropdown-wrapper'>
-          <button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
-          <div class="dropdown_menu">
-            <button onclick="abrirModal({{ profissional.id }})">Ver detalhes</button>
-            <button onclick="window.location.href='{% url 'editar_profissional' profissional.id %}'">Editar</button>
-            <button onclick="abrirFicha('{% url 'ficha_profissional' profissional.id %}')">Gerar Ficha</button>
-          </div>
-        </div>
+        {% include "core/partials/_profissional_dropdown.html" %}
 
         <div class="card-top"></div>
 
@@ -52,70 +91,10 @@
 
       </div>
     {% endfor %}
+    
   </div>
-
-
  
-
-  <div id="modalOverlay" class="overlay" style="display: none;">
-    <div class="modal">
-      <div class="perfil_topbar">
-        <div  class="patient-header">
-          <h2 id="profissionalNome"></h2>
-          <span class="birth" id="profissionalNascimento"></span> 
-          <span class="birth" id="profissionalIdade"></span>
-        </div>
-        <span class="fechar" onclick="fecharModal()">×</span>
-      </div>
-      <div class="patient-card">
-        <div class="patient-photo">
-          <img id="profissionalFoto" src="" alt="Foto do profissional">
-        </div>
-        <div class="patient-info-table">
-          <table>
-            <tbody>
-              <tr>
-                <th>RG</th>
-                <td id="profissionalRg"></td>
-                <th>CPF</th>
-                <td id="profissionalCpf"></td>
-              </tr>
-              <tr>
-                <th>Telefone</th>
-                <td id="profissionalTelefone"></td>
-                <th>Celular</th>
-                <td id="profissionalCelular"></td>
-              </tr>
-              <tr>
-                <th>Cor</th>
-                <td id="profissionalCor"></td>
-                <th>Sexo</th>
-                <td id="profissionalSexo"></td>
-              </tr>
-              <tr>
-                <th>Estado Civil</th>
-                <td id="profissionalEstadoCivil"></td>
-                <th>Email</th>
-                <td id="profissionalEmail"></td>
-              </tr>
-              <tr>
-                <th>Endereço</th>
-                <td colspan="3" id="profissionalEndereco"></td>
-              </tr>
-              <tr>
-                <th>Observação</th>
-                <td colspan="3" id="profissionalObs"></td>
-              </tr>
-            </tbody>
-          </table>
-        
-   
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
+ 
 </div>
 {% endblock %} {% block scripts %}
 <script src="https://unpkg.com/imask"></script>

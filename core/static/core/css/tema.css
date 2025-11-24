@@ -1,5 +1,5 @@
 :root {
-  --roxoPrincipal: #7f4396;
+  --roxoPrincipal: #6D398E;
   --roxoPrincipal-hover: #76378f11;
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
@@ -13,36 +13,118 @@
   --bg-color: #E4E9F7;
   --hover-dropdown: #F0F0F0;
   --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
+  --btn-red-exclude: #ff000025;
+  --btn-red-font: #efc4c4;
+  --cinza-escuro: #555;
+  --cinza-medio: #888;
+  --cinza-claro: #eee;
+  --cinza-borda: #ddd;
+  --erro: #ff0000;
+  --titulo-perfil: #64748b;
+  --dourado: #D4AF37;
+  --verde-sucesso: #10B981;
+  --vermelho-alerta: #EF4444;
+  --sombra-suave: 0 10px 40px rgba(0, 0, 0, 0.08);
+  --sombra-destaque: 0 15px 35px rgba(109, 57, 142, 0.15);
+  --borda-arredondada: 16px;
+  --transicao: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* Espaçamentos */
+  --espaco-xs: 0.5rem;
+  --espaco-sm: 1rem;
+  --espaco-md: 1.5rem;
+  --espaco-lg: 2rem;
+  --espaco-xl: 3rem;
 
+  /* Bordas */
+  --borda-radius: 8px;
+  --borda-radius-sm: 4px;
+
+  /* Sombras */
+  --sombra: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --sombra-focus: 0 0 0 3px rgba(127, 67, 150, 0.3);
+
+  --backgroundCard: #FFF;
+  --backgroundCard-hover: #6d398e38;
 }
 
 .dark {
-  --roxoPrincipal: #7f4396;
-  --roxoPrincipal-hover: #76378f11;
+  --roxoPrincipal: #6D398E;
+  --roxoPrincipal-hover: rgba(118, 55, 143, 0.067);
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
   --verdePrincipal: #92cbad;
-
-  --branco: #363636;
+  --cinza-claro: #0E101A;
+  --branco: #121623;
 
   --preto: #f1f1f1;
 
   --cinzaBorda: #444;
   --cinzaEscuro: #aaa;
-  --bg-color: #242525;
+  --bg-color: #0B0B10;
   --bg-btn-1: #363636;
   --hover-dropdown: #7f4396;
+  --sucesso-bg: #4444;
+  --cinza-escuro: #ccc;
+  --cinza-medio: #aaa;
+  --cinza-claro: #444;
+  --cinza-borda: #555;
+  --titulo-perfil: #64748b;
+  --backgroundCard: #00000078;
+  --backgroundCard-hover: #00000025;
 }
 
 * {
   transition: background-color 0.3s, color 0.3s;
+  margin: 0;
+  padding: 0;
+}
+
+/* Afeta todas as scrollbars do site */
+* {
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #6d398e #f1f1f1;
+  /* Firefox (cor barra, cor trilho) */
+}
+
+/* Chrome, Safari e Edge */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #6d398e;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #4a2563;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+input[type="time"]::-webkit-inner-spin-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+input[type="time"] {
+  -moz-appearance: textfield;
+  text-align: center
 }
 
 body {
   background-color: var(--bg-color);
-  /* antes era --bg-color */
   color: var(--preto);
-  /* antes era --text-color */
   font-family: var(--fontePrincipal);
 }
 
@@ -50,15 +132,13 @@ input,
 textarea,
 select {
   background-color: var(--branco);
-
   color: var(--preto);
-
   border: 1px solid var(--cinzaBorda);
 }
 
 a {
   color: var(--preto);
-  /* substitui --text-color */
+  text-decoration: none;
 }
 
 th {
@@ -67,7 +147,6 @@ th {
 
 .content {
   background-color: var(--branco);
-
   padding: 1rem;
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -77,12 +156,6 @@ th {
 
   color: var(--preto);
 }
-
-.input-s {
-  border: 1px solid var(--verdePrincipal);
-}
-
-
 
 .dropdown {
   position: relative;
@@ -143,7 +216,256 @@ th {
   background-color: var(--hover-dropdown);
 }
 
-/* Hover mostra o menu */
 .dropdown:hover .dropdown-content {
   display: block;
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+thead {
+  background-color: var(--roxoPrincipal);
+  color: var(--branco);
+}
+
+th,
+td {
+  padding: 1em;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid var(--cinzaBorda);
+}
+
+th {
+  padding: 1em;
+}
+
+.badge {
+  padding: .4em .8em;
+  border-radius: 20px;
+  color: white !important;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+thead tr th:first-child {
+  border-top-left-radius: 12px;
+}
+
+thead tr th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* RESET GLOBAL OPCIONAL */
+input,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none;
+  border: 1px solid #ccc;
+  /* seu estilo */
+  border-radius: 8px;
+  padding: .6rem .9rem;
+  outline: none;
+}
+
+/* 1) NUMBER: remover setas (spinners) */
+input[type="number"] {
+  -moz-appearance: textfield;
+  /* Firefox */
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  /* Chrome, Edge, Safari */
+  margin: 0;
+}
+
+/* 2) DATE: esconder ícone/“calendário” */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  /* Chrome, Edge, Safari */
+}
+
+input[type="date"] {
+  /* Firefox não expõe o indicador via CSS.
+     appearance:none já remove boa parte do visual, mas o “picker” ainda abre ao clicar no campo.
+     Se quiser eliminar o picker por completo, use type="text" + máscara/validação. */
+}
+
+/* 3) TIME: remover relógio/ícones */
+input[type="time"]::-webkit-clear-button,
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  /* Chrome, Edge, Safari */
+}
+
+/* 4) SELECT: remover setinha e usar sua própria */
+select {
+  padding-right: 2rem;
+  /* espaço para sua setinha custom */
+  background-image: none;
+  /* garante sem ícone nativo */
+}
+
+/* Remover o ícone no IE/Edge antigo */
+select::-ms-expand {
+  display: none;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+  cursor: pointer;
+  padding: var(--espaco-sm) 0;
+}
+
+.checkbox-option input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--roxoPrincipal);
+  border-radius: 4px;
+  background: transparent;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  padding: .5em;
+}
+
+
+.checkbox-option input[type="checkbox"]::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--roxo-primary-hover);
+  transform: scale(0);
+  transition: transform .12s ease-in-out;
+  clip-path: polygon(14% 44%, 0 60%, 45% 100%, 100% 18%, 80% 0, 43% 62%);
+}
+
+.checkbox-option input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+.checkbox-option input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--roxoPrincipal);
+  outline-offset: 2px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+  cursor: pointer;
+  padding: var(--espaco-sm) 0;
+}
+
+.radio-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--roxoPrincipal);
+  border-radius: 50%;
+  background: transparent;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  padding: .5em;
+}
+
+.radio-option input[type="radio"]::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--roxo-primary-hover);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform .12s ease-in-out;
+}
+
+.radio-option input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+.radio-option input[type="radio"]:checked {
+  border-color: var(--roxo-primary-hover);
+  background: var(--roxoPrincipal-hover);
+}
+
+.radio-option input[type="radio"]:focus-visible {
+  outline: 2px solid var(--roxoPrincipal);
+  outline-offset: 2px;
+}
+
+/* Estados de hover */
+.radio-option:hover input[type="radio"] {
+  border-color: var(--roxo-primary-hover);
+  background: var(--roxoPrincipal-hover);
+}
+
+.radio-option:hover input[type="radio"]:checked {
+  background: var(--roxoPrincipal-hover);
+}
+
+
+
+/* Enhanced Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  margin-top: 1em;
+  border: 1px solid var(--cinza-borda);
+  background: var(--branco);
+  border-radius: 1em;
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: var(--cinza-escuro);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--cinzaBorda);
+  border-radius: 6px;
+  background: var(--branco);
+  color: var(--roxoPrincipal);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover {
+  background: var(--roxoPrincipal);
+  color: var(--branco);
+}
+
+.pagination-btn.active {
+  background: var(--roxoPrincipal);
+  color: var(--branco);
+}
+
+.pagination-btn.disabled {
+  color: var(--cinza-medio);
+  pointer-events: none;
+  opacity: 0.6;
 }

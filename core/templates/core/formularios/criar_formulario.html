@@ -1,0 +1,340 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Criar Formulário - Ponto de Equilíbrio{% endblock %}
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'core/css/formularios/criar_formulario.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+{% endblock %}
+
+{% block topbar_title %}<span class="text">Criar Formulário</span>{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+{% include "core/partials/alertas.html" %}
+<div class="content form-builder">
+     {% include "core/partials/_loader.html" %}
+        <a href="{% url 'formularios' %}" class="btn-voltar">
+            <i class="fas fa-arrow-left btn-icon"></i> Voltar para formulários ativos
+        </a>
+        
+        <div class="form-header">
+            <input type="text" id="formTitle" placeholder="Título do formulário" class="form-title-input">
+            <textarea id="formDescription" placeholder="Descrição do formulário" class="form-description-input"></textarea>
+        </div>
+
+        <div id="questionsContainer" class="questions-container"></div>
+    
+ 
+    <div class="content-actions">
+        <div class="actions-container">
+            <button id="addQuestionBottom" class="btn-primary">
+                <i class="fas fa-plus btn-icon"></i> Adicionar Pergunta
+            </button>
+            <button id="saveFormBottom" class="btn-success">
+                <i class="fas fa-save btn-icon"></i> Salvar Formulário
+            </button>
+        </div>
+    </div>
+</div>
+    <!-- Modal de tipos de pergunta -->
+    <div id="questionTypeModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Selecione o tipo de pergunta</h3>
+            <div class="type-options-grid">
+                <button data-type="short-text" class="type-option">
+                    <i class="fas fa-font type-icon"></i>
+                    <p>Texto curto</p>
+                </button>
+                <button data-type="paragraph" class="type-option">
+                    <i class="fas fa-align-left type-icon"></i>
+                    <p>Parágrafo</p>
+                </button>
+                <button data-type="multiple-choice" class="type-option">
+                    <i class="fas fa-dot-circle type-icon"></i>
+                    <p>Múltipla escolha</p>
+                </button>
+                <button data-type="checkbox" class="type-option">
+                    <i class="fas fa-check-square type-icon"></i>
+                    <p>Caixas de seleção</p>
+                </button>
+                <button data-type="dropdown" class="type-option">
+                    <i class="fas fa-caret-square-down type-icon"></i>
+                    <p>Menu suspenso</p>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModal" class="btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM Elements
+    const addQuestionBottom = document.getElementById('addQuestionBottom');
+    const saveFormBottom = document.getElementById('saveFormBottom');
+    const questionTypeModal = document.getElementById('questionTypeModal');
+    const closeModal = document.getElementById('closeModal');
+    const questionsContainer = document.getElementById('questionsContainer');
+    const formTitle = document.getElementById('formTitle');
+    const formDescription = document.getElementById('formDescription');
+
+    // State
+    let currentQuestionId = 0;
+    let formData = {
+        title: '',
+        description: '',
+        questions: []
+    };
+
+    // Helper Functions
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function showQuestionTypeModal() {
+        questionTypeModal.classList.add('active');
+    }
+
+    function hideQuestionTypeModal() {
+        questionTypeModal.classList.remove('active');
+    }
+
+    function addNewQuestion(type) {
+        const questionId = currentQuestionId++;
+        
+        const question = {
+            id: questionId.toString(),
+            text: '',
+            type: type,
+            required: false,
+            options: type === 'multiple-choice' || type === 'checkbox' || type === 'dropdown' 
+                ? ['Opção 1'] 
+                : []
+        };
+        
+        formData.questions.push(question);
+        addQuestionToDOM(question);
+        
+        setTimeout(() => {
+            const lastQuestion = questionsContainer.lastElementChild;
+            lastQuestion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+
+    function addQuestionToDOM(question) {
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card';
+        questionCard.setAttribute('data-id', question.id);
+        questionCard.setAttribute('data-type', question.type);
+        
+        let optionsHTML = '';
+        
+        if (question.type === 'multiple-choice' || question.type === 'checkbox' || question.type === 'dropdown') {
+            question.options.forEach((option, index) => {
+                optionsHTML += `
+                    <div class="option-container">
+                        <i class="fas fa-${question.type === 'multiple-choice' ? 'dot-circle' : question.type === 'checkbox' ? 'check-square' : 'caret-square-down'} option-icon"></i>
+                        <input type="text" value="${option}" class="option-input" placeholder="Opção ${index + 1}">
+                        <button class="remove-option-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            optionsHTML += `
+                <button class="add-option-btn">
+                    <i class="fas fa-plus btn-icon"></i>Adicionar opção
+                </button>
+            `;
+        }
+        
+        questionCard.innerHTML = `
+            <div class="question-header">
+                <input type="text" class="question-text-input" value="${question.text}" placeholder="Pergunta">
+                <select class="question-type-select">
+                    <option value="short-text" ${question.type === 'short-text' ? 'selected' : ''}>Texto curto</option>
+                    <option value="paragraph" ${question.type === 'paragraph' ? 'selected' : ''}>Parágrafo</option>
+                    <option value="multiple-choice" ${question.type === 'multiple-choice' ? 'selected' : ''}>Múltipla escolha</option>
+                    <option value="checkbox" ${question.type === 'checkbox' ? 'selected' : ''}>Caixas de seleção</option>
+                    <option value="dropdown" ${question.type === 'dropdown' ? 'selected' : ''}>Menu suspenso</option>
+                </select>
+            </div>
+            
+            <div class="question-options">
+                ${optionsHTML}
+            </div>
+            
+            <div class="question-footer">
+                <label class="required-label">
+                    <input type="checkbox" class="required-checkbox" ${question.required ? 'checked' : ''}>
+                    <span>Resposta obrigatória</span>
+                </label>
+                <button class="remove-question-btn">
+                    <i class="fas fa-trash btn-icon"></i>Remover
+                </button>
+            </div>
+        `;
+        
+        questionsContainer.appendChild(questionCard);
+        
+        // Add event listeners
+        questionCard.querySelector('.remove-question-btn').addEventListener('click', () => {
+            questionCard.remove();
+            formData.questions = formData.questions.filter(q => q.id !== question.id);
+        });
+        
+        const questionTypeSelect = questionCard.querySelector('.question-type-select');
+        questionTypeSelect.addEventListener('change', function() {
+            const newType = this.value;
+            questionCard.setAttribute('data-type', newType);
+            
+            let newOptionsHTML = '';
+            if (newType === 'multiple-choice' || newType === 'checkbox' || newType === 'dropdown') {
+                newOptionsHTML = `
+                    <div class="option-container">
+                        <i class="fas fa-${newType === 'multiple-choice' ? 'dot-circle' : newType === 'checkbox' ? 'check-square' : 'caret-square-down'} option-icon"></i>
+                        <input type="text" value="Opção 1" class="option-input" placeholder="Opção 1">
+                        <button class="remove-option-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button class="add-option-btn">
+                        <i class="fas fa-plus btn-icon"></i>Adicionar opção
+                    </button>
+                `;
+            }
+            
+            questionCard.querySelector('.question-options').innerHTML = newOptionsHTML;
+            
+            if (newOptionsHTML) {
+                setupOptionButtons(questionCard);
+            }
+        });
+        
+        setupOptionButtons(questionCard);
+    }
+
+    function setupOptionButtons(questionCard) {
+        const addOptionBtn = questionCard.querySelector('.add-option-btn');
+        if (addOptionBtn) {
+            addOptionBtn.addEventListener('click', function() {
+                const optionsContainer = questionCard.querySelector('.question-options');
+                const optionCount = optionsContainer.querySelectorAll('.option-container').length + 1;
+                const questionType = questionCard.getAttribute('data-type');
+                
+                const optionHTML = `
+                    <div class="option-container">
+                        <i class="fas fa-${questionType === 'multiple-choice' ? 'dot-circle' : questionType === 'checkbox' ? 'check-square' : 'caret-square-down'} option-icon"></i>
+                        <input type="text" value="Opção ${optionCount}" class="option-input" placeholder="Opção ${optionCount}">
+                        <button class="remove-option-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                addOptionBtn.insertAdjacentHTML('beforebegin', optionHTML);
+                
+                // Add event listener to the new remove button
+                const newRemoveBtn = optionsContainer.querySelectorAll('.remove-option-btn');
+                newRemoveBtn[newRemoveBtn.length - 1].addEventListener('click', function() {
+                    this.closest('.option-container').remove();
+                });
+            });
+        }
+        
+        questionCard.querySelectorAll('.remove-option-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.option-container').remove();
+            });
+        });
+    }
+
+    function saveCurrentForm() {
+    // Cria um formulário tradicional
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/formularios/form/novo/';
+        form.enctype = 'multipart/form-data';
+        
+        // Adiciona campos básicos
+        const addField = (name, value) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        };
+        
+        addField('title', formTitle.value);
+        addField('description', formDescription.value);
+        addField('csrfmiddlewaretoken', getCookie('csrftoken'));
+        addField('question_count', document.querySelectorAll('.question-card').length);
+        
+        // Adiciona perguntas
+        document.querySelectorAll('.question-card').forEach((card, index) => {
+            const questionText = card.querySelector('.question-text-input').value;
+            const questionType = card.getAttribute('data-type');
+            const isRequired = card.querySelector('.required-checkbox').checked;
+            
+            addField(`questions[${index}][text]`, questionText);
+            addField(`questions[${index}][type]`, questionType);
+            addField(`questions[${index}][required]`, isRequired ? 'on' : 'off');
+            
+            if (questionType === 'multiple-choice' || questionType === 'checkbox' || questionType === 'dropdown') {
+                const options = card.querySelectorAll('.option-input');
+                addField(`questions[${index}][option_count]`, options.length);
+                
+                options.forEach((option, optionIndex) => {
+                    addField(`questions[${index}][options][${optionIndex}]`, option.value);
+                });
+            }
+        });
+        
+        // Adiciona o formulário ao DOM e submete
+        document.body.appendChild(form);
+        form.submit();
+    }
+    // Event Listeners
+    addQuestionBottom.addEventListener('click', showQuestionTypeModal);
+    saveFormBottom.addEventListener('click', saveCurrentForm);
+    closeModal.addEventListener('click', hideQuestionTypeModal);
+
+    // Question type selection
+    document.querySelectorAll('[data-type]').forEach(button => {
+        button.addEventListener('click', function() {
+            const type = this.getAttribute('data-type');
+            addNewQuestion(type);
+            hideQuestionTypeModal();
+        });
+    });
+
+    // Fechar modal ao clicar fora
+    questionTypeModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideQuestionTypeModal();
+        }
+    });
+});
+</script>
+{% endblock %}

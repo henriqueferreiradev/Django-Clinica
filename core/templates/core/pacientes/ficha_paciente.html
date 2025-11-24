@@ -6,210 +6,595 @@
   <title>Ficha de cadastro - {{ paciente.nome }}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
+    
     :root {
-      --roxoPrincipal: #7F4396;
-      --roxoPrincipal-hover: #76378f11;
-      --roxoPrincipal-hover2: #76378f;
-      --verdePrincipal: #92cbad;
-      --branco: #FFF;
-      --preto: #000;
-      --cinzaBorda: #ccc;
-      --cinzaEscuro: #6e6e6e;
-      --fontePrincipal: 'Inter';
-    }
-
-    @media print {
-      .no-print {
-        display: none;
-      }
+      --primary: #7F4396;
+      --primary-light: #f0e6f5;
+      --secondary: #92cbad;
+      --accent: #ff9e6d;
+      --text-primary: #2d3748;
+      --text-secondary: #718096;
+      --border: #e2e8f0;
+      --background: #f8fafc;
+      --header-bg: #f1f5f9;
     }
 
     body {
-      font-family: var(--fontePrincipal);
+      font-family: 'Inter', sans-serif;
       margin: 0;
       padding: 20px;
-      background-color: #fff;
+      background-color: var(--background);
+      color: var(--text-primary);
       box-sizing: border-box;
+      line-height: 1.5;
     }
     
     .container {
       width: 100%;
       max-width: 1000px;
       margin: 0 auto;
-      overflow-x: auto;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 30px;
+      box-sizing: border-box;
     }
     
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      margin-bottom: 20px;
-      background: #fff;
-      border: 1px solid var(--cinzaBorda);
-    }
-    
-    thead {
-      background-color: var(--roxoPrincipal-hover);
-    }
-    
-    th, td {
-      text-align: left;
-      padding: 10px 12px;
-      border: 1px solid var(--cinzaBorda);
-      vertical-align: middle;
-    }
-    
-    th {
-      color: var(--roxoPrincipal);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
     .header {
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
     }
 
     .logo_img {
-      width: 400px;
+      width: 320px;
       height: auto;
+      margin-bottom: 20px;
+    }
+    
+    .document-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0 0 5px 0;
+    }
+    
+    .document-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    
+    .patient-badge {
+      background: var(--primary-light);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 500;
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .patient-badge svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary-light);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .info-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .info-value {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      padding: 8px 12px;
+      background: var(--background);
+      border-radius: 6px;
+      min-height: 20px;
+    }
+    
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
       text-align: center;
     }
-
-
-
+    
     footer p {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--roxoPrincipal);
-      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.6;
+    }
+    
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 25px 0;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      background: #6a3780;
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary-light);
+    }
+    
+    .empty-value {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    
+    /* ESTILOS ESPECÍFICOS PARA IMPRESSÃO FIEL */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0.7cm;
+      }
+      
+      body {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: white !important;
+        font-size: 13px !important;
+        width: 100% !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      
+      .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 15px !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+      }
+      
+      .no-print {
+        display: none !important;
+      }
+      
+      .header {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        margin-bottom: 20px !important;
+        padding-bottom: 15px !important;
+        border-bottom: 1px solid var(--border) !important;
+      }
+      
+      .logo_img {
+        width: 280px !important;
+        margin-bottom: 15px !important;
+      }
+      
+      .document-title {
+        font-size: 20px !important;
+        color: var(--primary) !important;
+      }
+      
+      .document-subtitle {
+        font-size: 14px !important;
+        color: var(--text-secondary) !important;
+      }
+      
+      .patient-badge {
+        background: var(--primary-light) !important;
+        padding: 6px 12px !important;
+        border-radius: 20px !important;
+        color: var(--primary) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      
+      .section {
+        margin-bottom: 20px !important;
+        page-break-inside: avoid !important;
+      }
+      
+      .section-title {
+        font-size: 16px !important;
+        color: var(--primary) !important;
+        border-bottom: 2px solid var(--primary-light) !important;
+        margin-bottom: 15px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        page-break-after: avoid !important;
+      }
+      
+      .section-title svg {
+        width: 18px !important;
+        height: 18px !important;
+      }
+      
+      .info-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+        gap: 12px !important;
+        page-break-inside: avoid !important;
+      }
+      
+      .info-item {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      
+      .info-label {
+        font-size: 12px !important;
+        color: var(--text-secondary) !important;
+        margin-bottom: 3px !important;
+      }
+      
+      .info-value {
+        font-size: 14px !important;
+        color: var(--text-primary) !important;
+        padding: 6px 10px !important;
+        background: var(--background) !important;
+        border-radius: 6px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      
+      .full-width {
+        grid-column: 1 / -1 !important;
+      }
+      
+      footer {
+        margin-top: 30px !important;
+        padding-top: 15px !important;
+        border-top: 1px solid var(--border) !important;
+        text-align: center !important;
+      }
+      
+      footer p {
+        color: var(--text-secondary) !important;
+        font-size: 12px !important;
+      }
+      
+      /* Força o navegador a respeitar todos os estilos */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+      
+      /* Ajusta quebras de página */
+      .info-grid, .section {
+        break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        padding: 20px;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      @media print {
+        .info-grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
     }
   </style>
 </head>
 
-<body onload=" window.print()">
+<body>
   <div class="container">
     <div class="header">
-      <img class="logo_img" src="/static/core/img/icons/logoCompleto.png" alt="logo Completo">
-      <h2>Ficha de Cadastro do Paciente</h2>
+      <img class="logo_img" src="/static/core/img/icons/logoCompleto.png" alt="Logo da Clínica">
+      <h1 class="document-title">Ficha de Cadastro do Paciente</h1>
+      <p class="document-subtitle">Documento gerado em {{ data_geracao|date:"d/m/Y" }}</p>
+      
+      <div class="patient-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+        </svg>
+        <span>Paciente: {{ paciente.nome }} {{ paciente.sobrenome }}</span>
+      </div>
     </div>
-    <table>
-      <h3>Informações Pessoais</h3>
-      <tr>
-        <th>Nome</th>
-        <td colspan="3">{{ paciente.nome }} {{ paciente.sobrenome }}</td>
-      </tr>
-      <tr>
-        <th>Nome Social</th>
-        <td>{{ paciente.nomeSocial }}</td>
-        <th>Data de Nascimento</th>
-        <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
-      </tr>
-      <tr>
-        <th>RG</th>
-        <td>{{ paciente.rg }}</td>
-        <th>CPF</th>
-        <td>{{ paciente.cpf }}</td>
-      </tr>
-      <tr>
-        <th>Cor/Raça</th>
-        <td>{{ paciente.get_cor_raca_display }}</td>
-        <th>Sexo</th>
-        <td>{{ paciente.get_sexo_display }}</td>
-      </tr>
-      <tr>
-        <th>Estado Civil</th>
-        <td>{{ paciente.get_estado_civil_display }}</td>
-        <th>Naturalidade</th>
-        <td>{{ paciente.naturalidade }}</td>
-      </tr>
-      <tr>
-        <th>UF</th>
-        <td>{{ paciente.get_uf_display }}</td>
-        <th>Como conheceu a clínica?</th>
-        <td>{{ paciente.get_midia_display }}</td>
-      </tr>
-      <tr>
-        <th>Rede Social</th>
-        <td>{{ paciente.redeSocial }}</td>
-        <th>Profissão</th>
-        <td>{{ paciente.profissao }}</td>
-      </tr>
-      <tr>
-        <th>Observações</th>
-        <td colspan="3">{{ paciente.observacao }}</td>
-      </tr>
-    </table>
 
-    <h3>Endereço</h3>
-    <table>
-      <tr>
-        <th>Rua</th>
-        <td colspan="3">{{ paciente.rua }}</td>
+    <div class="actions no-print">
+      <button class="btn btn-primary" onclick="window.print()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+          <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+        </svg>
+        Imprimir
+      </button>
+      <a href="#" class="btn btn-secondary" onclick="history.back(); return false;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+        Voltar
+      </a>
+    </div>
 
-      </tr>
-      <tr>
-        <th>Número</th>
-        <td>{{ paciente.numero }}</td>
+    <div class="section">
+      <h2 class="section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+        </svg>
+        Informações Pessoais
+      </h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Nome completo</span>
+          <div class="info-value">{{ paciente.nome }} {{ paciente.sobrenome }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Nome social</span>
+          <div class="info-value">{% if paciente.nomeSocial %}{{ paciente.nomeSocial }}{% else %}<span class="empty-value">Não informado</span>{% endif %}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Data de nascimento</span>
+          <div class="info-value">{{ paciente.data_nascimento|date:"d/m/Y" }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Idade</span>
+          <div class="info-value">{{ paciente.idade }} anos</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">RG</span>
+          <div class="info-value">{{ paciente.rg }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">CPF</span>
+          <div class="info-value">{{ paciente.cpf }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Cor/Raça</span>
+          <div class="info-value">{{ paciente.get_cor_raca_display }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Sexo</span>
+          <div class="info-value">{{ paciente.get_sexo_display }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Estado civil</span>
+          <div class="info-value">{{ paciente.get_estado_civil_display }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Naturalidade</span>
+          <div class="info-value">{{ paciente.naturalidade }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">UF</span>
+          <div class="info-value">{{ paciente.get_uf_display }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Como conheceu a clínica?</span>
+          <div class="info-value">{{ paciente.get_midia_display }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Rede Social</span>
+          <div class="info-value">{% if paciente.redeSocial %}{{ paciente.redeSocial }}{% else %}<span class="empty-value">Não informado</span>{% endif %}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Profissão</span>
+          <div class="info-value">{{ paciente.profissao }}</div>
+        </div>
+        
+        <div class="info-item full-width">
+          <span class="info-label">Observações</span>
+          <div class="info-value">{% if paciente.observacao %}{{ paciente.observacao }}{% else %}<span class="empty-value">Nenhuma observação registrada</span>{% endif %}</div>
+        </div>
+      </div>
+    </div>
 
-        <th>Complemento</th>
-        <td>{{ paciente.complemento }}</td>
-      </tr>
-      <tr>
-        <th>Bairro</th>
-        <td>{{ paciente.bairro }}</td>
-        <th>Cidade</th>
-        <td>{{ paciente.cidade }}</td>
-      </tr>
-      <tr>
-        <th>Estado</th>
-        <td>{{ paciente.estado }}</td>
-        <th>CEP</th>
-        <td>{{ paciente.cep }}</td>
-      </tr>
-    </table>
+    <div class="section">
+      <h2 class="section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+        </svg>
+        Endereço
+      </h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Rua</span>
+          <div class="info-value">{{ paciente.rua }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Número</span>
+          <div class="info-value">{{ paciente.numero }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Complemento</span>
+          <div class="info-value">{% if paciente.complemento %}{{ paciente.complemento }}{% else %}<span class="empty-value">Não informado</span>{% endif %}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Bairro</span>
+          <div class="info-value">{{ paciente.bairro }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Cidade</span>
+          <div class="info-value">{{ paciente.cidade }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Estado</span>
+          <div class="info-value">{{ paciente.estado }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">CEP</span>
+          <div class="info-value">{{ paciente.cep }}</div>
+        </div>
+      </div>
+    </div>
 
-    <h3>Contatos</h3>
-    <table>
-      <tr>
-        <th>Telefone</th>
-        <td>{{ paciente.telefone }}</td>
-        <th>Celular</th>
-        <td>{{ paciente.celular }}</td>
-      </tr>
-      <tr>
-        <th>Email</th>
-        <td colspan="3">{{ paciente.email }}</td>
-      </tr>
-      <tr>
-        <th>Contato de Emergência</th>
-        <td>{{ paciente.nomeEmergencia }}</td>
-        <th>Vínculo</th>
-        <td>{{ paciente.get_vinculo_display }}</td>
-      </tr>
-      <tr>
-        <th>Telefone de Emergência</th>
-        <td colspan="3">{{ paciente.telEmergencia }}</td>
-      </tr>
-    </table>
+    <div class="section">
+      <h2 class="section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/>
+          <path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+        </svg>
+        Contatos
+      </h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Telefone</span>
+          <div class="info-value">{{ paciente.telefone }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Celular</span>
+          <div class="info-value">{{ paciente.celular }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Email</span>
+          <div class="info-value">{{ paciente.email }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Contato de emergência</span>
+          <div class="info-value">{{ paciente.nomeEmergencia }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Vínculo</span>
+          <div class="info-value">{{ paciente.get_vinculo_display }}</div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Telefone de emergência</span>
+          <div class="info-value">{{ paciente.telEmergencia }}</div>
+        </div>
+      </div>
+    </div>
 
     <footer>
       <p>Av. Prof Romanda Gonçalves, nº 2657 | Itaipu Niterói-RJ | 21 3254-7682 | 21 990841-8739</p>
+      <p>Documento gerado em {{ data_geracao|date:"d/m/Y H:i" }}</p>
     </footer>
   </div>
+
+  <script>
+    // Adiciona a data de geração do documento
+    document.addEventListener('DOMContentLoaded', function() {
+      const now = new Date();
+      const dataGeracaoElements = document.querySelectorAll('[data-geracao]');
+      
+      dataGeracaoElements.forEach(el => {
+        el.textContent = now.toLocaleString('pt-BR');
+      });
+    });
+  </script>
 </body>
 
 </html>

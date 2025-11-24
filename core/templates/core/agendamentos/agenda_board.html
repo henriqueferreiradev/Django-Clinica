@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda da Clínica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --sidebar-bg: #1e293b;
+      --card-bg: #334155;
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --text: #e5e7eb;
+      --text-light: #94a3b8;
+      --border: #475569;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+    }
+
+    .agenda-board {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Coluna esquerda com profissionais */
+    .profissionais {
+      background: var(--sidebar-bg);
+      padding: 1.5rem;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .prof-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      color: #fff;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .prof-card:hover {
+      transform: translateX(5px);
+      background: var(--primary);
+    }
+
+    .prof-card i {
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    .prof-card:hover i {
+      color: white;
+    }
+
+    /* Área de horários */
+    .horarios {
+      overflow: auto;
+      padding: 1.5rem;
+      background: var(--bg-dark);
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      min-width: 1200px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    th {
+      background: var(--sidebar-bg);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+    }
+
+    .horario-col {
+      background: var(--sidebar-bg);
+      font-weight: 600;
+      position: sticky;
+      left: 0;
+      z-index: 4;
+      min-width: 80px;
+    }
+
+    .paciente {
+      border-radius: 8px;
+      background: gray;
+      color: #fff;
+      font-size: 0.85rem;
+      padding: 8px 12px;
+      display: inline-block;
+      width: auto;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .paciente:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--sidebar-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+<div class="agenda-board">
+  <div class="profissionais">
+    {% for prof in profissionais %}
+      <div class="prof-card"><i class="fas fa-user-md"></i> {{ prof.1 }}</div>
+    {% endfor %}
+  </div>
+
+  <div class="horarios">
+    <table>
+      <thead>
+        <tr>
+          <th class="horario-col">Horário</th>
+          {% for prof in profissionais %}
+            <th>{{ prof.1 }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for hora in horarios %}
+          <tr>
+            <td class="horario-col">{{ hora }}</td>
+            {% for prof in profissionais %}
+              <td>
+                {% for ag in agendamentos %}
+                  {% if ag.hora_inicio|time:"H:i" == hora and ag.profissional_1.id == prof.0 %}
+                    <span class="paciente" style='background:{{ag.especialidade.cor}};'>
+                      <i class="fas fa-user"></i> {{ ag.paciente.nome }}
+                    </span>
+                  {% endif %}
+                {% endfor %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+  </body>
+</html>

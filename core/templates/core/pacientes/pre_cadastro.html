@@ -1,280 +1,495 @@
 {% load static %}
- 
+<!DOCTYPE html>
+<html lang="pt-BR">
+
 <head>
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ponto de Equilíbrio - Pré cadastro</title>.
-    {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'core/css/pacientes/pre_cadastro.css' %}">
-    <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
-    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
-    {% endblock %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Pré-cadastro de pacientes para a clínica Ponto de Equilíbrio" />
+  <title>Ponto de Equilíbrio - Pré-cadastro</title>
+  {% block extra_css %}
+  <link rel="stylesheet" href="{% static 'core/css/pacientes/pre_cadastro.css' %}" />
+  <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
+  <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
+  <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  {% endblock %}
 </head>
 
+<body>
+{% include "core/partials/alertas.html" %}
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="header-title fade-in">Pré-Cadastro de Paciente</h1>
+        <p class="header-subtitle fade-in">
+          Preencha os dados abaixo para agilizar seu atendimento inicial.
+          Nossa equipe entrará em contato após a conferência.
+        </p>
+ 
+      </div>
+    </div>
 
-<header class="header-precadastro">
-    <img src="{% static 'core/img/icons/logoCompleto.png' %}" alt="Logo Clínica" height="60">
-    <h2>Pré-Cadastro de Paciente</h2>
-    <p>Preencha os dados abaixo para agilizar seu atendimento inicial. Nossa equipe entrará em contato após a
-        conferência.</p>
-</header>
+    <!-- SVG Curve -->
+    <div class="header-curve" aria-hidden="true">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#8641a1" />
+            <stop offset="100%" stop-color="#7F4396" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
+          opacity=".25" class="shape-fill"></path>
+        <path
+          d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
+          opacity=".5" class="shape-fill"></path>
+        <path
+          d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
+          class="shape-fill"></path>
+      </svg>
+    </div>
+  </header>
 
-{% block content %}
-<div class="content">
-    <form method="post" enctype="multipart/form-data" id="multiStepForm">
-        {% csrf_token %}
-
-        <!-- ETAPA 1 -->
-        <div class="form-step active" id="step-1">
-            <div class="form_titulo">Informações Pessoais</div>
-            <div class="form_div">
-                <div class="div_forms">
-                    <!-- Nome, Sobrenome, Nome Social -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s capitalize-input" type="text" name="nome" required>
-                            <span class="span-s">Nome*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s capitalize-input" type="text" name="sobrenome" required>
-                            <span class="span-s">Sobrenome*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s capitalize-input" type="text" name="nomeSocial">
-                            <span class="span-s">Nome Social</span>
-                        </div>
-                    </div>
-
-                    <!-- RG, CPF, Nascimento -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s" type="text" name="rg">
-                            <span class="span-s">RG</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s" type="text" name="cpf" required>
-                            <span class="span-s">CPF*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s date-s" type="text" name="nascimento" required>
-                            <span class="span-s">Nascimento*</span>
-                        </div>
-                    </div>
-
-                    <!-- Cor, Sexo, Estado Civil, Profissão -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <select name="cor" class="input-s">
-                                <option value="" disabled selected></option>
-                                {% for value, label in cor_choices %}
-                                <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Cor/Raça</span>
-                        </div>
-                        <div class="formField">
-                            <select name="sexo" class="input-s">
-                                <option value="" disabled selected></option>
-                                {% for value, label in sexo_choices %}
-                                <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Sexo</span>
-                        </div>
-                        <div class="formField">
-                            <select name="estado_civil" class="input-s" required>
-                                <option value="" disabled selected></option>
-                                {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Estado Civil*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s" type="text" name="profissao">
-                            <span class="span-s">Profissão</span>
-                        </div>
-                    </div>
-
-                    <!-- Naturalidade, UF, Mídia, Rede Social -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s" type="text" name="naturalidade" required>
-                            <span class="span-s">Naturalidade*</span>
-                        </div>
-                        <div class="formField">
-                            <select name="uf" class="input-s" required>
-                                <option value="" disabled selected></option>
-                                {% for value, label in uf_choices %}
-                                <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">UF*</span>
-                        </div>
-                        <div class="formField">
-                            <select name="midia" class="input-s" required>
-                                <option value="" disabled selected></option>
-                                {% for value, label in midia_choices %}
-                                <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Como nos conheceu?*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s" type="text" name="redeSocial">
-                            <span class="span-s">Rede Social</span>
-                        </div>
-                    </div>
-
-                    <!-- Foto + Observação -->
-                    <div class="form_cadastro-nomes">
-                        <label for="file" class="custum-file-upload">
-                            <div class="icon">
-                                <svg viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1C9.73478..." /></svg>
-                            </div>
-                            <div class="text"><span>Clique aqui para enviar a imagem</span></div>
-                            <input name="foto" id="file" type="file" accept="image/*" onchange="previewImage(event)">
-                        </label>
-
-                        <div class="formField">
-                            <textarea class="input-s textarea-s" name="observacao" maxlength="500"></textarea>
-                            <span class="span-s">Observação</span>
-                            <p class="contador"><span id="contador">0</span>/500 caracteres</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-navigation">
-                <button type="button" class="btn-save btn-next">Próximo</button>
-            </div>
+  <main id="form-section" class="form-section">
+    <div class="container">
+      <div class="content">
+        <!-- Progress Steps -->
+        <div class="form-progress">
+          <div class="progress-step active" data-step="1" aria-current="step">
+            <span class="step-number">1</span>
+            <span class="step-text">Informações Pessoais</span>
+          </div>
+          <div class="progress-step" data-step="2">
+            <span class="step-number">2</span>
+            <span class="step-text">Endereço e Contato</span>
+          </div>
         </div>
 
-        <!-- ETAPA 2 -->
-        <div class="form-step" id="step-2">
-            <div class="form_titulo">Endereço e Contato</div>
-            <div class="form_div">
-                <div class="div_forms">
-                    <!-- CEP, Rua -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s" type="text" name="cep" required>
-                            <span class="span-s">CEP*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s capitalize-input" type="text" name="rua" required>
-                            <span class="span-s">Rua*</span>
-                        </div>
-                    </div>
+        <form method="post" enctype="multipart/form-data" class="multi-step-form" id="multiStepForm" novalidate>
+          {% csrf_token %}
 
-                    <!-- Número, Complemento -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s" type="text" name="numero" required>
-                            <span class="span-s">Número*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s" type="text" name="complemento">
-                            <span class="span-s">Complemento</span>
-                        </div>
-                    </div>
+          <!-- ETAPA 1 -->
+          <div class="form-step active" id="step-1" role="tabpanel" aria-labelledby="step-1-tab">
+            <h2 class="form-step-title">Informações Pessoais</h2>
 
-                    <!-- Bairro, Cidade, Estado -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s" type="text" name="bairro" required>
-                            <span class="span-s">Bairro*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s" type="text" name="cidade" required>
-                            <span class="span-s">Cidade*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s" type="text" name="estado" required>
-                            <span class="span-s">UF*</span>
-                        </div>
-                    </div>
-
-                    <!-- Contato -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s" type="text" name="telefone">
-                            <span class="span-s">Telefone</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s" type="text" name="celular" required>
-                            <span class="span-s">Celular*</span>
-                        </div>
-                    </div>
-
-                    <!-- Emergência -->
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s" type="text" name="email" required>
-                            <span class="span-s">Email*</span>
-                        </div>
-                    </div>
-
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class="input-s capitalize-input" type="text" name="nomeEmergencia" required>
-                            <span class="span-s">Contato de emergência*</span>
-                        </div>
-                        <div class="formField">
-                            <select name="vinculo" class="input-s" required>
-                                <option value="" disabled selected></option>
-                                {% for value, label in vinculo_choices %}
-                                <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Vínculo*</span>
-                        </div>
-                        <div class="formField">
-                            <input class="input-s" type="text" name="telEmergencia" required>
-                            <span class="span-s">Telefone de emergência*</span>
-                        </div>
-                    </div>
+            <div class="form-step-content">
+              <!-- Nome, Sobrenome, Nome Social -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="nome" class="form-label">
+                    Nome <span class="required">*</span>
+                  </label>
+                  <input id="nome" class="form-input capitalize-input" type="text" name="nome" required
+                    aria-required="true" />
                 </div>
+
+                <div class="form-field">
+                  <label for="sobrenome" class="form-label">
+                    Sobrenome <span class="required">*</span>
+                  </label>
+                  <input id="sobrenome" class="form-input capitalize-input" type="text" name="sobrenome" required
+                    aria-required="true" />
+                </div>
+
+                <div class="form-field">
+                  <label for="nomeSocial" class="form-label">Nome Social</label>
+                  <input id="nomeSocial" class="form-input capitalize-input" type="text" name="nomeSocial" />
+                </div>
+              </div>
+
+              <!-- RG, CPF, Nascimento -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="rg" class="form-label">RG</label>
+                  <input id="rg" class="form-input" type="text" name="rg" inputmode="numeric" />
+                </div>
+
+                <div class="form-field">
+                  <label for="cpf" class="form-label">
+                    CPF <span class="required">*</span>
+                  </label>
+                  <input id="cpf" class="form-input cpf-mask" type="text" name="cpf" required aria-required="true"
+                    inputmode="numeric" />
+                  <span id="cpf-feedback" class="error-message"></span>
+                </div>
+
+                <div class="form-field">
+                  <label for="nascimento" class="form-label">
+                    Nascimento <span class="required">*</span>
+                  </label>
+                  <input id="nascimento" class="form-input date-mask" type="text" name="nascimento" required
+                    aria-required="true" placeholder="DD/MM/AAAA" />
+                </div>
+              </div>
+
+              <!-- Cor, Sexo, Estado Civil, Profissão -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="cor" class="form-label">Cor/Raça</label>
+                  <select id="cor" name="cor" class="form-select">
+                    <option value="" disabled selected>Selecione</option>
+                    {% for value, label in cor_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="sexo" class="form-label">Sexo</label>
+                  <select id="sexo" name="sexo" class="form-select">
+                    <option value="" disabled selected>Selecione</option>
+                    {% for value, label in sexo_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="estado_civil" class="form-label">
+                    Estado Civil <span class="required">*</span>
+                  </label>
+                  <select id="estado_civil" name="estado_civil" class="form-select" required aria-required="true">
+                    <option value="" disabled selected>Selecione</option>
+                    {% for value, label in estado_civil_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="profissao" class="form-label">Profissão</label>
+                  <input id="profissao" class="form-input" type="text" name="profissao" />
+                </div>
+              </div>
+
+              <!-- Naturalidade, UF, Mídia, Rede Social -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="naturalidade" class="form-label">
+                    Naturalidade <span class="required">*</span>
+                  </label>
+                  <input id="naturalidade" class="form-input" type="text" name="naturalidade" required
+                    aria-required="true" />
+                </div>
+
+                <div class="form-field">
+                  <label for="uf" class="form-label">
+                    UF <span class="required">*</span>
+                  </label>
+                  <select id="uf" name="uf" class="form-select" required aria-required="true">
+                    <option value="" disabled selected>Selecione</option>
+                    {% for value, label in uf_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="midia" class="form-label">
+                    Como nos conheceu? <span class="required">*</span>
+                  </label>
+                  <select id="midia" name="midia" class="form-select" required aria-required="true">
+                    <option value="" disabled selected>Selecione</option>
+                    {% for value, label in midia_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="redeSocial" class="form-label">Rede Social</label>
+                  <input id="redeSocial" class="form-input" type="text" name="redeSocial" />
+                </div>
+              </div>
+
+              <!-- Foto + Observação -->
+              <div class="form-row">
+                <div class="form-field form-field-file">
+                  <label for="file" class="form-label">Foto (opcional)</label>
+                  <div class="file-upload-wrapper">
+                    <input id="file" name="foto" type="file" accept="image/*" onchange="previewImage(event)"
+                      aria-describedby="fileHelp" />
+                    <label for="file" class="file-upload-label">
+                      <span class="file-upload-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 5V19M5 12H19" stroke="#7F4396" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                      </span>
+                      <span class="file-upload-text">Selecione uma foto</span>
+                    </label>
+                    <div id="filePreview" class="file-preview"></div>
+                    <small id="fileHelp" class="form-help-text">Formatos aceitos: JPG, PNG (máx. 2MB)</small>
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="observacao" class="form-label">Observação</label>
+                  <textarea id="observacao" class="form-textarea" name="observacao" maxlength="500"
+                    aria-describedby="charCount"></textarea>
+                  <div id="charCount" class="char-count">
+                    <span class="current-count">0</span>/500 caracteres
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div class="form-navigation">
-                <button type="button" class="btn-save btn-prev">Voltar</button>
-                <button type="submit" class="btn-save">Enviar</button>
+              <button type="button" class="btn btn-next" aria-controls="step-2">
+                Próximo
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
             </div>
-        </div>
-    </form>
-</div>
-{% endblock %}
+          </div>
 
-{% block scripts %}
-<script>
-    const steps = document.querySelectorAll(".form-step");
-    const nextBtns = document.querySelectorAll(".btn-next");
-    const prevBtns = document.querySelectorAll(".btn-prev");
-    let currentStep = 0;
+          <!-- ETAPA 2 -->
+          <div class="form-step" id="step-2" role="tabpanel" aria-labelledby="step-2-tab">
+            <h2 class="form-step-title">Endereço e Contato</h2>
 
-    function showStep(index) {
-        steps.forEach((step, i) => step.classList.toggle("active", i === index));
-    }
+            <div class="form-step-content">
+              <!-- CEP, Rua -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="cep" class="form-label">
+                    CEP <span class="required">*</span>
+                  </label>
+                  <input id="cep" class="form-input cep-mask" type="text" name="cep" required aria-required="true"
+                    inputmode="numeric" />
+                  <button type="button" class="btn-cep-search" id="btnBuscarCep">
+                    Buscar CEP
+                  </button>
+                </div>
 
-    nextBtns.forEach(btn => btn.addEventListener("click", () => {
-        currentStep++;
-        showStep(currentStep);
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }));
+                <div class="form-field">
+                  <label for="rua" class="form-label">
+                    Rua <span class="required">*</span>
+                  </label>
+                  <input id="rua" class="form-input capitalize-input" type="text" name="rua" required
+                    aria-required="true" />
+                </div>
+              </div>
 
-    prevBtns.forEach(btn => btn.addEventListener("click", () => {
-        currentStep--;
-        showStep(currentStep);
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }));
+              <!-- Número, Complemento -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="numero" class="form-label">
+                    Número <span class="required">*</span>
+                  </label>
+                  <input id="numero" class="form-input" type="text" name="numero" required aria-required="true" />
+                </div>
 
-    showStep(currentStep);
-</script>
-{% endblock %}
+                <div class="form-field">
+                  <label for="complemento" class="form-label">Complemento</label>
+                  <input id="complemento" class="form-input" type="text" name="complemento" />
+                </div>
+              </div>
+
+              <!-- Bairro, Cidade, Estado -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="bairro" class="form-label">
+                    Bairro <span class="required">*</span>
+                  </label>
+                  <input id="bairro" class="form-input" type="text" name="bairro" required aria-required="true" />
+                </div>
+
+                <div class="form-field">
+                  <label for="cidade" class="form-label">
+                    Cidade <span class="required">*</span>
+                  </label>
+                  <input id="cidade" class="form-input" type="text" name="cidade" required aria-required="true" />
+                </div>
+
+                <div class="form-field">
+                  <label for="estado" class="form-label">
+                    UF <span class="required">*</span>
+                  </label>
+                  <input id="estado" class="form-input" type="text" name="estado" required aria-required="true"
+                    maxlength="2" />
+                </div>
+              </div>
+
+              <!-- Contato -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="telefone" class="form-label">Telefone</label>
+                  <input id="telefone" class="form-input phone-mask" type="text" name="telefone" inputmode="tel" />
+                </div>
+
+                <div class="form-field">
+                  <label for="celular" class="form-label">
+                    Celular <span class="required">*</span>
+                  </label>
+                  <input id="celular" class="form-input cellphone-mask" type="text" name="celular" required
+                    aria-required="true" inputmode="tel" />
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="email" class="form-label">
+                    Email <span class="required">*</span>
+                  </label>
+                  <input id="email" class="form-input" type="email" name="email" required aria-required="true"
+                    inputmode="email" />
+                </div>
+              </div>
+
+              <!-- Emergência -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="nomeEmergencia" class="form-label">
+                    Contato de emergência <span class="required">*</span>
+                  </label>
+                  <input id="nomeEmergencia" class="form-input capitalize-input" type="text" name="nomeEmergencia"
+                    required aria-required="true" />
+                </div>
+
+                <div class="form-field">
+                  <label for="vinculo" class="form-label">
+                    Vínculo <span class="required">*</span>
+                  </label>
+                  <select id="vinculo" name="vinculo" class="form-select" required aria-required="true">
+                    <option value="" disabled selected>Selecione</option>
+                    {% for value, label in vinculo_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="telEmergencia" class="form-label">
+                    Telefone de emergência <span class="required">*</span>
+                  </label>
+                  <input id="telEmergencia" class="form-input phone-mask" type="text" name="telEmergencia" required
+                    aria-required="true" inputmode="tel" />
+                </div>
+              </div>
+
+              <!-- LGPD: Aviso + Consentimentos -->
+              <section class="lgpd-section" style="margin-top: 1.5rem">
+                <div class="lgpd-box" style="
+                      background: #faf7fd;
+                      border: 1px solid #e9d9f5;
+                      border-radius: 12px;
+                      padding: 16px;
+                    ">
+                  <p class="lgpd-title" style="
+                        margin: 0 0 0.5rem 0;
+                        font-weight: 600;
+                        color: #5b2b75;
+                      ">
+                    Proteção de Dados e Imagem (LGPD)
+                  </p>
+                  <p class="lgpd-text" style="
+                        margin: 0 0 0.75rem 0;
+                        color: #4a4a4a;
+                        font-size: 0.95rem;
+                        line-height: 1.5;
+                      ">
+                    As informações deste formulário serão utilizadas
+                    exclusivamente para cadastro, contato e organização do seu
+                    atendimento nesta clínica. Seus dados são tratados
+                    conforme a Lei nº 13.709/2018 (LGPD), com medidas de
+                    segurança e acesso restrito. Não compartilhamos com
+                    terceiros sem sua autorização, salvo nas hipóteses
+                    previstas em lei.
+                    <a href="/politica-de-privacidade" target="_blank" rel="noopener"
+                      style="color: #7f4396; text-decoration: underline">Leia a Política de Privacidade</a>.
+                  </p>
+
+                  <!-- Consentimento obrigatório para tratamento -->
+                  <label class="consent">
+                    <input type="checkbox" name="consentimento_tratamento" required aria-required="true" />
+                    <span>
+                      Declaro que <strong>li</strong> e
+                      <strong>concordo</strong> com o tratamento dos meus
+                      dados <em>pessoais e sensíveis</em> para as finalidades
+                      informadas acima.
+                    </span>
+                  </label>
+
+                  <!-- Consentimento opcional para uso de imagem -->
+                  <label class="consent">
+                    <input type="checkbox" name="consentimento_imagem" value="on" />
+                    <span>
+                      Autorizo, de forma livre e opcional, o uso da minha
+                      imagem (fotos/vídeos) pela clínica, inclusive em
+                      materiais de divulgação, redes sociais e campanhas
+                      institucionais. Estou ciente de que posso revogar esta
+                      autorização a qualquer momento.
+                    </span>
+                  </label>
+
+                  <!-- Consentimento opcional para comunicações -->
+                  <label class="consent">
+                    <input type="checkbox" name="consentimento_marketing" value="on" />
+                    <span>
+                      Aceito receber comunicações sobre orientações, conteúdos
+                      e novidades da clínica por e-mail/WhatsApp. (Opcional)
+                    </span>
+                  </label>
+
+                  <!-- Campo oculto para versionamento do termo -->
+                  <input type="hidden" name="politica_privacidade_versao" value="v1.0-2025-08-20" />
+                </div>
+
+                <small style="display: block; margin-top: 0.5rem; color: #666">
+                  Você pode solicitar acesso, correção ou exclusão de dados,
+                  bem como revogar o uso de imagem ou marketing, pelos canais
+                  informados na Política de Privacidade.
+                </small>
+              </section>
+            </div>
+
+            <div class="form-navigation">
+              <button type="button" class="btn btn-prev" aria-controls="step-1">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                Voltar
+              </button>
+
+              <button type="submit" class="btn btn-submit" id="submitBtn">
+                <span class="btn-text">Enviar Cadastro</span>
+                <span class="btn-loading hidden">
+                  <svg class="spinner" viewBox="0 0 50 50">
+                    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-text">
+        © <span id="current-year"></span> Ponto de Equilíbrio. Todos os
+        direitos reservados.
+      </p>
+    </div>
+  </footer>
+
+  {% block scripts %}
+  <script type="module" src="{% static 'core/js/pacientes/main.js' %}"></script>
+  <script src="https://unpkg.com/imask"></script>
+  <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
+  <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
+  <script src="{% static '/core/js/base/cep.js' %}"></script>
+  <script src="{% static '/core/js/pacientes/base.js' %}"></script>
+  {% endblock %}
+</body>
+
+</html>

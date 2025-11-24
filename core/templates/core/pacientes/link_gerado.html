@@ -12,6 +12,7 @@
 
 {% block content %}
 <div class="content">
+  {% include "core/partials/_loader.html" %}
   <div class="right_content">
 
     <!--
@@ -48,11 +49,11 @@
             class='bx bxl-telegram'></i></button>
         <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link))"><i
             class='bx bxl-facebook'></i></button>
-        <button onclick="window.open('https://www.instagram.com/')"><i class='bx bxl-instagram'></i></button>  
+        <button onclick="window.open('https://www.instagram.com/')"><i class='bx bxl-instagram'></i></button>
       </div>
     </div>
     <p>Ou leia o QR Code</p>
-    <img src="data:image/png;base64,{{ qrcode_base64 }}" alt="QR Code do Link">
+    <img style="width: 250px; height:250px;" src=" data:image/png;base64,{{ qrcode_base64 }}" alt="QR Code do Link">
   </div>
   <div class="left_content">
     <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
@@ -78,7 +79,8 @@
             <td>{{ paciente.celular }}</td>
             <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
             <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
-            <td>{% if paciente.pre_cadastro %}
+            <td>
+              {% if paciente.pre_cadastro %}
               <span class="status-pendente">Pendente</span>
               {% endif %}
             </td>
@@ -102,15 +104,15 @@
                 </div>
               </div>
             </td>
-
           </tr>
           {% endfor %}
           {% else %}
-          <tr><td class='linha-vazia' colspan="8">No momento não existem pré-cadastros a serem verificados.</td></tr>
-        
+          <tr>
+            <td class='linha-vazia' colspan="8">No momento não existem pré-cadastros a serem verificados.</td>
+          </tr>
           {% endif %}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
 
     </div>
   </div>

@@ -1,0 +1,221 @@
+{% extends 'core/base.html' %} {% load static %} {% block title %}Status mensal
+- Ponto de Equilíbrio{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/pacientes/status_mensal.css' %}" />
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+<style>
+
+</style>
+{% endblock %} {% block topbar_title %}<span class="text">Status mensal</span>
+{%endblock%} {% block content %}
+
+<div class="content">
+  <!-- KPIs -->
+
+  <div class="filtros_div">
+    <div id="filtro-bar">
+      <select class="fp-input" id="filtroMes">
+        <option value="1">Janeiro</option>
+        <option value="2">Fevereiro</option>
+        <option value="3">Março</option>
+        <option value="4">Abril</option>
+        <option value="5">Maio</option>
+        <option value="6">Junho</option>
+        <option value="7">Julho</option>
+        <option value="8">Agosto</option>
+        <option value="9">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
+
+      <select class="fp-input" id="filtroAno"></select>
+
+      <button class="btn btn-primary" type="button" id="aplicarFiltro">
+        Filtrar
+      </button>
+    </div>
+    <div class="filtro-chip">
+      <input id="filtroBusca" class="fp-input" type="text" placeholder="Buscar por nome/CPF…"
+        style="max-width: 280px" />
+      <div class="filtro-chip-btn">
+        <button type="button" class="chip" data-chip="todos">Todos</button>
+        <button type="button" class="chip" data-chip="premium">Premium</button>
+        <button type="button" class="chip" data-chip="vip">VIP</button>
+        <button type="button" class="chip" data-chip="plus">Plus</button>
+        <button type="button" class="chip" data-chip="indefinido">
+          Indefinido
+        </button>
+        <button type="button" class="chip" data-chip="primeiro_mes">
+          Primeiro Mês
+        </button>
+      </div>
+    </div>
+  </div>
+  <form d id="formFreq" method="post" action="/frequencias/salvar">
+    {% csrf_token %}
+    <!-- Hidden que o backend já usa -->
+    <input type="hidden" id="mes" name="mes" value="{{ mes|default:9 }}" />
+    <input type="hidden" id="ano" name="ano" value="{{ ano|default:2025 }}" />
+
+    <div style="overflow-x: auto">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-lg">Paciente</th>
+            <th class="col-center col-md">Freq. Sistema</th>
+            <th class="col-center col-md">Freq. Programada</th>
+            <th class="col-center col-sm">%</th>
+            <th class="col-center col-md">Status</th>
+            <th class="col-center col-md">Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </form>
+  <!-- Rodapé sticky com ação de salvar -->
+  <div id="saveBar" class="hidden" style="
+      position: sticky;
+      bottom: 0;
+      background: rgba(10, 11, 17, 0.9);
+      backdrop-filter: blur(6px);
+      border-top: 1px solid #272a3a;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      z-index: 40;
+      margin-top: 1rem;
+    ">
+    <div style="display: flex; gap: 1rem; align-items: center; font-size: 0.9rem">
+      <span id="dirtyBadge" style="
+          display: none;
+          padding: 0.25rem 0.5rem;
+          border-radius: 999px;
+          background: #4338ca;
+          color: #fff;
+          font-weight: 600;
+        ">
+        0 alteração pendente
+      </span>
+      <span id="listInfo" style="opacity: 0.7">Tabela carregada.</span>
+    </div>
+    <div style="display: flex; gap: 0.5rem">
+      <button id="btnScrollTop" type="button" class="btn" style="
+          border: 1px solid #343746;
+          background: transparent;
+          color: #e5e7eb;
+        ">
+        Topo
+      </button>
+      <button id="btnSalvarTudo" type="button" class="btn btn-primary">
+        Salvar tudo
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Benefícios -->
+  <div id="benefitsModal" class="modal-overlay hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">Benefícios do Paciente</h3>
+        <button class="btn-close" onclick="closeModal('benefitsModal')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="benefit-item">
+          <div class="benefit-header">
+            <div>
+              <h4 class="benefit-name">Desconto de 20%</h4>
+              <p class="benefit-date">Válido até 30/04/2023</p>
+            </div>
+            <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem">
+              Usar Desconto
+            </button>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-header">
+            <div>
+              <h4 class="benefit-name">Sessão Extra</h4>
+              <p class="benefit-date">Válido até 15/05/2023</p>
+            </div>
+            <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem">
+              Agendar Sessão
+            </button>
+          </div>
+        </div>
+        <div class="benefit-item benefit-used">
+          <div class="benefit-header">
+            <div>
+              <h4 class="benefit-name">Massagem Relaxante</h4>
+              <p class="benefit-date">Utilizado em 12/03/2023</p>
+            </div>
+            <span class="benefit-status"> Utilizado </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal Histórico -->
+  <div id="historyModal" class="modal-overlay hidden">
+
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title" id="historyPatientName">
+          Histórico de Status
+        </h3>
+        <button class="btn-close" onclick="closeModal('historyModal')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="history-item">
+          <div class="history-date">15 de Março, 2023</div>
+          <div class="history-details">
+            <span class="history-type">Fisioterapia</span>
+            <span class="history-status status-completed">Realizada</span>
+          </div>
+          <div class="history-time">14:00 - 15:00</div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Modal Confirmar Salvar -->
+<div id="confirmSaveModal" class="modal-overlay hidden">
+
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirmar salvamento</h3>
+    </div>
+    <div class="modal-body">
+      <p>
+        Você está prestes a salvar
+        <strong id="confirmDirtyCount">0</strong> alteração(ões) para
+        <span id="confirmMesAno">este mês/ano</span>.
+      </p>
+      <p style="opacity: 0.8; margin-top: 0.5rem">Deseja continuar?</p>
+    </div>
+    <div class="modal-footer" style="justify-content: space-between">
+      <button class="btn-close" id="cancelConfirmSave">Cancelar</button>
+      <button class="btn btn-primary" id="confirmSave">Salvar agora</button>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %} {% block scripts %}
+<script src="{% static '/core/js/pacientes/statusMensal.js' %}"></script>
+
+
+
+{% endblock %}

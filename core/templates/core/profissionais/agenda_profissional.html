@@ -1,0 +1,2155 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda - Ponto de Equilíbrio</title>
+    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
+    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/profissionais/agenda_profissional.css' %}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+
+</head>
+
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-heartbeat me-2"></i>Ponto de Equilíbrio
+        </a>
+
+        <div class="user-info">
+            {% if user.profissional.foto %}
+            <img src="{{ user.profissional.foto.url }}" alt="Foto de {{ user.get_full_name }}" />
+            {% else %}
+            <img src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto" />
+            {% endif %}
+            <div>
+                <div class="fw-bold">
+                    {{ user.get_full_name }}
+                </div>
+                <div class="small">
+                    {{user.profissional.espe}}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <div class="day-header">
+            <a class="nav-arrow" href="{{ prev_url }}" aria-label="Dia anterior">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+
+            <h2>
+                {{ dia|date:"l, d \\d\\e F \\d\\e Y" }}
+            </h2>
+
+            <a class="nav-arrow" href="{{ next_url }}" aria-label="Próximo dia">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+
+
+
+        <div class="agenda-grid">
+            <!-- Consultas do Dia -->
+            <div class="agenda-principal">
+                <div class="card agenda-card">
+                    <div class="card-header">
+                        <span>Agenda</span>
+                        <div>
+                        
+                            <a class="btn btn-sm btn-light" href="{{ hoje_url }}">Hoje</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if agendamentos %}
+                        {% for ag in agendamentos %}
+                        <div class="consultation-item">
+
+                            <div class="d-flex align-items-center">
+                                <div class="patient-header">
+                                    {% if ag.paciente.foto %}
+                                    <img  class="patient-img" src="{{ ag.paciente.foto.url }}" alt="Foto de {{ ag.paciente.nome }}">
+                                    {% else %}
+                                    <img class="patient-img" src="{% static 'core/img/defaultPerfil.png' %}" alt="Sem foto">
+                                    {% endif %}   
+                                     <div class="flex-grow-1">
+                                        <h5>{{ag.paciente.nome}} {{ag.paciente.sobrenome}} {{ag.paciente.id}}</h5>
+                                        <p class="mb-1">{{ag.hora_inicio}} - {{ag.hora_fim}} | {{ag.especialidade}}</p>
+                                        <p class="mb-1">Agendamento Nº {{ ag.id }}</p>
+                                    </div>
+                                </div>
+                                <div>
+ 
+                                    <div class="status-simple" data-agendamento-id="{{ag.id}}">
+                                        <div class="status-badges">
+                                            <span class="status-badge prontuario" data-status="false"
+                                                data-tab-target="prontuario" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
+                                                <i class="fas fa-file-medical"></i>
+                                                <span class="status-text">Prontuário</span>
+                                            </span>
+                                            <span class="status-badge evolucao" data-status="false"
+                                                data-tab-target="evolucao" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
+                                                <i class="fas fa-chart-line"></i>
+                                                <span class="status-text">Evolução</span>
+                                            </span>
+                                            <span class="status-badge avaliacao" data-status="false"
+                                                data-tab-target="analisefisio" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
+                                                <i class="fas fa-clipboard-check"></i>
+                                                <span class="status-text">Avaliação</span>
+                                            </span>
+                                            <span class="status-badge imagens" data-status="false"
+                                                data-tab-target="imagens" data-agendamento-id="{{ag.id}}"
+                                                data-paciente-id="{{ag.paciente.id}}"
+                                                data-paciente-nome="{{ag.paciente.nome}} {{ag.paciente.sobrenome}}">
+                                                <i class="fas fa-images"></i>
+                                                <span class="status-text">Imagens</span>
+                                            </span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="empty-state">
+                            <span>Sem agendamentos no momento.</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estatísticas e Ações Rápidas -->
+            <div class="agenda-lateral">
+                <div class="card">
+                    <div class="card-header">Resumo do Dia</div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-number" id="atendimentos-dia">{{atendimentos_dia}}</div>
+                                    <div class="stat-label">Consultas</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="prontuarios-pendente">{{prontuarios_pendente}}</div>
+                                    <div class="stat-label">Prontuários Pendentes</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="evolucoes-pendente">{{evolucoes_pendente}}</div>
+                                    <div class="stat-label">Evoluções Pendentes</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="avaliacoes-pendente">{{avaliacoes_pendente}}</div>
+                                    <div class="stat-label">Avaliações Pendentes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Paciente -->
+    <div class="modal" id="patientModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="patientModalLabel">Prontuário do Paciente</h5>
+
+                    <button type="button" class="btn-close" onclick="closeModal('patientModal')"
+                        aria-label="Close">X</button>
+                </div>
+                <div class="modal-body">
+                    <div class="perfil">
+                        <div class="">
+                            <img id='patientPhoto' src="" class="img-paciente" alt="Paciente">
+                        </div>
+                        <div class="col-md-5">
+                            <p id="patientName"></p>
+                            <p id="patientAge"></p>
+                            <p id='patientInicio'></p>
+                            <p id='patientNext'></p>
+ 
+                     
+                        </div>
+                    </div>
+
+                    <ul class="nav-tabs" id="patientTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" onclick="switchTab('prontuario')"><i
+                                    class="fas fa-file-medical"></i>Prontuário</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" onclick="switchTab('evolucao')"><i
+                                    class="fas fa-chart-line"></i>Evolução</button>
+                        </li>
+
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" onclick="switchTab('analisefisio')"><i
+                                    class="fas fa-images"></i>Avaliação</button>
+                        </li>
+
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" onclick="switchTab('imagens')"><i
+                                    class="fas fa-clipboard-check"></i>Imagens</button>
+                        </li>
+
+                    </ul>
+
+                    <div class="tab-content" id="patientTabContent">
+                        <!-- Aba Prontuário -->
+
+                        <div class="tab-pane active" id="prontuario">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Prontuários do Paciente</h5>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('newProntuarioModal')">
+                                    <i class="fas fa-plus me-1"></i> Novo Prontuário
+                                </button>
+                            </div>
+                            <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
+                            <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
+                            <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
+
+                            <div id="listProntuarios" class="prontuarios-list">
+                                <div class="prontuario-item">
+                                    <div class="prontuario-header">
+
+                                        <button class="btn btn-sm btn-outline-primary" onclick="openProntuarioModal(1)">
+                                            <i class="fas fa-eye me-1"></i> Leia Mais
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Modal Novo Prontuário -->
+                        <div class="modal" id="newProntuarioModal">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Novo Prontuário</h5>
+                                        <button type="button" class="btn-close"
+                                            onclick="closeModal('newProntuarioModal')" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="prontuarioForm">
+                                            <input type="hidden" id="pacienteId" value="{{ paciente.id }}">
+                                            <input type="hidden" id="profissionalId" value="{{ request.user.id }}">
+                                            <input type="hidden" id="agendamentoId" value="{{ agendamento.id }}">
+
+                                            <div class="habitos-grid-2">
+                                                <div class="habitos-col">
+                                                    <label for="queixaPrincipal" class="form-label">Queixa
+                                                        Principal</label>
+                                                    <textarea class="form-control" id="queixaPrincipal" rows="3"
+                                                        placeholder="Descreva a queixa principal do paciente..."></textarea>
+                                                </div>
+                                                <div class="habitos-col">
+                                                    <label for="conduta" class="form-label">Conduta durante a sessão
+                                                    </label>
+                                                    <textarea class="form-control" id="conduta" rows="4"
+                                                        placeholder="Descreva a conduta durante a sessão..."></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="habitos-grid-2">
+                                                <div class="habitos-col">
+                                                    <label for="historiaDoenca" class="form-label">Feedback do paciente
+                                                    </label>
+                                                    <textarea class="form-control" id="historiaDoenca" rows="3"
+                                                        placeholder="Descreva a história da doença atual..."></textarea>
+                                                </div>
+                                                <div class="habitos-col">
+                                                    <label for="exameFisico" class="form-label">Evolução</label>
+                                                    <textarea class="form-control" id="exameFisico" rows="4"
+                                                        placeholder="Descreva os achados do exame físico..."></textarea>
+                                                </div>
+
+
+                                            </div>
+
+                                            <div class="habitos-col">
+                                                <label for="diagnostico" class="form-label">Diagnóstico</label>
+                                                <input type="text" class="form-control" id="diagnostico"
+                                                    placeholder="Diagnóstico principal...">
+                                            </div>
+
+                                            <div class="habitos-col">
+                                                <label for="observacoes" class="form-label">Observações
+                                                    Adicionais / Comunicação</label>
+                                                <textarea class="form-control" id="observacoes" rows="3"
+                                                    placeholder="Observações adicionais..."></textarea>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <label class="checkbox-option" for="naoSeAplicaProntuario">
+                                            <input class="form-check-input" type="checkbox" id="naoSeAplicaProntuario">
+                                            Não foi necessário prontuário.
+                                        </label>
+                                        <div>
+                                            <button type="button" class="btn btn-secondary"
+                                                onclick="closeModal('newProntuarioModal')">Cancelar</button>
+                                            <button type="button" class="btn btn-primary" id='btn-salvar-prontuario'
+                                                onclick="salvarProntuario()">Salvar Prontuário</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Visualizar Prontuário Completo -->
+                        <div class="modal" id="viewProntuarioModal">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewProntuarioTitle">Prontuário Completo</h5>
+                                        <button type="button" class="btn-close"
+                                            onclick="closeModal('viewProntuarioModal')" aria-label="Close"></button>
+                                    </div>
+                                    <div id='prontuarioDetalhes' class="modal-body">
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            onclick="closeModal('viewProntuarioModal')">Fechar</button>
+                                        <button type="button" class="btn btn-outline-primary">
+                                            <i class="fas fa-print me-1"></i> Imprimir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Aba Evolução -->
+
+                        <div class="tab-pane" id="evolucao">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Registro de Evoluções</h5>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('newEvolutionModal')">
+                                    <i class="fas fa-plus me-1"></i> Nova Evolução
+                                </button>
+                            </div>
+                            <div id="listEvolucoes" class="prontuarios-list">
+
+
+
+                            </div>
+                        </div>
+
+                        <!-- Aba Imagens -->
+                        <div class="tab-pane" id="imagens">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Imagens do Paciente</h5>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('novaImagemModal')">
+                                    <i class="fas fa-plus me-1"></i> Nova Imagem
+                                </button>
+                            </div>
+
+                            <!-- Área de Upload -->
+                            <div class="file-upload mb-4" id="dropArea">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                                <p>Arraste imagens aqui ou clique para fazer upload</p>
+                                <input type="file" class="d-none" id="fileUpload" multiple accept="image/*">
+                                <button class="btn btn-sm btn-outline-primary"
+                                    onclick="document.getElementById('fileUpload').click()">Selecionar Arquivos</button>
+                            </div>
+
+                            <!-- Filtro de Pastas -->
+                            <div class="mb-4">
+                                <label for="pastaSelect" class="form-label">Filtrar por pasta:</label>
+                                <select class="form-select" id="pastaSelect" onchange="filtrarPorPasta()">
+                                    <option value="todas">Todas as pastas</option>
+                                    <option value="consulta-1">Consulta 01/03/2023 - Dr. Silva</option>
+                                    <option value="consulta-2">Consulta 15/04/2023 - Dr. Oliveira</option>
+                                    <option value="consulta-3">Consulta 22/05/2023 - Dra. Santos</option>
+                                </select>
+                            </div>
+
+                            <!-- Galeria Organizada por Pastas -->
+                            <div id="galeriaPastas">
+                                <!-- Pasta 1 -->
+                                <div class="folder-section" data-pasta="consulta-1">
+                                    <div class="folder-header">
+                                        <div class="folder-title">Consulta 01/03/2023 - Dr. Silva</div>
+                                        <span class="folder-badge">3 imagens</span>
+                                    </div>
+                                    <div class="image-gallery">
+                                        <div class="gallery-item">
+                                            <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                                alt="Raio-X">
+                                            <div class="overlay">Raio-X Lombar</div>
+                                        </div>
+                                        <div class="gallery-item">
+                                            <img src="https://images.unsplash.com/photo-1599045118108-bf9954418b76?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                                alt="Ressonância">
+                                            <div class="overlay">Ressonância</div>
+                                        </div>
+                                        <div class="gallery-item">
+                                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                                alt="Ultrassom">
+                                            <div class="overlay">Ultrassom</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pasta 2 -->
+                                <div class="folder-section" data-pasta="consulta-2">
+                                    <div class="folder-header">
+                                        <div class="folder-title">Consulta 15/04/2023 - Dr. Oliveira</div>
+                                        <span class="folder-badge">1 imagem</span>
+                                    </div>
+                                    <div class="image-gallery">
+                                        <div class="gallery-item">
+                                            <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                                alt="Avaliação Postural">
+                                            <div class="overlay">Avaliação Postural</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pasta 3 (vazia) -->
+                                <div class="folder-section" data-pasta="consulta-3">
+                                    <div class="folder-header">
+                                        <div class="folder-title">Consulta 22/05/2023 - Dra. Santos</div>
+                                        <span class="folder-badge">0 imagens</span>
+                                    </div>
+                                    <div class="empty-folder">
+                                        <i class="fas fa-folder-open fa-2x mb-2"></i>
+                                        <p>Nenhuma imagem nesta pasta</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Nova Imagem -->
+                        <div class="modal" id="novaImagemModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Adicionar Nova Imagem</h5>
+                                        <button type="button" class="btn-close" onclick="closeModal('novaImagemModal')"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="formNovaImagem">
+                                            <div class="mb-3">
+                                                <label for="consultaSelect" class="form-label">Selecionar
+                                                    Consulta</label>
+                                                <select class="form-select" id="consultaSelect" required>
+                                                    <option value="">Selecione uma consulta</option>
+                                                    <option value="consulta-1">Consulta 01/03/2023 - Dr. Silva</option>
+                                                    <option value="consulta-2">Consulta 15/04/2023 - Dr. Oliveira
+                                                    </option>
+                                                    <option value="consulta-3">Consulta 22/05/2023 - Dra. Santos
+                                                    </option>
+                                                    <option value="nova-consulta">+ Criar nova consulta</option>
+                                                </select>
+                                            </div>
+
+                                            <div id="novaConsultaForm" class="mb-3" style="display: none;">
+                                                <div class="mb-2">
+                                                    <label for="dataConsulta" class="form-label">Data da
+                                                        Consulta</label>
+                                                    <input type="date" class="form-control" id="dataConsulta">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="medicoConsulta" class="form-label">Médico
+                                                        Responsável</label>
+                                                    <input type="text" class="form-control" id="medicoConsulta"
+                                                        placeholder="Nome do médico">
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="descricaoImagem" class="form-label">Descrição da
+                                                    Imagem</label>
+                                                <input type="text" class="form-control" id="descricaoImagem"
+                                                    placeholder="Ex: Raio-X Lombar, Ressonância, etc.">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="uploadImagemModal" class="form-label">Selecionar
+                                                    Imagem</label>
+                                                <input type="file" class="form-control" id="uploadImagemModal"
+                                                    accept="image/*" required>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            onclick="closeModal('novaImagemModal')">Cancelar</button>
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="adicionarNovaImagem()">Salvar Imagem</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="analisefisio">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Registro de Avaliações</h5>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('newAvaliacaoModal')">
+                                    <i class="fas fa-plus me-1"></i> Nova Avaliação
+                                </button>
+                            </div>
+                            <input type="hidden" id="pacienteIdAtual" value="">
+                            <input type="hidden" id="agendamentoIdAtual" value="">
+                            <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
+                            <div id='listAvaliacoes' class="prontuarios-list">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Nova Evolução -->
+    <div class="modal" id="newEvolutionModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nova Evolução - Estado de Saúde e Tratamento</h5>
+                    <button type="button" class="btn-close" onclick="closeModal('newEvolutionModal')"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="evolutionForm">
+                        <input type="hidden" id="pacienteId" value="{{ paciente.id|default:'' }}">
+                        <input type="hidden" id="profissionalLogado" value="{{ user.id }}">
+
+                        <input type="hidden" id="agendamentoId" value="{{ agendamento.id|default:'' }}">
+                        <div class="habitos-grid">
+                            <h6 class="section-title habitos-col">2. Evolução do estado de saúde e tratamento</h6>
+
+                            <div class="habitos-col">
+                                <label for="queixaPrincipalEvolucao" class="form-label">Queixa principal inicial</label>
+                                <textarea class="form-control" id="queixaPrincipalEvolucao" rows="2"
+                                    placeholder="Descreva a queixa principal inicial..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="processoTerapeutico" class="form-label">Resumo do processo terapêutico até o
+                                    momento</label>
+                                <textarea class="form-control" id="processoTerapeutico" rows="3"
+                                    placeholder="Resumo do processo terapêutico..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="condutasTecnicas" class="form-label">Condutas e técnicas aplicadas neste
+                                    atendimento</label>
+                                <textarea class="form-control" id="condutasTecnicas" rows="3"
+                                    placeholder="Condutas e técnicas aplicadas..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="respostaPaciente" class="form-label">Resposta do paciente ao tratamento
+                                    (tolerância, percepção, feedback)</label>
+                                <textarea class="form-control" id="respostaPaciente" rows="3"
+                                    placeholder="Resposta do paciente..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="intercorrencias" class="form-label">Intercorrências observadas</label>
+                                <textarea class="form-control" id="intercorrencias" rows="2"
+                                    placeholder="Intercorrências observadas..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 3. Avaliação parcial do progresso (Mini reavaliação) -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">3. Avaliação parcial do progresso (Mini reavaliação)
+                            </h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Dor (0-10)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="dorInicio"
+                                                placeholder="Início" min="0" max="10">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="dorAtual" placeholder="Atual"
+                                                min="0" max="10">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="dorObservacoes"
+                                        placeholder="Observações">
+                                </div>
+
+                                <div class="habitos-col">
+                                    <label class="form-label">Amplitude de movimento (Em graus)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="amplitudeInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="amplitudeAtual"
+                                                placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="amplitudeObservacoes"
+                                        placeholder="Observações">
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Força muscular (0-5)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="forcaInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="forcaAtual" placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="forcaObservacoes"
+                                        placeholder="Observações">
+                                </div>
+
+                                <div class="habitos-col">
+                                    <label class="form-label">Postura e controle motor (0-5)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="posturaInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="posturaAtual"
+                                                placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="posturaObservacoes"
+                                        placeholder="Observações">
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Edema / inflamação (0-10)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="edemaInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="edemaAtual" placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="edemaObservacoes"
+                                        placeholder="Observações">
+                                </div>
+
+                                <div class="habitos-col">
+                                    <label class="form-label">Função nas AVDs / Treino (0-5)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="avdsInicio"
+                                                placeholder="Início">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="avdsAtual" placeholder="Atual">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control mt-2" id="avdsObservacoes"
+                                        placeholder="Observações">
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Aspectos emocionais / engajamento (0-10)</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" id="emocionaisInicio"
+                                            placeholder="Início">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" id="emocionaisAtual"
+                                            placeholder="Atual">
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control mt-2" id="emocionaisObservacoes"
+                                    placeholder="Observações">
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="sinteseEvolucao" class="form-label">Síntese da evolução</label>
+                                <textarea class="form-control" id="sinteseEvolucao" rows="3"
+                                    placeholder="Síntese da evolução..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 4. Orientação ao Paciente -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">4. Orientação ao Paciente</h6>
+
+                            <div class="habitos-col">
+                                <label for="mensagemPaciente" class="form-label">Mensagem técnica e emocional
+                                    transmitida ao paciente</label>
+                                <textarea class="form-control" id="mensagemPaciente" rows="2"
+                                    placeholder="Mensagem transmitida..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="explicacaoContinuidade" class="form-label">Explicação sobre continuidade,
+                                    planejamento e importância da adesão</label>
+                                <textarea class="form-control" id="explicacaoContinuidade" rows="2"
+                                    placeholder="Explicação sobre continuidade..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="reacoesPaciente" class="form-label">Reações e entendimento do
+                                    paciente</label>
+                                <textarea class="form-control" id="reacoesPaciente" rows="2"
+                                    placeholder="Reações e entendimento..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 5. Expectativa x Realidade da Fisioterapeuta -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">5. Expectativa x Realidade da Fisioterapeuta</h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Nível de dor e conforto</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="dorExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="dorRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="habitos-col">
+                                    <label class="form-label">Mobilidade e função</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="mobilidadeExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="mobilidadeRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label class="form-label">Energia e disposição</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="energiaExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="energiaRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="habitos-col">
+                                    <label class="form-label">Consciência corporal / postura</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="conscienciaExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="conscienciaRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid">
+                                <div class="habitos-col">
+                                    <label class="form-label">Emoção / confiança / autoestima</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="emocaoExpectativa"
+                                                placeholder="Expectativa">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" id="emocaoRealidade"
+                                                placeholder="Realidade">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Próximos passos e novo Plano Terapêutico -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">6. Próximos passos e novo Plano Terapêutico</h6>
+
+                            <div class="habitos-col">
+                                <label for="objetivosCiclo" class="form-label">Objetivos para o novo ciclo</label>
+                                <textarea class="form-control" id="objetivosCiclo" rows="2"
+                                    placeholder="Objetivos para o novo ciclo..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="condutasMantidas" class="form-label">Condutas a serem mantidas</label>
+                                <textarea class="form-control" id="condutasMantidas" rows="2"
+                                    placeholder="Condutas a serem mantidas..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="ajustesPlano" class="form-label">Ajustes necessários no plano
+                                    terapêutico</label>
+                                <textarea class="form-control" id="ajustesPlano" rows="2"
+                                    placeholder="Ajustes necessários..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Sugestões complementares</label>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="treinoFuncional">
+                                                <input class="form-check-input" type="checkbox" id="treinoFuncional">
+                                                Treino funcional
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="pilatesClinico">
+                                                <input class="form-check-input" type="checkbox" id="pilatesClinico">
+                                                Pilates clínico</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="recovery">
+                                                <input class="form-check-input" type="checkbox" id="recovery">
+                                                Recovery</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="rpg">
+                                                <input class="form-check-input" type="checkbox" id="rpg">
+                                                RPG</label>
+                                        </div>
+                                    </div>
+                                    <div class="">
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="nutricao">
+                                                <input class="form-check-input" type="checkbox" id="nutricao">
+                                                Nutrição</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="psicoterapia">
+                                                <input class="form-check-input" type="checkbox" id="psicoterapia">
+                                                Psicoterapia</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="estetica">
+                                                <input class="form-check-input" type="checkbox" id="estetica">
+                                                Estética</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="checkbox-option" for="outro">
+                                                <input class="form-check-input" type="checkbox" id="sugestaoOutro">
+                                                Outro:</label>
+                                            <input type="text" class="form-control form-control-sm mt-1"
+                                                id="sugestaoOutroTexto" placeholder="Especificar">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 7. Registro interno / Observações profissionais -->
+                        <div class="mb-3">
+                            <h6 class="section-title habitos-col">7. Registro interno / Observações profissionais</h6>
+
+                            <div class="habitos-col">
+                                <label for="observacoesInternas" class="form-label">Observações internas (para
+                                    equipe)</label>
+                                <textarea class="form-control" id="observacoesInternas" rows="2"
+                                    placeholder="Observações internas..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="orientacoesGrupo" class="form-label">Orientações a serem dadas em grupo
+                                    interno / estudo de caso</label>
+                                <textarea class="form-control" id="orientacoesGrupo" rows="2"
+                                    placeholder="Orientações para grupo interno..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Informações do profissional -->
+                        <div class="habitos-grid-2">
+                            <div class="habitos-col">
+                                <label for="fisioterapeutaResponsavel" class="form-label">Fisioterapeuta
+                                    responsável</label>
+                                <input type="text" class="form-control" id="fisioterapeutaResponsavel"
+                                    value="{{ user.get_full_name }}" readonly>
+                            </div>
+                            <div class="habitos-col">
+                                <label for="crefito" class="form-label">CREFITO</label>
+                                <input type="text" class="form-control" id="crefito"
+                                    value="{{ user.profissional.crefito|default:'A definir' }}">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <label class="checkbox-option" for="naoSeAplicaEvolucao">
+                        <input class="form-check-input" type="checkbox" id="naoSeAplicaEvolucao">
+                        Não foi necessário evolução.
+                    </label>
+                    <div>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeModal('newEvolutionModal')">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id='btn-salvar-evolucao'
+                            onclick="salvarEvolucao()">Salvar Evolução</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="viewEvolutionModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Visualizar Evolução - Estado de Saúde e Tratamento</h5>
+                    <button type="button" class="btn-close" onclick="closeModal('viewEvolutionModal')"
+                        aria-label="Close"></button>
+                </div>
+                <div id='evolucaoDetalhes' class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('viewEvolutionModal')">Fechar</button>
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="fas fa-print me-1"></i> Imprimir
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Avaliação Fisioterapêutica -->
+    <div class="modal" id="newAvaliacaoModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Avaliação Fisioterapêutica</h5>
+                    <button type="button" class="btn-close" onclick="closeModal('newAvaliacaoModal')"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="avaliacaoForm">
+                        <!-- 2. Anamnese / Histórico Clínico -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">1. Anamnese / Histórico Clínico</h6>
+
+                            <div class="habitos-col">
+                                <label for="queixaPrincipalAvaliacao" class="form-label">Queixa principal (nas palavras
+                                    do
+                                    paciente)</label>
+                                <textarea class="form-control" id="queixaPrincipalAvaliacao" rows="2"
+                                    placeholder="Descreva a queixa principal nas palavras do paciente..."></textarea>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label for="inicioProblema" class="form-label">Como o problema começou e há quanto
+                                        tempo?</label>
+                                    <textarea class="form-control" id="inicioProblema" rows="2"
+                                        placeholder="Descreva o início do problema..."></textarea>
+                                </div>
+                                <div class="habitos-col">
+                                    <label for="causaProblema" class="form-label">O que acredita ter causado o
+                                        problema?</label>
+                                    <textarea class="form-control" id="causaProblema" rows="2"
+                                        placeholder="Possíveis causas..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- a) Histórico da doença atual -->
+                            <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                <h6 class="section-title habitos-col">a) Histórico da doença atual</h6>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label for="dorRecenteAntiga" class="form-label">Dor ou limitação é recente ou
+                                            antiga?</label>
+                                        <input type="text" class="form-control" id="dorRecenteAntiga"
+                                            placeholder="Ex: Recente, há 2 semanas">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="episodiosAnteriores" class="form-label">Episódios anteriores
+                                            semelhantes?</label>
+                                        <input type="text" class="form-control" id="episodiosAnteriores"
+                                            placeholder="Descreva episódios anteriores...">
+                                    </div>
+                                </div>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label class="form-label">Tratamento fisioterapêutico anterior?</label>
+                                        <div class="d-flex align-items-center">
+                                            <div class='form-radio-div'>
+                                                <div class="form-check me-3">
+
+                                                    <label class="radio-option">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="tratamentoAnterior" id="tratamentoSim" value="sim">
+                                                        Sim
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+
+                                                    <label class="radio-option">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="tratamentoAnterior" id="tratamentoNao" value="nao"
+                                                            checked>
+                                                        Não
+                                                    </label>
+                                                </div>
+                                                <input type="text" class="form-control ms-2" id="qualTratamento"
+                                                    placeholder="Qual(is)?" style="flex: 1;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="cirurgiaProcedimento" class="form-label">Cirurgia ou procedimento
+                                            relacionado?</label>
+                                        <input type="text" class="form-control" id="cirurgiaProcedimento"
+                                            placeholder="Descreva cirurgias...">
+                                    </div>
+                                </div>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label class="form-label">Acompanhamento médico?</label>
+                                        <div class="d-flex align-items-center">
+                                            <div class="form-check me-3">
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="acompanhamentoMedico" id="acompanhamentoSim" value="sim">
+                                                    Sim
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="acompanhamentoMedico" id="acompanhamentoNao" value="nao"
+                                                        checked>
+                                                    Não
+                                                </label>
+                                            </div>
+                                            <input type="text" class="form-control ms-2" id="medicoEspecialidade"
+                                                placeholder="Médico / Especialidade" style="flex: 1;">
+                                        </div>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="diagnosticoMedico" class="form-label">Diagnóstico médico (se
+                                            houver)</label>
+                                        <input type="text" class="form-control" id="diagnosticoMedico"
+                                            placeholder="Diagnóstico médico...">
+                                    </div>
+                                </div>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label for="usoMedicamentos" class="form-label">Uso de medicamentos?
+                                            Quais?</label>
+                                        <textarea class="form-control" id="usoMedicamentos" rows="2"
+                                            placeholder="Medicamentos em uso..."></textarea>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label class="form-label">Exames trazidos?</label>
+                                        <div class="d-flex align-items-center">
+                                            <div class="form-check me-3">
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio" name="examesTrazidos"
+                                                        id="examesSim" value="sim">
+                                                    Sim
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <!-- CORREÇÃO AQUI -->
+                                                <label class="radio-option">
+                                                    <input class="form-check-input" type="radio" name="examesTrazidos"
+                                                        id="examesNao" value="nao" checked>
+                                                    Não
+                                                </label>
+                                            </div>
+                                            <input type="text" class="form-control ms-2" id="tipoExame"
+                                                placeholder="Tipo de exame" style="flex: 1;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label for="historicoLesoes" class="form-label">Histórico de outras lesões? Se sim?
+                                        Qual(is)? e Quando? Breve histórico</label>
+                                    <textarea class="form-control" id="historicoLesoes" rows="3"
+                                        placeholder="Histórico de lesões anteriores..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- b) Histórico pessoal e familiar -->
+                            <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                <h6 class="section-title habitos-col">b) Histórico pessoal e familiar</h6>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label for="doencasPrevias" class="form-label">Doenças prévias /
+                                            crônicas</label>
+                                        <textarea class="form-control" id="doencasPrevias" rows="2"
+                                            placeholder="Doenças prévias..."></textarea>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="cirurgiasPrevias" class="form-label">Cirurgias prévias</label>
+                                        <textarea class="form-control" id="cirurgiasPrevias" rows="2"
+                                            placeholder="Cirurgias prévias..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label for="condicoesGeneticas" class="form-label">Condições genéticas /
+                                            reumatológicas / metabólicas</label>
+                                        <textarea class="form-control" id="condicoesGeneticas" rows="2"
+                                            placeholder="Condições genéticas..."></textarea>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="historicoFamiliar" class="form-label">Histórico familiar
+                                            relevante</label>
+                                        <textarea class="form-control" id="historicoFamiliar" rows="2"
+                                            placeholder="Histórico familiar..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- c) Hábitos e estilo de vida -->
+                            <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                <h6 class="section-title habitos-col">c) Hábitos e estilo de vida</h6>
+
+                                <div class="habitos-grid-3">
+                                    <!-- Qualidade do sono -->
+                                    <div class="habitos-col">
+                                        <label class="form-label">Qualidade do sono</label>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="sonoBoa">
+                                                <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                    id="sonoBoa" value="boa"> Boa
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="sonoRegular">
+                                                <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                    id="sonoRegular" value="regular"> Regular
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="sonoRuim">
+                                                <input class="form-check-input" type="radio" name="qualidadeSono"
+                                                    id="sonoRuim" value="ruim"> Ruim
+                                            </label>
+                                        </div>
+                                        <input type="number" class="form-control" id="horasSono"
+                                            placeholder="Horas/noite" min="0" max="24">
+                                    </div>
+
+                                    <!-- Alimentação -->
+                                    <div class="habitos-col">
+                                        <label class="form-label">Alimentação</label>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="alimentacaoSaudavel">
+                                                <input class="form-check-input" type="radio" name="alimentacao"
+                                                    id="alimentacaoSaudavel" value="saudavel"> Saudável
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="alimentacaoIrregular">
+                                                <input class="form-check-input" type="radio" name="alimentacao"
+                                                    id="alimentacaoIrregular" value="irregular"> Irregular
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="alimentacaoUltraprocessados">
+                                                <input class="form-check-input" type="radio" name="alimentacao"
+                                                    id="alimentacaoUltraprocessados" value="ultraprocessados"> Rica em
+                                                ultraprocessados
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nível de atividade física -->
+                                    <div class="habitos-col">
+                                        <label class="form-label">Nível de atividade física</label>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="sedentario">
+                                                <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                    id="sedentario" value="sedentario"> Sedentário
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="leveModerado">
+                                                <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                    id="leveModerado" value="leve_moderado"> Exercício leve/moderado
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="atleta">
+                                                <input class="form-check-input" type="radio" name="nivelAtividade"
+                                                    id="atleta" value="atleta"> Atleta
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label for="tipoExercicio" class="form-label">Tipo de exercício</label>
+                                        <input type="text" class="form-control" id="tipoExercicio"
+                                            placeholder="Tipo de exercício praticado...">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="nivelEstresse" class="form-label">Nível de estresse (0-10)</label>
+                                        <input type="number" class="form-control" id="nivelEstresse" placeholder="0-10"
+                                            min="0" max="10">
+                                    </div>
+
+                                </div>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label for="rotinaTrabalho" class="form-label">Rotina de trabalho /
+                                            posturas</label>
+                                        <textarea class="form-control" id="rotinaTrabalho" rows="2"
+                                            placeholder="Rotina de trabalho..."></textarea>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="aspectosEmocionais" class="form-label">Aspectos emocionais</label>
+                                        <textarea class="form-control" id="aspectosEmocionais" rows="2"
+                                            placeholder="Aspectos emocionais..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- d) Sinais, sintomas e dor -->
+                            <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                <h6 class="section-title habitos-col">d) Sinais, sintomas e dor</h6>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label for="localizacaoDor" class="form-label">Localização da dor /
+                                            sintoma</label>
+                                        <textarea class="form-control" id="localizacaoDor" rows="2"
+                                            placeholder="Localização da dor..."></textarea>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label class="form-label">Tipo de dor</label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-check">
+                                                    <label class="checkbox-option" for="dorPontada">
+                                                        <input class="form-check-input" type="checkbox" id="dorPontada">
+                                                        Pontada</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <label class="checkbox-option" for="dorQueimacao">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="dorQueimacao">
+                                                        Queimação</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <label class="checkbox-option" for="dorPeso">
+                                                        <input class="form-check-input" type="checkbox" id="dorPeso">
+                                                        Peso</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-check">
+                                                    <label class="checkbox-option" for="dorChoque">
+                                                        <input class="form-check-input" type="checkbox" id="dorChoque">
+                                                        Choque</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <label class="checkbox-option" for="dorOutra">
+                                                        <input class="form-check-input" type="checkbox" id="dorOutra">
+                                                        Outra:</label>
+                                                    <input type="text" class="form-control form-control-sm mt-1"
+                                                        id="dorOutraTexto" placeholder="Especificar">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="habitos-grid-3">
+                                    <div class="habitos-col">
+                                        <div class="col-md-4">
+                                            <label for="intensidadeRepouso" class="form-label">Intensidade (0-10) -
+                                                Repouso</label>
+                                            <input type="number" class="form-control" id="intensidadeRepouso"
+                                                placeholder="0-10" min="0" max="10">
+                                        </div>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <div class="col-md-4">
+                                            <label for="intensidadeMovimento" class="form-label">Intensidade (0-10) -
+                                                Movimento</label>
+                                            <input type="number" class="form-control" id="intensidadeMovimento"
+                                                placeholder="0-10" min="0" max="10">
+                                        </div>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <div class="col-md-4">
+                                            <label for="intensidadePior" class="form-label">Intensidade (0-10) - Pior
+                                                momento</label>
+                                            <input type="number" class="form-control" id="intensidadePior"
+                                                placeholder="0-10" min="0" max="10">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="habitos-grid-2">
+                                    <div class="habitos-col">
+                                        <label for="fatoresAgravam" class="form-label">Fatores que agravam</label>
+                                        <textarea class="form-control" id="fatoresAgravam" rows="2"
+                                            placeholder="Fatores que agravam a dor..."></textarea>
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="fatoresAliviam" class="form-label">Fatores que aliviam</label>
+                                        <textarea class="form-control" id="fatoresAliviam" rows="2"
+                                            placeholder="Fatores que aliviam a dor..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <div class="habitos-col">
+                                            <label class="form-label">Sinais associados</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalEdema">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalEdema">
+                                                            Edema</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalParestesia">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalParestesia">
+                                                            Parestesia</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalRigidez">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalRigidez">
+                                                            Rigidez</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalFraqueza">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalFraqueza">
+                                                            Fraqueza</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalCompensacoes">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalCompensacoes">
+                                                            Compensações</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <label class="checkbox-option" for="sinalOutro">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="sinalOutro">
+                                                            Outro:</label>
+                                                        <input type="text" class="form-control form-control-sm mt-1"
+                                                            id="sinalOutroTexto" placeholder="Especificar">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="habitos-col">
+                                            <label class="form-label">Grau de inflamação</label>
+                                            <div>
+                                                <div class="form-check">
+                                                    <label class="radio-option" for="inflamacaoLeve">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="grauInflamacao" id="inflamacaoLeve"
+                                                            value="leve">Leve</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <label class="radio-option" for="inflamacaoModerado">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="grauInflamacao" id="inflamacaoModerado"
+                                                            value="moderado">Moderado</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <label class="radio-option" for="inflamacaoIntenso">
+                                                        <input class="form-check-input" type="radio"
+                                                            name="grauInflamacao" id="inflamacaoIntenso"
+                                                            value="intenso">Intenso</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Exame físico e funcional -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">3. Exame físico e funcional</h6>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label for="inspecaoPostura" class="form-label">Inspeção e postura</label>
+                                    <textarea class="form-control" id="inspecaoPostura" rows="3"
+                                        placeholder="Observações sobre postura..."></textarea>
+                                </div>
+                                <div class="habitos=col">
+                                    <label for="compensacoesCorporais" class="form-label">Compensações corporais</label>
+                                    <textarea class="form-control" id="compensacoesCorporais" rows="3"
+                                        placeholder="Compensações observadas..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+                                <div class="habitos-col">
+                                    <label for="padraoRespiratorio" class="form-label">Padrão respiratório / controle
+                                        motor</label>
+                                    <textarea class="form-control" id="padraoRespiratorio" rows="2"
+                                        placeholder="Padrão respiratório..."></textarea>
+                                </div>
+                                <div class="habitos-col">
+                                    <label for="palpacao" class="form-label">Palpação</label>
+                                    <textarea class="form-control" id="palpacao" rows="2"
+                                        placeholder="Achados na palpação..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="pontosDor" class="form-label">Pontos de dor / rigidez / edema</label>
+                                <textarea class="form-control" id="pontosDor" rows="3"
+                                    placeholder="Pontos específicos de dor..."></textarea>
+                            </div>
+                            <!-- MOBILIDADE (ADM) -->
+                            <div class="habitos-col">
+                                <label class="form-label">Mobilidade (ADM)</label>
+                                <div class="habitos-grid-4">
+                                    <div class="habitos-col">
+                                        <label for="mobilidadeRegiao" class="form-label">Região/Grupo</label>
+                                        <input type="text" class="form-control" id="mobilidadeRegiao"
+                                            placeholder="Ex: Ombro D">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="mobilidadeAtiva" class="form-label">ADM Ativa (°)</label>
+                                        <input type="number" class="form-control" id="mobilidadeAtiva" placeholder="°">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="mobilidadePassiva" class="form-label">ADM Passiva (°)</label>
+                                        <input type="number" class="form-control" id="mobilidadePassiva"
+                                            placeholder="°">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label class="form-label">Dor ADM</label>
+                                        <div class="form-check mt-2">
+                                            <label class="checkbox-option" for="mobilidadeDor">
+                                                <input class="form-check-input" type="checkbox" id="mobilidadeDor">
+                                                Presente
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FORÇA MUSCULAR (MMT) -->
+                            <div class="habitos-col">
+                                <label class="form-label">Força muscular (MMT 0-5)</label>
+                                <div class="habitos-grid-3">
+                                    <div class="habitos-col">
+                                        <label for="forcaGrupo" class="form-label">Grupo muscular</label>
+                                        <input type="text" class="form-control" id="forcaGrupo"
+                                            placeholder="Ex: Deltóide">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label for="forcaGrau" class="form-label">Força (0-5)</label>
+                                        <input type="number" class="form-control" id="forcaGrau" placeholder="0-5"
+                                            min="0" max="5">
+                                    </div>
+                                    <div class="habitos-col">
+                                        <label class="form-label">Dor Força</label>
+                                        <div class="form-check mt-2">
+                                            <label class="checkbox-option" for="forcaDor">
+                                                <input class="form-check-input" type="checkbox" id="forcaDor">
+                                                Presente
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="habitos-col">
+                                <label for="testesFuncionais" class="form-label">Testes funcionais / compensações
+                                    observadas</label>
+                                <textarea class="form-control" id="testesFuncionais" rows="3"
+                                    placeholder="Testes funcionais realizados..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="outrasObservacoes" class="form-label">Outras observações</label>
+                                <textarea class="form-control" id="outrasObservacoes" rows="3"
+                                    placeholder="Outras observações relevantes..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 4. Diagnóstico Fisioterapêutico -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">4. Diagnóstico Fisioterapêutico</h6>
+
+                            <div class="habitos-col">
+                                <label class="form-label">Diagnóstico Completo</label>
+                                <div class="diagnostico-template" style='margin-bottom: 1.5em;'>
+                                    <div class="template-text">Exemplo</div>
+                                    <div class="template-text-example">
+                                        Paciente de <strong>45 anos</strong> com queixa de <strong>"dor lombar
+                                            crônica"</strong>, apresenta limitação funcional em <strong>"agachar e
+                                            levantar pesos"</strong>, demonstra postura compensatória em <strong>"coluna
+                                            lombar"</strong>. Tensão muscular em <strong>"músculos
+                                            paravertebrais"</strong>. Compensações <strong>"marcha antálgica"</strong> e
+                                        fatores emocionais relacionados a <strong>"estresse no trabalho"</strong>.
+                                        Rotina impactada por <strong>"dificuldade para dirigir"</strong>. Diagnóstico
+                                        funcional indica <strong>"síndrome dolorosa miofascial com alterações
+                                            posturais"</strong>.
+                                    </div>
+                                </div>
+                                <div>
+
+                                    <div class="template-text">
+                                        Paciente de
+                                        <input type="number" class="template-input" id="diagnosticoIdade"
+                                            placeholder="idade" min="0" max="120" style="width: 80px;">
+                                        anos com queixa de
+                                        <input type="text" class="template-input" id="diagnosticoQueixa"
+                                            placeholder="queixa principal" style="width: 200px;">
+                                        , apresenta limitação funcional em
+                                        <input type="text" class="template-input" id="diagnosticoLimitacao"
+                                            placeholder="limitação funcional" style="width: 180px;">
+                                        , demonstra postura compensatória em
+                                        <input type="text" class="template-input" id="diagnosticoPostura"
+                                            placeholder="área postural" style="width: 150px;">
+                                        . Tensão muscular em
+                                        <input type="text" class="template-input" id="diagnosticoTensao"
+                                            placeholder="grupo muscular" style="width: 140px;">
+                                        . Compensações
+                                        <input type="text" class="template-input" id="diagnosticoCompensacoes"
+                                            placeholder="tipo de compensações" style="width: 160px;">
+                                        e fatores emocionais relacionados a
+                                        <input type="text" class="template-input" id="diagnosticoEmocionais"
+                                            placeholder="fatores emocionais" style="width: 150px;">
+                                        . Rotina impactada por
+                                        <input type="text" class="template-input" id="diagnosticoRotina"
+                                            placeholder="impacto na rotina" style="width: 170px;">
+                                        . Diagnóstico funcional indica
+                                        <input type="text" class="template-input" id="diagnosticoFuncional"
+                                            placeholder="diagnóstico final" style="width: 200px;">
+                                        .
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-4">
+                                <div class="habitos-col">
+                                    <label for="grauDor" class="form-label">Grau de dor (0-10)</label>
+                                    <input type="number" class="form-control" id="grauDor" placeholder="0-10" min="0"
+                                        max="10">
+                                </div>
+                                <div class="habitos-col">
+                                    <label for="limitaçãoFuncional" class="form-label">Limitação funcional
+                                        (0-10)</label>
+                                    <input type="number" class="form-control" id="limitaçãoFuncional" placeholder="0-10"
+                                        min="0" max="10">
+                                </div>
+                                <div class="habitos-col">
+                                    <label for="grauInflamacao" class="form-label">Inflamação (0-3)</label>
+                                    <input type="number" class="form-control" id="grauInflamacao" placeholder="0-3"
+                                        min="0" max="3">
+                                </div>
+                                <div class="habitos-col">
+                                    <label for="grauEdema" class="form-label">Edema (0-3)</label>
+                                    <input type="number" class="form-control" id="grauEdema" placeholder="0-3" min="0"
+                                        max="3">
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-2">
+
+                                <div class="habitos-col">
+                                    <label class="form-label">Receptividade</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="receptividadeAlta">
+                                                <input class="form-check-input" type="radio" name="receptividade"
+                                                    id="receptividadeAlta" value="alta">
+                                                Alta</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="receptividadeMedia">
+                                                <input class="form-check-input" type="radio" name="receptividade"
+                                                    id="receptividadeMedia" value="media">
+                                                Média</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="receptividadeBaixa">
+                                                <input class="form-check-input" type="radio" name="receptividade"
+                                                    id="receptividadeBaixa" value="baixa">
+                                                Baixa</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Autonomia AVD</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="autonomiaIndep">
+                                                <input class="form-check-input" type="radio" name="autonomiaAVD"
+                                                    id="autonomiaIndep" value="independente">Independente</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="autonomiaParcial">
+                                                <input class="form-check-input" type="radio" name="autonomiaAVD"
+                                                    id="autonomiaParcial" value="parcial">
+                                                Parcial</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="autonomiaDependente">
+                                                <input class="form-check-input" type="radio" name="autonomiaAVD"
+                                                    id="autonomiaDependente" value="dependente">
+                                                Dependente</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Plano Terapêutico -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">5. Plano Terapêutico</h6>
+
+                            <div class="habitos-col">
+                                <label for="objetivoGeral" class="form-label">Objetivo geral</label>
+                                <textarea class="form-control" id="objetivoGeral" rows="2"
+                                    placeholder="Objetivo geral do tratamento..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="objetivoPrincipal" class="form-label">Objetivo principal</label>
+                                <textarea class="form-control" id="objetivoPrincipal" rows="2"
+                                    placeholder="Objetivo principal..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="objetivoSecundario" class="form-label">Objetivo secundário</label>
+                                <textarea class="form-control" id="objetivoSecundario" rows="2"
+                                    placeholder="Objetivo secundário..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="pontosAtencao" class="form-label">Pontos de atenção (sobre o planejamento do
+                                    tratamento, resistência do paciente, limitações...)</label>
+                                <textarea class="form-control" id="pontosAtencao" rows="3"
+                                    placeholder="Pontos de atenção..."></textarea>
+                            </div>
+
+                            <!-- Técnicas manuais -->
+                            <div class="habitos-col">
+                                <div class="mb-3">
+                                    <label class="form-label">Técnicas manuais</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaLiberacao">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="tecnicaLiberacao">
+                                                    Liberação miofascial</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaMobilizacao">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="tecnicaMobilizacao">
+                                                    Mobilização</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaDryNeedling">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="tecnicaDryNeedling">
+                                                    Dry
+                                                    Needling</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaVentosa">
+                                                    <input class="form-check-input" type="checkbox" id="tecnicaVentosa">
+                                                    Ventosa</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaManipulacoes">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="tecnicaManipulacoes">
+                                                    Manipulações</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="tecnicaOutras">
+                                                    <input class="form-check-input" type="checkbox" id="tecnicaOutras">
+                                                    Outras:</label>
+                                                <input type="text" class="form-control form-control-sm mt-1"
+                                                    id="tecnicaOutrasTexto" placeholder="Especificar">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Recursos eletrofísicos -->
+                            <div class="habitos-col">
+                                <div class="mb-3">
+                                    <label class="form-label">Recursos eletrofísicos</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoAussie">
+                                                    <input class="form-check-input" type="checkbox" id="recursoAussie">
+                                                    CORRENTE AUSSIE</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoRussa">
+                                                    <input class="form-check-input" type="checkbox" id="recursoRussa">
+                                                    CORRENTE RUSSA</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoAussieTens">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="recursoAussieTens">
+                                                    CORRENTE AUSSIE
+                                                    TENS</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoUS">
+                                                    <input class="form-check-input" type="checkbox" id="recursoUS">
+                                                    US</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoTermo">
+                                                    <input class="form-check-input" type="checkbox" id="recursoTermo">
+                                                    Termo</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="recursoOutro">
+                                                    <input class="form-check-input" type="checkbox" id="recursoOutro">
+                                                    Outro:</label>
+                                                <input type="text" class="form-control form-control-sm mt-1"
+                                                    id="recursoOutroTexto" placeholder="Especificar">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cinesioterapia -->
+                            <div class="habitos-col">
+                                <div class="mb-3">
+                                    <label class="form-label">Cinesioterapia</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioFortalecimento">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioFortalecimento">
+                                                    Fortalecimento</label>
+                                            </div>
+                                            <div class="form-check"><label class="checkbox-option"
+                                                    for="cinesioAlongamento">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioAlongamento">
+                                                    Alongamento</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioPostural">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioPostural">
+                                                    Postural</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioRespiração">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioRespiração">
+                                                    Respiração</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioMobilidade">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioMobilidade">
+                                                    Mobilidade</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="checkbox-option" for="cinesioFuncional">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cinesioFuncional">
+                                                    Funcional</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="habitos-col">
+                                <label for="descricaoPlano" class="form-label">Descrição breve sobre o plano de
+                                    tratamento</label>
+                                <textarea class="form-control" id="descricaoPlano" rows="3"
+                                    placeholder="Descrição do plano de tratamento..."></textarea>
+                            </div>
+
+                            <div class="habitos-grid-3">
+                                <div class="habitos-col">
+                                    <label class="form-label">Medo de agulha?</label>
+                                    <div>
+                                        <div class="form-check ">
+                                            <label class="radio-option" for="medoAgulhaSim">
+                                                <input class="form-check-input" type="radio" name="medoAgulha"
+                                                    id="medoAgulhaSim" value="sim">
+                                                Sim</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="radio-option" for="medoAgulhaNao">
+                                                <input class="form-check-input" type="radio" name="medoAgulha"
+                                                    id="medoAgulhaNao" value="nao" checked>
+                                                Não</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Limiar de dor baixo?</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="limiarDorSim">
+                                                <input class="form-check-input" type="radio" name="limiarDor"
+                                                    id="limiarDorSim" value="sim">
+                                                Sim</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="limiarDorNao">
+                                                <input class="form-check-input" type="radio" name="limiarDor"
+                                                    id="limiarDorNao" value="nao" checked>
+                                                Não</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="habitos-col">
+                                    <label class="form-label">Fragilidade?</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="fragilidadeSim">
+                                                <input class="form-check-input" type="radio" name="fragilidade"
+                                                    id="fragilidadeSim" value="sim">
+                                                Sim</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="radio-option" for="fragilidadeNao">
+                                                <input class="form-check-input" type="radio" name="fragilidade"
+                                                    id="fragilidadeNao" value="nao" checked>
+                                                Não</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="habitos-grid-3">
+                                <div class="habitos-col">
+                                    <label for="frequencia" class="form-label">Frequência (x/semana)</label>
+                                    <input type="number" class="form-control" id="frequencia" placeholder="Ex: 3"
+                                        min="1" max="7">
+                                </div>
+                                <div class="habitos-col">
+                                    <label for="duracao" class="form-label">Duração (min)</label>
+                                    <input type="number" class="form-control" id="duracao" placeholder="Ex: 60" min="15"
+                                        max="180">
+                                </div>
+                                <div class="habitos-col">
+                                    <label for="reavaliacaoSessao" class="form-label">Reavaliação na sessão</label>
+                                    <input type="text" class="form-control" id="reavaliacaoSessao"
+                                        placeholder="Ex: 5ª sessão">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Prognóstico e orientações -->
+                        <div class="mb-4">
+                            <h6 class="section-title habitos-col">6. Prognóstico e orientações</h6>
+
+                            <div class="habitos-col">
+                                <label for="evolucaoPrimeiraSessao" class="form-label">Evolução esperada na primeira
+                                    sessão</label>
+                                <textarea class="form-control" id="evolucaoPrimeiraSessao" rows="2"
+                                    placeholder="Evolução esperada na primeira sessão..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="evolucaoProximasSessoes" class="form-label">Evolução esperada nas próximas
+                                    sessões</label>
+                                <textarea class="form-control" id="evolucaoProximasSessoes" rows="2"
+                                    placeholder="Evolução esperada nas próximas sessões..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="expectativasPrimeiraEtapa" class="form-label">Expectativas sobre a primeira
+                                    etapa do tratamento</label>
+                                <textarea class="form-control" id="expectativasPrimeiraEtapa" rows="2"
+                                    placeholder="Expectativas da primeira etapa..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="proximosPassos" class="form-label">Próximos passos</label>
+                                <textarea class="form-control" id="proximosPassos" rows="2"
+                                    placeholder="Próximos passos do tratamento..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="sobreOrientacoes" class="form-label">Sobre as orientações</label>
+                                <textarea class="form-control" id="sobreOrientacoes" rows="2"
+                                    placeholder="Orientações gerais..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="sonoRotina" class="form-label">Sono / rotina / pausas</label>
+                                <textarea class="form-control" id="sonoRotina" rows="2"
+                                    placeholder="Orientações sobre sono e rotina..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="posturaErgonomia" class="form-label">Postura / ergonomia</label>
+                                <textarea class="form-control" id="posturaErgonomia" rows="2"
+                                    placeholder="Orientações posturais..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="alimentacaoHidratacao" class="form-label">Alimentação / hidratação</label>
+                                <textarea class="form-control" id="alimentacaoHidratacao" rows="2"
+                                    placeholder="Orientações alimentares..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="exerciciosCasa" class="form-label">Exercícios em casa (dever)</label>
+                                <textarea class="form-control" id="exerciciosCasa" rows="2"
+                                    placeholder="Exercícios para casa..."></textarea>
+                            </div>
+
+                            <div class="habitos-col">
+                                <label for="aspectosEmocionaisEspirituais" class="form-label">Aspectos emocionais /
+                                    espiritualidade</label>
+                                <textarea class="form-control" id="aspectosEmocionaisEspirituais" rows="2"
+                                    placeholder="Aspectos emocionais e espirituais..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Observações finais -->
+                        <div class="habitos-col">
+                            <h6 class="section-title habitos-col">Observações finais</h6>
+                            <textarea class="form-control" id="observacoesFinais" rows="6"
+                                placeholder="Observações finais..."></textarea>
+                        </div>
+
+                        <!-- Informações do profissional -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <label for="fisioterapeutaAvaliacao" class="form-label">Fisioterapeuta</label>
+                                <input type="text" class="form-control" id="fisioterapeutaAvaliacao"
+                                    value="{{ user.get_full_name }}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="crefitoAvaliacao" class="form-label">CREFITO</label>
+                                <input type="text" class="form-control" id="crefitoAvaliacao"
+                                    value="{{ profissional.conselho1|default:'A definir' }} {{profissional.num1_conselho|default:'A definir'}}">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <label class="checkbox-option" for="naoSeAplicaAvaliacao">
+                        <input class="form-check-input" type="checkbox" id="naoSeAplicaAvaliacao">
+                        Não foi necessário avaliação.
+                    </label>
+                    <div>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeModal('newAvaliacaoModal')">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btn-salvar-avaliacao"
+                            onclick="salvarAvaliacao()">Salvar Avaliação</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Modal Visualizar Avaliação Fisioterapêutica -->
+    <div class="modal" id="viewAvaliacaoModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Avaliação Fisioterapêutica - Visualização</h5>
+                    <button type="button" class="btn-close" onclick="closeModal('viewAvaliacaoModal')"
+                        aria-label="Close"></button>
+                </div>
+                <div id='avaliacaoDetalhes' class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('viewAvaliacaoModal')">Fechar</button>
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="fas fa-print me-1"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="{% static 'core/js/prontuarios/formularios.js' %}"></script>
+
+
+    <script>
+        // Função para filtrar imagens por pasta
+        function filtrarPorPasta() {
+            const pastaSelecionada = document.getElementById('pastaSelect').value;
+            const pastas = document.querySelectorAll('.folder-section');
+
+            pastas.forEach(pasta => {
+                if (pastaSelecionada === 'todas' || pasta.getAttribute('data-pasta') === pastaSelecionada) {
+                    pasta.style.display = 'block';
+                } else {
+                    pasta.style.display = 'none';
+                }
+            });
+        }
+
+        // Mostrar/ocultar formulário de nova consulta
+        document.getElementById('consultaSelect').addEventListener('change', function () {
+            const novaConsultaForm = document.getElementById('novaConsultaForm');
+            if (this.value === 'nova-consulta') {
+                novaConsultaForm.style.display = 'block';
+            } else {
+                novaConsultaForm.style.display = 'none';
+            }
+        });
+
+        // Função para adicionar nova imagem
+        function adicionarNovaImagem() {
+            const consultaSelect = document.getElementById('consultaSelect');
+            const descricao = document.getElementById('descricaoImagem').value;
+            const arquivo = document.getElementById('uploadImagemModal').files[0];
+
+            if (!consultaSelect.value || !descricao || !arquivo) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+
+            // Aqui você implementaria a lógica para salvar no banco de dados
+            // Por enquanto, apenas fechamos o modal
+            closeModal('novaImagemModal');
+
+            // Limpar formulário
+            document.getElementById('formNovaImagem').reset();
+            document.getElementById('novaConsultaForm').style.display = 'none';
+
+            alert('Imagem adicionada com sucesso!');
+        }
+
+        // Configurar área de arrastar e soltar
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileUpload');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.style.borderColor = '#007bff';
+            dropArea.style.backgroundColor = '#e9f5ff';
+        }
+
+        function unhighlight() {
+            dropArea.style.borderColor = '#dee2e6';
+            dropArea.style.backgroundColor = '#f8f9fa';
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            // Aqui você processaria os arquivos para upload
+            alert(`${files.length} arquivo(s) selecionado(s) para upload`);
+        }
+
+    </script>
+</body>
+
+</html>

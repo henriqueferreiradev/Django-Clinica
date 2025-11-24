@@ -1,14 +1,21 @@
+from decimal import Decimal
+from urllib.parse import DefragResult
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.urls import reverse
 from django.utils import timezone
 from datetime import date
 from django.utils.text import slugify
 import os
 from dateutil.relativedelta import relativedelta
 import uuid
-
+from django.db.models import Q
+from django.forms import CharField
+from core.services.status_beneficios import calcular_beneficio
+from django.db.models import Sum
+from django.core.validators import MaxValueValidator, MinValueValidator
 def caminho_foto_paciente(instance, filename):
     nome = slugify(instance.nome)
     extensao = os.path.splitext(filename)[1]
@@ -39,7 +46,6 @@ FORMAS_PAGAMENTO = [
     ('credito', 'Cartão de Crédito'),
     ('dinheiro', 'Dinheiro'),
 ]
-
 ESTADO_CIVIL = [
     # padrao "Não informado"
     ('solteiro(a)','Solteiro(a)'),
@@ -139,7 +145,6 @@ MIDIA_ESCOLHA = [
     ('whatsapp', 'WhatsApp'),
     ('outro', 'Outro'),
 ] 
-
 CONSELHO_ESCOLHA = [
     ("cref", 'CREF'),
     ("crefito", 'CREFITO'),
@@ -208,14 +213,59 @@ class Paciente(models.Model):
     nomeEmergencia = models.CharField(max_length=100)
     vinculo = models.CharField(max_length=100, choices=VINCULO)
     telEmergencia = models.CharField(max_length=20, blank=True, null=True)
-     
+    
+    consentimento_lgpd = models.BooleanField(default=False)
+    consentimento_marketing = models.BooleanField(default=False)
+    
+    politica_privacidade_versao = models.CharField(max_length=32, blank=True, default='')
+    data_consentimento = models.DateField(null=True, blank=True)
+    ip_consentimento = models.GenericIPAddressField(null=True, blank=True)
+    
+    nf_reembolso_plano = models.BooleanField(default=False)
+    nf_imposto_renda = models.BooleanField(default=False)
+    nf_nao_aplica = models.BooleanField(default=False)
+    
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
+
     ativo = models.BooleanField(default=True)
     pre_cadastro = models.BooleanField(default=False)
     conferido = models.BooleanField(default=False)
     
     def __str__(self):
         return self.nome
+    def get_status_mes(self, mes=None, ano=None):
+        from datetime import date
+
+        if not mes or not ano:
+            hoje = date.today()
+            mes, ano = hoje.month, hoje.year
+
+        # tenta pegar do mês atual
+        fm = self.frequencias.filter(mes=mes, ano=ano).order_by('-id').first()
+
+        # se não tiver do mês, pega o último registrado
+        if not fm:
+            fm = self.frequencias.order_by('-ano', '-mes', '-id').first()
+
+        if fm:
+            return fm.status
+
+        # fallback
+        elif self.data_cadastro and self.data_cadastro.month == mes and self.data_cadastro.year == ano:
+            return "primeiro_mes"
+
+        return "Indefinido"
+
+    @property
+    def status_atual(self):
+        hoje = date.today()
+        fm = self.frequencias.filter(mes=hoje.month, ano=hoje.year).first()
+        if fm:
+            return fm.status
+        if self.data_cadastro and self.data_cadastro.month == hoje.month and self.data_cadastro.year == hoje.year:
+            return "primeiro_mes"
+        return "indefinido"
+ 
 
     @property
     def idade_formatada(self):
@@ -255,7 +305,7 @@ class Profissional(models.Model):
     num4_conselho = models.CharField(max_length=20, blank=True, null=True)
     foto = models.ImageField(upload_to=caminho_foto_profissional, blank=True, null=True)
     observacao = models.TextField(max_length=5000, null=True)
-
+    redeSocial = models.CharField(default='Não informado', max_length=35)   
 
     cep = models.CharField(max_length=10, blank=True, null=True)
     rua = models.TextField(max_length=255, blank=True, null=True)
@@ -276,7 +326,16 @@ class Profissional(models.Model):
     data_cadastro = models.DateField(default=date.today, blank=True, null=True)
     ativo = models.BooleanField(default=True)
     
-    
+    @property
+    def idade_formatada(self):
+        if self.data_nascimento:
+            hoje = date.today()
+            idade = relativedelta(hoje, self.data_nascimento)
+            return f'{idade.years} anos, {idade.months} meses e {idade.days} dias'
+        return 'Data de nascimento não informada'
+    @property
+    def endereco_formatado(self):
+        return f'{self.rua}, {self.numero}, {self.complemento} - {self.bairro}, {self.cidade}/{self.uf} - {self.cep}'
     def save(self, *args, **kwargs):
         criando = self.pk is None
         
@@ -392,8 +451,19 @@ class PacotePaciente(models.Model):
 
     @property
     def valor_restante(self):
-        return self.valor_final - self.total_pago
+        valor_final = Decimal(str(self.valor_final or 0))
+        total_pago = Decimal(str(self.total_pago or 0))
+        return valor_final - total_pago
 
+
+    @property
+    def valor_desconto(self):
+        if self.desconto_reais:
+            return round(self.desconto_reais, 2)
+        elif self.desconto_percentual:
+            return (self.valor_original or 0) * (self.desconto_percentual / 100)
+        return 0
+    
     def __str__(self):
         return f"Pacote {self.codigo} Valor restante {self.valor_restante} - {self.paciente} "
 
@@ -427,13 +497,19 @@ class Pagamento(models.Model):
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     valor = models.DecimalField(max_digits=8, decimal_places=2)
     data = models.DateTimeField(default=timezone.now)
-    forma_pagamento = models.CharField(max_length=30, choices=[
-        ('pix', 'Pix'),
-        ('credito', 'Cartão de Crédito'),
-        ('debito', 'Cartão de Débito'),
-        ('dinheiro', 'Dinheiro'),
-    ])
-  
+    receita = models.ForeignKey('Receita', null=True, blank=True,
+                                on_delete=models.SET_NULL, related_name='pagamentos')
+    forma_pagamento = models.CharField(
+        max_length=30,
+        choices=[('pix','Pix'),('credito','Cartão de Crédito'),('debito','Cartão de Débito'),('dinheiro','Dinheiro')],
+        null=True, blank=True
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=[('pendente','Pendente'),('pago','Pago'),('cancelado','Cancelado')],
+        default='pendente'
+    )
+    vencimento = models.DateField(null=True, blank=True)
 
     def __str__(self):
         ref = self.pacote.codigo if self.pacote else f"Sessão {self.agendamento.id}" if self.agendamento else "Avulso"
@@ -458,3 +534,703 @@ class Pendencia(models.Model):
     resolvido = models.BooleanField(default=False)
     criado_em = models.DateTimeField(auto_now_add=True)
     responsavel = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+ 
+
+TIPO_PERGUNTA = (
+    ('short-text', 'Texto Curto'),
+    ('paragraph', 'Parágrafo'),
+    ('multiple-choice', 'Múltipla Escolha'),
+    ('checkbox', 'Checkbox'),
+    ('dropdown', 'Dropdown'),
+)
+
+from django.db import models
+from django.utils.text import slugify
+
+class Formulario(models.Model):
+    titulo = models.CharField(max_length=255)
+    descricao = models.TextField()
+    criado_em = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
+    ativo = models.BooleanField(default=True) 
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+
+            base_slug = slugify(self.titulo)
+            slug = base_slug
+            counter = 2
+
+            while Formulario.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.titulo
+
+
+class Pergunta(models.Model):
+    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE, related_name='perguntas')
+    texto = models.CharField(max_length=500)
+    tipo = models.CharField(max_length=20, choices=TIPO_PERGUNTA)
+    obrigatoria = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.texto
+
+
+class OpcaoResposta(models.Model):
+    pergunta = models.ForeignKey(Pergunta, on_delete=models.CASCADE, related_name='opcoes')
+    texto = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.texto
+
+
+
+class LinkFormularioPaciente(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100, unique=True, default=uuid.uuid4)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.formulario.titulo} - {self.paciente.nome}"
+
+    def get_url(self):
+        return reverse('responder_formulario_token', kwargs={
+            'slug': self.formulario.slug,
+            'token': self.token
+        })
+
+class RespostaFormulario(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
+    enviado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Resposta de {self.paciente.nome} em {self.formulario.titulo}"
+
+
+import uuid
+
+class Resposta(models.Model):
+    formulario = models.ForeignKey('Formulario', on_delete=models.CASCADE)
+    paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE)
+    token = models.CharField(max_length=32, unique=True, editable=False)
+    data_resposta = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = uuid.uuid4().hex[:10]
+        super().save(*args, **kwargs)
+
+    def get_resposta_url(self):
+        return reverse('responder_formulario_token', kwargs={
+            'slug': self.formulario.slug,
+            'token': self.token
+        })
+
+class RespostaPergunta(models.Model):
+    resposta = models.ForeignKey(RespostaFormulario, on_delete=models.CASCADE, related_name='respostas')
+    pergunta = models.ForeignKey(Pergunta, on_delete=models.CASCADE)
+    valor = models.TextField()
+
+    def __str__(self):
+        return f"{self.pergunta.texto[:40]}...: {self.valor[:40]}"
+
+
+
+
+STATUS_PACIENTES_CHOICES = [
+    ('primeiro_mes', '1º Mês'),
+    ('premium', 'Premium'),
+    ('vip', 'VIP'),
+    ('plus', 'Plus'),
+    ('indefinido', 'Indefinido'),
+]
+
+class FrequenciaMensal(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='frequencias')
+    mes = models.PositiveIntegerField()
+    ano = models.PositiveIntegerField()
+
+    freq_sistema = models.PositiveIntegerField(default=0)
+
+    freq_programada = models.PositiveIntegerField(default=0)
+    
+    programada_set_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='freq_programada_por')
+    programada_set_em = models.DateTimeField(null=True, blank=True)
+
+    percentual = models.DecimalField(max_digits=6, decimal_places=2,default=0)
+    status = models.CharField(max_length=20, choices=STATUS_PACIENTES_CHOICES, default='indefinido')
+
+    observacao = models.TextField(blank=True, null=True)
+    fechado = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('paciente', 'mes', 'ano')
+        indexes = [
+            models.Index(fields=['ano', 'mes']),
+            models.Index(fields=['paciente', 'ano', 'mes'])
+        ]
+
+    def calcular_status(self):
+        # 1 mes
+        if self.paciente.data_cadastro and self.paciente.data_cadastro.year == self.ano and self.paciente.data_cadastro.month == self.mes:
+            return 'primeiro_mes'
+        
+        if self.freq_programada > 0:
+            perc = (self.freq_sistema / self.freq_programada) *100
+
+            if perc >= 100:
+                return 'premium'
+            elif perc > 60:
+                return 'vip'
+            return 'plus'
+        return 'indefinido'
+    def atualizar_percentual_e_status(self):
+            self.percentual = round((self.freq_sistema / self.freq_programada) * 100, 2) if self.freq_programada > 0 else 0
+            self.status = self.calcular_status()
+
+    def save(self, *args, **kwargs):
+        self.atualizar_percentual_e_status()
+        super().save(*args, **kwargs)
+        
+        ganhou = calcular_beneficio(self.paciente, self.mes, self.ano, self.status)
+        HistoricoStatus.objects.update_or_create(
+            paciente=self.paciente, mes=self.mes, ano=self.ano,
+            defaults={
+                'status': self.status,
+                'percentual': self.percentual,
+                'freq_sistema': self.freq_sistema,
+                'freq_programada': self.freq_programada,
+                'ganhou_beneficio': ganhou,
+            }
+        )
+
+
+    def __str__(self):
+        return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status} ({self.freq_sistema}/{self.freq_programada})"
+
+class HistoricoStatus(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="historico_status")
+    mes = models.PositiveIntegerField()
+    ano = models.PositiveIntegerField()
+    status = models.CharField(max_length=50, choices=STATUS_PACIENTES_CHOICES)
+    percentual = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    freq_sistema = models.PositiveIntegerField(default=0)
+    freq_programada = models.PositiveIntegerField(default=0)
+
+    ganhou_beneficio = models.BooleanField(default=False)  # se ganhou no mês
+    data_registro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('paciente', 'mes', 'ano')
+        ordering = ["ano", "mes"]
+
+    def __str__(self):
+        return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status}"
+
+# core/models.py
+BENEFICIO_TIPO = [
+    ('relaxante', 'Sessão Relaxante'),     # VIP
+    ('desconto', 'Desconto em Pagamento'), # VIP/PREMIUM
+    ('brinde', 'Brinde'),                  # VIP/PREMIUM
+    ('sessao_livre', 'Sessão Livre'),      # PREMIUM
+]
+
+class UsoBeneficio(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='usos_beneficio')
+    mes = models.PositiveIntegerField()
+    ano = models.PositiveIntegerField()
+    status_no_mes = models.CharField(max_length=20, choices=STATUS_PACIENTES_CHOICES)
+    tipo = models.CharField(max_length=20, choices=BENEFICIO_TIPO)
+
+    agendamento = models.ForeignKey(Agendamento, null=True, blank=True, on_delete=models.SET_NULL)
+    valor_desconto_aplicado = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+
+    usado_em = models.DateTimeField(auto_now_add=True)
+    usado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        unique_together = ('paciente', 'mes', 'ano', 'tipo')
+        indexes = [models.Index(fields=['paciente', 'ano', 'mes', 'tipo'])]
+
+
+
+
+
+
+
+
+
+
+
+#======================================================================================
+#===================================FINANCEIRO=================================
+#======================================================================================
+
+class Fornecedor(models.Model):
+    tipo_pessoa = models.CharField(max_length=20, blank=True,null=True)
+    razao_social = models.CharField(max_length=150)
+    nome_fantasia = models.CharField(max_length=150)
+    documento = models.CharField(max_length=20, blank=True,null=True)
+    telefone = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(blank=True,null=True)
+    ativo = models.BooleanField(default=False)
+    def __str__(self):
+        return self.razao_social
+    
+    
+class CategoriaFinanceira(models.Model):
+    TIPO_CHOICES = (
+        ('receita',"Receita"),
+        ('despesa',"Despesa"),
+    )
+    
+    nome = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+
+    def __str__(self):
+        return f'{self.nome} ({self.tipo})'
+
+class CategoriaDespesa(models.Model):
+    nome = models.CharField(max_length=100)
+
+
+    def __str__(self):
+        return self.nome
+
+class ContaBancaria(models.Model):
+    codigo_banco = models.CharField(max_length=10)
+    nome_banco = models.CharField(max_length=100)
+    agencia_banco = models.CharField(max_length=10)
+    conta_banco = models.CharField(max_length=20)
+    digito_banco = models.CharField(max_length=20)
+    chave_pix_banco = models.CharField(max_length=150)
+    tipo_conta_banco = models.CharField(max_length=20, choices=(('corrente', 'Corrente'), ('poupanca', 'Poupança')))
+    ativo = models.BooleanField(default=False)
+    @property
+    def tipo_sigla(self) -> str:
+        return "C/C" if self.tipo_conta_banco == "corrente" else "C/P"
+
+    def conta_bancaria_extenso(self):
+        base = f'{self.codigo_banco} - {self.nome_banco} - Agência {self.agencia_banco} / Conta {self.conta_banco}-{self.digito_banco} {self.tipo_sigla}'
+        return base
+    
+    def __str__(self):
+        return f"{self.nome_banco} - CC {self.agencia_banco}"
+
+
+class Despesa(models.Model):
+    STATUS_CHOICES = (
+        ('pendente', 'Pendente'),
+        ('agendado', 'Agendado'),
+        ('pago', 'Pago'),
+        ('atrasado', 'Atrasado'),
+    )
+    fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, null=True)
+    categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'despesa'})
+    descricao = models.CharField(max_length=255)
+    vencimento = models.DateField()
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
+    forma_pagamento = models.CharField(max_length=30, blank=True, null=True)
+    conta_bancaria = models.ForeignKey(ContaBancaria, on_delete=models.SET_NULL, null=True, blank=True)
+    documento = models.CharField(max_length=50, blank=True, null=True)
+    observacoes = models.TextField(blank=True, null=True)
+    comprovante = models.FileField(upload_to="comprovantes/despesas/", blank=True, null=True)
+    recorrente = models.BooleanField(default=False)
+    frequencia = models.CharField(max_length=20, blank=True, null=True)
+    inicio = models.DateField(blank=True, null=True)
+    termino = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.fornecedor} - {self.descricao} ({self.valor})"
+
+
+class Receita(models.Model):
+    STATUS_CHOICES = (
+        ('pendente', 'Pendente'),
+        ('pago', 'Pago'),
+        ('atrasado', 'Atrasado'),
+    )
+    paciente = models.ForeignKey("core.Paciente", on_delete=models.SET_NULL, null=True, blank=True)  
+    categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'receita'})
+    descricao = models.CharField(max_length=255)
+    agendamento_codigo = models.CharField(max_length=50, blank=True, null=True)
+    vencimento = models.DateField()
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
+    forma_pagamento = models.CharField(max_length=30, blank=True, null=True)
+    observacoes = models.TextField(blank=True, null=True)
+    recibo = models.FileField(upload_to="recibos/receitas/", blank=True, null=True)
+    @property
+    def total_pago(self):
+        return self.pagamentos.aggregate(s=Sum('valor'))['s'] or 0
+
+ 
+
+    @property
+    def saldo(self):
+        valor = Decimal(str(self.valor or 0))
+        pago = Decimal(str(self.total_pago or 0))
+        return valor - pago
+
+
+    def atualizar_status_por_pagamentos(self):
+        if self.saldo <= 0:
+            self.status = 'pago'
+        else:
+            self.status = 'atrasado' if (self.vencimento and self.vencimento < date.today()) else 'pendente'
+        self.save(update_fields=['status'])
+    def __str__(self):
+        return f"{self.paciente} - {self.descricao} ({self.valor})"
+
+
+class Lancamento(models.Model):
+    TIPO_CHOICES = (
+        ('receita', 'Receita'),
+        ('despesa', 'Despesa'),
+    )
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    data = models.DateTimeField()
+    descricao = models.CharField(max_length=255)
+    categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True)
+    pessoa = models.CharField(max_length=150, blank=True, null=True)  # paciente ou fornecedor
+    forma_pagamento = models.CharField(max_length=30)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=(('pago', 'Pago'), ('pendente', 'Pendente')), default='pendente')
+    observacoes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.tipo} - {self.descricao} - {self.valor}"
+
+
+
+class Prontuario(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    queixa_principal = models.TextField()
+    conduta = models.TextField()
+    feedback_paciente = models.TextField()
+    evolucao = models.TextField()
+    diagnostico = models.TextField()
+    observacoes = models.TextField()
+
+    nao_se_aplica = models.BooleanField(default=False)
+    foi_preenchido = models.BooleanField(default=False)
+    class Meta:
+        ordering = ['-data_criacao']
+
+    def __str__(self):
+        return f'Prontuário {self.paciente} - {self.data_criacao}'
+    
+class Evolucao(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    foi_preenchido = models.BooleanField(default=False)
+    nao_se_aplica = models.BooleanField(default=False)
+    # Campos de texto/char opcionais -> blank=True, null=True
+    queixa_principal_inicial = models.TextField(blank=True, null=True)
+    processo_terapeutico = models.TextField(blank=True, null=True)
+    condutas_tecnicas = models.TextField(blank=True, null=True)
+    resposta_paciente  = models.TextField(blank=True, null=True)
+    intercorrencias = models.TextField(blank=True, null=True)
+
+    dor_inicio = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    dor_atual = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    dor_observacoes = models.TextField(blank=True, null=True)
+
+    amplitude_inicio = models.CharField(max_length=100, blank=True, null=True)
+    amplitude_atual = models.CharField(max_length=100, blank=True, null=True)
+    amplitude_observacoes = models.TextField(blank=True, null=True)
+
+    forca_inicio = models.CharField(max_length=100, blank=True, null=True)
+    forca_atual = models.CharField(max_length=100, blank=True, null=True)
+    forca_observacoes = models.TextField(blank=True, null=True)
+
+    postura_inicio = models.CharField(max_length=100, blank=True, null=True)
+    postura_atual = models.CharField(max_length=100, blank=True, null=True)
+    postura_observacoes = models.TextField(blank=True, null=True)
+
+    edema_inicio = models.CharField(max_length=100, blank=True, null=True)
+    edema_atual = models.CharField(max_length=100, blank=True, null=True)
+    edema_observacoes = models.TextField(blank=True, null=True)
+
+    avds_inicio = models.CharField(max_length=100, blank=True, null=True)
+    avds_atual = models.CharField(max_length=100, blank=True, null=True)
+    avds_observacoes = models.TextField(blank=True, null=True)
+
+    emocionais_inicio = models.CharField(max_length=100, blank=True, null=True)
+    emocionais_atual = models.CharField(max_length=100, blank=True, null=True)
+    emocionais_observacoes = models.TextField(blank=True, null=True)
+
+    sintese_evolucao = models.TextField(blank=True, null=True)
+
+    # Orientação ao Paciente
+    mensagem_paciente = models.TextField(blank=True, null=True)
+    explicacao_continuidade = models.TextField(blank=True, null=True)
+    reacoes_paciente = models.TextField(blank=True, null=True)
+
+    # Expectativa x Realidade
+    dor_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    dor_realidade = models.CharField(max_length=100, blank=True, null=True)
+    mobilidade_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    mobilidade_realidade = models.CharField(max_length=100, blank=True, null=True)
+    energia_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    energia_realidade = models.CharField(max_length=100, blank=True, null=True)
+    consciencia_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    consciencia_realidade = models.CharField(max_length=100, blank=True, null=True)
+    emocao_expectativa = models.CharField(max_length=100, blank=True, null=True)
+    emocao_realidade = models.CharField(max_length=100, blank=True, null=True)
+
+    # Próximos passos
+    objetivos_ciclo = models.TextField(blank=True, null=True)
+    condutas_mantidas = models.TextField(blank=True, null=True)
+    ajustes_plano = models.TextField(blank=True, null=True)
+
+    # Sugestões complementares
+    treino_funcional = models.BooleanField(default=False)
+    pilates_clinico = models.BooleanField(default=False)
+    recovery = models.BooleanField(default=False)
+    rpg = models.BooleanField(default=False)
+    nutricao = models.BooleanField(default=False)
+    psicoterapia = models.BooleanField(default=False)
+    estetica = models.BooleanField(default=False)
+    outro_complementar = models.BooleanField(default=False)
+    outro_complementar_texto = models.CharField(max_length=100, blank=True, null=True)
+
+    # Registro interno
+    observacoes_internas = models.TextField(blank=True, null=True)
+    orientacoes_grupo = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['-data_criacao']
+
+    def __str__(self):
+        return f"Evolução {self.paciente} - {self.data_criacao}"
+
+class AvaliacaoFisioterapeutica(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    data_avaliacao = models.DateTimeField(auto_now_add=True)
+    criado_por = models.ForeignKey(User, on_delete=models.CASCADE)
+    foi_preenchido = models.BooleanField(default=False)
+    nao_se_aplica = models.BooleanField(default=False)
+    # Anamnese / Histórico Clínico
+    queixa_principal = models.TextField()
+    inicio_problema = models.TextField(blank=True)
+    causa_problema = models.TextField(blank=True)
+    
+    # Histórico da doença atual
+    dor_recente_antiga = models.CharField(max_length=100, blank=True)
+    episodios_anteriores = models.TextField(blank=True)
+    tratamento_anterior = models.BooleanField(null=True)
+    qual_tratamento = models.TextField(blank=True)
+    cirurgia_procedimento = models.TextField(blank=True)
+    
+    acompanhamento_medico = models.BooleanField(null=True)
+    medico_especialidade = models.CharField(max_length=100, blank=True)
+    
+    diagnostico_medico = models.CharField(max_length=200, blank=True)
+    uso_medicamentos = models.TextField(blank=True)
+    exames_trazidos = models.BooleanField(null=True)
+    tipo_exame = models.CharField(max_length=100, blank=True)
+    historico_lesoes = models.TextField(blank=True)
+    
+    # Histórico pessoal e familiar
+    doencas_previas = models.TextField(blank=True)
+    cirurgias_previas = models.TextField(blank=True)
+    condicoes_geneticas = models.TextField(blank=True)
+    historico_familiar = models.TextField(blank=True)
+    
+    # Hábitos e estilo de vida
+    qualidade_sono = models.CharField(max_length=20, blank=True)
+    horas_sono = models.TextField(null=True, blank=True, default=0)
+    alimentacao = models.CharField(max_length=50, blank=True)
+    nivel_atividade = models.CharField(max_length=50, blank=True)
+    tipo_exercicio = models.CharField(max_length=100, blank=True)
+    nivel_estresse = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    rotina_trabalho = models.TextField(blank=True)
+    aspectos_emocionais = models.TextField(blank=True)
+    
+    # Sinais, sintomas e dor
+    localizacao_dor = models.TextField(blank=True)
+    
+    tipo_dor_pontada = models.BooleanField(default=False)
+    tipo_dor_queimacao = models.BooleanField(default=False)
+    tipo_dor_peso = models.BooleanField(default=False)
+    tipo_dor_choque = models.BooleanField(default=False)
+    tipo_dor_outra = models.BooleanField(default=False)
+    tipo_dor_outra_texto = models.CharField(max_length=100, blank=True)
+    
+    intensidade_repouso = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    intensidade_movimento = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    intensidade_pior = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    
+    fatores_agravam = models.TextField(blank=True)
+    fatores_aliviam = models.TextField(blank=True)
+    
+    sinal_edema = models.BooleanField(default=False)
+    sinal_parestesia = models.BooleanField(default=False)
+    sinal_rigidez = models.BooleanField(default=False)
+    sinal_fraqueza = models.BooleanField(default=False)
+    sinal_compensacoes = models.BooleanField(default=False)
+    sinal_outro = models.BooleanField(default=False)
+    sinal_outro_texto = models.CharField(max_length=100, blank=True)
+    
+    grau_inflamacao = models.CharField(max_length=20, blank=True)
+    
+    # Exame físico e funcional
+    inspecao_postura = models.TextField(blank=True)
+    compensacoes_corporais = models.TextField(blank=True)
+    padrao_respiratorio = models.TextField(blank=True)
+    palpacao = models.TextField(blank=True)
+    pontos_dor = models.TextField(blank=True)
+    testes_funcionais = models.TextField(blank=True)
+    outras_observacoes = models.TextField(blank=True)
+    
+    mobilidade_regiao = models.TextField(blank=True)
+    mobilidade_ativa = models.TextField(blank=True)
+    mobilidade_passiva = models.TextField(blank=True)
+    mobilidade_dor = models.BooleanField(default=False)
+    
+    forca_grupo = models.TextField(blank=True)
+    forca_grau = models.TextField(blank=True)
+    forca_dor = models.BooleanField(default=False)
+    
+    
+    # Diagnóstico Fisioterapêutico
+    diagnostico_completo = models.TextField(blank=True)
+    grau_dor = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    limitacao_funcional = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        null=True, blank=True
+    )
+    grau_inflamacao_num = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(3)],
+        null=True, blank=True
+    )
+    grau_edema = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(3)],
+        null=True, blank=True
+    )
+    receptividade = models.CharField(max_length=20, blank=True, null=True)
+
+    autonomia_avd = models.CharField(max_length=20, blank=True)
+    
+    # Plano Terapêutico
+    objetivo_geral = models.TextField(blank=True)
+    objetivo_principal = models.TextField(blank=True)
+    objetivo_secundario = models.TextField(blank=True)
+    pontos_atencao = models.TextField(blank=True)
+    
+    # Técnicas manuais
+    tecnica_liberacao = models.BooleanField(default=False)
+    tecnica_mobilizacao = models.BooleanField(default=False)
+    tecnica_dry_needling = models.BooleanField(default=False)
+    tecnica_ventosa = models.BooleanField(default=False)
+    tecnica_manipulacoes = models.BooleanField(default=False)
+    tecnica_outras = models.BooleanField(default=False)
+    tecnica_outras_texto = models.CharField(max_length=100, blank=True)
+    
+    # Recursos eletrofísicos
+    recurso_aussie = models.BooleanField(default=False)
+    recurso_russa = models.BooleanField(default=False)
+    recurso_aussie_tens = models.BooleanField(default=False)
+    recurso_us = models.BooleanField(default=False)
+    recurso_termo = models.BooleanField(default=False)
+    recurso_outro = models.BooleanField(default=False)
+    recurso_outro_texto = models.CharField(max_length=100, blank=True)
+    
+    # Cinesioterapia
+    cinesio_fortalecimento = models.BooleanField(default=False)
+    cinesio_alongamento = models.BooleanField(default=False)
+    cinesio_postural = models.BooleanField(default=False)
+    cinesio_respiracao = models.BooleanField(default=False)
+    cinesio_mobilidade = models.BooleanField(default=False)
+    cinesio_funcional = models.BooleanField(default=False)
+    
+    descricao_plano = models.TextField(blank=True)
+    
+    medo_agulha = models.BooleanField(null=True)
+    limiar_dor_baixo = models.BooleanField(null=True)
+    fragilidade = models.BooleanField(null=True)
+    
+    frequencia = models.IntegerField(null=True, blank=True)
+    duracao = models.IntegerField(null=True, blank=True)
+    reavaliacao_sessao = models.CharField(max_length=50, blank=True)
+    
+    # Prognóstico e orientações
+    evolucao_primeira_sessao = models.TextField(blank=True)
+    evolucao_proximas_sessoes = models.TextField(blank=True)
+    expectativas_primeira_etapa = models.TextField(blank=True)
+    proximos_passos = models.TextField(blank=True)
+    sobre_orientacoes = models.TextField(blank=True)
+    sono_rotina = models.TextField(blank=True)
+    postura_ergonomia = models.TextField(blank=True)
+    alimentacao_hidratacao = models.TextField(blank=True)
+    exercicios_casa = models.TextField(blank=True)
+    aspectos_emocionais_espirituais = models.TextField(blank=True)
+    
+    observacoes_finais = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['-data_avaliacao']
+    
+    def __str__(self):
+        return f"Avaliação {self.paciente} - {self.data_avaliacao.date()}"

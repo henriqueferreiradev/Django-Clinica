@@ -6,10 +6,11 @@
 {% block title %}Agenda - Ponto de Equilíbrio{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/agenda/agenda.css' %}">
+
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}">
+ <link rel="stylesheet" href="{% static 'core/css/agenda/agenda.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
- 
+
 
 {% endblock %}
 
@@ -17,372 +18,459 @@
 
 {% block content %}
 <div class="content">
+    {% include "core/partials/filtros/filtro_agenda.html" %}
+    <div id="lista-agendamentos">
+        
+        {% for data, agendamentos in agendamentos_agrupados.items %}
+        <div class="agenda-data-group">{{ data }}</div>
 
-    <div class="" class="sidebar" id="sidebar">
-        <div class="header-sidebar">
-            <h2>Agendamento</h2>
-            <button id="closeBtn">&times;</button>
+        {% for ag in agendamentos %}
+        <div class="agenda-item
+                            {% if ag.status == 'pre' %} status-pre
+                            {% elif ag.status == 'agendado' %} status-agendado
+                            {% elif ag.status == 'finalizado' %} status-finalizado
+                            {% elif ag.status == 'desistencia' %} status-desistencia
+                            {% elif ag.status == 'desistencia_remarcacao' %} status-dcr
+                            {% elif ag.status == 'falta_remarcacao' %} status-fcr
+                            {% elif ag.status == 'falta_cobrada' %} status-falta
+                            {% endif %}">
+            <div class="time-col">
+                <div class="agenda-hora"> 
+                    <div style="background-color: {{ ag.cor_especialidade }};" class="bolinha"></div>
+                    <span>{{ ag.hora_inicio }} – {{ ag.hora_fim }} </span>
+
+                </div>
+            </div>
+
+
+            <div class="info-col">
+                <span class="paciente">{{ ag.paciente }}</span>
+                <span class="profissional">{{ ag.especialidade }} com {{ ag.profissional }} </span>
+                {% if ag.sessao_atual %}
+                {% if ag.codigo|slice:":3" == "REP" %}
+                    <span class="sessao reposicao"><i class="fa-solid fa-rotate-left"></i>Sessão de Reposição | {{ ag.codigo }}</span>
+                {% elif ag.codigo|slice:":3" == "BEN" %}
+                    <span class="sessao beneficio"><i class="fa-solid fa-gift"></i>Sessão de Benefício | {{ ag.codigo }}</span>
+                    {% else %}
+                <span class="sessao normal">
+                    <i class="fa-solid fa-calendar-check"></i>Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
+                </span>
+                {% endif %}
+            {% endif %}
+            </div>
+
+            <div class="status-col">
+                <form method="post" action="{% url 'alterar_status_agendamento' ag.id %}">
+                    {% csrf_token %}
+                    <select name="status" class="status-select">
+                        <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
+                        <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
+                        <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
+                        <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
+                        <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
+                        <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
+                        <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
+                </select>
+            </div>
+            <div class="actions-col">
+                <button type="submit"  class="action-btn tooltip" ><i class="fa-solid fa-cloud-arrow-up"></i><span class="tooltiptext">Salvar Status</span> </button>
+                <a href="{% url 'confirmacao_agendamento' ag.id %}">
+                    <button type="button" class="action-btn tooltip"><i class="fa-solid fa-eye"></i>
+<span class="tooltiptext">Ver detalhes</span>  </button>
+                </a>
+                <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
+                    class="btn-editar-agendamento action-btn tooltip" ><i class="fa-solid fa-pen-to-square"></i><span class="tooltiptext">Editar agendamento</span>  </button>
+                
+            </div>
+            </form>
+
         </div>
-        <div class="agendamento_div">
-            <form id="agendamentoForm" method="post" action="{% url 'criar_agendamento' %}">
-                {% csrf_token %}
+        {% endfor %}
+        {% endfor %}
+    </div>
 
-                <div id="aviso-pacote"
-                    style="display: none; margin: 1em 0; padding: 10px; background-color: #e6ffe6; border: 1px solid #4CAF50; border-radius: 5px;">
-                    <strong style="color: #2e7d32;">Pacote ativo detectado!</strong><br>
-                    <span id="mensagem-pacote" style="color: #2e7d32; font-size: 13px;"></span>
-                    <button type="button" id="usar-pacote-btn"
-                        style="margin-left: 10px; background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                        Usar este pacote
+
+<div class="sidebar" hidden id="sidebar">
+    <div class="header-sidebar">
+        <h2>Agendamento</h2>
+        <button id="closeBtn">&times;</button>
+    </div>
+    
+    <div class="agendamento_div">
+
+        <form id="agendamentoForm" method="post" action="{% url 'criar_agendamento' %}" novalidate>
+            {% csrf_token %}
+
+            <div id="aviso-pacote" class="aviso-premium" style="display: none;">
+                <div style='display: flex; gap:.5em; align-items:center;'>
+                <i class="fas fa-check-circle aviso-icon"></i>
+                <strong>Pacote ativo detectado!</strong>
+                </div>
+                <div class="aviso-content">
+                    
+                    <span id="mensagem-pacote"></span>
+                    <button type="button" id="usar-pacote-btn" class="btn-premium">
+                        <i class="fas fa-tag"></i> Usar este pacote
                     </button>
                 </div>
-                <div  id="pacote_atual"></div>
-                <div  id="info_reposicao"></div>
-                <div id="aviso-desmarcacoes"
-                style="display: none; margin: 1em 0; padding: 10px; background-color:rgb(255, 230, 230); border: 1px solidrgb(175, 76, 76); border-radius: 5px;">
-                <strong style="color:rgb(125, 46, 46);">Saldos de sessões desmarcadas detectados!</strong><br>
-                <span id="mensagem-desmarcacoes" style="color:rgb(125, 46, 46); font-size: 13px;"></span>
-                <button type="button" id="usar-reposicao-btn"
-                    style="margin-left: 10px; background-color:rgb(175, 76, 76); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                    Remarcar sessão
-                </button>
-                
+            </div>
+            <div id="aviso-beneficio" class="aviso-premium callout callout-info" style="display:none;">
+                <div id="mensagem-beneficio" style="font-weight:600;"></div>
+                <div id="beneficio-botoes" class='btn-premium '></div>
+                </div>
+
+            <div  id="pacote_atual"></div>
+            <div  id="info_reposicao"></div>
+            
+            <div id="aviso-desmarcacoes" class="aviso-premium" style="display: none;">
+                <i class="fas fa-exclamation-circle aviso-icon"></i>
+                <div class="aviso-content">
+                    <strong>Saldos de sessões desmarcadas detectados!</strong>
+                    <span id="mensagem-desmarcacoes"></span>
+                    <button type="button" id="usar-reposicao-btn" class="btn-premium">
+                        <i class="fas fa-calendar-plus"></i> Remarcar sessão
+                    </button>
+                </div>
             </div>
  
- 
-                <div class="formField input-wrapper">
-                    <input class='capitalize-input' type="text" id="busca" placeholder="Buscar paciente por nome..."
-                        autocomplete="off">
-                    <input type="hidden" id="paciente_id" name="paciente_id">
-                    <div id="sugestoes"></div>
+            <div class="formField input-wrapper">
+                <label for="busca"><i class="fas fa-user"></i> Paciente</label>
+                <input required class="capitalize-input input-s" type="text" id="busca" placeholder="Buscar paciente por nome..." autocomplete="off">
+                <input type="hidden" id="paciente_id" name="paciente_id">
+                <div id="sugestoes"></div>
+            </div>
+            
+            <div  class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" name="tipo_agendamento" value="novo" id="tipo-novo" checked>
+                    <label for="tipo-novo">Nova Sessão / Novo Pacote</label>
                 </div>
-                <div class="radio-group">
-                    <label><input type="radio" name="tipo_agendamento" value="novo" checked> Nova Sessão / Novo
-                        Pacote</label>
-                    <div hidden>
-                        <label><input class="input-s" type="radio" name="tipo_agendamento" value="existente">
-                            Sessão de Pacote Já Assinado</label>
-                        <input type="text" id="pacote_codigo" name="pacote_codigo"
-                            placeholder="Digite o código do pacote">
-                    </div>
-                    <div>
-                        <label><input type="radio" name="tipo_agendamento" value="reposicao"> Reposição de
-                            Sessão</label>
-                    </div>
+                <div class="radio-option" hidden>
+                    <input type="radio" name="tipo_agendamento" value="existente" id="tipo-existente">
+                    <label for="tipo-existente">Sessão de Pacote Já Assinado</label>
+                    <input type="text" id="pacote_codigo" name="pacote_codigo" class="input-s" placeholder="Digite o código do pacote">
                 </div>
+                <div class="radio-option">
+                    <input type="radio" name="tipo_agendamento" value="reposicao" id="tipo-reposicao">
+                    <label for="tipo-reposicao">Reposição de Sessão</label>
+                </div>
+            </div>
+
+            <div class="formField">
+                <label for="pacotesInput" id="tipo_sessao"><i class="fas fa-concierge-bell"></i> Tipo de sessão</label>
+                <input type="hidden" id="servico_id_hidden" name="servico_id">
+                <input type="hidden" id="beneficio_tipo" name="beneficio_tipo">
+                <input type="hidden" id="beneficio_percentual" name="beneficio_percentual">
+                <select name="servico_id" id="pacotesInput" class="input-s" required>
+                <option value="" disabled selected>Selecione um serviço</option>
+                        <optgroup label="Pacotes">
+                            {% for servico in servicos %}
+                            {% if servico.qtd_sessoes >= 2 %}
+                            <option value="{{ servico.id }}" data-valor="{{ servico.valor }}"
+                                class="servico-banco servico-pacote">
+                                {{ servico.nome }} - R$ {{ servico.valor }}
+                            </option>
+                            {% endif %}  
+                           {% endfor %}
+                        </optgroup>
+                        <optgroup label="Sessões Avulsas">
+                            {% for servico in servicos %}
+                            {% if servico.qtd_sessoes < 2 %} <option
+                                value="{{ servico.id }}" data-valor="{{ servico.valor }}"
+                                class="servico-banco servico-pacote">
+                                {{ servico.nome }} - R$ {{ servico.valor }}
+                                </option>
+                                {% endif %} 
+                                {% endfor %}
+                        </optgroup>
+                    <optgroup label="Reposição">
+                 <option  class="servico-reposicao" data-valor="0.00">Reposição - D</option>
+                <option class="servico-reposicao" data-valor="0.00">Reposição - DCR</option>
+                <option  class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
+                        </optgroup>
+                         
+
+                <!-- Reposição (já tinha) -->
+                <option value="d"   class="servico-reposicao" data-valor="0.00">Reposição - D</option>
+                <option value="dcr" class="servico-reposicao" data-valor="0.00">Reposição - DCR</option>
+                <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
+
+                <!-- Benefícios (aparecem só quando o usuário clica no botão) -->
+                <option value="beneficio_sessao_livre"   class="servico-beneficio" data-valor="0.00" hidden>Sessão Livre (Benefício)</option>
+                <option value="beneficio_relaxante"      class="servico-beneficio" data-valor="0.00" hidden>Sessão Relaxante (Benefício)</option>
+                </select>
 
 
 
+            </div>
+
+            <div class="formRow cols-2">
                 <div class="formField">
-                    <label id='tipo_sessao'>Tipo de sessão</label>
-                    <input type="hidden" id="servico_id_hidden" name="servico_id">
-                    <select name="servico_id" id="pacotesInput" class="input-s" required>
-                        <option value="" disabled selected>Selecione um serviço</option>
-                        {% for servico in servicos %}
-                        <option  value="{{ servico.id }}" data-valor="{{ servico.valor }}" class="servico-banco">
-                            {{ servico.nome }} - R$ {{ servico.valor }}
+                    <label for="especialidadeInput"><i class="fas fa-stethoscope"></i> Especialidade</label>
+                    <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
+                        <option value="" disabled selected>Selecione uma especialidade</option>
+                        {% for esp in especialidades %}
+                        <option value="{{ esp.id }}">
+                            {{ esp.nome }}
                         </option>
-
                         {% endfor %}
-                        <option value="d" class="servico-reposicao" data-valor="0.00">Reposição - D </option>
-                        <option value="dcr" class="servico-reposicao" data-valor="0.00">Reposição - DCR </option>
-                        <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR </option>
-                    </select>
-                </div>
-
-                <div class="formRow">
-                    <div class="formField">
-                        <label>Especialidade</label>
-                        <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
-                            <option value="" disabled selected>Selecione uma especialidade</option>
-                            {% for esp in especialidades %}
-                            <option value="{{ esp.id }}">
-                                {{ esp.nome }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="formField">
-                        <label>Profissional 1</label>
-                        <select name="profissional1_id" id="profissional1Input" class="input-s" required>
-                            <option value="" disabled selected>Selecione um profissional</option>
-                            {% for profissional in profissionais %}
-                            <option value="{{ profissional.id }}">
-                                {{ profissional.nome }} {{ profissional.sobrenome }} - {{ profissional.especialidade }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-                <div class="formRow">
-                    <div class="formField">
-                        <label>Data</label>
-                        <input type="date" name="data" id="dataInput">
-                    </div>
-                    <div class="formField">
-                        <label>Início</label>
-                        <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required>
-                    </div>
-                    <div class="formField">
-                        <label>Fim</label>
-                        <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required>
-                    </div>
-                </div>
-                <div class="formRow">
-                    <div class="formField">
-                        <label><input type="checkbox" name="recorrente" id="recorrente"> Agendamento Recorrente</label>
-                    </div>
-                    <div class="formField">
-                        <label>Recorrência</label>
-                        <select name="recorrencia_dia" id="recorrencia_dia">
-                            <option value="" disabled selected>Selecione...</option>
-                            <option value="0">Todas segundas</option>
-                            <option value="1">Todas terças</option>
-                            <option value="2">Todas quartas</option>
-                            <option value="3">Todas quintas</option>
-                            <option value="4">Todas sextas</option>
-                            <option value="5">Todos sábados</option>
-                        </select>
-                    </div>
-                </div>
-                <div id='formValor' class="formRow">
-                    <div class="formField">
-                        <label>Valor Pacote</label>
-                        <input id="valor_pacote" name="valor_pacote" type="number" step="0.01"
-                            oninput="calcularDesconto()" readonly>
-                    </div>
-
-                    <div class="formField">
-                        <label id='desconto_label'>Desconto (%)</label>
-                        <div class="input-wrapper">
-                            <input id="desconto" name="desconto" type="number" step="0.01" oninput="calcularDesconto()">
-                            <input type="hidden" id="modo_desconto" name="modo_desconto" value="%">
-                            <button type="button" id='desconto_button' class="modo_desconto"
-                                onclick="alternarModoDesconto()">R$</button>
-                        </div>
-                    </div>
-
-                    <div class="formField">
-                        <label for="valor_final">Valor final</label>
-                        <input id="valor_final" name="valor_final" type="number" step="0.01" oninput="alterarDesconto()"
-                            required>
-                        <input type="hidden" id="valor_pago_atual" name="valor_pago_atual" value="0.00">
-                    </div>
-                </div>
-
-                <div class="formRow">
-                    <div class="formField">
-                        <label>Valor pago</label>
-                        <input type="number" name="valor_pago" placeholder="Valor pago" step="0.01">
-
-                    </div>
-                    <div class="formField">
-                        <label>Forma de pagamento</label>
-                        <select name="forma_pagamento">
-                            <option value="" disabled selected>Selecione...</option>
-                            <option value="pix">Pix</option>
-                            <option value="credito">Cartão de Crédito</option>
-                            <option value="debito">Cartão de Débito</option>
-                            <option value="dinheiro">Dinheiro</option>
-                            <option value="outro">Outro</option>
-                        </select>
-                    </div>
-
-                </div>
-                <div id="info_pacote" class="hidden">
-                    <table class="table-auto w-full text-sm text-left border border-gray-300 mb-4">
-                        <tbody>
-                            <tr class="border-b">
-                                <th class="px-2 py-1 font-medium bg-gray-100">Código do Pacote</th>
-                                <td class="px-2 py-1" id="codigo_pacote_display"></td>
-                            </tr>
-                            <tr class="border-b">
-                                <th class="px-2 py-1 font-medium bg-gray-100">Valor Pago</th>
-                                <td class="px-2 py-1">R$ <span id="valor_pago_display"></span></td>
-                            </tr>
-                            <tr class="border-b">
-                                <th class="px-2 py-1 font-medium bg-gray-100">Valor Restante</th>
-                                <td class="px-2 py-1">R$ <span id="valor_restante_display"></span></td>
-                            </tr>
-                            <tr>
-                                <th class="px-2 py-1 font-medium bg-gray-100">Sessão Atual</th>
-                                <td class="px-2 py-1">
-                                    <span id="sessao_atual_display"></span> de <span id="total_sessoes_display"></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                </div>
-
-                <div class="formField">
-                    <label>Ambiente / Sala</label>
-                    <select name="ambiente">
-                        <option value="">Selecione...</option>
-                        <option value="Andar 1 - Sala 1">Andar 1 - Sala 1</option>
-                        <option value="Andar 1 - Sala 2">Andar 1 - Sala 2</option>
-                        <option value="Andar 1 - Sala 3">Andar 1 - Sala 3</option>
-                        <option value="Andar 1 - Sala externa">Andar 1 - Sala externa</option>
-                        <option value="Andar 1 - Personal">Andar 1 - Personal</option>
-                        <option value="Andar 2 - Sala 1">Andar 2 - Sala 1</option>
-                        <option value="Andar 2 - Sala 2">Andar 2 - Sala 2</option>
-                        <option value="Andar 2 - Sala 3">Andar 2 - Sala 3</option>
-                    </select>
-
-                </div>
-
-                <div class="formField">
-                    <label>Status de agendamento</label>
-                    <select name="status">
-                        <option value="" disabled selected>Selecione...</option>
-                        <option value="agendado">✅ Agendado</option>
-                        <option value="pre">✅ Pré-Agendado</option>
-
                     </select>
                 </div>
 
                 <div class="formField">
-                    <label>OBSERVAÇÕES / NOTAS INTERNAS</label>
-                    <textarea class="textarea-large" name="observacoes"></textarea>
+                    <label for="profissional1Input"><i class="fas fa-user-md"></i> Profissional 1</label>
+                    <select name="profissional1_id" id="profissional1Input" class="input-s" required>
+                        <option value="" disabled selected>Selecione um profissional</option>
+                        {% for profissional in profissionais %}
+                        <option value="{{ profissional.id }}">
+                            {{ profissional.nome }} {{ profissional.sobrenome }} - {{ profissional.especialidade }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
-        </div>
-        <div class="footer">
-            <button class="btn-footer" type="submit">Agendar</button>
-            <button class="btn-footer" type="submit">Gerar recibo</button>
-        </div>
-        </form>
-    </div>
-    <div class="content-header">
-        <h2>Todas as consultas</h2>
-        <form method="get" class="search-form">
-            <div class="buttons_header" >
-                
-                
-              
-                        <input type="text" name="q" value="{{ query }}" placeholder="Buscar por paciente ou profissional aqui">
-              
-                        <input type="date" name="data_inicio" value="{{ data_inicio }}">
-               
-                        <input type="date" name="data_fim" value="{{ data_fim }}">
-               
-               
-                <button class="btn-add" name="filtrar" value="1">Filtrar</button>
-        </form>
- 
-        
-    </div>
-    <button type='button' id="openBtn" class="btn-add"> Novo Agendamento</button>
-
-</div>
-
-<div id="lista-agendamentos">
-    
-    {% for data, agendamentos in agendamentos_agrupados.items %}
-    <div class="agenda-data-group">{{ data }}</div>
-
-    {% for ag in agendamentos %}
-    <div class="agenda-item">
-        <div class="time-col">
-            <div class="agenda-hora">
-                <div style="background-color: {{ ag.cor_especialidade }};" class="bolinha"></div>
-                <span>{{ ag.hora_inicio }} – {{ ag.hora_fim }} </span>
-
             </div>
-        </div>
 
+            <div class="formRow cols-3">
+                <div class="formField">
+                    <label for="dataInput"><i class="fas fa-calendar"></i> Data</label>
+                    <input type="date" name="data"  required id="dataInput" class="input-s">
+                </div>
+                <div class="formField">
+                    <label for="horaInicioInput"><i class="fas fa-clock"></i> Início</label>
+                    <input type="time" name="hora_inicio" id="horaInicioInput" min="06:00" max="00:00" required class="input-s">
+                </div>
+                <div class="formField">
+                    <label for="horaFimInput"><i class="fas fa-clock"></i> Fim</label>
+                    <input type="time" name="hora_fim" id="horaFimInput" min="06:00" max="00:00" required class="input-s">
+                </div>
+            </div>
+            
+            <div class="formRow cols-2">
+                <div class="formField">
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="recorrente" onchange="openRecorrente()" id="recorrente">
+                        <span><i class="fas fa-sync-alt"></i> Agendamento Recorrente</span>
+                    </label>
+                </div>
+ 
+            </div>
 
-        <div class="info-col">
-            <span class="paciente">{{ ag.paciente }}</span>
-            <span class="profissional">{{ ag.especialidade }} com {{ ag.profissional }} </span>
-            {% if ag.sessao_atual %}
-            {% if ag.codigo|slice:":3" == "REP" %}
-                <span class="sessao vermelho">Sessão de Reposição | {{ ag.codigo }}</span>
-                {% else %}
-            <span class="sessao verde">
-                Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
-            </span>
-            {% endif %}
-        {% endif %}
-        </div>
+            <div>
+                <div id="week-recorrente" class="formField-week">
+                    <div class="week-div">
+                      <!-- Segunda -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[segunda][ativo]" id="recorrente-segunda">
+                          <span>Segunda</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-segunda"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[segunda][inicio]" id="horaInicio-segunda" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-segunda"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[segunda][fim]" id="horaFim-segunda" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
+                  
+                      <!-- Terça -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[terca][ativo]" id="recorrente-terca">
+                          <span>Terça</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-terca"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[terca][inicio]" id="horaInicio-terca" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-terca"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[terca][fim]" id="horaFim-terca" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
+                    </div>
+                  
+                    <div class="week-div">
+                      <!-- Quarta -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[quarta][ativo]" id="recorrente-quarta">
+                          <span>Quarta</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-quarta"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[quarta][inicio]" id="horaInicio-quarta" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-quarta"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[quarta][fim]" id="horaFim-quarta" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
+                  
+                      <!-- Quinta -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[quinta][ativo]" id="recorrente-quinta">
+                          <span>Quinta</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-quinta"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[quinta][inicio]" id="horaInicio-quinta" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-quinta"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[quinta][fim]" id="horaFim-quinta" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
+                    </div>
+                  
+                    <div class="week-div">
+                      <!-- Sexta -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[sexta][ativo]" id="recorrente-sexta">
+                          <span>Sexta</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-sexta"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[sexta][inicio]" id="horaInicio-sexta" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-sexta"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[sexta][fim]" id="horaFim-sexta" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
+                  
+                      <!-- Sábado -->
+                      <div class="week-day">
+                        <label class="checkbox-option">
+                          <input type="checkbox" name="recorrente[sabado][ativo]" id="recorrente-sabado">
+                          <span>Sábado</span>
+                        </label>
+                        <div class="formField ffweek">
+                          <label for="horaInicio-sabado"><i class="fas fa-clock"></i> Início</label>
+                          <input type="time" name="recorrente[sabado][inicio]" id="horaInicio-sabado" min="06:00" max="23:59" class="input-s">
+                        </div>
+                        <div class="formField ffweek">
+                          <label for="horaFim-sabado"><i class="fas fa-clock"></i> Fim</label>
+                          <input type="time" name="recorrente[sabado][fim]" id="horaFim-sabado" min="06:00" max="23:59" class="input-s">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+            </div>
+            
+            <div id="formValor" class="formRow cols-3">
+                <div class="formField">
+                    <label for="valor_pacote"><i class="fas fa-tag"></i> Valor Pacote</label>
+                    <input id="valor_pacote" name="valor_pacote" type="number" step="0.01" class="input-s" readonly>
+                </div>
 
-        <div class="status-col">
-            <form method="post" action="{% url 'alterar_status_agendamento' ag.id %}">
-                {% csrf_token %}
-                <select name="status" class="status-select">
-                    <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
-                    <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
-                    <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
-                    <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
-                    <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
-                    <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
-                    <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
-            </select>
-        </div>
-        <div class="actions-col">
-            <button type="submit"  class="action-btn tooltip" ><i class='bx  bx-save'  ></i><span class="tooltiptext">Salvar Status</span> </button>
-            <a href="{% url 'confirmacao_agendamento' ag.id %}">
-                <button type="button" class="action-btn tooltip"><i class='bx  bx-send'  ></i><span class="tooltiptext">Ver detalhes</span>  </button>
-            </a>
-            <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
-                class="btn-editar-agendamento action-btn tooltip" ><i class='bx  bxs-edit'  ></i><span class="tooltiptext">Editar agendamento</span>  </button>
-              
-        </div>
-        </form>
+                <div class="formField input-wrapper">
+                    <label for="desconto"><i class="fas fa-percent"></i> <span id="desconto_label">Desconto (%)</span></label>
+                    <input oninput="calcularDesconto()" id="desconto" name="desconto" type="number" step="0.01" class="input-s">
+                    <input type="hidden" id="modo_desconto" name="modo_desconto" value="%">
+                    <button type="button" id="desconto_button" class="modo_desconto" onclick="alternarModoDesconto()">R$</button>
+                </div>
 
-    </div>
-    {% endfor %}
-    {% endfor %}
+                <div class="formField">
+                    <label for="valor_final"><i class="fas fa-dollar-sign"></i> Valor final</label>
+                    <input oninput="alterarDesconto()"  id="valor_final" name="valor_final" type="number" step="0.01" class="input-s" required>
+                    <input type="hidden" id="valor_pago_atual" name="valor_pago_atual" value="0.00">
+                </div>
+            </div>
+
+            <div class="formRow cols-2">
+                <div class="formField">
+                    <label for="valor_pago_input"><i class="fas fa-money-bill-wave"></i> Valor pago</label>
+                    <input type="number" name="valor_pago" id="valor_pago_input" placeholder="Valor pago" step="0.01" class="input-s">
+                </div>
+                <div class="formField">
+                    <label for="forma_pagamento_select"><i class="fas fa-credit-card"></i> Forma de pagamento</label>
+                    <select name="forma_pagamento" id="forma_pagamento_select" class="input-s">
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="pix">Pix</option>
+                        <option value="credito">Cartão de Crédito</option>
+                        <option value="debito">Cartão de Débito</option>
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="info_pacote" class="hidden">
+                <table class="tabela-premium">
+                    <tbody>
+                        <tr>
+                            <th>Código do Pacote</th>
+                            <td id="codigo_pacote_display"></td>
+                        </tr>
+                        <tr>
+                            <th>Valor Pago</th>
+                            <td>R$ <span id="valor_pago_display"></span></td>
+                        </tr>
+                        <tr>
+                            <th>Valor Restante</th>
+                            <td>R$ <span id="valor_restante_display"></span></td>
+                        </tr>
+                        <tr>
+                            <th>Sessão Atual</th>
+                            <td><span id="sessao_atual_display"></span> de <span id="total_sessoes_display"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+  <div class="formRow cols-2">
+            <div class="formField">
+                <label for="ambiente_select"><i class="fas fa-door-open"></i> Ambiente / Sala</label>
+                <select required name="ambiente" id="ambiente_select" class="input-s">
+                    <option value="">Selecione...</option>
+                    <option value="Andar 1 - Sala 1">Andar 1 - Sala 1</option>
+                    <option value="Andar 1 - Sala 2">Andar 1 - Sala 2</option>
+                    <option value="Andar 1 - Sala 3">Andar 1 - Sala 3</option>
+                    <option value="Andar 1 - Sala externa">Andar 1 - Sala externa</option>
+                    <option value="Andar 1 - Personal">Andar 1 - Personal</option>
+                    <option value="Andar 2 - Sala 1">Andar 2 - Sala 1</option>
+                    <option value="Andar 2 - Sala 2">Andar 2 - Sala 2</option>
+                    <option value="Andar 2 - Sala 3">Andar 2 - Sala 3</option>
+                </select>
+            </div>
+
+            <div class="formField">
+                <label for="status_select"><i class="fas fa-clipboard-check"></i> Status de agendamento</label>
+                <select required name="status" id="status_select" class="input-s">
+                    <option value="" disabled selected>Selecione...</option>
+                    <option value="agendado">✅ Agendado</option>
+                    <option value="pre">✅ Pré-Agendado</option>
+                </select>
+            </div>
 </div>
+            <div class="formField">
+                <label for="observacoes_textarea"><i class="fas fa-sticky-note"></i>Observações</label>
+                <textarea class="textarea-large input-s" name="observacoes" id="observacoes_textarea"></textarea>
+            </div>
 
-
-
+            <div class="footer">
+                <button class="btn-footer" type="submit">Agendar</button>
+                <button class="btn-footer" type="button" id="gerar-recibo-btn">Gerar recibo</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% include "core/partials/_modal_agendamento.html" %}
 {% include "core/partials/modal_edit_agenda.html" %}
 {% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
-  
-    
-<script>
-    
-    document.getElementById("btn_gerar_cupom").addEventListener("click", function () {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
 
-        const codigo = document.getElementById("codigo_pacote_display").textContent;
-        const valorPago = document.getElementById("valor_pago_display").textContent;
-        const valorRestante = document.getElementById("valor_restante_display").textContent;
-        const sessaoAtual = document.getElementById("sessao_atual_display").textContent;
-        const totalSessoes = document.getElementById("total_sessoes_display").textContent;
-
-        doc.setFontSize(16);
-        doc.text("Comprovante de Sessão", 20, 20);
-        doc.setFontSize(12);
-        doc.text('')
-
-        doc.setFontSize(12);
-        doc.text(`Código do Pacote: ${codigo}`, 20, 40);
-        doc.text(`Valor Pago: R$ ${valorPago}`, 20, 50);
-        doc.text(`Valor Restante: R$ ${valorRestante}`, 20, 60);
-        doc.text(`Sessão Atual: ${sessaoAtual} de ${totalSessoes}`, 20, 70);
-
-        const dataAtual = new Date().toLocaleString("pt-BR");
-        doc.text(`Data/Hora: ${dataAtual}`, 20, 85);
-
-        doc.save(`comprovante_${codigo || sessaoAtual}.pdf`);
-    });
-</script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+ 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/imask"></script>
-<script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
+<script src="{% static 'core/js/base/campoObrigatorio.js' %}"></script>
+<script src="{% static 'core/js/base/abrirFiltro.js' %}"></script>
 <script src="{% static 'core/js/agenda/baseAgenda.js' %}"></script>
-<script src="{% static 'core/js/base/scriptBase.js' %}"></script>
-
-
-<script src="{% static 'core/js/profissionais/baseProfissionais.js' %}"></script>
-
+ 
 {% endblock %}

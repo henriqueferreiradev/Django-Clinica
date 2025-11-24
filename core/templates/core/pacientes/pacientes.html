@@ -6,171 +6,139 @@
 <link rel="stylesheet" href="{% static 'core/css/pacientes.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 {% endblock %}
+{% block topbar_title %} <i class="fas fa-users"></i> Pacientes{% endblock %}
+
 {% block content %}
-{% if messages %}
-<div class="messages-container" id="alert-container">
-    {% for message in messages %}
-    <div class="alert {{ message.tags }}">
-        <span class="icon">
-            {% if message.tags == 'success' %}
-            ✅
-            {% elif message.tags == 'warning' %}
-            ⚠️
-            {% elif message.tags == 'error' %}
-            ❌
-            {% elif message.tags == 'info' %}
-            ℹ️
-            {% endif %}
-        </span>
-        {{ message }}
 
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+{% include "core/partials/_confirm_modal.html" %}
+
 <div class="content">
-<div class="content-loader">
-  <div class="spinner"></div>
-</div>
-  <div class="content-header">
-    <h2>Lista de Pacientes</h2>
-    <form method="GET" action="{% url 'pacientes' %}" class="search-form" type="search">
-      <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar paciente aqui">
-    </form>
-    <div class='header_buttons'>
-    <form method="get">
-      <select class='select-s' name="periodo" id="periodo">
-        <option value="semana">Última semana</option>
-        <option value="mes">Este mês</option>
-        <option value="semestre">Este semestre</option>
-        <option value="ano">Este ano</option>
-      </select>
-      <button type="submit">Filtrar</button>
-    </form>
-    <form action="{% url 'gerar_link_publico_precadastro' %}" method="get" style="display:inline;">
-  <button type="submit" class="btn btn-primary">🔗 Gerar Link de Pré-Cadastro</button>
-</form>
-    <button  onclick="window.location.href='{% url 'cadastrar_paciente' %}'">+ Add Paciente</button>
-  </div>
-  </div>
-  <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
-    <table>
-
-      <thead >
-        <tr>
-          <th>Nome</th>
-          <th>CPF</th>
-          <th>Celular</th>
-          <th>Nascimento</th>
-          <th>Cadastro</th>
-          <th>Status</th>
-          <th>Situação</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for paciente in pacientes %}
-        <tr class="
-          {% if not paciente.ativo %}inativo {% endif %}
-          {% if paciente.pre_cadastro and not paciente.conferido %}linha-pendente{% endif %}">
-          <td>
-            <div class="tooltip-wrapper"
-                 onmouseenter="mostrarPopupComDelay(this)"
-                 onmouseleave="ocultarPopup(this)">
-              <span>{{ paciente.nome }} {{ paciente.sobrenome }}</span>
-              <div class="tooltip-popup">
-                <div class="info">
-                  {% if paciente.foto %}
-                    <img src="{{ paciente.foto.url }}" alt="Foto">
-                  {% else %}
-                    <img src="https://via.placeholder.com/50" alt="Sem foto">
-                  {% endif %}
-                  <div>
-                    <strong>{{ paciente.nome }} {{ paciente.sobrenome }}</strong><br>
-                    {{ paciente.celular }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </td>
-          <td>{{ paciente.cpf }}</td>
-          <td>{{ paciente.celular }}</td>
-          <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
-          <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
-          <td><span class="badge grade-simples">Premium</span></td>
-          <td>
-            {% if paciente.pre_cadastro or paciente.conferido or paciente.ativo %}
-              <span class="{% if paciente.conferido %}status-conferido{% else %}status-pendente{% endif %}">
-                {% if paciente.conferido %}
-                  Ativo
-                {% else %}
-                  Pendente
-                {% endif %}
-              </span>
-            {% endif %}
-          </td>
-    <td>
-  <div class="dropdown-wrapper">
-    <button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
-    <div class="dropdown_menu">
-      <a href="{% url 'perfil_paciente' paciente.id %}">
-        <button type="button">Ver detalhes</button>
-      </a>
-      <button onclick="window.location.href='{% url 'editar_paciente' paciente.id %}'">Editar</button>
-      <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Gerar Ficha</button>
-      <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Novo Agendamento</button>
-      <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
-        {% csrf_token %}
-        <input type="hidden" name="delete_id" value="{{ paciente.id }}">
-        <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
-          Inativar
-        </button>
-      </form>
-    </div>
-  </div>
-</td>
-
-        </tr>
-        {% endfor %}
-      </table>
-      </tbody>
-      <div class="tabela_infos-dados">
-        <p>Mostrando: {{ total_filtrados }} de {{ total_ativos }}</p>
-        <form method="get" style="display: inline;">
-          <label class="label_inativos">
-            <input type="checkbox" name="mostrar_todos" onchange="this.form.submit()" 
-            {% if mostrar_todos %}checked{% endif %}>
-            Mostrar inativos
-          </label>
-        </form>
-        <form method="get" style="display: inline;">
-          <label class="label_inativos">
-            <input type="checkbox" name="filtra_inativo" onchange="this.form.submit()" 
-            {% if filtra_inativo %}checked{% endif %}>
-            Mostrar apenas inativos
-          </label>
-        </form>
-      </div>
-    </div>
-    </table>
-  </div>
-
+{% include "core/partials/_loader.html" %}
+{% include "core/partials/filtros/filtro_propac.html" %}
+ 
+  <!-- Table Container -->
+  <div class="table-container">
  
 
-</div>
+    <div class="table-content">
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Celular</th>
+              <th>Nascimento</th>
+              <th>Cadastro</th>
+              <th>Status no mês</th>
+              <th>Situação</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for paciente in page_obj %}
+            <tr class="
+              {% if not paciente.ativo %}inativo {% endif %}
+              {% if paciente.pre_cadastro and not paciente.conferido %}linha-pendente{% endif %}">
+              <td>
+                <div class="tooltip-wrapper"
+                     onmouseenter="mostrarPopupComDelay(this)"
+                     onmouseleave="ocultarPopup(this)">
+                  <span>{{ paciente.nome }} {{ paciente.sobrenome }}</span>
+                  <div class="tooltip-popup">
+                    <div class="info">
+                      {% if paciente.foto %}
+                        <img src="{{ paciente.foto.url }}" alt="Foto">
+                      {% else %}
+                        <img src="https://via.placeholder.com/50" alt="Sem foto">
+                      {% endif %}
+                      <div>
+                        <strong>{{ paciente.nome }} {{ paciente.sobrenome }}</strong><br>
+                        {{ paciente.celular }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ paciente.cpf }}</td>
+              <td>{{ paciente.celular }}</td>
+              <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
+              <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
+              <td>
+                {% if paciente.status_atual == "primeiro_mes" %}
+                  <span class="badge badge-primeiro_mes">1º Mês</span>
+                {% elif paciente.status_atual == "premium" %}
+                  <span class="badge badge-premium">Premium</span>
+                {% elif paciente.status_atual == "vip" %}
+                  <span class="badge badge-vip">VIP</span>
+                {% elif paciente.status_atual == "plus" %}
+                  <span class="badge badge-plus">Plus</span>
+                {% else %}
+                  <span class="badge badge-indefinido">Indefinido</span>
+                {% endif %}
+              </td>
 
+              <td>
+                {% if paciente.ativo and paciente.conferido %}
+                  <span class="badge status-conferido">Ativo</span>
+                {% elif paciente.ativo and not paciente.conferido %}
+                  <span class="badge status-pendente">Pendente</span>
+                {% else %}
+                  <span class="badge status-inativo">Inativo</span>
+                {% endif %}
+              </td>
+     
+              <td class="text-center">
+                {% include "core/partials/_paciente_dropdown.html" %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8" class="text-center">Nenhum paciente encontrado.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="pagination">
+      <div class="pagination-info">
+        Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+      </div>
+      <div class="pagination-controls">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+           class="pagination-btn">Anterior</a>
+        {% else %}
+        <button class="pagination-btn disabled">Anterior</button>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+          <button class="pagination-btn active">{{ num }}</button>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+             class="pagination-btn">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+           class="pagination-btn">Próxima</a>
+        {% else %}
+        <button class="pagination-btn disabled">Próxima</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+ 
+
+{% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
- 
-  <script>
-  window.addEventListener('load', () => {
-    const loader = document.querySelector('.content-loader');
-    if (loader) loader.style.display = 'none';
-  });
-</script>
 <script src="https://unpkg.com/imask"></script>
-
+<script src="{% static 'core/js/base/abrirFiltro.js' %}"></script>
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>
 <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
 {% endblock %}

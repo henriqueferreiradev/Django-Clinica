@@ -1,0 +1,407 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+
+{% block title %}Contas a Receber - Clínica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/financeiro/contas_receber.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+{% endblock %}
+
+{% block topbar_title %}
+<span class="text">Contas a Receber</span>
+{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+<div class="content">
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-receipt"></i> Contas a Receber
+        </h1>
+        <div class="header-actions">
+            <button class="btn btn-primary" id="openModalRecebimento">
+                <i class="fas fa-plus-circle"></i> Novo Recebimento
+            </button>
+            <button class="btn btn-outline" id="btnPrint">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+            <button class="btn btn-outline" id="btnExport">
+                <i class="fas fa-download"></i> Exportar
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+        <div class="filters-grid">
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">Todos os Status</option>
+                    <option value="pendente">Pendentes</option>
+                    <option value="atrasado">Atrasados</option>
+                    <option value="hoje">Vencem Hoje</option>
+                    <option value="pago">Recebidos</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Período</label>
+                <select class="filter-select" id="filterPeriodo">
+                    <option value="">Todos</option>
+                    <option value="hoje">Vencem Hoje</option>
+                    <option value="semana">Esta Semana</option>
+                    <option value="mes">Este Mês</option>
+                    <option value="atrasado">Atrasados</option>
+                    <option value="futuro">Próximos 30 Dias</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Paciente</label>
+                <input type="text" class="filter-input" id="filterPaciente" placeholder="Buscar paciente...">
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Tipo</label>
+                <select class="filter-select" id="filterTipo">
+                    <option value="">Todos os Tipos</option>
+                    <option value="consulta">Consulta</option>
+                    <option value="pacote">Pacote</option>
+                    <option value="exame">Exame</option>
+                    <option value="procedimento">Procedimento</option>
+                    <option value="outros">Outros</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn btn-primary" id="btnFiltrar">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+                <button class="btn btn-outline" id="btnLimparFiltros">
+                    <i class="fas fa-eraser"></i> Limpar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card total">
+            <div class="kpi-content">
+                <div class="kpi-text">
+                    <div class="kpi-title">Total a Receber</div>
+                    <div class="kpi-value">{{total_pendente}}</div>
+                    <div class="kpi-info">Em aberto</div>
+                </div>
+                <div class="kpi-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="kpi-card atrasado">
+            <div class="kpi-content">
+                <div class="kpi-text">
+                    <div class="kpi-title">Atrasados</div>
+                    <div class="kpi-value">{{total_atrasado}}</div>
+                    <div class="kpi-info">Não recebidos</div>
+                </div>
+                <div class="kpi-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="kpi-card hoje">
+            <div class="kpi-content">
+                <div class="kpi-text">
+                    <div class="kpi-title">Vencem Hoje</div>
+                    <div class="kpi-value">{{total_vence_hoje}}</div>
+                    <div class="kpi-info">Para receber hoje</div>
+                </div>
+                <div class="kpi-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="bulk-actions" id="bulkActions">
+        <div class="bulk-count">
+            <span id="selectedCount">0</span> itens selecionados
+        </div>
+        <div class="bulk-buttons">
+            <button class="btn btn-success btn-sm" id="btnBulkReceive">
+                <i class="fas fa-cash-register"></i> Marcar como Recebido
+            </button>
+            <button class="btn btn-outline btn-sm" id="btnBulkReminder">
+                <i class="fas fa-envelope"></i> Enviar Lembretes
+            </button>
+            <button class="btn btn-outline btn-sm" id="btnBulkBoleto">
+                <i class="fas fa-barcode"></i> Gerar Boletos
+            </button>
+            <button class="btn btn-outline btn-sm" id="btnBulkDeselect">
+                <i class="fas fa-times"></i> Desmarcar
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3 class="table-title">
+                <i class="fas fa-list"></i>
+                Lançamentos
+            </h3>
+
+        </div>
+
+        <div class="table-content">
+            <div class="table-scroll">
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th>Vencimento</th>
+                            <th>Paciente</th>
+
+                            <th>Pacote/Agendamento</th>
+                            <th class="text-right">Valor</th>
+                            <th>Status</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in page_obj %}
+
+                        <tr
+                            class="row-status {% if p.status_calculado == 'Atrasado' %}atrasado{% elif p.status_calculado == 'Vence Hoje' %}hoje{% elif p.status_calculado == 'Pago' %}pago{% else %}pendente{% endif %}">
+                            <td>{{ p.vencimento|date:"d/m/Y" }}</td>
+                            <td><strong>{{ p.paciente.nome }} {{ p.paciente.sobrenome }}</strong></td>
+                            <td>{{ p.descricao }}</td>
+                            <td class="text-right"><strong>R$ {{ p.valor|floatformat:2 }}</strong></td>
+                            <td>
+                                {% if p.status == 'Atrasado' %}
+                                <span class="badge badge-atrasado"><i class="fas fa-clock"></i> Atrasado</span>
+                                {% elif p.status == 'Vence Hoje' %}
+                                <span class="badge badge-pendente"><i class="fas fa-exclamation"></i> Vence Hoje</span>
+                                {% else %}
+                                <span class="badge badge-pendente"><i class="fas fa-clock"></i> Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="action-buttons">
+                                    {% if p.status_calculado != 'Pago' %}
+                                    <button class="btn btn-success btn-icon" onclick='openReceitaPayment({{ p.id }})'
+                                        title="Registrar Recebimento">
+                                        <i class="fas fa-cash-register"></i>
+                                    </button>
+                                    <button class="btn btn-outline btn-icon" title="Emitir Boleto">
+                                        <i class="fas fa-barcode"></i>
+                                    </button>
+                                    <button class="btn btn-outline btn-icon" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    {% else %}
+                                    <button class="btn btn-outline btn-icon" title="Ver Comprovante">
+                                        <i class="fas fa-receipt"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">Nenhum lançamento encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <div class="pagination-info">
+                Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }}
+                registros
+            </div>
+            <div class="pagination-controls">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Anterior</a>
+                {% else %}
+                <button class="pagination-btn disabled">Anterior</button>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                <button class="pagination-btn active">{{ num }}</button>
+                {% else %}
+                <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Próxima</a>
+                {% else %}
+                <button class="pagination-btn disabled">Próxima</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions  -->
+    <!--
+    <div class="quick-actions">
+        <a href="#" class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="action-title">Relatórios</div>
+            <div class="action-desc">Análises detalhadas</div>
+        </a>
+
+        <a href="#" class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="action-title">Configurações</div>
+            <div class="action-desc">Personalizar sistema</div>
+        </a>
+
+        <a href="#" class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="action-title">Agenda</div>
+            <div class="action-desc">Ver agendamentos</div>
+        </a>
+
+        <a href="#" class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="action-title">Pacientes</div>
+            <div class="action-desc">Gerenciar cadastros</div>
+        </a>
+    </div>
+    -->
+</div>
+
+<!-- Modal Novo Recebimento -->
+<div class="modal-overlay" id="modalRecebimento">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-plus-circle"></i> Novo Recebimento
+            </h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="formRecebimento">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Data do Recebimento</label>
+                            <input type="date" class="form-control" value="2023-05-16" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tipo</label>
+                            <select class="form-select" required>
+                                <option value="">Selecione...</option>
+                                <option value="consulta">Consulta</option>
+                                <option value="pacote">Pacote de Sessões</option>
+                                <option value="exame">Exame</option>
+                                <option value="procedimento">Procedimento</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Paciente</label>
+                        <input type="text" class="form-control" placeholder="Nome do paciente" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Valor (R$)</label>
+                            <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vencimento</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <input type="text" class="form-control" placeholder="Descrição detalhada">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Forma de Pagamento</label>
+                            <select class="form-select" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                <option value="pix">Pix</option>
+                                <option value="credito">Cartão de Crédito</option>
+                                <option value="debito">Cartão de Débito</option>
+                                <option value="dinheiro">Dinheiro</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" required>
+                                <option value="pendente">Pendente</option>
+                                <option value="pago">Recebido</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Agendamento (opcional)</label>
+                        <input type="text" class="form-control" placeholder="Código do agendamento">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-check">
+                            <label class='checkbox-option'>
+                                <input type="checkbox" class="checkbox-option" id="gerarBoleto"></label>
+                            <label class="form-check-label" for="gerarBoleto">Gerar boleto automaticamente</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="cancelModal">Cancelar</button>
+            <button class="btn btn-primary" id="saveRecebimento">
+                <i class="fas fa-save"></i> Salvar Recebimento
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registrar Recebimento -->
+<div class="modal-overlay" id="modalPagamento">
+
+</div>
+
+{% include "core/partials/alertas.html" %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'core/js/financeiro/contas_receber.js' %}"></script>
+{% endblock %}

@@ -5,7 +5,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    
+
 }
 
 body {
@@ -196,19 +196,19 @@ body {
     margin: 0;
 }
 
- 
+
 /*==========TABELA============================TABELA===========================TABELA==========*/
-.tabela-container {
-    background: var(--branco);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    padding: 1em;
+.table-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100vh - 180px);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 1em;
 }
 
 thead {
@@ -218,7 +218,7 @@ thead {
 
 th,
 td {
-    padding: .05em 1em;
+    padding: 1em;
     text-align: left;
     font-size: 14px;
     border-bottom: 1px solid var(--cinzaBorda);
@@ -228,13 +228,7 @@ th {
     padding: 1em;
 }
 
-.badge {
-    padding: .4em .8em;
-    border-radius: 20px;
-    color: white !important;
-    font-size: 12px;
-    font-weight: 600;
-}
+
 
 thead tr th:first-child {
     border-top-left-radius: 12px;
@@ -244,19 +238,6 @@ thead tr th:last-child {
     border-top-right-radius: 12px;
 }
 
-.grade-simples {
-    background-color: #f26666;
-    ;
-}
-
-.grade-plus {
-    background: #f2c94c;
-    color: black;
-}
-
-.grade-premium {
-    background: #7f56d9;
-}
 
 .action-btn {
     cursor: pointer;
@@ -271,34 +252,6 @@ thead tr th:last-child {
     background: transparent;
 }
 
-.dropdown_menu {
-    position: absolute;
-    background: var(--cinzaBorda);
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    display: none;
-    flex-direction: column;
-    min-width: 120px;
-    z-index: 10;
-    color: var(--preto);
-}
-
-.dropdown_menu button {
-    padding: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    color: var(--preto);
-    box-shadow: none
-}
-
-.dropdown_menu button:hover {
-    background: var(--cinzaBorda);
-
-}
-
- 
 
 .tabela_infos-dados {
     display: flex;
@@ -312,10 +265,41 @@ thead tr th:last-child {
 
 }
 
- 
 
 
- 
+.badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    min-width: 90px;
+}
+
+.badge-premium {
+    background-color: #f59e0b;
+}
+
+.badge-vip {
+    background-color: #4338CA;
+}
+
+.badge-plus {
+    background-color: #2AC4CF;
+}
+
+.badge-primeiro_mes {
+    background-color: #31BA7A;
+}
+
+.badge-indefinido {
+    background-color: #797979ff;
+}
+
+
+
+
 
 .input-style {
     width: 100%;
@@ -327,8 +311,8 @@ thead tr th:last-child {
     height: 40px;
 }
 
- 
- 
+
+
 
 @media (max-width: 768px) {
     .content-header {
@@ -467,7 +451,7 @@ thead tr th:last-child {
     }
 }
 
- 
+
 .linha-pendente {
     background-color: #fff3cd6f !important;
     font-weight: 600;
@@ -475,7 +459,6 @@ thead tr th:last-child {
 
 .status-pendente {
     background-color: #f39c12;
-    /* Laranja */
     padding: .4em .8em;
     border-radius: 20px;
     color: black !important;
@@ -483,9 +466,17 @@ thead tr th:last-child {
     font-weight: 600;
 }
 
-.status-conferido{
+.status-conferido {
     background-color: #4CAF50;
-    /* Laranja */
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: black !important;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-inativo {
+    background-color: #af4c4c;
     padding: .4em .8em;
     border-radius: 20px;
     color: black !important;

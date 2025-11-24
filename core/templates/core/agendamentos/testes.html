@@ -1,0 +1,617 @@
+{% extends 'core/base.html' %} {% load static %} {% block title %}Agendamento -
+Ponto de Equilíbrio{% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}"
+/>
+<link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+{% endblock %}
+<style>
+  /* Estilos específicos para o agendamento */
+  .radio-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-xs);
+  }
+
+  .info-table {
+    width: 100%;
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--borda-radius-sm);
+    margin-bottom: var(--espaco-md);
+  }
+
+  .info-row {
+    display: flex;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+
+  .info-row:last-child {
+    border-bottom: none;
+  }
+
+  .info-header {
+    flex: 1;
+    padding: var(--espaco-sm);
+    font-weight: 500;
+    background-color: var(--cinza-claro);
+  }
+
+  .info-value {
+    flex: 2;
+    padding: var(--espaco-sm);
+  }
+
+  .dropdown-suggestions {
+    position: absolute;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 0 0 var(--borda-radius-sm) var(--borda-radius-sm);
+    box-shadow: var(--sombra);
+    z-index: 100;
+    display: none;
+  }
+
+  .dropdown-suggestions div {
+    padding: var(--espaco-sm);
+    cursor: pointer;
+  }
+
+  .dropdown-suggestions div:hover {
+    background-color: var(--roxo-light);
+  }
+
+  .textarea-large {
+    min-height: 120px;
+  }
+</style>
+{% block content %}
+<main id="form-section" class="form-section">
+  <div class="container">
+    <div class="content">
+      <!-- Título da Página -->
+      <div class="topbar">
+        <span class="text">Agendamento</span>
+      </div>
+
+      <form
+        id="agendamentoForm"
+        method="post"
+        action="{% url 'criar_agendamento' %}"
+        class="multi-step-form"
+        novalidate
+      >
+        {% csrf_token %}
+
+        <!-- Alertas -->
+        <div
+          id="aviso-pacote"
+          class="alert alert-success"
+          style="display: none"
+        >
+          <div class="alert-content">
+            <strong>Pacote ativo detectado!</strong>
+            <span id="mensagem-pacote"></span>
+          </div>
+          <button
+            type="button"
+            id="usar-pacote-btn"
+            class="btn btn-sm btn-primary"
+          >
+            Usar este pacote
+          </button>
+        </div>
+
+        <div id="pacote_atual" class="hidden"></div>
+        <div id="info_reposicao" class="hidden"></div>
+
+        <div
+          id="aviso-desmarcacoes"
+          class="alert alert-error"
+          style="display: none"
+        >
+          <div class="alert-content">
+            <strong>Saldos de sessões desmarcadas detectados!</strong>
+            <span id="mensagem-desmarcacoes"></span>
+          </div>
+          <button
+            type="button"
+            id="usar-reposicao-btn"
+            class="btn btn-sm btn-error"
+          >
+            Remarcar sessão
+          </button>
+        </div>
+
+        <!-- Seção 1: Informações Básicas -->
+        <div
+          class="form-step active"
+          id="step-1"
+          role="tabpanel"
+          aria-labelledby="step-1-tab"
+        >
+          <h2 class="form-step-title">Informações do Agendamento</h2>
+
+          <div class="form-step-content">
+            <!-- Busca de Paciente -->
+            <div class="form-field">
+              <label for="busca" class="form-label"
+                >Buscar paciente <span class="required">*</span></label
+              >
+              <div class="input-wrapper">
+                <input
+                  class="form-input capitalize-input"
+                  type="text"
+                  id="busca"
+                  placeholder="Digite o nome do paciente..."
+                  autocomplete="off"
+                  required
+                />
+                <input type="hidden" id="paciente_id" name="paciente_id" />
+                <div id="sugestoes" class="dropdown-suggestions"></div>
+              </div>
+            </div>
+
+            <!-- Tipo de Agendamento -->
+            <div class="form-field radio-group">
+              <div class="radio-options">
+                <label class="radio-label">
+                  <input
+                    type="radio"
+                    name="tipo_agendamento"
+                    value="novo"
+                    checked
+                  />
+                  <span>Nova Sessão / Novo Pacote</span>
+                </label>
+
+                <div class="hidden">
+                  <label class="radio-label">
+                    <input
+                      class="input-s"
+                      type="radio"
+                      name="tipo_agendamento"
+                      value="existente"
+                    />
+                    <span>Sessão de Pacote Já Assinado</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="pacote_codigo"
+                    name="pacote_codigo"
+                    placeholder="Digite o código do pacote"
+                  />
+                </div>
+
+                <div>
+                  <label class="radio-label">
+                    <input
+                      type="radio"
+                      name="tipo_agendamento"
+                      value="reposicao"
+                    />
+                    <span>Reposição de Sessão</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tipo de Sessão -->
+            <div class="form-field">
+              <label for="pacotesInput" class="form-label"
+                >Tipo de sessão <span class="required">*</span></label
+              >
+              <input type="hidden" id="servico_id_hidden" name="servico_id" />
+              <select
+                name="servico_id"
+                id="pacotesInput"
+                class="form-select"
+                required
+              >
+                <option value="" disabled selected>Selecione um serviço</option>
+                {% for servico in servicos %}
+                <option
+                  value="{{ servico.id }}"
+                  data-valor="{{ servico.valor }}"
+                  class="servico-banco"
+                >
+                  {{ servico.nome }} - R$ {{ servico.valor }}
+                </option>
+                {% endfor %}
+                <option value="d" class="servico-reposicao" data-valor="0.00">
+                  Reposição - D
+                </option>
+                <option value="dcr" class="servico-reposicao" data-valor="0.00">
+                  Reposição - DCR
+                </option>
+                <option value="fcr" class="servico-reposicao" data-valor="0.00">
+                  Reposição - FCR
+                </option>
+              </select>
+            </div>
+
+            <!-- Profissional e Especialidade -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="especialidadeInput" class="form-label"
+                  >Especialidade <span class="required">*</span></label
+                >
+                <select
+                  name="especialidade_id"
+                  id="especialidadeInput"
+                  class="form-select"
+                  required
+                >
+                  <option value="" disabled selected>
+                    Selecione uma especialidade
+                  </option>
+                  {% for esp in especialidades %}
+                  <option value="{{ esp.id }}">{{ esp.nome }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="profissional1Input" class="form-label"
+                  >Profissional <span class="required">*</span></label
+                >
+                <select
+                  name="profissional1_id"
+                  id="profissional1Input"
+                  class="form-select"
+                  required
+                >
+                  <option value="" disabled selected>
+                    Selecione um profissional
+                  </option>
+                  {% for profissional in profissionais %}
+                  <option value="{{ profissional.id }}">
+                    {{ profissional.nome }} {{ profissional.sobrenome }} - {{
+                    profissional.especialidade }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Data e Horário -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="dataInput" class="form-label"
+                  >Data <span class="required">*</span></label
+                >
+                <input
+                  type="date"
+                  name="data"
+                  id="dataInput"
+                  class="form-input"
+                  required
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="horaInicioInput" class="form-label"
+                  >Início <span class="required">*</span></label
+                >
+                <input
+                  type="time"
+                  name="hora_inicio"
+                  id="horaInicioInput"
+                  class="form-input"
+                  min="06:00"
+                  max="00:00"
+                  required
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="horaFimInput" class="form-label"
+                  >Fim <span class="required">*</span></label
+                >
+                <input
+                  type="time"
+                  name="hora_fim"
+                  id="horaFimInput"
+                  class="form-input"
+                  min="06:00"
+                  max="00:00"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Recorrência -->
+            <div class="form-row">
+              <div class="form-field checkbox-field">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="recorrente"
+                    id="recorrente"
+                    class="checkbox-input"
+                  />
+                  <span>Agendamento Recorrente</span>
+                </label>
+              </div>
+
+              <div class="form-field">
+                <label for="recorrencia_dia" class="form-label"
+                  >Recorrência</label
+                >
+                <select
+                  name="recorrencia_dia"
+                  id="recorrencia_dia"
+                  class="form-select"
+                >
+                  <option value="" disabled selected>Selecione...</option>
+                  <option value="0">Todas segundas</option>
+                  <option value="1">Todas terças</option>
+                  <option value="2">Todas quartas</option>
+                  <option value="3">Todas quintas</option>
+                  <option value="4">Todas sextas</option>
+                  <option value="5">Todos sábados</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-navigation">
+            <button type="button" class="btn btn-next" aria-controls="step-2">
+              Próximo
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 12H19M19 12L12 5M19 12L12 19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Seção 2: Pagamento e Detalhes -->
+        <div
+          class="form-step"
+          id="step-2"
+          role="tabpanel"
+          aria-labelledby="step-2-tab"
+        >
+          <h2 class="form-step-title">Pagamento e Detalhes</h2>
+
+          <div class="form-step-content">
+            <!-- Valores -->
+            <div class="form-row" id="formValor">
+              <div class="form-field">
+                <label for="valor_pacote" class="form-label"
+                  >Valor Pacote</label
+                >
+                <input
+                  id="valor_pacote"
+                  name="valor_pacote"
+                  type="number"
+                  step="0.01"
+                  class="form-input"
+                  oninput="calcularDesconto()"
+                  readonly
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="desconto" class="form-label" id="desconto_label"
+                  >Desconto (%)</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    id="desconto"
+                    name="desconto"
+                    type="number"
+                    step="0.01"
+                    class="form-input"
+                    oninput="calcularDesconto()"
+                  />
+                  <input
+                    type="hidden"
+                    id="modo_desconto"
+                    name="modo_desconto"
+                    value="%"
+                  />
+                  <button
+                    type="button"
+                    id="desconto_button"
+                    class="btn btn-secondary modo_desconto"
+                    onclick="alternarModoDesconto()"
+                  >
+                    R$
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="valor_final" class="form-label"
+                  >Valor final <span class="required">*</span></label
+                >
+                <input
+                  id="valor_final"
+                  name="valor_final"
+                  type="number"
+                  step="0.01"
+                  class="form-input"
+                  oninput="alterarDesconto()"
+                  required
+                />
+                <input
+                  type="hidden"
+                  id="valor_pago_atual"
+                  name="valor_pago_atual"
+                  value="0.00"
+                />
+              </div>
+            </div>
+
+            <!-- Pagamento -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="valor_pago" class="form-label">Valor pago</label>
+                <input
+                  type="number"
+                  name="valor_pago"
+                  class="form-input"
+                  placeholder="Valor pago"
+                  step="0.01"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="forma_pagamento" class="form-label"
+                  >Forma de pagamento</label
+                >
+                <select name="forma_pagamento" class="form-select">
+                  <option value="" disabled selected>Selecione...</option>
+                  <option value="pix">Pix</option>
+                  <option value="credito">Cartão de Crédito</option>
+                  <option value="debito">Cartão de Débito</option>
+                  <option value="dinheiro">Dinheiro</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Info Pacote -->
+            <div id="info_pacote" class="hidden">
+              <div class="info-table">
+                <div class="info-row">
+                  <div class="info-header">Código do Pacote</div>
+                  <div class="info-value" id="codigo_pacote_display"></div>
+                </div>
+                <div class="info-row">
+                  <div class="info-header">Valor Pago</div>
+                  <div class="info-value">
+                    R$ <span id="valor_pago_display"></span>
+                  </div>
+                </div>
+                <div class="info-row">
+                  <div class="info-header">Valor Restante</div>
+                  <div class="info-value">
+                    R$ <span id="valor_restante_display"></span>
+                  </div>
+                </div>
+                <div class="info-row">
+                  <div class="info-header">Sessão Atual</div>
+                  <div class="info-value">
+                    <span id="sessao_atual_display"></span> de
+                    <span id="total_sessoes_display"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ambiente e Status -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="ambiente" class="form-label">Ambiente / Sala</label>
+                <select name="ambiente" class="form-select">
+                  <option value="">Selecione...</option>
+                  <option value="Andar 1 - Sala 1">Andar 1 - Sala 1</option>
+                  <option value="Andar 1 - Sala 2">Andar 1 - Sala 2</option>
+                  <option value="Andar 1 - Sala 3">Andar 1 - Sala 3</option>
+                  <option value="Andar 1 - Sala externa">
+                    Andar 1 - Sala externa
+                  </option>
+                  <option value="Andar 1 - Personal">Andar 1 - Personal</option>
+                  <option value="Andar 2 - Sala 1">Andar 2 - Sala 1</option>
+                  <option value="Andar 2 - Sala 2">Andar 2 - Sala 2</option>
+                  <option value="Andar 2 - Sala 3">Andar 2 - Sala 3</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="status" class="form-label"
+                  >Status de agendamento <span class="required">*</span></label
+                >
+                <select name="status" class="form-select" required>
+                  <option value="" disabled selected>Selecione...</option>
+                  <option value="agendado">✅ Agendado</option>
+                  <option value="pre">✅ Pré-Agendado</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Observações -->
+            <div class="form-field">
+              <label for="observacoes" class="form-label"
+                >OBSERVAÇÕES / NOTAS INTERNAS</label
+              >
+              <textarea
+                class="form-textarea textarea-large"
+                name="observacoes"
+                id="observacoes"
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-navigation">
+            <button type="button" class="btn btn-prev" aria-controls="step-1">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19 12H5M5 12L12 19M5 12L12 5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Voltar
+            </button>
+
+            <button type="submit" class="btn btn-submit" id="submitBtn">
+              <span class="btn-text">Confirmar Agendamento</span>
+              <span class="btn-loading hidden">
+                <svg class="spinner" viewBox="0 0 50 50">
+                  <circle
+                    class="path"
+                    cx="25"
+                    cy="25"
+                    r="20"
+                    fill="none"
+                    stroke-width="5"
+                  ></circle>
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+{% endblock %} {% block scripts %}
+<script type="module" src="{% static 'core/js/pacientes/main.js' %}"></script>
+<script src="{% static 'core/js/agendamento/main.js' %}"></script>
+<script src="https://unpkg.com/imask"></script>
+<script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
+<script src="{% static 'core/js/base/validadorCpfCnpj.js' %}"></script>
+<script src="{% static 'core/js/base/cep.js' %}"></script>
+<script src="{% static 'core/js/agendamento/base.js' %}"></script>
+{% endblock %}

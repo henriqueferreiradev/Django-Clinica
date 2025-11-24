@@ -1,38 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-:root {
-    --roxoPrincipal: #7f4396;
-    --roxoPrincipal-hover: #76378f11;
-    --roxoPrincipal-hover2: #76378f;
-    --roxo-primary-hover: #9b58b4;
-    --verdePrincipal: #92cbad;
-    --branco: #FFF;
-    --preto: #000;
-    --cinzaBorda: #ccc;
-    --cinzaEscuro: #6e6e6e;
-    --fontePrincipal: 'Inter';
-    --bg-color: #E4E9F7;
-    --cz-fonte-infocards: #6b7280;
-
-}
-
-.dark {
-    --roxoPrincipal: #7f4396;
-    --roxoPrincipal-hover: #76378f11;
-    --roxoPrincipal-hover2: #76378f;
-    --roxo-primary-hover: #9b58b4;
-    --verdePrincipal: #92cbad;
-
-    --branco: #363636;
-    /* fundo escuro */
-    --preto: #f1f1f1;
-    /* texto claro */
-    --cinzaBorda: #444;
-    --cinzaEscuro: #aaa;
-    --bg-color: #242525;
-    --cz-fonte-infocards: #f1f1f1;
-}
-
+ 
 * {
     margin: 0;
     padding: 0;
@@ -78,9 +46,9 @@ body {
 
 .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .card {
@@ -298,7 +266,7 @@ thead tr th:last-child {
 .card-icon {
     background-color: rgba(59, 130, 246, 0.1);
     padding: 0.75rem;
-    border-radius: 50%;
+    border-radius:10px ;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -416,26 +384,30 @@ thead tr th:last-child {
 }
 
 
-.status-select {
-    padding: 6px;
-    border-radius: 15px;
-    border: 1px solid var(--roxoPrincipal);
-    font-size: 13px;
-}
-
-.sessao.verde {
-    color: green;
+.sessao {
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    display: inline-block;
+    width: fit-content;
     font-weight: 500;
 }
-
-.sessao.vermelho {
-    color: red;
-    font-weight: 500;
+.sessao i {
+    margin-right: .5em;
+}
+.sessao.normal {
+    background-color: white;
+    border: 2px solid #2e7d32;
+    color: #2e7d32;
 }
 
-.linha-vazia {
-    text-align: center;
-    color: var(--cinzaEscuro);
-    padding: 1em;
-
+.sessao.reposicao {
+    background-color: white;
+    border: 2px solid #c62828;
+    color: #c62828;
+}
+.sessao.beneficio {
+    background-color: white;
+    border: 2px solid #01D4D6;
+    color: #01D4D6;
 }

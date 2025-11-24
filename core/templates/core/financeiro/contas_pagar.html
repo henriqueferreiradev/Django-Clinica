@@ -1,0 +1,1394 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+
+{% block title %}Contas a Pagar - Sistema{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/financeiro/contas_pagar.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  /* Design System Variables */
+  :root {
+    --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    --warning-gradient: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    --success-gradient: linear-gradient(135deg, #92cbad 0%, #7bc29a 100%);
+    --info-gradient: linear-gradient(135deg, #6D398E 0%, #9b58b4 100%);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 8px 30px rgba(109, 57, 142, 0.15);
+  }
+
+  /* Layout Improvements */
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--titulo-perfil);
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .page-title i {
+    background: var(--info-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.5em;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Enhanced Filter Section */
+  .filters-section {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-label {
+    font-size: 0.85rem;
+    color: var(--cinza-escuro);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-input,
+  .filter-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cinzaBorda);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: var(--branco);
+    color: var(--preto);
+    transition: all 0.2s ease;
+  }
+
+  .filter-input:focus,
+  .filter-select:focus {
+    border-color: var(--roxoPrincipal);
+    box-shadow: 0 0 0 3px rgba(109, 57, 142, 0.1);
+    outline: none;
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  /* Enhanced KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .kpi-card {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+  }
+
+  .kpi-card.total::before {
+    background: var(--info-gradient);
+  }
+
+  .kpi-card.atrasado::before {
+    background: var(--danger-gradient);
+  }
+
+  .kpi-card.hoje::before {
+    background: var(--warning-gradient);
+  }
+
+  .kpi-card.agendado::before {
+    background: var(--success-gradient);
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  .kpi-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .kpi-text {
+    flex: 1;
+  }
+
+  .kpi-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--cinza-escuro);
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+  }
+
+  .kpi-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 0.25rem;
+    line-height: 1.2;
+  }
+
+  .kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .trend-up {
+    color: var(--verdePrincipal);
+  }
+
+  .trend-down {
+    color: var(--erro);
+  }
+
+  .kpi-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--branco);
+  }
+
+  .total .kpi-icon {
+    background: var(--info-gradient);
+  }
+
+  .atrasado .kpi-icon {
+    background: var(--danger-gradient);
+  }
+
+  .hoje .kpi-icon {
+    background: var(--warning-gradient);
+  }
+
+  .agendado .kpi-icon {
+    background: var(--success-gradient);
+  }
+
+  /* Enhanced Table */
+  .table-container {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 2rem;
+  }
+
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    background: var(--cinza-claro);
+  }
+
+  .table-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--titulo-perfil);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .table-content {
+    padding: 0;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+  }
+
+  .table th {
+    background: var(--cinza-claro);
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-size: 0.8rem;
+    color: var(--cinza-escuro);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+
+  .table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    transition: background-color 0.2s ease;
+  }
+
+  .table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .table tbody tr:hover {
+    background: var(--hover-dropdown);
+  }
+
+  /* Enhanced Status Rows */
+  .row-status {
+    border-left: 4px solid transparent;
+  }
+
+  .row-status.atrasado {
+    border-left-color: var(--erro);
+    background: rgba(255, 107, 107, 0.05);
+  }
+
+  .row-status.hoje {
+    border-left-color: #f39c12;
+    background: rgba(243, 156, 18, 0.05);
+  }
+
+  .row-status.pendente {
+    border-left-color: var(--roxoPrincipal);
+    background: rgba(109, 57, 142, 0.05);
+  }
+
+  .row-status.pago {
+    border-left-color: var(--verdePrincipal);
+    background: rgba(146, 203, 173, 0.1);
+  }
+
+  .row-status.agendado {
+    border-left-color: #2AC4CF;
+    background: rgba(42, 196, 207, 0.05);
+  }
+
+  /* Enhanced Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    border: 1px solid transparent;
+  }
+
+  .badge-pendente {
+    background: var(--roxoPrincipal);
+    color: var(--branco);
+  }
+
+  .badge-atrasado {
+    background: var(--erro);
+    color: var(--branco);
+  }
+
+  .badge-pago {
+    background: var(--verdePrincipal);
+    color: var(--branco);
+  }
+
+  .badge-agendado {
+    background: #2AC4CF;
+    color: var(--branco);
+  }
+
+  .badge-hoje {
+    background: #f39c12;
+    color: var(--preto);
+  }
+
+  .badge-category {
+    background: #eef1f5;
+    color: #111827;
+    font-size: 0.7rem;
+  }
+
+  /* Action Buttons */
+  .action-buttons {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+
+  /* Bulk Actions */
+  .bulk-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--cinza-claro);
+    border-bottom: 1px solid var(--cinza-borda);
+    display: none;
+  }
+
+  .bulk-actions.active {
+    display: flex;
+  }
+
+  .bulk-count {
+    font-size: 0.9rem;
+    color: var(--cinza-escuro);
+    font-weight: 600;
+  }
+
+  /* Enhanced Pagination */
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--cinza-borda);
+    background: var(--cinza-claro);
+  }
+
+  .pagination-info {
+    font-size: 0.9rem;
+    color: var(--cinza-escuro);
+  }
+
+  .pagination-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .pagination-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--cinzaBorda);
+    border-radius: 6px;
+    background: var(--branco);
+    color: var(--roxoPrincipal);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .pagination-btn:hover {
+    background: var(--roxoPrincipal);
+    color: var(--branco);
+  }
+
+  .pagination-btn.active {
+    background: var(--roxoPrincipal);
+    color: var(--branco);
+  }
+
+  .pagination-btn.disabled {
+    color: var(--cinza-medio);
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* Enhanced Modals */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-container {
+    background: var(--branco);
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    border: 1px solid var(--cinza-borda);
+  }
+
+  .modal-overlay.active .modal-container {
+    transform: scale(1);
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--cinza-claro);
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--titulo-perfil);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--cinza-borda);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    background: var(--branco);
+  }
+
+  .modal-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--cinzaEscuro);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+
+  .modal-close:hover {
+    background: var(--cinza-claro);
+  }
+
+  /* Form Improvements */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--titulo-perfil);
+    font-weight: 600;
+  }
+
+  .form-control,
+  .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cinzaBorda);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: var(--branco);
+    color: var(--preto);
+    transition: all 0.2s ease;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: var(--roxoPrincipal);
+    box-shadow: 0 0 0 3px rgba(109, 57, 142, 0.1);
+    outline: none;
+  }
+
+  .form-control:read-only {
+    background: var(--cinza-claro);
+    color: var(--cinza-medio);
+  }
+
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin: 0;
+    accent-color: var(--roxoPrincipal);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .filters-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      padding: 1rem;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .header-actions {
+      justify-content: center;
+    }
+
+    .filters-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .table-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .table-actions {
+      justify-content: center;
+    }
+
+    .pagination {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  }
+
+  /* Loading States */
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+
+    100% {
+      background-position: -200% 0;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block topbar_title %}
+<span>Contas a Pagar</span>
+{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+
+<div class="content">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">
+      <i class="fa-solid fa-credit-card"></i> Contas a Pagar
+    </h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="openModalNovaDespesa">
+        <i class="fa-solid fa-plus-circle"></i> Nova Despesa
+      </button>
+      <button class="btn btn-outline" id="btnPrint">
+        <i class="fa-solid fa-print"></i> Imprimir
+      </button>
+      <button class="btn btn-outline" id="btnExport">
+        <i class="fa-solid fa-download"></i> Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label class="filter-label">Status</label>
+        <select class="filter-select" id="filterStatus">
+          <option value="">Todos os Status</option>
+          <option value="pendente">Pendentes</option>
+          <option value="atrasado">Atrasados</option>
+          <option value="hoje">Vencem Hoje</option>
+          <option value="pago">Pagas</option>
+          <option value="agendado">Agendadas</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Período</label>
+        <select class="filter-select" id="filterPeriodo">
+          <option value="">Todos</option>
+          <option value="hoje">Vencem Hoje</option>
+          <option value="semana">Esta Semana</option>
+          <option value="mes">Este Mês</option>
+          <option value="atrasado">Atrasados</option>
+          <option value="futuro">Próximos 30 Dias</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Fornecedor</label>
+        <input type="text" class="filter-input" id="filterFornecedor" placeholder="Buscar fornecedor...">
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Categoria</label>
+        <select class="filter-select" id="filterCategoria">
+          <option value="">Todas as Categorias</option>
+          <option value="aluguel">Aluguel</option>
+          <option value="energia">Energia</option>
+          <option value="agua">Água</option>
+          <option value="folha">Folha de Pagamento</option>
+          <option value="internet">Internet</option>
+          <option value="telefone">Telefone</option>
+          <option value="limpeza">Limpeza</option>
+          <option value="outros">Outros</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-primary" id="btnFiltrar">
+          <i class="fa-solid fa-filter"></i> Filtrar
+        </button>
+        <button class="btn btn-outline" id="btnLimparFiltros">
+          <i class="fa-solid fa-eraser"></i> Limpar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card total">
+      <div class="kpi-content">
+        <div class="kpi-text">
+          <div class="kpi-title">Total a Pagar</div>
+          <div class="kpi-value">R$ 15.230,00</div>
+          <div class="kpi-trend trend-up">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>+5% vs mês anterior</span>
+          </div>
+        </div>
+        <div class="kpi-icon">
+          <i class="fa-solid fa-credit-card"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card atrasado">
+      <div class="kpi-content">
+        <div class="kpi-text">
+          <div class="kpi-title">Atrasados</div>
+          <div class="kpi-value">R$ 3.420,00</div>
+          <div class="kpi-trend trend-down">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <span>2 contas em atraso</span>
+          </div>
+        </div>
+        <div class="kpi-icon">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card hoje">
+      <div class="kpi-content">
+        <div class="kpi-text">
+          <div class="kpi-title">Vencem Hoje</div>
+          <div class="kpi-value">R$ 2.150,00</div>
+          <div class="kpi-trend">
+            <i class="fa-solid fa-clock"></i>
+            <span>2 contas para hoje</span>
+          </div>
+        </div>
+        <div class="kpi-icon">
+          <i class="fa-solid fa-calendar-day"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card agendado">
+      <div class="kpi-content">
+        <div class="kpi-text">
+          <div class="kpi-title">Agendados</div>
+          <div class="kpi-value">R$ 5.800,00</div>
+          <div class="kpi-trend">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>1 conta agendada</span>
+          </div>
+        </div>
+        <div class="kpi-icon">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Actions Bar -->
+  <div class="bulk-actions" id="bulkActions">
+    <div class="bulk-count">
+      <span id="selectedCount">0</span> itens selecionados
+    </div>
+    <div class="bulk-buttons">
+      <button class="btn btn-success btn-sm" id="btnBulkPay">
+        <i class="fa-solid fa-money-bill"></i> Marcar como Pago
+      </button>
+      <button class="btn btn-outline btn-sm" id="btnBulkSchedule">
+        <i class="fa-solid fa-calendar"></i> Agendar
+      </button>
+      <button class="btn btn-outline btn-sm" id="btnBulkDelete">
+        <i class="fa-solid fa-trash"></i> Excluir
+      </button>
+      <button class="btn btn-outline btn-sm" id="btnBulkDeselect">
+        <i class="fa-solid fa-times"></i> Desmarcar
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <div class="table-header">
+      <h3 class="table-title">
+        <i class="fa-solid fa-list"></i>
+        Lançamentos
+      </h3>
+      <div class="table-actions">
+        <div class="dropdown">
+          <button class="btn btn-outline btn-sm dropdown-toggle">
+            <i class="fa-solid fa-list-check"></i> Ações em Lote
+          </button>
+          <div class="dropdown-menu">
+            <a href="#" class="dropdown-item"><i class="fa-solid fa-money-bill"></i> Marcar como Pago</a>
+            <a href="#" class="dropdown-item"><i class="fa-solid fa-calendar"></i> Agendar Pagamento</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item"><i class="fa-solid fa-file-pdf"></i> Gerar Remessas</a>
+            <a href="#" class="dropdown-item"><i class="fa-solid fa-envelope"></i> Enviar por Email</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-content">
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th width="50">
+                <input type="checkbox" id="selectAll" class="form-check-input">
+              </th>
+              <th>Vencimento</th>
+              <th>Fornecedor</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th class="text-right">Valor</th>
+              <th>Status</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Atrasado -->
+            <tr class="row-status atrasado">
+              <td><input type="checkbox" class="row-checkbox"></td>
+              <td><span class="valor-atrasado">05/05/2023</span></td>
+              <td>Aluguel do Prédio</td>
+              <td>Aluguel Maio/2023</td>
+              <td><span class="badge badge-category">Aluguel</span></td>
+              <td class="text-right"><strong class="valor-atrasado">R$ 5.000,00</strong></td>
+              <td><span class="badge badge-atrasado"><i class="fa-solid fa-clock"></i> Atrasado</span></td>
+              <td class="text-center">
+                <div class="action-buttons">
+                  <button class="btn btn-success btn-icon" title="Registrar Pagamento">
+                    <i class="fa-solid fa-money-bill"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Editar">
+                    <i class="fa-solid fa-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Detalhes">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Atrasado -->
+            <tr class="row-status atrasado">
+              <td><input type="checkbox" class="row-checkbox"></td>
+              <td><span class="valor-atrasado">10/05/2023</span></td>
+              <td>Energia Elétrica</td>
+              <td>Fatura Abril/2023</td>
+              <td><span class="badge badge-category">Energia</span></td>
+              <td class="text-right"><strong class="valor-atrasado">R$ 850,00</strong></td>
+              <td><span class="badge badge-atrasado"><i class="fa-solid fa-clock"></i> Atrasado</span></td>
+              <td class="text-center">
+                <div class="action-buttons">
+                  <button class="btn btn-success btn-icon" title="Registrar Pagamento">
+                    <i class="fa-solid fa-money-bill"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Editar">
+                    <i class="fa-solid fa-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Detalhes">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Vence Hoje -->
+            <tr class="row-status hoje">
+              <td><input type="checkbox" class="row-checkbox"></td>
+              <td><span class="valor-hoje">16/05/2023</span></td>
+              <td>Água e Esgoto</td>
+              <td>Fatura Maio/2023</td>
+              <td><span class="badge badge-category">Água</span></td>
+              <td class="text-right"><strong class="valor-hoje">R$ 320,00</strong></td>
+              <td><span class="badge badge-hoje"><i class="fa-solid fa-exclamation"></i> Vence Hoje</span></td>
+              <td class="text-center">
+                <div class="action-buttons">
+                  <button class="btn btn-success btn-icon" title="Registrar Pagamento">
+                    <i class="fa-solid fa-money-bill"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Editar">
+                    <i class="fa-solid fa-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Detalhes">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Pendente -->
+            <tr class="row-status pendente">
+              <td><input type="checkbox" class="row-checkbox"></td>
+              <td>20/05/2023</td>
+              <td>Internet</td>
+              <td>Fatura Maio/2023</td>
+              <td><span class="badge badge-category">Internet</span></td>
+              <td class="text-right"><strong>R$ 220,00</strong></td>
+              <td><span class="badge badge-pendente"><i class="fa-solid fa-clock"></i> Pendente</span></td>
+              <td class="text-center">
+                <div class="action-buttons">
+                  <button class="btn btn-success btn-icon" title="Registrar Pagamento">
+                    <i class="fa-solid fa-money-bill"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Editar">
+                    <i class="fa-solid fa-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Detalhes">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Agendado -->
+            <tr class="row-status agendado">
+              <td><input type="checkbox" class="row-checkbox"></td>
+              <td>25/05/2023</td>
+              <td>Folha de Pagamento</td>
+              <td>Salários Maio/2023</td>
+              <td><span class="badge badge-category">Folha</span></td>
+              <td class="text-right"><strong>R$ 5.800,00</strong></td>
+              <td><span class="badge badge-agendado"><i class="fa-solid fa-calendar-check"></i> Agendado</span></td>
+              <td class="text-center">
+                <div class="action-buttons">
+                  <button class="btn btn-outline btn-icon" title="Editar">
+                    <i class="fa-solid fa-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline btn-icon" title="Detalhes">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Pago -->
+            <tr class="row-status pago">
+              <td><input type="checkbox" class="row-checkbox" disabled></td>
+              <td>01/05/2023</td>
+              <td>Telefone</td>
+              <td>Fatura Abril/2023</td>
+              <td><span class="badge badge-category">Telefone</span></td>
+              <td class="text-right"><strong>R$ 180,00</strong></td>
+              <td><span class="badge badge-pago"><i class="fa-solid fa-check"></i> Pago</span></td>
+              <td class="text-center">
+                <div class="action-buttons">
+                  <button class="btn btn-outline btn-icon" title="Ver Comprovante">
+                    <i class="fa-solid fa-receipt"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <div class="pagination-info">
+        Mostrando 1-6 de 15 registros
+      </div>
+      <div class="pagination-controls">
+        <button class="pagination-btn disabled">Anterior</button>
+        <button class="pagination-btn active">1</button>
+        <button class="pagination-btn">2</button>
+        <button class="pagination-btn">3</button>
+        <button class="pagination-btn">Próxima</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pagamento -->
+<div class="modal-overlay" id="modalPagamento">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fa-solid fa-money-bill"></i> Registrar Pagamento</h3>
+      <button class="modal-close" id="closePaymentModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formPagamento">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Fornecedor</label>
+            <input type="text" class="form-control" value="Aluguel do Prédio" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <input type="text" class="form-control" value="Aluguel Maio/2023" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Valor Original</label>
+            <input type="text" class="form-control" value="R$ 5.000,00" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Data do Pagamento</label>
+            <input type="date" class="form-control" value="2023-05-16" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Forma de Pagamento</label>
+            <select class="form-select" required>
+              <option value="ted">TED/DOC</option>
+              <option value="boleto">Boleto</option>
+              <option value="cheque">Cheque</option>
+              <option value="dinheiro">Dinheiro</option>
+              <option value="debito">Cartão Débito</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Valor Pago</label>
+            <div style="display:flex;gap:.5rem;">
+              <span class="form-control" style="flex:0 0 64px;text-align:center;">R$</span>
+              <input type="text" class="form-control" value="5.000,00" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Conta Bancária</label>
+            <select class="form-select">
+              <option>Banco ABC - CC 12345-6</option>
+              <option>Banco XYZ - CC 98765-4</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nº Documento</label>
+            <input type="text" class="form-control" placeholder="Número do documento">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Observações</label>
+          <textarea class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="anexarComprovante">
+            <label class="form-check-label" for="anexarComprovante">Anexar comprovante</label>
+          </div>
+        </div>
+
+        <div class="form-group" id="comprovanteField" style="display:none;">
+          <label class="form-label">Comprovante</label>
+          <input type="file" class="form-control">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelPaymentModal">Cancelar</button>
+      <button class="btn btn-primary" id="savePagamento"><i class="fa-solid fa-check-circle"></i> Registrar
+        Pagamento</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nova Despesa -->
+<div class="modal-overlay" id="modalNovaDespesa">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fa-solid fa-plus-circle"></i> Nova Despesa</h3>
+      <button class="modal-close" id="closeNovaDespesa">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formNovaDespesa">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Fornecedor</label>
+            <select class="form-select" required>
+              <option value="">Selecione um fornecedor</option>
+              <option value="1">Aluguel do Prédio</option>
+              <option value="2">Energia Elétrica</option>
+              <option value="3">Água e Esgoto</option>
+              <option value="4">Limpeza Profissional</option>
+              <option value="5">Internet</option>
+              <option value="6">Folha de Pagamento</option>
+              <option value="7">Telefone</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categoria</label>
+            <select class="form-select" required>
+              <option value="">Selecione uma categoria</option>
+              <option value="aluguel">Aluguel</option>
+              <option value="energia">Energia</option>
+              <option value="agua">Água</option>
+              <option value="limpeza">Limpeza</option>
+              <option value="internet">Internet</option>
+              <option value="folha">Folha de Pagamento</option>
+              <option value="telefone">Telefone</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Data de Vencimento</label>
+            <input type="date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Valor</label>
+            <div style="display:flex;gap:.5rem;">
+              <span class="form-control" style="flex:0 0 64px;text-align:center;">R$</span>
+              <input type="text" class="form-control" placeholder="0,00" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" required>
+              <option value="pendente">Pendente</option>
+              <option value="agendado">Agendado</option>
+              <option value="pago">Pago</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Forma de Pagamento</label>
+            <select class="form-select" required>
+              <option value="">Selecione</option>
+              <option value="ted">TED/DOC</option>
+              <option value="boleto">Boleto</option>
+              <option value="cheque">Cheque</option>
+              <option value="dinheiro">Dinheiro</option>
+              <option value="debito">Cartão Débito</option>
+              <option value="credito">Cartão Crédito</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descrição</label>
+          <input type="text" class="form-control" placeholder="Descrição da despesa" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Observações</label>
+          <textarea class="form-control" rows="3" placeholder="Observações sobre esta despesa"></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="despesaRecorrente">
+            <label class="form-check-label" for="despesaRecorrente">Despesa Recorrente</label>
+          </div>
+        </div>
+
+        <div class="form-grid" id="recorrenciaFields" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Frequência</label>
+            <select class="form-select">
+              <option value="mensal">Mensal</option>
+              <option value="bimestral">Bimestral</option>
+              <option value="trimestral">Trimestral</option>
+              <option value="semestral">Semestral</option>
+              <option value="anual">Anual</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Início</label>
+            <input type="date" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Término</label>
+            <input type="date" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Anexar Documento</label>
+          <input type="file" class="form-control">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelNovaDespesa">Cancelar</button>
+      <button class="btn btn-primary" id="saveNovaDespesa"><i class="fa-solid fa-save"></i> Salvar Despesa</button>
+    </div>
+  </div>
+</div>
+
+{% include "core/partials/alertas.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Enhanced JavaScript functionality
+  document.addEventListener('DOMContentLoaded', function () {
+    // Bulk selection functionality
+    const selectAll = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+    const bulkActions = document.getElementById('bulkActions');
+    const selectedCount = document.getElementById('selectedCount');
+
+    function updateBulkActions() {
+      const selected = document.querySelectorAll('.row-checkbox:checked').length;
+      selectedCount.textContent = selected;
+
+      if (selected > 0) {
+        bulkActions.classList.add('active');
+      } else {
+        bulkActions.classList.remove('active');
+      }
+    }
+
+    selectAll?.addEventListener('change', function () {
+      const isChecked = this.checked;
+      rowCheckboxes.forEach(checkbox => {
+        if (!checkbox.disabled) {
+          checkbox.checked = isChecked;
+        }
+      });
+      updateBulkActions();
+    });
+
+    rowCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', updateBulkActions);
+    });
+
+    // Bulk action buttons
+    document.getElementById('btnBulkPay')?.addEventListener('click', function () {
+      const selected = Array.from(document.querySelectorAll('.row-checkbox:checked'))
+        .map(cb => cb.closest('tr').querySelector('td:nth-child(3)').textContent);
+      alert(`Marcar como pago: ${selected.join(', ')}`);
+    });
+
+    document.getElementById('btnBulkDeselect')?.addEventListener('click', function () {
+      rowCheckboxes.forEach(cb => cb.checked = false);
+      selectAll.checked = false;
+      updateBulkActions();
+    });
+
+    // Filter functionality
+    document.getElementById('btnFiltrar')?.addEventListener('click', function () {
+      // Implement filter logic here
+      console.log('Aplicando filtros...');
+    });
+
+    document.getElementById('btnLimparFiltros')?.addEventListener('click', function () {
+      document.querySelectorAll('.filter-select, .filter-input').forEach(el => {
+        if (el.tagName === 'SELECT') {
+          el.selectedIndex = 0;
+        } else {
+          el.value = '';
+        }
+      });
+    });
+
+    // Enhanced modal functionality
+    const modals = {
+      pagamento: document.getElementById('modalPagamento'),
+      novaDespesa: document.getElementById('modalNovaDespesa')
+    };
+
+    // Open modals
+    document.querySelectorAll('.btn-success.btn-icon').forEach(btn => {
+      btn.addEventListener('click', () => modals.pagamento.classList.add('active'));
+    });
+
+    document.getElementById('openModalNovaDespesa')?.addEventListener('click',
+      () => modals.novaDespesa.classList.add('active'));
+
+    // Close modals
+    document.getElementById('closePaymentModal')?.addEventListener('click',
+      () => modals.pagamento.classList.remove('active'));
+    document.getElementById('cancelPaymentModal')?.addEventListener('click',
+      () => modals.pagamento.classList.remove('active'));
+
+    document.getElementById('closeNovaDespesa')?.addEventListener('click',
+      () => modals.novaDespesa.classList.remove('active'));
+    document.getElementById('cancelNovaDespesa')?.addEventListener('click',
+      () => modals.novaDespesa.classList.remove('active'));
+
+    // Close modals on outside click
+    Object.values(modals).forEach(modal => {
+      modal?.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('active');
+      });
+    });
+
+    // Dynamic form fields
+    const anexarComprovante = document.getElementById('anexarComprovante');
+    const comprovanteField = document.getElementById('comprovanteField');
+    if (anexarComprovante && comprovanteField) {
+      anexarComprovante.addEventListener('change', () => {
+        comprovanteField.style.display = anexarComprovante.checked ? 'block' : 'none';
+      });
+    }
+
+    const despesaRecorrente = document.getElementById('despesaRecorrente');
+    const recorrenciaFields = document.getElementById('recorrenciaFields');
+    if (despesaRecorrente && recorrenciaFields) {
+      despesaRecorrente.addEventListener('change', () => {
+        recorrenciaFields.style.display = despesaRecorrente.checked ? 'grid' : 'none';
+      });
+    }
+
+    // Export functionality
+    document.getElementById('btnExport')?.addEventListener('click', function () {
+      // Implement export logic
+      alert('Exportando dados...');
+    });
+
+    // Print functionality
+    document.getElementById('btnPrint')?.addEventListener('click', function () {
+      window.print();
+    });
+
+    // Dropdown functionality
+    document.addEventListener('click', function (e) {
+      const toggle = e.target.closest('.dropdown-toggle');
+      const openMenus = document.querySelectorAll('.dropdown-menu.show');
+
+      if (toggle) {
+        e.preventDefault();
+        const menu = toggle.parentElement.querySelector('.dropdown-menu');
+        if (menu) menu.classList.toggle('show');
+
+        // Close other menus
+        openMenus.forEach(m => {
+          if (m !== menu) m.classList.remove('show');
+        });
+      } else {
+        openMenus.forEach(m => m.classList.remove('show'));
+      }
+    });
+  });
+</script>
+{% endblock %}

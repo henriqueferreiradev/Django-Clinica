@@ -1,0 +1,388 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Editar {{ formulario.titulo }} - Ponto de Equilíbrio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/formularios/criar_formulario.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block topbar_title %}<span class="text">Editar Formulário</span>{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+
+<div class="content">
+    <a href="{% url 'formularios' %}" class="btn-voltar">
+        <i class="fas fa-arrow-left btn-icon"></i> Voltar para formulários ativos
+    </a>
+
+    <div class="form-header">
+        <input type="text" id="formTitle" value="{{ formulario.titulo }}" class="form-title-input">
+        <textarea id="formDescription" class="form-description-input">{{ formulario.descricao }}</textarea>
+    </div>
+
+    <div id="questionsContainer" class="questions-container">
+        {% for pergunta in perguntas %}
+        <div class="question-card" 
+             data-id="{{ forloop.counter }}" 
+             data-type="{{ pergunta.tipo }}">
+            <div class="question-header">
+                <input type="text" class="question-text-input" value="{{ pergunta.texto }}" placeholder="Pergunta">
+                <select class="question-type-select">
+                    <option value="short-text" {% if pergunta.tipo == 'short-text' %}selected{% endif %}>Texto curto</option>
+                    <option value="paragraph" {% if pergunta.tipo == 'paragraph' %}selected{% endif %}>Parágrafo</option>
+                    <option value="multiple-choice" {% if pergunta.tipo == 'multiple-choice' %}selected{% endif %}>Múltipla escolha</option>
+                    <option value="checkbox" {% if pergunta.tipo == 'checkbox' %}selected{% endif %}>Caixas de seleção</option>
+                    <option value="dropdown" {% if pergunta.tipo == 'dropdown' %}selected{% endif %}>Menu suspenso</option>
+                </select>
+            </div>
+            
+            {% if pergunta.tipo in "multiple-choice,checkbox,dropdown" %}
+            <div class="question-options">
+                {% for opcao in pergunta.opcoes.all %}
+                <div class="option-container">
+                    <i class="fas fa-{% if pergunta.tipo == 'multiple-choice' %}dot-circle{% elif pergunta.tipo == 'checkbox' %}check-square{% else %}caret-square-down{% endif %} option-icon"></i>
+                    <input type="text" value="{{ opcao.texto }}" class="option-input" placeholder="Opção">
+                    <button class="remove-option-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                {% endfor %}
+                <button class="add-option-btn">
+                    <i class="fas fa-plus btn-icon"></i>Adicionar opção
+                </button>
+            </div>
+            {% endif %}
+            
+            <div class="question-footer">
+                <label class="required-label">
+                    <input type="checkbox" class="required-checkbox" {% if pergunta.obrigatoria %}checked{% endif %}>
+                    <span>Resposta obrigatória</span>
+                </label>
+                <button class="remove-question-btn">
+                    <i class="fas fa-trash btn-icon"></i>Remover
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="fixed-actions">
+        <div class="actions-container">
+            <button id="addQuestionBottom" class="btn-primary">
+                <i class="fas fa-plus btn-icon"></i>Nova Pergunta
+            </button>
+            <button id="saveFormBottom" class="btn-success">
+                <i class="fas fa-save btn-icon"></i>Salvar Alterações
+            </button>
+        </div>
+    </div>
+
+    <div id="questionTypeModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Tipo de Pergunta</h3>
+            <div class="type-options-grid">
+                <button data-type="short-text" class="type-option">
+                    <i class="fas fa-font type-icon"></i>
+                    <p>Texto curto</p>
+                </button>
+                <button data-type="paragraph" class="type-option">
+                    <i class="fas fa-align-left type-icon"></i>
+                    <p>Parágrafo</p>
+                </button>
+                <button data-type="multiple-choice" class="type-option">
+                    <i class="fas fa-dot-circle type-icon"></i>
+                    <p>Múltipla escolha</p>
+                </button>
+                <button data-type="checkbox" class="type-option">
+                    <i class="fas fa-check-square type-icon"></i>
+                    <p>Caixas de seleção</p>
+                </button>
+                <button data-type="dropdown" class="type-option">
+                    <i class="fas fa-caret-square-down type-icon"></i>
+                    <p>Menu suspenso</p>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModal" class="btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "core/partials/alertas.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos DOM
+    const addQuestionBtn = document.getElementById('addQuestionBottom');
+    const saveFormBtn = document.getElementById('saveFormBottom');
+    const questionModal = document.getElementById('questionTypeModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const questionsContainer = document.getElementById('questionsContainer');
+    const formTitle = document.getElementById('formTitle');
+    const formDescription = document.getElementById('formDescription');
+
+    // Estado
+    let currentQuestionId = {{ perguntas.count }} + 1;
+    const formId = window.location.pathname.split('/').filter(Boolean).pop();
+    let formData = {
+        title: formTitle.value,
+        description: formDescription.value,
+        questions: []
+    };
+
+    // Inicializa perguntas existentes
+    document.querySelectorAll('.question-card').forEach(card => {
+        const question = {
+            id: card.getAttribute('data-id'),
+            text: card.querySelector('.question-text-input').value,
+            type: card.getAttribute('data-type'),
+            required: card.querySelector('.required-checkbox').checked,
+            options: []
+        };
+
+        if (question.type === 'multiple-choice' || question.type === 'checkbox' || question.type === 'dropdown') {
+            card.querySelectorAll('.option-input').forEach(input => {
+                question.options.push(input.value);
+            });
+        }
+
+        formData.questions.push(question);
+        setupQuestionEvents(card);
+    });
+
+    // Funções
+    function showModal() {
+        questionModal.classList.add('active');
+    }
+
+    function hideModal() {
+        questionModal.classList.remove('active');
+    }
+
+    function addQuestion(type) {
+        const questionId = currentQuestionId++;
+        const question = {
+            id: questionId.toString(),
+            text: '',
+            type: type,
+            required: false,
+            options: type === 'multiple-choice' || type === 'checkbox' || type === 'dropdown' ? ['Opção 1'] : []
+        };
+
+        formData.questions.push(question);
+        renderQuestion(question);
+    }
+
+    function renderQuestion(question) {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.setAttribute('data-id', question.id);
+        card.setAttribute('data-type', question.type);
+
+        let optionsHTML = '';
+        if (question.type === 'multiple-choice' || question.type === 'checkbox' || question.type === 'dropdown') {
+            question.options.forEach((opt, i) => {
+                optionsHTML += `
+                    <div class="option-container">
+                        <i class="fas fa-${question.type === 'multiple-choice' ? 'dot-circle' : question.type === 'checkbox' ? 'check-square' : 'caret-square-down'} option-icon"></i>
+                        <input type="text" value="${opt}" class="option-input" placeholder="Opção">
+                        <button class="remove-option-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            optionsHTML += `
+                <button class="add-option-btn">
+                    <i class="fas fa-plus btn-icon"></i>Adicionar opção
+                </button>
+            `;
+        }
+
+        card.innerHTML = `
+            <div class="question-header">
+                <input type="text" class="question-text-input" value="${question.text}" placeholder="Pergunta">
+                <select class="question-type-select">
+                    <option value="short-text" ${question.type === 'short-text' ? 'selected' : ''}>Texto curto</option>
+                    <option value="paragraph" ${question.type === 'paragraph' ? 'selected' : ''}>Parágrafo</option>
+                    <option value="multiple-choice" ${question.type === 'multiple-choice' ? 'selected' : ''}>Múltipla escolha</option>
+                    <option value="checkbox" ${question.type === 'checkbox' ? 'selected' : ''}>Caixas de seleção</option>
+                    <option value="dropdown" ${question.type === 'dropdown' ? 'selected' : ''}>Menu suspenso</option>
+                </select>
+            </div>
+            <div class="question-options">${optionsHTML}</div>
+            <div class="question-footer">
+                <label class="required-label">
+                    <input type="checkbox" class="required-checkbox" ${question.required ? 'checked' : ''}>
+                    <span>Resposta obrigatória</span>
+                </label>
+                <button class="remove-question-btn">
+                    <i class="fas fa-trash btn-icon"></i>Remover
+                </button>
+            </div>
+        `;
+
+        questionsContainer.appendChild(card);
+        setupQuestionEvents(card);
+    }
+
+    function setupQuestionEvents(card) {
+        const removeBtn = card.querySelector('.remove-question-btn');
+        const typeSelect = card.querySelector('.question-type-select');
+        const addOptionBtn = card.querySelector('.add-option-btn');
+        
+        removeBtn.addEventListener('click', () => {
+            const questionId = card.getAttribute('data-id');
+            card.remove();
+            formData.questions = formData.questions.filter(q => q.id !== questionId);
+        });
+
+        typeSelect.addEventListener('change', function() {
+            const newType = this.value;
+            card.setAttribute('data-type', newType);
+            
+            let optionsHTML = '';
+            if (newType === 'multiple-choice' || newType === 'checkbox' || newType === 'dropdown') {
+                optionsHTML = `
+                    <div class="option-container">
+                        <i class="fas fa-${newType === 'multiple-choice' ? 'dot-circle' : newType === 'checkbox' ? 'check-square' : 'caret-square-down'} option-icon"></i>
+                        <input type="text" value="Opção 1" class="option-input" placeholder="Opção">
+                        <button class="remove-option-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button class="add-option-btn">
+                        <i class="fas fa-plus btn-icon"></i>Adicionar opção
+                    </button>
+                `;
+            }
+            
+            card.querySelector('.question-options').innerHTML = optionsHTML;
+            if (addOptionBtn) setupOptionButtons(card);
+        });
+
+        if (addOptionBtn) setupOptionButtons(card);
+    }
+
+    function setupOptionButtons(card) {
+        const addOptionBtn = card.querySelector('.add-option-btn');
+        const optionsContainer = card.querySelector('.question-options');
+        
+        addOptionBtn.addEventListener('click', () => {
+            const optionCount = optionsContainer.querySelectorAll('.option-container').length + 1;
+            const questionType = card.getAttribute('data-type');
+            
+            const optionHTML = `
+                <div class="option-container">
+                    <i class="fas fa-${questionType === 'multiple-choice' ? 'dot-circle' : questionType === 'checkbox' ? 'check-square' : 'caret-square-down'} option-icon"></i>
+                    <input type="text" value="Opção ${optionCount}" class="option-input" placeholder="Opção">
+                    <button class="remove-option-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            addOptionBtn.insertAdjacentHTML('beforebegin', optionHTML);
+            optionsContainer.querySelector('.remove-option-btn:last-child').addEventListener('click', function() {
+                this.closest('.option-container').remove();
+            });
+        });
+
+        card.querySelectorAll('.remove-option-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.option-container').remove();
+            });
+        });
+    }
+
+    function saveForm() {
+        formData.title = formTitle.value;
+        formData.description = formDescription.value;
+        formData.questions = [];
+        
+        document.querySelectorAll('.question-card').forEach(card => {
+            const question = {
+                id: card.getAttribute('data-id'),
+                text: card.querySelector('.question-text-input').value,
+                type: card.getAttribute('data-type'),
+                required: card.querySelector('.required-checkbox').checked,
+                options: []
+            };
+
+            if (question.type === 'multiple-choice' || question.type === 'checkbox' || question.type === 'dropdown') {
+                card.querySelectorAll('.option-input').forEach(input => {
+                    question.options.push(input.value);
+                });
+            }
+
+            formData.questions.push(question);
+        });
+
+        fetch(`/formularios/form/editar/${formId}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(async response => {
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao salvar');
+            }
+            return response.json();
+        })
+        .then(data => {
+            window.location.href = '/formularios/';
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert(error.message);
+        });
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Event Listeners
+    addQuestionBtn.addEventListener('click', showModal);
+    saveFormBtn.addEventListener('click', saveForm);
+    closeModalBtn.addEventListener('click', hideModal);
+
+    document.querySelectorAll('#questionTypeModal [data-type]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const type = this.getAttribute('data-type');
+            addQuestion(type);
+            hideModal();
+        });
+    });
+
+    // Fechar modal ao clicar fora
+    questionTypeModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideModal();
+        }
+    });
+});
+</script>
+{% endblock %}

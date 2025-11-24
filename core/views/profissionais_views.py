@@ -1,11 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from core.models import Paciente, Especialidade,Profissional, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import AvaliacaoFisioterapeutica, Paciente, Especialidade,Prontuario,Profissional, Evolucao,Agendamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
-from core.utils import registrar_log
+from core.utils import registrar_log, get_semana_atual
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
+from django.db.models import Min, Max,Count 
+from django.utils import timezone
+import json
+from core.views.agendamento_views import listar_agendamentos
+
 def cadastrar_profissionais_view(request):
     if request.method == 'POST':
         if 'delete_id' in request.POST:
@@ -20,8 +25,9 @@ def cadastrar_profissionais_view(request):
                 objeto_id=profissional.id,
                 descricao=f'Profissional {profissional.nome} inativado.')
             return redirect('profissionals')
-
-        # Criação de novo profissional
+        rg = request.POST.get('rg')
+        cpf = request.POST.get('cpf')
+        cnpj = request.POST.get('cnpj')
         nome = request.POST.get('nome')
         sobrenome = request.POST.get('sobrenome')
         nomeSocial = request.POST.get('nomeSocial')
@@ -33,9 +39,8 @@ def cadastrar_profissionais_view(request):
             messages.error(request, "Já existe um profissional com este CNPJ.")
             return redirect('cadastrar_profissional') 
         
-        rg = request.POST.get('rg')
-        cpf = request.POST.get('cpf')
-        cnpj = request.POST.get('cnpj')
+       
+
         nascimento = request.POST.get('nascimento')
         try:
             nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
@@ -241,7 +246,22 @@ def ficha_profissional(request,id ):
 
 @login_required(login_url='login')
 def profissionais_view(request):
-    profissionais = Profissional.objects.all().order_by('-id')
+    profissionais = Profissional.objects.filter(ativo=True).all().order_by('-id')
+
+    if request.method == 'POST':
+        if 'delete_id' in request.POST:
+            profissional = Profissional.objects.get(id=request.POST['delete_id'])
+            profissional.ativo = False
+            profissional.save()
+            messages.success(request, f'Profissional {profissional.nome} inativado com sucesso!') 
+            registrar_log(usuario=request.user,
+                acao='Inativação',
+                modelo='Profissional',
+                objeto_id=profissional.id,
+                descricao=f'Profissional {profissional.nome} inativado.')
+            return redirect('profissionais')
+
+
     return render(request, 'core/profissionais/profissionais.html', {
         "profissionais": profissionais,
     })
@@ -289,3 +309,164 @@ def dados_profissional(request, profissional_id):
         "cnpj":profissional.cnpj,
     }
     return JsonResponse(data)
+
+
+FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
+PENDENTES = ['pre','agendado']
+
+def perfil_profissional(request, profissional_id):
+    inicio_semana, fim_semana = get_semana_atual()
+
+    profissional = get_object_or_404(Profissional, id=profissional_id)
+    
+    # Agendamentos onde o profissional é o principal
+    agendamentos_principal = Agendamento.objects.filter(profissional_1=profissional)
+    
+    # Agendamentos onde o profissional é auxiliar
+    agendamentos_auxiliar = Agendamento.objects.filter(profissional_2=profissional)
+    
+    # Todos os agendamentos do profissional (como principal ou auxiliar)
+    todos_agendamentos = agendamentos_principal | agendamentos_auxiliar
+    
+    frequencia_semanal = todos_agendamentos.filter(data__range=[inicio_semana, fim_semana]).count()
+    quantidade_agendamentos = todos_agendamentos.count()
+    quantidade_faltas = todos_agendamentos.filter(status__in=FINALIZADOS).count()
+    
+    primeiro_agendamento = todos_agendamentos.aggregate(Min('data'))['data__min']
+    ultimo_agendamento = todos_agendamentos.aggregate(Max('data'))['data__max']
+    
+    # Pacientes mais atendidos
+    pacientes_mais_atendidos = (todos_agendamentos
+        .values('paciente__id', 'paciente__nome', 'paciente__foto')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:5]
+    )
+    
+    # Especialidades mais utilizadas
+    especialidades_mais_utilizadas = (todos_agendamentos
+        .values('especialidade__id', 'especialidade__nome')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:5]
+    )
+    
+    # Prontuários (observações feitas pelo profissional)
+    prontuarios = todos_agendamentos.exclude(observacoes='').order_by('-data', '-hora_inicio')
+    
+    # Últimos 3 agendamentos
+    tres_ultimos_agendamentos = todos_agendamentos.order_by('-data')[:3]
+    
+    context = {
+        'profissional': profissional,
+        'frequencia_semanal': frequencia_semanal,
+        'quantidade_agendamentos': quantidade_agendamentos,
+        'quantidade_faltas': quantidade_faltas,
+        'primeiro_agendamento': primeiro_agendamento,
+        'ultimo_agendamento': ultimo_agendamento,
+        'pacientes_mais_atendidos': pacientes_mais_atendidos,
+        'especialidades_mais_utilizadas': especialidades_mais_utilizadas,
+        'prontuarios': prontuarios,
+        'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
+        'todos_agendamentos': todos_agendamentos,
+    }
+    
+    return render(request, 'core/profissionais/perfil_profissional.html', context)
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.db.models import Q
+from django.utils import timezone
+
+from datetime import date, timedelta
+from urllib.parse import urlencode
+
+@login_required(login_url='login')
+def agenda_profissional(request):
+    # --- pegar filtros existentes ---
+    query = (request.GET.get('q') or '').strip()
+    data_inicio = request.GET.get('data_inicio') or None
+    data_fim = request.GET.get('data_fim') or None
+    especialidade_id = request.GET.get('especialidade_id') or None
+    status = request.GET.get('status') or None
+
+    # --- dia selecionado (YYYY-MM-DD) ---
+    dia_str = request.GET.get('dia')
+    try:
+        dia = date.fromisoformat(dia_str) if dia_str else date.today()
+    except ValueError:
+        dia = date.today()
+ 
+    profissional = Profissional.objects.filter(id=1).first()  
+
+    
+    agendamentos = Agendamento.objects.filter(
+        profissional_1=profissional,
+        data=dia
+    )
+
+
+    prontuarios_pendente = 0
+    evolucoes_pendente = 0
+    avaliacoes_pendente = 0
+    
+    for agendamento in agendamentos:
+        # PRONTUÁRIO
+        prontuario = Prontuario.objects.filter(agendamento=agendamento).first()
+        if not prontuario or (not prontuario.foi_preenchido and not prontuario.nao_se_aplica):
+            prontuarios_pendente += 1
+            
+        # EVOLUÇÃO (mesma lógica)
+        evolucao = Evolucao.objects.filter(agendamento=agendamento).first()
+        if not evolucao or (not evolucao.foi_preenchido and not evolucao.nao_se_aplica):
+            evolucoes_pendente += 1
+            
+        # AVALIAÇÃO (mesma lógica)
+        avaliacao = AvaliacaoFisioterapeutica.objects.filter(agendamento=agendamento).first()
+        if not avaliacao or (not avaliacao.foi_preenchido and not avaliacao.nao_se_aplica):
+            avaliacoes_pendente += 1
+    
+    print(f"Pendências - Prontuários: {prontuarios_pendente}, Evoluções: {evolucoes_pendente}, Avaliações: {avaliacoes_pendente}")
+    
+    atendimentos_dia = agendamentos.count()
+
+    # --- demais filtros (opcionais) ---
+    if data_inicio:
+        agendamentos = agendamentos.filter(data__date__gte=data_inicio)
+    if data_fim:
+        agendamentos = agendamentos.filter(data__date__lte=data_fim)
+    if especialidade_id:
+        agendamentos = agendamentos.filter(especialidade_id=especialidade_id)
+    if status:
+        agendamentos = agendamentos.filter(status=status)
+    if query:
+        agendamentos = agendamentos.filter(
+            Q(paciente__nome__icontains=query) | Q(observacoes__icontains=query)
+        )
+
+    agendamentos = agendamentos.select_related('paciente','profissional_1','servico') \
+                                .order_by('hora_inicio')
+
+ 
+    base_params = {
+        'q': query or '',
+        'di': data_inicio or '',
+        'df': data_fim or '',
+        'eid': especialidade_id or '',
+        'status': status or '',
+    }
+    prev_params = {'dia': (dia - timedelta(days=1)).isoformat()}
+    next_params = {'dia': (dia + timedelta(days=1)).isoformat()}
+    
+    context = {
+        'agendamentos': agendamentos,
+        'profissional': profissional,
+        'atendimentos_dia': atendimentos_dia,
+        'prontuarios_pendente': prontuarios_pendente,
+        'evolucoes_pendente': evolucoes_pendente,
+        'avaliacoes_pendente':avaliacoes_pendente,
+        'dia': dia,
+        'prev_url': f"?{urlencode(prev_params)}",
+        'next_url': f"?{urlencode(next_params)}",
+        'hoje_url': f"?{urlencode({'dia': date.today().isoformat()})}",
+    }
+    return render(request, 'core/profissionais/agenda_profissional.html', context)

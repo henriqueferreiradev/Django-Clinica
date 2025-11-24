@@ -1,0 +1,515 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+{% block title %}Dashboard Administrativo - Ponto de Equilíbrio{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/administrativo/dashboard_adm.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+{% endblock %}
+<span class="text">{% block topbar_title %}Dashboard Administrativo{% endblock %}</span>
+{% block content %}
+<div class="content">
+<div class="container" style="padding:12px 0;display:flex;gap:10px;flex-wrap:wrap">
+  <button class="btn btn-primary" data-open="#modal-novo">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Nova pendência
+  </button>
+  <button class="btn btn-ghost" data-open="#modal-csv">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg> Exportar CSV
+  </button>
+  <button class="btn btn-ghost" data-open="#modal-pdf">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5h20v5a2 2 0 0 1-2 2h-2M8 22h8v-6H8v6z"/></svg> Exportar PDF
+  </button>
+  <button class="btn btn-ghost" data-open="#modal-destaques">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> Destaques do mês
+  </button>
+  <button class="btn btn-ghost" data-open="#modal-onboarding">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg> Onboarding paciente
+  </button>
+  <button class="btn btn-ghost" data-open="#modal-mov">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9m0 0-4 4m4-4 4 4M5 3h14"/></svg> Mov. de estoque
+  </button>
+</div>
+
+<!-- ===== KPIs ===== -->
+<section class="container kpis">
+  <div class="kpi grad-purple"><div class="inner"><div class="t">Abertas</div><div class="v">07</div><div class="h">Pendências aguardando ação</div></div></div>
+  <div class="kpi grad-emerald"><div class="inner"><div class="t">Em andamento</div><div class="v">12</div><div class="h">Pendências em progresso</div></div></div>
+  <div class="kpi grad-amber"><div class="inner"><div class="t">Vencendo hoje</div><div class="v">03</div><div class="h">Deadlines no dia</div></div></div>
+  <div class="kpi grad-sky"><div class="inner"><div class="t">Concluídas</div><div class="v">24</div><div class="h">Resolvidas no período</div></div></div>
+</section>
+
+<!-- ===== GRID MAIN ===== -->
+<main class="container grid-main" style="padding-bottom:86px">
+  <section class="card">
+    <div class="card-h">
+      <div class="card-ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V21l4-2v-6.54L22 3z"/></svg></div>
+      <div class="grow" style="font-weight:800">Pendências Administrativas</div>
+    </div>
+    <div class="card-b">
+      <details>
+        <summary style="cursor:pointer;display:flex;align-items:center;gap:10px;color:#cbd5e1">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V21l4-2v-6.54L22 3z"/></svg>
+          Filtros avançados
+        </summary>
+        <div class="grid-2 mt-3">
+          <div class="field"><label class="label">Tipo</label><select class="select"><option>Todos</option><option>Comprovante vencido</option><option>Documentação incompleta</option><option>Outros</option></select></div>
+          <div class="field"><label class="label">Status</label><select class="select"><option>Todos</option><option>Aberta</option><option>Em andamento</option><option>Resolvida</option></select></div>
+          <div class="field"><label class="label">Prioridade</label><select class="select"><option>Todos</option><option>Baixa</option><option>Média</option><option>Alta</option></select></div>
+          <div class="field"><label class="label">Responsável</label><input class="input" placeholder="Nome"></div>
+          <div class="field"><label class="label">De</label><input class="input" type="date"></div>
+          <div class="field"><label class="label">Até</label><input class="input" type="date"></div>
+        </div>
+      </details>
+
+      <div class="table-wrap mt-3">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th><th>Descrição</th><th>Paciente/Profissional</th><th>Prioridade</th><th>Responsável</th><th>Status</th><th>Criada em</th><th>Deadline</th><th style="text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-th="Tipo"><div class="flex items-center gap-2">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6"/></svg> Comprovante vencido
+              </div></td>
+              <td data-th="Descrição"><div style="max-width:360px"><div style="font-weight:700">Comprovante vencido – João Silva</div><div class="small muted">O comprovante de residência está vencido há 15 dias.</div></div></td>
+              <td data-th="Entidade"><div><div style="font-weight:700">João Silva</div><div class="small muted">Paciente</div></div></td>
+              <td data-th="Prioridade"><span class="badge b-red">Alta</span></td>
+              <td data-th="Responsável"><span class="muted">—</span></td>
+              <td data-th="Status"><span class="badge b-purple">Aberta</span></td>
+              <td data-th="Criada">23/04/2025</td><td data-th="Deadline">25/04/2025 <span class="small" style="color:#fda4af;margin-left:6px">Vencida</span></td>
+              <td data-th="Ações">
+                <div class="flex gap-2" style="justify-content:flex-end">
+                  <button class="icon-btn" title="Marcar como resolvida" data-open="#modal-row-resolve"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></button>
+                  <button class="icon-btn" title="Atualizar cadastro" data-open="#modal-row-edit"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                  <button class="icon-btn" title="Atribuir responsável" data-open="#modal-row-assign"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v3h18v-3c0-2.5-4-5-9-5z"/></svg></button>
+                  <button class="icon-btn" title="Ver histórico" data-open="#modal-row-hist"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7v3l4-4-4-4v3zM12 8h2v6l5 3-1 1-6-3.5V8z"/></svg></button>
+                  <button class="icon-btn" title="Abrir detalhes" data-open="#modal-row-details"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></button>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td data-th="Tipo"><div class="flex items-center gap-2">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Documentação incompleta
+              </div></td>
+              <td data-th="Descrição"><div style="max-width:360px"><div style="font-weight:700">Docs incompletos – Dra. Marina</div><div class="small muted">Falta certificado de especialidade e comprovante bancário.</div></div></td>
+              <td data-th="Entidade"><div><div style="font-weight:700">Dra. Marina Rocha</div><div class="small muted">Profissional</div></div></td>
+              <td data-th="Prioridade"><span class="badge b-amber">Média</span></td>
+              <td data-th="Responsável">Taynara Alves</td>
+              <td data-th="Status"><span class="badge b-sky">Em andamento</span></td>
+              <td data-th="Criada">22/04/2025</td><td data-th="Deadline">24/04/2025</td>
+              <td data-th="Ações">
+                <div class="flex gap-2" style="justify-content:flex-end">
+                  <button class="icon-btn" title="Marcar como resolvida" data-open="#modal-row-resolve"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></button>
+                  <button class="icon-btn" title="Atualizar cadastro" data-open="#modal-row-edit"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                  <button class="icon-btn" title="Atribuir responsável" data-open="#modal-row-assign"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v3h18v-3c0-2.5-4-5-9-5z"/></svg></button>
+                  <button class="icon-btn" title="Ver histórico" data-open="#modal-row-hist"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7v3l4-4-4-4v3zM12 8h2v6l5 3-1 1-6-3.5V8z"/></svg></button>
+                  <button class="icon-btn" title="Abrir detalhes" data-open="#modal-row-details"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></button>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT COLUMN -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <section class="card">
+      <div class="card-h">
+        <div class="card-ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+        <div class="grow"><div style="font-weight:800">Destaque do Mês</div><div class="h-sub">Certificados e brindes (mock).</div></div>
+      </div>
+      <div class="card-b">
+        <div class="flex between items-center">
+          <div><div class="small">Pronto para selecionar?</div><div class="small muted">Gera subtarefas.</div></div>
+          <button class="btn btn-primary" data-open="#modal-destaques">Selecionar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-h">
+        <div class="card-ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 2v2M17 2v2M3 8h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg></div>
+        <div class="grow"><div style="font-weight:800">Aniversariantes do Dia</div><div class="h-sub">Envie mensagens personalizadas (mock).</div></div>
+      </div>
+      <div class="card-b">
+        <div style="display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--glass-1);margin-bottom:10px">
+          <div><div style="font-weight:700">Clara Nunes</div><div class="small muted" style="display:flex;align-items:center;gap:6px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> WhatsApp</div></div>
+          <button class="btn btn-soft" data-open="#modal-aniver">Enviar</button>
+        </div>
+        <div class="small muted">Log: Taynara adicionou em 23/04/2025.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-h">
+        <div class="card-ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2H4a2 2 0 0 0-2 2v6h8V2zm0 8H2v10a2 2 0 0 0 2 2h6V10zm2 0v12h8a2 2 0 0 0 2-2V10H12zM22 4a2 2 0 0 0-2-2h-6v8h8V4z"/></svg></div>
+        <div class="grow"><div style="font-weight:800">Estoque de Kits</div><div class="h-sub">Baixa automática no onboarding (mock).</div></div>
+      </div>
+      <div class="card-b">
+        <div class="kits">
+          <div class="kit kit-bronze"><div class="small">Kit</div><div style="font-weight:800">Bronze</div><div style="margin-top:8px;font-size:26px;font-weight:900">2</div></div>
+          <div class="kit kit-prata"><div class="small">Kit</div><div style="font-weight:800">Prata</div><div style="margin-top:8px;font-size:26px;font-weight:900">3</div></div>
+          <div class="kit kit-ouro low"><div class="small">Kit</div><div style="font-weight:800">Ouro</div><div style="margin-top:8px;font-size:26px;font-weight:900">1</div></div>
+          <div class="kit kit-diamante"><div class="small">Kit</div><div style="font-weight:800">Diamante</div><div style="margin-top:8px;font-size:26px;font-weight:900">3</div></div>
+        </div>
+        <div class="mt-3" style="display:flex;justify-content:flex-end">
+          <button class="btn btn-soft" data-open="#modal-mov">Movimentar</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+ 
+<!-- ===== MODALS ===== -->
+<section id="modal-notifs" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-notifs" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-notifs" style="font-weight:800">Notificações</div><div class="small muted">Visualização estática</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--glass-1)">Estoque crítico: Kit Ouro.</div>
+        <div style="border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--glass-1)">Ficha gerada: Rafael Lima — conferir.</div>
+        <div style="border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--glass-1)">2 pendências vencendo hoje.</div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Ok</button></div>
+  </div>
+</section>
+
+<section id="modal-novo" class="modal" role="dialog" aria-modal="true" aria-labelledby="ttl-novo" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-novo" style="font-weight:800">Nova pendência</div><div class="small muted">Formulário UI</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Título</label><input class="input" placeholder="Comprovante vencido – João Silva"></div>
+        <div class="field"><label class="label">Tipo</label><select class="select"><option>Comprovante vencido</option><option>Documentação incompleta</option><option>Outros</option></select></div>
+        <div class="field"><label class="label">Entidade</label><input class="input" placeholder="Paciente/Profissional"></div>
+        <div class="field"><label class="label">Prioridade</label><select class="select"><option>Baixa</option><option>Média</option><option selected>Alta</option></select></div>
+        <div class="field"><label class="label">Responsável</label><input class="input" placeholder="Nome (opcional)"></div>
+        <div class="field"><label class="label">Deadline</label><input type="date" class="input"></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Descrição</label><textarea class="textarea" rows="4" placeholder="Detalhe a pendência…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-primary" data-close>Criar (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-csv" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-csv" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-csv" style="font-weight:800">Exportar CSV</div><div class="small muted">Selecione colunas/período</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Período inicial</label><input type="date" class="input"></div>
+        <div class="field"><label class="label">Período final</label><input type="date" class="input"></div>
+        <div class="field"><label class="label">Colunas</label><select class="select"><option>Completo</option><option>Essencial</option><option>Personalizado</option></select></div>
+        <div class="field"><label class="label">Delimitador</label><select class="select"><option>Vírgula (,)</option><option>Ponto e vírgula (;)</option></select></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-primary" data-close>Exportar (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-pdf" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-pdf" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-pdf" style="font-weight:800">Exportar PDF</div><div class="small muted">Layout e opções</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Modelo</label><select class="select"><option>Relatório completo</option><option>Resumo executivo</option></select></div>
+        <div class="field"><label class="label">Orientação</label><select class="select"><option>Retrato</option><option>Paisagem</option></select></div>
+        <div class="field"><label class="label">Assinatura</label><input class="input" placeholder="Assinado por (opcional)"></div>
+        <div class="field"><label class="label">Marca d’água</label><input class="input" placeholder="Texto opcional"></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Observações</label><textarea class="textarea" rows="3" placeholder="Notas adicionais…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-primary" data-close>Gerar PDF (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-destaques" class="modal" role="dialog" aria-modal="true" aria-labelledby="ttl-dst" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-dst" style="font-weight:800">Selecionar Destaques do Mês</div><div class="small muted">Certificados e brindes</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Mês/Ano</label><select class="select"><option>Agosto/2025</option><option>Setembro/2025</option><option>Outubro/2025</option></select></div>
+        <div class="field"><label class="label">Paciente</label><input class="input" placeholder="Digite para buscar"></div>
+        <div class="field"><label class="label">Colaborador</label><input class="input" placeholder="Digite para buscar"></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Justificativa</label><textarea class="textarea" rows="3" placeholder="Motivo da escolha…"></textarea></div>
+        <div class="field" style="grid-column:1/-1">
+          <div class="label">Itens de brinde</div>
+          <div class="flex gap-2 wrap"><span class="btn btn-soft">Squeeze</span><span class="btn btn-soft">Camiseta</span><span class="btn btn-soft">Viseira</span><span class="btn btn-soft">Voucher</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="btn btn-soft" data-open="#modal-brinde">Registrar entrega</button><button class="modal-close btn btn-primary" data-close>Gerar certificados (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-brinde" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-br" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-br" style="font-weight:800">Registrar Entrega de Brinde</div><div class="small muted">Lançamento (mock)</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Tipo de brinde</label><select class="select"><option>Squeeze</option><option>Camiseta</option><option>Viseira</option><option>Voucher</option></select></div>
+        <div class="field"><label class="label">Data de entrega</label><input type="date" class="input"></div>
+        <div class="field"><label class="label">Recebido por</label><input class="input" placeholder="Nome completo"></div>
+        <div class="field"><label class="label">Baixar do estoque</label><select class="select"><option>-</option><option>Bronze</option><option>Prata</option><option>Ouro</option><option>Diamante</option></select></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Observações</label><input class="input" placeholder="Opcional"></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-primary" data-close>Salvar (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-onboarding" class="modal modal--xl" role="dialog" aria-modal="true" aria-labelledby="ttl-onb" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-onb" style="font-weight:800">Checklist de Onboarding</div><div class="small muted">Paciente: Ana Costa</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="flex items-center gap-2 small muted" style="margin-bottom:10px">
+        <span class="badge">1</span> Contato <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+        <span class="badge">2</span> Financeiro <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+        <span class="badge">3</span> Entregas <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+        <span class="badge">4</span> Feedback <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+        <span class="badge">5</span> Pacote
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <section style="border:1px solid var(--line);border-radius:16px;overflow:hidden">
+          <div style="padding:10px 12px;background:var(--glass-1);font-weight:700">Contato</div>
+          <div style="padding:12px;display:flex;flex-direction:column;gap:10px">
+            <label class="small"><input type="checkbox"> Mensagem de boas-vindas</label>
+            <label class="small"><input type="checkbox"> Endereço da clínica</label>
+            <label class="small"><input type="checkbox"> Link de agendamento/termos</label>
+          </div>
+        </section>
+        <section style="border:1px solid var(--line);border-radius:16px;overflow:hidden">
+          <div style="padding:10px 12px;background:var(--glass-1);font-weight:700">Financeiro</div>
+          <div style="padding:12px"><label class="small"><input type="checkbox"> Cobrar sinal 50%</label></div>
+        </section>
+        <section style="border:1px solid var(--line);border-radius:16px;overflow:hidden">
+          <div style="padding:10px 12px;background:var(--glass-1);font-weight:700">Entregas</div>
+          <div style="padding:12px;display:flex;flex-direction:column;gap:10px">
+            <label class="small" style="display:flex;gap:10px;align-items:center"><input type="checkbox"> Kit Boas-Vindas
+              <select class="select" style="max-width:200px"><option>-</option><option>Bronze</option><option>Prata</option><option>Ouro</option><option>Diamante</option></select></label>
+            <label class="small"><input type="checkbox"> Cartão VIP</label>
+            <label class="small" style="display:flex;gap:10px;align-items:center"><input type="checkbox"> Caixa da Sorte
+              <input class="input" placeholder="Item / não fechou pacote" style="max-width:280px"></label>
+          </div>
+        </section>
+        <section style="border:1px solid var(--line);border-radius:16px;overflow:hidden">
+          <div style="padding:10px 12px;background:var(--glass-1);font-weight:700">Feedback</div>
+          <div style="padding:12px"><label class="small"><input type="checkbox"> Enviar avaliação do 1º atendimento (resp.: Taynara)</label></div>
+        </section>
+        <section style="border:1px solid var(--line);border-radius:16px;overflow:hidden">
+          <div style="padding:10px 12px;background:var(--glass-1);font-weight:700">Pacote</div>
+          <div style="padding:12px"><label class="small"><input type="checkbox"> Criar pacote (resp.: Taynara)</label></div>
+        </section>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Fechar</button><button class="modal-close btn btn-primary" data-close>Salvar progresso (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-mov" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-mov" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-mov" style="font-weight:800">Movimentação de Estoque</div><div class="small muted">Kits</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Tipo de kit</label><select class="select"><option>Bronze</option><option>Prata</option><option>Ouro</option><option>Diamante</option></select></div>
+        <div class="field"><label class="label">Operação</label><select class="select"><option>Entrada</option><option>Saída</option></select></div>
+        <div class="field"><label class="label">Quantidade</label><input class="input" placeholder="1"></div>
+        <div class="field"><label class="label">Motivo</label><select class="select"><option>Entrega</option><option>Ajuste</option><option>Compra</option></select></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Vínculo</label><input class="input" placeholder="Paciente/Evento (opcional)"></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-primary" data-close>Salvar (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-ficha" class="modal" role="dialog" aria-modal="true" aria-labelledby="ttl-ficha" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-ficha" style="font-weight:800">Conferir Ficha</div><div class="small muted">Paciente: Rafael Lima</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <section style="border:1px solid var(--line);border-radius:16px;padding:12px">
+          <div style="font-weight:700;margin-bottom:8px">Checklist</div>
+          <div class="small" style="display:flex;flex-direction:column;gap:10px">
+            <label><input type="checkbox"> Documento de identidade</label>
+            <label><input type="checkbox"> CPF</label>
+            <label><input type="checkbox"> Comprovante de endereço</label>
+            <label><input type="checkbox"> Consentimentos LGPD</label>
+          </div>
+        </section>
+        <div>
+          <div class="field"><label class="label">Observações</label><textarea class="textarea" rows="6"></textarea></div>
+          <div class="field"><label class="label">Anexos</label><input type="file" class="input"></div>
+        </div>
+      </div>
+      <div class="small muted mt-3"><div style="font-weight:700">Auditoria</div><ul style="margin:6px 0 0 18px;line-height:1.8"><li>23/04/2025 09:12 – Sistema gerou ficha</li></ul></div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Solicitar correção</button><button class="modal-close btn btn-soft" data-close>Imprimir (mock)</button><button class="modal-close btn btn-primary" data-close>Marcar conferida (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-aniver" class="modal" role="dialog" aria-modal="true" aria-labelledby="ttl-aniver" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div><div id="ttl-aniver" style="font-weight:800">Enviar Mensagem de Aniversário</div><div class="small muted">Pré-visualização</div></div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Canal</label><select class="select"><option>WhatsApp</option><option>SMS</option><option>E-mail</option></select></div>
+        <div class="field"><label class="label">Modelo</label><select class="select"><option>Curto e simpático</option><option>Formal</option><option>Personalizado</option></select></div>
+        <div class="field"><label class="label">Nome</label><input class="input" value="Clara Nunes"></div>
+        <div class="field"><label class="label">Horário</label><input class="input" value="09:00"></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Prévia</label>
+          <textarea class="textarea" rows="4">Olá Clara Nunes! 🎉
+A equipe da Clínica Ponto de Equilíbrio deseja um feliz aniversário! Atendimento hoje até 09:00.</textarea>
+        </div>
+        <div class="field"><label class="label">Agendar envio</label><input type="datetime-local" class="input"></div>
+        <div class="field"><label class="label">Anexos</label><input type="file" class="input"></div>
+      </div>
+      <p class="small" style="color:#fbbf24;margin-top:8px">Aviso: envio pode gerar custos conforme o provedor.</p>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-soft" data-close>Enviar/Agendar (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-row-details" class="modal" role="dialog" aria-modal="true" aria-labelledby="ttl-rdet" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div id="ttl-rdet" style="font-weight:800">Detalhes da Pendência</div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Título</label><input class="input" value="Comprovante vencido – João Silva" readonly></div>
+        <div class="field"><label class="label">Entidade</label><input class="input" value="Paciente: João Silva" readonly></div>
+        <div class="field"><label class="label">Prioridade</label><input class="input" value="Alta" readonly></div>
+        <div class="field"><label class="label">Status</label><input class="input" value="Aberta" readonly></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Descrição</label><textarea class="textarea" rows="4" readonly>Comprovante de residência vencido há 15 dias.</textarea></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close btn btn-primary" data-close>Ok</button></div>
+  </div>
+</section>
+
+<section id="modal-row-assign" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-rasg" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div id="ttl-rasg" style="font-weight:800">Atribuir responsável</div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Responsável</label><input class="input" placeholder="Ex.: Taynara, Maria"></div>
+        <div class="field"><label class="label">Prazo</label><input class="input" type="datetime-local"></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Observações</label><textarea class="textarea" rows="3"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-primary" data-close>Atribuir (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-row-hist" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-rhis" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div id="ttl-rhis" style="font-weight:800">Histórico</div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <ul style="display:flex;flex-direction:column;gap:10px;font-size:14px">
+        <li style="border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--glass-1)">23/04/2025 09:10 — Sistema criou pendência</li>
+        <li style="border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--glass-1)">23/04/2025 09:14 — Sistema sinalizou prazo</li>
+      </ul>
+    </div>
+    <div class="modal-f"><button class="modal-close btn btn-primary" data-close>Ok</button></div>
+  </div>
+</section>
+
+<section id="modal-row-edit" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-redt" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div id="ttl-redt" style="font-weight:800">Atualizar cadastro</div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b">
+      <div class="grid-2">
+        <div class="field"><label class="label">Nome</label><input class="input" value="João Silva"></div>
+        <div class="field"><label class="label">Tipo</label><input class="input" value="Paciente"></div>
+        <div class="field" style="grid-column:1/-1"><label class="label">Observações</label><textarea class="textarea" rows="3"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-primary" data-close>Salvar (mock)</button></div>
+  </div>
+</section>
+
+<section id="modal-row-resolve" class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="ttl-rres" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-h"><div id="ttl-rres" style="font-weight:800">Marcar como resolvida</div><button class="modal-close" data-close>Fechar</button></div>
+    <div class="modal-b"><p>Confirmar marcação desta pendência como <strong>Resolvida</strong>? (visual apenas)</p></div>
+    <div class="modal-f"><button class="modal-close" data-close>Cancelar</button><button class="modal-close btn btn-primary" data-close>Confirmar (mock)</button></div>
+  </div>
+</section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const qs = (s,ctx=document)=>ctx.querySelector(s);
+  const qsa = (s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+  let lastOpener = null;
+
+  // abre modal
+  function openModal(selector){
+    const modal = qs(selector);
+    if(!modal) return;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden','false');
+    // focus trap
+    const focusables = qsa('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])', modal)
+      .filter(el => !el.hasAttribute('disabled'));
+    const first = focusables[0], last = focusables[focusables.length - 1];
+    if(first) first.focus();
+
+    function onKey(e){
+      if(e.key === 'Escape'){ closeModal(modal); }
+      if(e.key === 'Tab' && focusables.length){
+        if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+      }
+    }
+    modal.__keyHandler = onKey;
+    document.addEventListener('keydown', onKey);
+    // close on overlay click
+    modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(modal); });
+  }
+
+  // fecha modal
+  function closeModal(modal){
+    if(!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden','true');
+    document.removeEventListener('keydown', modal.__keyHandler || (()=>{}));
+    if(lastOpener) { lastOpener.focus(); lastOpener = null; }
+  }
+
+  // binds: abrir
+  qsa('[data-open]').forEach(btn=>{
+    btn.addEventListener('click', () => {
+      const sel = btn.getAttribute('data-open');
+      lastOpener = btn;
+      openModal(sel);
+    });
+  });
+
+  // binds: fechar
+  qsa('[data-close]').forEach(btn=>{
+    btn.addEventListener('click', () => {
+      const modal = btn.closest('.modal');
+      closeModal(modal);
+    });
+  });
+})();
+</script>
+<script src="https://unpkg.com/imask"></script>
+<script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
+<script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
+<script src="{% static '/core/js/base/cep.js' %}"></script>
+<script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
+{% endblock %}
+
+ 
+
+ 

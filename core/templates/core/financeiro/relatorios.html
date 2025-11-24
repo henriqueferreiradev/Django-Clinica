@@ -1,0 +1,282 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Relatórios Financeiros - Clínica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/financeiro/relatorios.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+{% endblock %}
+
+{% block topbar_title %}<span class="text">Relatórios</span>{% endblock %}
+
+{% block content %}
+{% include "core/partials/_confirm_modal.html" %}
+<div class="content">
+  <div class="relatorios">
+    <!-- Cabeçalho -->
+    <div class="header-bar">
+      <h1 class="page-title"><i class="fa-solid fa-file-lines"></i> Relatórios Financeiros</h1>
+      <div class="actions">
+        <button class="btn btn-outline" id="btnPrint"><i class="fa-solid fa-print"></i> Imprimir</button>
+        <button class="btn btn-primary"><i class="fa-solid fa-gear"></i> Configurações</button>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filter-panel">
+      <div class="filter-grid">
+        <div>
+          <label class="ui-label">Tipo de Relatório</label>
+          <select class="ui-select" id="tipoRelatorio">
+            <option value="">Selecione...</option>
+            <option value="fluxo-caixa">Fluxo de Caixa</option>
+            <option value="receber">Contas a Receber</option>
+            <option value="pagar">Contas a Pagar</option>
+            <option value="faturamento">Faturamento</option>
+            <option value="comissoes">Comissões</option>
+            <option value="folha">Folha de Pagamento</option>
+            <option value="custom">Personalizado</option>
+          </select>
+        </div>
+        <div>
+          <label class="ui-label">Período</label>
+          <select class="ui-select" id="periodoRelatorio">
+            <option value="mensal" selected>Este Mês</option>
+            <option value="trimestral">Trimestre</option>
+            <option value="semestral">Semestre</option>
+            <option value="anual">Anual</option>
+            <option value="custom">Personalizado</option>
+          </select>
+        </div>
+        <div id="dataInicioContainer" style="display:none;">
+          <label class="ui-label">De</label>
+          <input type="date" class="ui-input" id="dataInicio">
+        </div>
+        <div id="dataFimContainer" style="display:none;">
+          <label class="ui-label">Até</label>
+          <input type="date" class="ui-input" id="dataFim">
+        </div>
+        <div style="align-self:end;">
+          <button class="btn btn-primary" style="width:100%;"><i class="fa-solid fa-funnel"></i> Gerar Relatório</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards rápidos -->
+    <div class="report-grid">
+      <div class="report-card fluxo">
+        <h5 class="rc-title">Fluxo de Caixa</h5>
+        <p class="rc-text">Relatório completo de entradas e saídas</p>
+        <div class="rc-footer">
+          <span class="badge-lite">PDF, XLSX</span>
+          <button class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i> Exportar</button>
+        </div>
+      </div>
+      <div class="report-card receber">
+        <h5 class="rc-title">Contas a Receber</h5>
+        <p class="rc-text">Detalhamento de recebimentos</p>
+        <div class="rc-footer">
+          <span class="badge-lite">PDF, XLSX</span>
+          <button class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i> Exportar</button>
+        </div>
+      </div>
+      <div class="report-card pagar">
+        <h5 class="rc-title">Contas a Pagar</h5>
+        <p class="rc-text">Despesas e pagamentos programados</p>
+        <div class="rc-footer">
+          <span class="badge-lite">PDF, XLSX</span>
+          <button class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i> Exportar</button>
+        </div>
+      </div>
+      <div class="report-card faturamento">
+        <h5 class="rc-title">Faturamento</h5>
+        <p class="rc-text">Análise de receitas e lucratividade</p>
+        <div class="rc-footer">
+          <span class="badge-lite">PDF, XLSX</span>
+          <button class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i> Exportar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Relatório Gerado -->
+    <div class="block">
+      <div class="block-body">
+        <div class="block-head">
+          <h5 class="block-title">Relatório de Faturamento - Maio/2023</h5>
+          <div>
+            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i> Exportar</button>
+            <button class="btn btn-outline btn-sm" id="printLocal"><i class="fa-solid fa-print"></i> Imprimir</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Paciente</th>
+                <th>Profissional</th>
+                <th class="text-end">Valor</th>
+                <th>Forma Pag.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>15/05/2023</td>
+                <td>Consulta - Dra. Ana</td>
+                <td>Maria Silva</td>
+                <td>Dra. Ana Silva</td>
+                <td class="text-end">R$ 350,00</td>
+                <td><span class="badge-lite" style="background: var(--verdePrincipal); color:#fff; border-color:transparent;">Pix</span></td>
+              </tr>
+              <tr>
+                <td>14/05/2023</td>
+                <td>Pacote Fisioterapia</td>
+                <td>João Santos</td>
+                <td>Dr. Carlos Mendes</td>
+                <td class="text-end">R$ 1.200,00</td>
+                <td><span class="badge-lite" style="background: var(--roxoPrincipal); color:#fff; border-color:transparent;">Crédito</span></td>
+              </tr>
+              <!-- ...outras linhas -->
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="4">Total</th>
+                <th class="text-end">R$ 28.750,00</th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="charts-grid">
+          <div>
+            <h6 style="margin:.6rem 0; color:var(--titulo-perfil); font-weight:800;">Distribuição por Especialidade</h6>
+            <div class="chart-box"><canvas id="graficoPizza"></canvas></div>
+          </div>
+          <div>
+            <h6 style="margin:.6rem 0; color:var(--titulo-perfil); font-weight:800;">Comparativo Mensal</h6>
+            <div class="chart-box"><canvas id="graficoBarras"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modelos Salvos -->
+    <div class="saved-card block">
+      <div class="block-body">
+        <h5 class="block-title" style="margin-bottom:.8rem;">Modelos de Relatórios Salvos</h5>
+
+        <div class="saved-item">
+          <div>
+            <h6>Faturamento Mensal Detalhado</h6>
+            <small>Última geração: 10/05/2023</small>
+          </div>
+          <div>
+            <span class="badge-lite" style="margin-right:.4rem;">PDF, XLSX</span>
+            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-play"></i> Executar</button>
+            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-pen"></i> Editar</button>
+          </div>
+        </div>
+
+        <div class="saved-item">
+          <div>
+            <h6>Comissões por Profissional</h6>
+            <small>Última geração: 05/05/2023</small>
+          </div>
+          <div>
+            <span class="badge-lite" style="margin-right:.4rem;">PDF</span>
+            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-play"></i> Executar</button>
+            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-pen"></i> Editar</button>
+          </div>
+        </div>
+
+        <div class="saved-item">
+          <div>
+            <h6>Fluxo de Caixa Trimestral</h6>
+            <small>Última geração: 01/05/2023</small>
+          </div>
+          <div>
+            <span class="badge-lite" style="margin-right:.4rem;">XLSX</span>
+            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-play"></i> Executar</button>
+            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-pen"></i> Editar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+  // ==== helpers para cores do :root
+  function hexToRgba(hex, a){
+    const h = hex.replace('#','').trim();
+    const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+    const r = (n>>16)&255, g=(n>>8)&255, b=n&255;
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
+  const css = getComputedStyle(document.documentElement);
+  const roxo   = (css.getPropertyValue('--roxoPrincipal')||'#6D398E').trim();
+  const roxoH  = (css.getPropertyValue('--roxo-primary-hover')||'#9b58b4').trim();
+  const verde  = (css.getPropertyValue('--verdePrincipal')||'#92cbad').trim();
+  const cinzaM = (css.getPropertyValue('--cinza-medio')||'#888').trim();
+
+  // ==== filtros: período custom
+  const periodo = document.getElementById('periodoRelatorio');
+  const cIni = document.getElementById('dataInicioContainer');
+  const cFim = document.getElementById('dataFimContainer');
+  function toggleCustom(){ const show = periodo.value === 'custom'; cIni.style.display = show?'block':'none'; cFim.style.display = show?'block':'none'; }
+  periodo.addEventListener('change', toggleCustom);
+
+  // ==== imprimir
+  document.getElementById('btnPrint')?.addEventListener('click', ()=>window.print());
+  document.getElementById('printLocal')?.addEventListener('click', ()=>window.print());
+
+  // ==== Chart.js opções comuns
+  const common = {
+    responsive:true, maintainAspectRatio:false, animation:false, resizeDelay:200,
+    plugins:{ legend:{ position:'right', labels:{ usePointStyle:true, color:cinzaM } } },
+    scales:{ y:{ beginAtZero:true, ticks:{ color:cinzaM } }, x:{ ticks:{ color:cinzaM } } }
+  };
+
+  // Pizza: Distribuição por Especialidade
+  const pizzaCtx = document.getElementById('graficoPizza').getContext('2d');
+  new Chart(pizzaCtx, {
+    type:'pie',
+    data:{
+      labels:['Fisioterapia','Nutrição','Psicologia','Educação Física'],
+      datasets:[{
+        data:[8400,7000,5600,4000],
+        backgroundColor:[ hexToRgba(roxo, .85), hexToRgba(verde, .85), hexToRgba(roxoH, .85), 'rgba(242,183,5,.85)' ],
+        borderColor:[ hexToRgba(roxo, 1), hexToRgba(verde, 1), hexToRgba(roxoH, 1), 'rgba(242,183,5,1)' ],
+        borderWidth:1
+      }]
+    },
+    options:{ ...common, scales:undefined, plugins:{ ...common.plugins, legend:{ position:'right', labels:{ usePointStyle:true } } } }
+  });
+
+  // Barras: Comparativo Mensal
+  const barrasCtx = document.getElementById('graficoBarras').getContext('2d');
+  new Chart(barrasCtx, {
+    type:'bar',
+    data:{
+      labels:['Jan','Fev','Mar','Abr','Mai'],
+      datasets:[{
+        label:'Faturamento',
+        data:[18500,19500,22000,24000,28750],
+        backgroundColor: hexToRgba(verde,.75),
+        borderColor: hexToRgba(verde,1),
+        borderWidth:1
+      }]
+    },
+    options: common
+  });
+</script>
+{% endblock %}
