@@ -12,15 +12,12 @@ from django.shortcuts import get_object_or_404, redirect
 from .models import Agendamento, LogAcao
 from django.contrib import messages
 
-<<<<<<< HEAD
 try:
     locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 except locale.Error:
     locale.setlocale(locale.LC_TIME, 'C')  # fallback universal
-=======
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-
->>>>>>> origin/main
+    
+    
 def criar_pasta_foto_paciente(id_paciente, nome_paciente):
     nome = slugify(nome_paciente)
     caminho = os.path.join(settings.MEDIA_ROOT, f'imagens/pacientes/{id_paciente}_{nome}')
