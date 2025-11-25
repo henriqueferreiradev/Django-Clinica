@@ -11,39 +11,75 @@
 <div class="content">
  
     {% include "core/partials/filtros/filtro_auditoria.html" %}
-
+  <div class="table-container">
     <table>
-    <thead>
-        <tr>
-            <th>Data/Hora</th>
-            <th>Usuário</th>
-            <th>Ação</th>
-            <th>Módulo</th>
-            <th>ID</th>
-            <th>Descrição</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for log in logs %}
-        <tr>
-            <td>{{ log.data_hora|date:"d/m/Y H:i" }}</td>
-            <td>{{ log.usuario }}</td>
-            <td>                    <span class="badge 
-                {% if log.acao == 'Criação' %} badge-success 
-                {% elif log.acao == 'Edição' %} badge-warning 
-                {% elif log.acao == 'Inativação' %} badge-danger
-                {% else %} badge-default {% endif %}">
-                {{ log.acao }}
-            </span></td>
-            <td>{{ log.modelo }}</td>
-            <td>{{ log.objeto_id }}</td>
-            <td>{{ log.descricao }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6">Nenhuma ação registrada.</td></tr>
-        {% endfor %}
-    </tbody>
+        <thead>
+            <tr>
+                <th>Data/Hora</th>
+                <th>Usuário</th>
+                <th>Ação</th>
+                <th>Módulo</th>
+                <th>ID</th>
+                <th>Descrição</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in page_obj %}
+            <tr>
+                <td>{{ log.data_hora|date:"d/m/Y H:i" }}</td>
+                <td>{{ log.usuario }}</td>
+                <td>                    <span class="badge 
+                    {% if log.acao == 'Criação' %} badge-success    '
+                    {% elif log.acao == 'Edição' %} badge-warning 
+                    {% elif log.acao == 'Inativação' %} badge-danger
+                    {% else %} badge-default {% endif %}">
+                    {{ log.acao }}
+                </span></td>
+                <td>{{ log.modelo }}</td>
+                <td>{{ log.objeto_id }}</td>
+                <td>{{ log.descricao }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">Nenhuma ação registrada.</td></tr>
+            {% endfor %}
+        </tbody>
     </table>
+<div class="pagination">
+  <div class="pagination-info">
+    Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+  </div>
+
+  <div class="pagination-controls">
+
+    {% with params=request.GET.urlencode|cut:"page=" %}
+
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&{{ params }}" class="pagination-btn">Anterior</a>
+      {% else %}
+        <button class="pagination-btn disabled">Anterior</button>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <button class="pagination-btn active">{{ num }}</button>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a href="?page={{ num }}&{{ params }}" class="pagination-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&{{ params }}" class="pagination-btn">Próxima</a>
+      {% else %}
+        <button class="pagination-btn disabled">Próxima</button>
+      {% endif %}
+
+    {% endwith %}
+
+  </div>
+</div>
+
+
+    </div>
 </div>
 {% endblock %}
 

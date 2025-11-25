@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from core.models import LogAcao
 from django.db.models import F
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 @login_required
 @login_required
@@ -29,15 +29,31 @@ def logs_view(request):
     if data_fim:
         logs = logs.filter(data_hora__date__lte=data_fim)
 
-    # Agora sim, aplique o slice
-    logs = logs[:200]
-
+ 
     # Valores únicos para os selects
     acoes_disponiveis = LogAcao.objects.values_list('acao', flat=True).distinct()
     modelos_disponiveis = LogAcao.objects.values_list('modelo', flat=True).distinct()
 
+    # Ordenação final
+    
+
+ 
+
+    # PAGINAÇÃO - EXATAMENTE COMO NO CONTAS A RECEBER
+    paginator = Paginator(logs,13)  # 10 pacientes por página
+    page_number = request.GET.get('page')
+    
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger :
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
+
+
     context = {
         'logs': logs,
+        'page_obj':page_obj,
         'filtros': {
             'acao': acao or '',
             'modelo': modelo or '',

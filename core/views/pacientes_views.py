@@ -94,7 +94,7 @@ def pacientes_view(request):
     total_filtrados = pacientes.count()
 
     # PAGINAÇÃO - EXATAMENTE COMO NO CONTAS A RECEBER
-    paginator = Paginator(pacientes, 10)  # 10 pacientes por página
+    paginator = Paginator(pacientes, 11)  # 10 pacientes por página
     page_number = request.GET.get('page')
     
     try:
