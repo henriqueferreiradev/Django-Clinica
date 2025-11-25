@@ -17,9 +17,9 @@
             <tr>
                 <th>Data/Hora</th>
                 <th>Usuário</th>
-                <th>Ação</th>
                 <th>Módulo</th>
                 <th>ID</th>
+                <th>Ação</th>
                 <th>Descrição</th>
             </tr>
         </thead>
@@ -28,15 +28,16 @@
             <tr>
                 <td>{{ log.data_hora|date:"d/m/Y H:i" }}</td>
                 <td>{{ log.usuario }}</td>
-                <td>                    <span class="badge 
+               
+                <td>{{ log.modelo }}</td>
+                <td>{{ log.objeto_id }}</td>
+                 <td>                    <span class="badge 
                     {% if log.acao == 'Criação' %} badge-success    '
                     {% elif log.acao == 'Edição' %} badge-warning 
                     {% elif log.acao == 'Inativação' %} badge-danger
                     {% else %} badge-default {% endif %}">
                     {{ log.acao }}
                 </span></td>
-                <td>{{ log.modelo }}</td>
-                <td>{{ log.objeto_id }}</td>
                 <td>{{ log.descricao }}</td>
             </tr>
             {% empty %}
