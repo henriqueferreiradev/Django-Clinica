@@ -204,31 +204,31 @@
 
             </div>
 
-            <div class="formRow cols-2">
-                <div class="formField">
-                    <label for="especialidadeInput"><i class="fas fa-stethoscope"></i> Especialidade</label>
-                    <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
-                        <option value="" disabled selected>Selecione uma especialidade</option>
-                        {% for esp in especialidades %}
-                        <option value="{{ esp.id }}">
-                            {{ esp.nome }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <div class="formRow cols-2">
+                    <div class="formField">
+                        <label for="especialidadeInput"><i class="fas fa-stethoscope"></i> Especialidade do Atendimento</label>
+                        <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
+                            <option value="" disabled selected>Selecione a especialidade do atendimento</option>
+                            {% for esp in especialidades %}
+                            <option value="{{ esp.id }}">
+                                {{ esp.nome }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                <div class="formField">
-                    <label for="profissional1Input"><i class="fas fa-user-md"></i> Profissional 1</label>
-                    <select name="profissional1_id" id="profissional1Input" class="input-s" required>
-                        <option value="" disabled selected>Selecione um profissional</option>
-                        {% for profissional in profissionais %}
-                        <option value="{{ profissional.id }}">
-                            {{ profissional.nome }} {{ profissional.sobrenome }} - {{ profissional.especialidade }}
-                        </option>
-                        {% endfor %}
-                    </select>
+                    <div class="formField">
+                        <label for="profissional1Input"><i class="fas fa-user-md"></i> Profissional</label>
+                        <select name="profissional1_id" id="profissional1Input" class="input-s" required>
+                            <option value="" disabled selected>Selecione um profissional</option>
+                            {% for profissional in profissionais %}
+                            <option value="{{ profissional.id }}">
+                                {{ profissional.nome }} {{ profissional.sobrenome }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-            </div>
 
             <div class="formRow cols-3">
                 <div class="formField">

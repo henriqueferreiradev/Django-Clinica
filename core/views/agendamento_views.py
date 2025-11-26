@@ -454,7 +454,6 @@ def verificar_pacotes_ativos(request, paciente_id):
         "pacotes": pacotes_data, 
         "saldos_desmarcacoes": saldos_desmarcacoes,
     })
-
 def listar_agendamentos(filtros=None, query=None):
     filtros = filtros or {}
 
@@ -473,15 +472,13 @@ def listar_agendamentos(filtros=None, query=None):
     if not data_inicio and not data_fim:
         qs_filtros['data__gte'] = date.today()
     if especialidade:
-         qs_filtros['especialidade'] = especialidade
+         qs_filtros['especialidade'] = especialidade  # ← Isso filtra pela especialidade do AGENDAMENTO
     if status: 
         qs_filtros['status'] = status
 
-
-
-
+    # CORRIGIR: Incluir 'especialidade' no select_related
     agendamentos = Agendamento.objects.select_related(
-        'paciente', 'profissional_1', 'profissional_1__especialidade'
+        'paciente', 'profissional_1', 'profissional_1__especialidade', 'especialidade'  # ← ADICIONAR AQUI
     ).filter(
         **qs_filtros
     ).order_by('data', 'hora_inicio')
@@ -506,8 +503,9 @@ def listar_agendamentos(filtros=None, query=None):
         if chave_data not in dados_agrupados:
             dados_agrupados[chave_data] = []
 
-        especialidade = getattr(ag.profissional_1.especialidade, 'nome', '')
-        cor_especialidade = getattr(ag.profissional_1.especialidade, 'cor', '#ccc')
+        # CORREÇÃO: Pegar a especialidade do AGENDAMENTO, não do profissional
+        especialidade_nome = getattr(ag.especialidade, 'nome', '')  # ← MUDAR AQUI
+        cor_especialidade = getattr(ag.especialidade, 'cor', '#ccc')  # ← MUDAR AQUI
 
         pacote = getattr(ag, 'pacote', None)
 
@@ -522,7 +520,6 @@ def listar_agendamentos(filtros=None, query=None):
         sessoes_restantes = None
 
         if pacote:
-            # get_sessao_atual pode retornar None; qtd_sessoes pode ser None
             sessao_atual_val = pacote.get_sessao_atual(ag)
             sessoes_total_val = getattr(pacote, 'qtd_sessoes', None)
 
@@ -531,7 +528,6 @@ def listar_agendamentos(filtros=None, query=None):
                 sessoes_total = sessoes_total_val
                 sessoes_restantes = max(sessoes_total - sessao_atual, 0)
             else:
-                # mantém como None se não houver dados suficientes
                 sessao_atual = None
                 sessoes_total = sessoes_total_val if isinstance(sessoes_total_val, int) else None
                 sessoes_restantes = None
@@ -542,7 +538,7 @@ def listar_agendamentos(filtros=None, query=None):
             'hora_fim': ag.hora_fim.strftime('%H:%M') if ag.hora_fim else '',
             'paciente': f"{ag.paciente.nome} {ag.paciente.sobrenome}",
             'profissional': f"{ag.profissional_1.nome} {ag.profissional_1.sobrenome}",
-            'especialidade': especialidade,
+            'especialidade': especialidade_nome,  # ← Agora vai mostrar a especialidade correta
             'cor_especialidade': cor_especialidade,
             'status': ag.status,
             'sessao_atual': sessao_atual,
@@ -554,7 +550,6 @@ def listar_agendamentos(filtros=None, query=None):
         })
 
     return dados_agrupados
-
 
 def confirmacao_agendamento(request, agendamento_id):
     agendamento = get_object_or_404(Agendamento, id=agendamento_id)

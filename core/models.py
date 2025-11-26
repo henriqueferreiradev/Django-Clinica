@@ -344,7 +344,7 @@ class Profissional(models.Model):
         if criando and not self.user and self.email:
             
             username = self.email
-            senha_padrao = 'resiliencia'
+            senha_padrao = self.data_nascimento
             nome = self.nome or ''
             sobrenome = self.sobrenome or ''
             
