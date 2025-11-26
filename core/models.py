@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 from urllib.parse import DefragResult
 from django.db import models
@@ -344,7 +345,13 @@ class Profissional(models.Model):
         if criando and not self.user and self.email:
             
             username = self.email
-            senha_padrao = self.data_nascimento
+            senha_padrao = None
+            if self.data_nascimento:
+                print(senha_padrao)
+                senha_padrao = self.data_nascimento.strftime("%d%m%Y")  # ex.: 22012025
+                
+            else:
+                senha_padrao = "123456"
             nome = self.nome or ''
             sobrenome = self.sobrenome or ''
             

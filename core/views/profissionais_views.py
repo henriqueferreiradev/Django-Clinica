@@ -35,9 +35,10 @@ def cadastrar_profissionais_view(request):
             messages.error(request, "Já existe um profissional com este CPF.")
             return redirect('cadastrar_profissional')
         
-        if Profissional.objects.filter(cnpj=cnpj).exists():
-            messages.error(request, "Já existe um profissional com este CNPJ.")
-            return redirect('cadastrar_profissional') 
+        if cnpj.strip():
+            if Profissional.objects.filter(cnpj=cnpj).exists():
+                messages.error(request, "Já existe um profissional com este CNPJ.")
+                return redirect('cadastrar_profissional') 
         
        
 
