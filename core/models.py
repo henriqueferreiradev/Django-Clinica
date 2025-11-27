@@ -337,51 +337,45 @@ class Profissional(models.Model):
     @property
     def endereco_formatado(self):
         return f'{self.rua}, {self.numero}, {self.complemento} - {self.bairro}, {self.cidade}/{self.uf} - {self.cep}'
+
     def save(self, *args, **kwargs):
         criando = self.pk is None
         
+        # Salva primeiro para ter o ID
         super().save(*args, **kwargs)
         
+        # Depois do save, cria o usuário se necessário
         if criando and not self.user and self.email:
-            
-            username = self.email
-            senha_padrao = None
-            if self.data_nascimento:
-                print(senha_padrao)
-                senha_padrao = self.data_nascimento.strftime("%d%m%Y")  # ex.: 22012025
+            try:
+                username = self.email
+                senha_padrao = self.data_nascimento.strftime("%d%m%Y") if self.data_nascimento else "123456"
                 
-            else:
-                senha_padrao = "123456"
-            nome = self.nome or ''
-            sobrenome = self.sobrenome or ''
-            
-            if not User.objects.filter(username=username).exists():
-                user = User.objects.create(
-                username=username,
-                email=self.email,
-                first_name=nome,
-                last_name=sobrenome,
-                password=make_password(senha_padrao),
-                tipo='profissional',
-                ativo = True
-                )
-                self.user = user
-                super().save(update_fields=['user'])
-        
-        
-        
-        
-        
-        
-        
-            
-    def __str__(self):
-        if self.user:
-            return self.user.get_full_name() or self.user.username
-        return "Profissional sem usuário"
-    
- 
-    
+                nome = self.nome or ''
+                sobrenome = self.sobrenome or ''
+                
+                if not User.objects.filter(username=username).exists():
+                    user = User.objects.create(
+                        username=username,
+                        email=self.email,
+                        first_name=nome,
+                        last_name=sobrenome,
+                        password=make_password(senha_padrao),
+                        tipo='profissional',
+                        ativo=True
+                    )
+                    self.user = user
+                    # Salva novamente para atualizar o campo user
+                    super().save(update_fields=['user'])
+                else:
+                    # Se o usuário já existe, associa
+                    existing_user = User.objects.get(username=username)
+                    self.user = existing_user
+                    super().save(update_fields=['user'])
+                    
+            except Exception as e:
+                # Log do erro sem quebrar a aplicação
+                print(f"Erro ao criar usuário para profissional: {e}")    
+
 
 class Servico(models.Model):
     nome = models.CharField(max_length=100)

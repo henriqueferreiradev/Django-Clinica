@@ -11,6 +11,7 @@ from django.utils import timezone
 import json
 from core.views.agendamento_views import listar_agendamentos
 
+
 def cadastrar_profissionais_view(request):
     if request.method == 'POST':
         if 'delete_id' in request.POST:
@@ -25,28 +26,30 @@ def cadastrar_profissionais_view(request):
                 objeto_id=profissional.id,
                 descricao=f'Profissional {profissional.nome} inativado.')
             return redirect('profissionals')
+        
         rg = request.POST.get('rg')
         cpf = request.POST.get('cpf')
         cnpj = request.POST.get('cnpj')
         nome = request.POST.get('nome')
         sobrenome = request.POST.get('sobrenome')
         nomeSocial = request.POST.get('nomeSocial')
+        
+        # Validações de CPF e CNPJ
         if Profissional.objects.filter(cpf=cpf).exists():
             messages.error(request, "Já existe um profissional com este CPF.")
             return redirect('cadastrar_profissional')
         
-        if cnpj.strip():
+        if cnpj and cnpj.strip():
             if Profissional.objects.filter(cnpj=cnpj).exists():
                 messages.error(request, "Já existe um profissional com este CNPJ.")
                 return redirect('cadastrar_profissional') 
-        
-       
 
         nascimento = request.POST.get('nascimento')
         try:
             nascimento_formatada = datetime.strptime(nascimento, "%d/%m/%Y").date()
         except ValueError:
-            nascimento_formatada = None  # ou algum tratamento específico
+            nascimento_formatada = None
+        
         cor_raca = request.POST.get('cor')
         sexo = request.POST.get('sexo')
         estado_civil = request.POST.get('estado_civil')
@@ -54,6 +57,7 @@ def cadastrar_profissionais_view(request):
         uf = request.POST.get('uf')
         especialidade_id = request.POST.get('especialidade')
         especialidade_obj = Especialidade.objects.get(id=especialidade_id) if especialidade_id else None
+        
         conselho1 = request.POST.get('conselho1')
         conselho2 = request.POST.get('conselho2')
         conselho3 = request.POST.get('conselho3')
@@ -79,13 +83,15 @@ def cadastrar_profissionais_view(request):
         telefone = request.POST.get('telefone')
         celular = request.POST.get('celular')
         email = request.POST.get('email')
+ 
         nomeEmergencia = request.POST.get('nomeEmergencia')
         vinculo = request.POST.get('vinculo')
         telEmergencia = request.POST.get('telEmergencia')
 
-     
         if nome:
-    # 1º: Cria o profissional sem a foto
+            print(f"DEBUG VIEW: Antes de criar Profissional")
+            print(f"DEBUG VIEW: Email que será salvo: {email}")
+            # Cria o profissional - o método save() automaticamente criará o usuário
             profissional = Profissional.objects.create(
                 nome=nome,
                 sobrenome=sobrenome,
@@ -122,37 +128,40 @@ def cadastrar_profissionais_view(request):
                 vinculo=vinculo,
                 telEmergencia=telEmergencia,
                 email=email,
-                ativo=True
+                ativo=True,
+                foto=foto  # Agora pode passar a foto diretamente
             )
-
-            # 2º: Agora que o ID existe, atribua a foto
-            if foto:
-                profissional.foto = foto
-                profissional.save()
-                messages.info(request, 'Foto do profissional atualizada') 
-            
+ 
+            # O método save() do model já foi chamado pelo create(), então o usuário já foi criado
             messages.success(request, f'Profissional {profissional.nome} cadastrado com sucesso!')
+            
+            if foto:
+                messages.info(request, 'Foto do profissional salva com sucesso!')
+            
             registrar_log(usuario=request.user,
                 acao='Criação',
-                modelo='Paciente',
+                modelo='Profissional',  # Corrigido de 'Paciente' para 'Profissional'
                 objeto_id=profissional.id,
                 descricao=f'Profissional {profissional.nome} cadastrado.')
+            
             return redirect('cadastrar_profissional')
+    
     profissionais = Profissional.objects.all().order_by('-id')
     especialidades = Especialidade.objects.all()
 
-
     return render(request, 'core/profissionais/cadastrar_profissional.html', {
-                        'estado_civil_choices': ESTADO_CIVIL,
-                        'midia_choices': MIDIA_ESCOLHA,
-                        'sexo_choices': SEXO_ESCOLHA,
-                        'uf_choices': UF_ESCOLHA,
-                        'cor_choices': COR_RACA,
-                        'vinculo_choices': VINCULO,
-                        'conselho_choices': CONSELHO_ESCOLHA,
-                        'especialidade_choices': especialidades,
-                        'profissionais': profissionais,
-                        }) 
+        'estado_civil_choices': ESTADO_CIVIL,
+        'midia_choices': MIDIA_ESCOLHA,
+        'sexo_choices': SEXO_ESCOLHA,
+        'uf_choices': UF_ESCOLHA,
+        'cor_choices': COR_RACA,
+        'vinculo_choices': VINCULO,
+        'conselho_choices': CONSELHO_ESCOLHA,
+        'especialidade_choices': especialidades,
+        'profissionais': profissionais,
+    })
+
+
 
 def editar_profissional_view(request, id):
 
@@ -397,14 +406,27 @@ def agenda_profissional(request):
     except ValueError:
         dia = date.today()
  
-    profissional = Profissional.objects.filter(id=1).first()  
+    # CORREÇÃO AQUI: Pegar o profissional logado em vez do ID fixo
+    try:
+        profissional = request.user.profissional
+        print(f"DEBUG: Profissional logado: {profissional.nome} (ID: {profissional.id})")
+    except AttributeError:
+        # Se não houver profissional associado ao usuário
+        profissional = None
+        print("DEBUG: Nenhum profissional associado ao usuário logado")
+        messages.error(request, "Nenhum profissional associado ao seu usuário.")
+        return redirect('login')  # ou alguma página de erro
 
-    
-    agendamentos = Agendamento.objects.filter(
-        profissional_1=profissional,
-        data=dia
-    )
-
+    # CORREÇÃO: Filtrar agendamentos pelo profissional logado
+    if profissional:
+        agendamentos = Agendamento.objects.filter(
+            profissional_1=profissional,
+            data=dia
+        )
+        print(f"DEBUG: Agendamentos encontrados para {profissional.nome}: {agendamentos.count()}")
+    else:
+        agendamentos = Agendamento.objects.none()
+        print("DEBUG: Nenhum profissional, retornando agendamentos vazios")
 
     prontuarios_pendente = 0
     evolucoes_pendente = 0
@@ -426,7 +448,7 @@ def agenda_profissional(request):
         if not avaliacao or (not avaliacao.foi_preenchido and not avaliacao.nao_se_aplica):
             avaliacoes_pendente += 1
     
-    print(f"Pendências - Prontuários: {prontuarios_pendente}, Evoluções: {evolucoes_pendente}, Avaliações: {avaliacoes_pendente}")
+    print(f"DEBUG: Pendências - Prontuários: {prontuarios_pendente}, Evoluções: {evolucoes_pendente}, Avaliações: {avaliacoes_pendente}")
     
     atendimentos_dia = agendamentos.count()
 
@@ -447,7 +469,6 @@ def agenda_profissional(request):
     agendamentos = agendamentos.select_related('paciente','profissional_1','servico') \
                                 .order_by('hora_inicio')
 
- 
     base_params = {
         'q': query or '',
         'di': data_inicio or '',
@@ -464,7 +485,7 @@ def agenda_profissional(request):
         'atendimentos_dia': atendimentos_dia,
         'prontuarios_pendente': prontuarios_pendente,
         'evolucoes_pendente': evolucoes_pendente,
-        'avaliacoes_pendente':avaliacoes_pendente,
+        'avaliacoes_pendente': avaliacoes_pendente,
         'dia': dia,
         'prev_url': f"?{urlencode(prev_params)}",
         'next_url': f"?{urlencode(next_params)}",
