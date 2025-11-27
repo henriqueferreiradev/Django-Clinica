@@ -43,9 +43,9 @@ def agenda_view(request):
 
     dados_agrupados = listar_agendamentos(filtros=filtros, query=query)
     agendamentos = Agendamento.objects.all()
-    especialidades = Especialidade.objects.all()
-    profissionais = Profissional.objects.all()
-    servicos = Servico.objects.all()
+    especialidades = Especialidade.objects.filter(ativo=True)
+    profissionais = Profissional.objects.filter(ativo=True)
+    servicos = Servico.objects.filter(ativo=True)
 
 
 

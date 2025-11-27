@@ -209,6 +209,7 @@
                         <label for="especialidadeInput"><i class="fas fa-stethoscope"></i> Especialidade do Atendimento</label>
                         <select name="especialidade_id" id="especialidadeInput" class="input-s" required>
                             <option value="" disabled selected>Selecione a especialidade do atendimento</option>
+
                             {% for esp in especialidades %}
                             <option value="{{ esp.id }}">
                                 {{ esp.nome }}
