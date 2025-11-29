@@ -6,586 +6,8 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
-<style>
-    /* Container principal - seguindo o estilo da agenda */
-
-    /* Tabs - estilo moderno igual à agenda com scroll horizontal */
-    .tabs {
-        display: flex;
-        gap: var(--espaco-xs);
-        border-bottom: 2px solid var(--roxoPrincipal);
-        margin-bottom: var(--espaco-lg);
-
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-
-    }
-
-    .tabs::-webkit-scrollbar {
-        display: none;
-    }
-
-    .tab {
-        background: transparent;
-        border: 2px solid transparent;
-        border-bottom: none;
-        padding: var(--espaco-sm) var(--espaco-md);
-        font-weight: 600;
-        font-size: 0.85rem;
-        border-radius: var(--borda-radius) var(--borda-radius) 0 0;
-        cursor: pointer;
-        color: var(--cinza-escuro);
-        transition: var(--transicao);
-        display: flex;
-        align-items: center;
-        gap: var(--espaco-xs);
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-
-    .tab.active {
-        background: var(--roxoPrincipal);
-        color: var(--branco);
-        border-color: var(--roxoPrincipal);
-        transform: translateY(1px);
-    }
-
-    .tab:hover:not(.active) {
-        background: var(--roxoPrincipal-hover);
-        color: var(--roxoPrincipal);
-        border-color: var(--roxoPrincipal);
-    }
-
-    /* Conteúdo das tabs */
-    .tab-content {
-        display: none;
-        animation: fadeIn 0.4s ease-out forwards;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    /* Forms - seguindo o padrão da agenda */
-    .form {
-        background: var(--branco);
-        border: 1px solid var(--cinza-borda);
-        border-radius: var(--borda-arredondada);
-        padding: var(--espaco-lg);
-        margin-bottom: var(--espaco-lg);
-        box-shadow: var(--sombra-suave);
-        position: relative;
-        overflow-y: auto;
-    }
-
-    .form::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 4px;
-        width: 100%;
-        background: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
-    }
-
-    .form_titulo {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--roxoPrincipal);
-        margin-bottom: var(--espaco-lg);
-        display: flex;
-        align-items: center;
-        gap: var(--espaco-sm);
-        padding-bottom: var(--espaco-sm);
-        border-bottom: 2px solid var(--cinza-claro);
-    }
-
-    /* Layout de formulário grid - igual à agenda */
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: var(--espaco-md);
-        margin-bottom: var(--espaco-lg);
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: var(--espaco-xs);
-    }
-
-    .form-group.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .form-group label {
-        color: var(--cinza-escuro);
-        font-weight: 600;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        gap: var(--espaco-xs);
-    }
-
-    /* Input fields - padrão agenda */
-    .input-field {
-        background: var(--branco);
-        border: 1px solid var(--cinza-borda);
-        border-radius: var(--borda-radius);
-        padding: 0.75rem 1rem;
-        color: var(--preto);
-        width: 100%;
-        font-size: 0.95rem;
-        transition: var(--transicao);
-        box-sizing: border-box;
-        font-family: var(--fontePrincipal);
-    }
-
-    .input-field:focus {
-        outline: none;
-        border-color: var(--roxoPrincipal);
-        box-shadow: var(--sombra-focus);
-        transform: translateY(-1px);
-    }
-
-    .input-field:disabled {
-        background-color: var(--cinza-claro);
-        border-color: var(--cinza-borda);
-        color: var(--cinza-medio);
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    /* Textarea específico */
-    textarea.input-field {
-        resize: vertical;
-        min-height: 80px;
-        font-family: var(--fontePrincipal);
-        line-height: 1.5;
-    }
-
-    /* Select múltiplo */
-    select.input-field[multiple] {
-        height: auto;
-        min-height: 120px;
-        padding: 0.75rem;
-    }
-
-    select.input-field[multiple] option {
-        padding: 0.5rem;
-        margin: 0.25rem 0;
-        border-radius: var(--borda-radius-sm);
-        transition: var(--transicao);
-    }
-
-    select.input-field[multiple] option:hover {
-        background: var(--roxoPrincipal-hover);
-    }
-
-    select.input-field[multiple] option:checked {
-        background: var(--roxoPrincipal);
-        color: var(--branco);
-    }
-
-    /* Input de cor personalizado */
-    .color-input-wrapper {
-        display: flex;
-        align-items: center;
-        gap: var(--espaco-sm);
-    }
-
-    .color-input {
-        width: 60px !important;
-        height: 45px;
-        padding: 0.2em;
-        cursor: pointer;
-        border: 2px solid var(--cinza-borda);
-        border-radius: var(--borda-radius);
-        transition: var(--transicao);
-    }
-
-    .color-input:hover {
-        border-color: var(--roxoPrincipal);
-        transform: scale(1.05);
-    }
-
-    .color-preview {
-        width: 40px;
-        height: 40px;
-        border-radius: var(--borda-radius);
-        border: 2px solid var(--cinza-borda);
-        box-shadow: var(--sombra-suave);
-        transition: var(--transicao);
-    }
-
-    /* Botões - estilo agenda */
-    .btn-submit {
-        background: linear-gradient(135deg, var(--roxoPrincipal), var(--roxo-primary-hover));
-        border: none;
-        padding: 0.875rem 1.75rem;
-        border-radius: var(--borda-radius);
-        font-weight: 700;
-        color: var(--branco);
-        cursor: pointer;
-        transition: var(--transicao);
-        font-size: 0.95rem;
-        display: inline-flex;
-        align-items: center;
-        gap: var(--espaco-xs);
-        box-shadow: var(--sombra-destaque);
-    }
-
-    .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(127, 67, 150, 0.35);
-        background: linear-gradient(135deg, var(--roxo-primary-hover), var(--roxoPrincipal));
-    }
-
-    .btn-submit:disabled {
-        background: var(--cinza-medio);
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
-
-    /* Tabelas - estilo agenda */
-    .tabela-wrapper {
-
-        border-radius: var(--borda-arredondada);
-        overflow: hidden;
-        margin-top: var(--espaco-lg);
-        box-shadow: var(--sombra-suave);
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.9rem;
-        color: var();
-    }
-
-    thead {
-        background: linear-gradient(135deg, var(--roxoPrincipal), var(--roxo-primary-hover));
-        color: var(--branco);
-    }
-
-    th {
-        padding: 1rem;
-        border-bottom: 1px solid var(--cinza-borda);
-        text-align: left;
-    }
-
-    th {
-        font-weight: 700;
-        font-size: 0.85rem;
-
-        letter-spacing: 0.5px;
-    }
-
-    td {
-        padding: .5em;
-    }
-
-    tbody tr {
-        transition: var(--transicao);
-    }
-
-
-    tbody tr:hover {
-        background: var(--roxoPrincipal-hover);
-        transform: translateX(4px);
-    }
-
-    /* Estados inativo - seguindo padrão agenda */
-    .inativo {
-        background-color: var(--vermelho-alerta) !important;
-        opacity: 0.7;
-        color: var(--preto);
-    }
-
-    .inativo td {
-        color: var(--preto);
-    }
-
-    /* Status badges - estilo agenda */
-    .status-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .status-badge.active {
-        background: var(--verde-sucesso);
-        color: var(--branco);
-    }
-
-    .status-badge.inactive {
-        background: var(--vermelho-alerta);
-        color: var(--branco);
-    }
-
-    /* Mensagens de formulário */
-    .form-message {
-        position: absolute;
-        bottom: 1em;
-        right: 1em;
-        font-size: 0.85rem;
-        margin-top: var(--espaco-xs);
-        padding: 1.5em;
-        border-radius: var(--borda-radius);
-        display: none;
-        font-weight: 500;
-    }
-
-    .form-message.success {
-        background: var(--verde-sucesso);
-        color: var(--branco);
-        display: block;
-    }
-
-    .form-message.error {
-        background: var(--vermelho-alerta);
-        color: var(--branco);
-        display: block;
-    }
-
-    /* Select styles - igual agenda */
-    select.input-field {
-        padding-right: 2.5rem;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236D398E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 12px center;
-        background-size: 16px;
-        appearance: none;
-        cursor: pointer;
-    }
-
-    /* File input customizado */
-    .input-field[type="file"] {
-        padding: 0.5rem;
-        border: 2px dashed var(--cinza-borda);
-        background: var(--cinza-claro);
-    }
-
-    .input-field[type="file"]:hover {
-        border-color: var(--roxoPrincipal);
-        background: var(--roxoPrincipal-hover);
-    }
-
-    /* Checkbox e radio customizados */
-    .checkbox-group {
-        display: flex;
-        flex-direction: column;
-        gap: var(--espaco-sm);
-    }
-
-    .checkbox-item {
-        display: flex;
-        align-items: center;
-        gap: var(--espaco-sm);
-        padding: var(--espaco-sm);
-        border: 1px solid var(--cinza-borda);
-        border-radius: var(--borda-radius);
-        transition: var(--transicao);
-        cursor: pointer;
-    }
-
-    .checkbox-item:hover {
-        border-color: var(--roxoPrincipal);
-        background: var(--roxoPrincipal-hover);
-    }
-
-    .checkbox-item input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: var(--roxoPrincipal);
-    }
-
-    /* Ações na tabela */
-    .acoes-cell {
-        display: flex;
-        gap: var(--espaco-xs);
-    }
-
-    .btn-acao {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border: none;
-        border-radius: var(--borda-radius);
-        background: transparent;
-        color: var(--cinza-escuro);
-        cursor: pointer;
-        transition: var(--transicao);
-        font-size: 1.1rem;
-    }
-
-    .btn-acao:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--sombra-suave);
-    }
-
-    .btn-acao.editar:hover {
-        background: var(--verde-sucesso);
-        color: var(--branco);
-    }
-
-    .btn-acao.excluir:hover {
-        background: var(--vermelho-alerta);
-        color: var(--branco);
-    }
-
-    /* Responsividade */
-    @media (max-width: 768px) {
-        .content.multipage {
-            padding: var(--espaco-sm);
-            margin-top: var(--espaco-sm);
-            border-radius: var(--borda-radius);
-        }
-
-        .tabs {
-            flex-direction: row;
-            gap: var(--espaco-xs);
-        }
-
-        .tab {
-            border-radius: var(--borda-radius);
-            border: 2px solid transparent;
-            justify-content: center;
-            font-size: 0.8rem;
-            padding: var(--espaco-sm);
-        }
-
-        .tab.active {
-            border-radius: var(--borda-radius);
-            transform: none;
-        }
-
-        .form {
-            padding: var(--espaco-md);
-        }
-
-        .form-grid {
-            grid-template-columns: 1fr;
-            gap: var(--espaco-sm);
-        }
-
-        .form_titulo {
-            font-size: 1.1rem;
-        }
-
-        .tabela-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            min-width: 600px;
-        }
-    }
-
-    /* Animações */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Estados vazios */
-    .empty-state {
-        text-align: center;
-        padding: var(--espaco-xl);
-        color: var(--cinza-medio);
-    }
-
-    .empty-state i {
-        font-size: 3rem;
-        margin-bottom: var(--espaco-md);
-        color: var(--cinza-borda);
-    }
-
-    /* Info boxes para configurações */
-    .config-info {
-        background: linear-gradient(to right, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
-        border-left: 4px solid var(--azul);
-        padding: var(--espaco-md);
-        border-radius: var(--borda-radius);
-        margin-bottom: var(--espaco-md);
-        display: flex;
-        align-items: center;
-        gap: 1em;
-    }
-
-    .config-info.warning {
-        background: linear-gradient(to right, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
-        border-left: 4px solid var(--laranja);
-    }
-
-    .config-info.success {
-        background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-        border-left: 4px solid var(--verde-sucesso);
-    }
-
-    .disp-card,
-    .week-grid {
-        display: grid;
-        grid-template-columns: 150px 100px repeat(6, 120px);
-        align-items: center;
-        gap: 1rem;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #333;
-    }
-
-    .week-grid {
-        border: none;
-    }
-
-    /* Estilos para edição em linha */
-    .editable {
-        position: relative;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .editable.editing {
-        background-color: var(--roxoPrincipal-hover);
-    }
-
-    .edit-input {
-        width: 100%;
-        padding: 0.25rem 0.5rem;
-        border: 2px solid var(--roxoPrincipal);
-        border-radius: var(--borda-radius);
-        background: var(--branco);
-        font-size: 0.9rem;
-    }
-
-    .editable .display-text {
-        padding: 0.25rem 0;
-    }
-
-    .btn-acao.salvar:hover {
-        background: var(--verde-sucesso);
-        color: var(--branco);
-    }
-
-    .btn-acao.cancelar:hover {
-        background: var(--vermelho-alerta);
-        color: var(--branco);
-    }
-</style>
+<link rel="stylesheet" href="{% static 'core/css/configuracoes.css' %}" />
+ 
 {% endblock %}
 
 {% block topbar_title %}<span class="text"><i class='bx bx-cog'></i>Configurações</span>{% endblock %}
@@ -594,41 +16,62 @@
 <div class="content multipage">
 
     <!-- Abas -->
-    <div class="tabs">
-        <button class="tab active" data-target="especialidades" data-section="especialidades">
-            <i class='bx bx-book-content'></i> Especialidades
-        </button>
-        <button class="tab" data-target="servicos" data-section="servicos">
-            <i class='bx bx-cog'></i> Serviços
-        </button>
-        <button class="tab" data-target="acessos" data-section="acessos">
-            <i class='bx bx-user'></i> Acessos & Valores
-        </button>
-        <a href="#agenda" class="tab" data-target="agenda" data-section="agenda" role="button">
-            <i class='bx bx-calendar'></i> Agenda
-        </a>
-        <button class="tab" data-target="financeiro" data-section="financeiro">
-            <i class='bx bx-dollar-circle'></i> Financeiro
-        </button>
-        <button class="tab" data-target="notificacoes" data-section="notificacoes">
-            <i class='bx bx-bell'></i> Notificações
-        </button>
-        <button class="tab" data-target="pacotes" data-section="pacotes">
-            <i class='bx bx-gift'></i> Pacotes & Benefícios
-        </button>
-        <button class="tab" data-target="empresa" data-section="empresa">
-            <i class='bx bx-building'></i> Empresa & Franquia
-        </button>
-        <button class="tab" data-target="estoque" data-section="estoque">
-            <i class='bx bx-box'></i> Estoque
-        </button>
-        <button class="tab" data-target="sistema" data-section="sistema">
-            <i class='bx bx-paint'></i> Sistema
-        </button>
-        <button class="tab" data-target="seguranca" data-section="seguranca">
-            <i class='bx bx-shield'></i> Segurança
-        </button>
-    </div>
+<div class="tabs">
+    <button class="tab active" data-target="especialidades" data-section="especialidades"
+            data-tooltip="Especialidades">
+        <i class='bx bx-book-content'></i>
+    </button>
+
+    <button class="tab" data-target="servicos" data-section="servicos"
+            data-tooltip="Serviços">
+        <i class='bx bx-cog'></i>
+    </button>
+
+    <button class="tab" data-target="acessos" data-section="acessos"
+            data-tooltip="Acessos & Valores">
+        <i class='bx bx-user'></i>
+    </button>
+
+    <a href="#agenda" class="tab" data-target="agenda" data-section="agenda"
+       data-tooltip="Agenda" role="button">
+        <i class='bx bx-calendar'></i>
+    </a>
+
+    <button class="tab" data-target="financeiro" data-section="financeiro"
+            data-tooltip="Financeiro">
+        <i class='bx bx-dollar-circle'></i>
+    </button>
+
+    <button class="tab" data-target="notificacoes" data-section="notificacoes"
+            data-tooltip="Notificações">
+        <i class='bx bx-bell'></i>
+    </button>
+
+    <button class="tab" data-target="pacotes" data-section="pacotes"
+            data-tooltip="Pacotes & Benefícios">
+        <i class='bx bx-gift'></i>
+    </button>
+
+    <button class="tab" data-target="empresa" data-section="empresa"
+            data-tooltip="Empresa & Franquia">
+        <i class='bx bx-building'></i>
+    </button>
+
+    <button class="tab" data-target="estoque" data-section="estoque"
+            data-tooltip="Estoque">
+        <i class='bx bx-box'></i>
+    </button>
+
+    <button class="tab" data-target="sistema" data-section="sistema"
+            data-tooltip="Sistema">
+        <i class='bx bx-paint'></i>
+    </button>
+
+    <button class="tab" data-target="seguranca" data-section="seguranca"
+            data-tooltip="Segurança">
+        <i class='bx bx-shield'></i>
+    </button>
+</div>
 
 
     <!-- Aba Especialidades -->
@@ -791,7 +234,7 @@
 
                             <td>
                                 <span class="status-badge {% if servico.ativo %}active{% else %}inactive{% endif %}">
-                                    {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
+                                    {{ servico.ativo|yesno:"Ativo,Inativo" }}
                                 </span>
                             </td>
                             <td>
@@ -1218,7 +661,7 @@
 
                             <td>
                                 <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
-                                    {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
+                                    {{ banco.ativo|yesno:"Ativo,Inativo" }}
                                 </span>
                             </td>
                             <td>
@@ -1357,7 +800,7 @@
                                     style="display: none;">
                             </td>
                             <td>
-                                <span class="status-badge {% if fornecedor.ativo %}active{% else %}inactive{% endif %}">
+                                <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
                                     {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
                                 </span>
                             </td>
