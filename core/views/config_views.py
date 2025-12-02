@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from core.models import Fornecedor,Paciente, User,Especialidade,Profissional, ContaBancaria, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import CategoriaContasReceber, Fornecedor,Paciente, User,Especialidade,Profissional, ContaBancaria, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -124,6 +124,16 @@ def configuracao_view(request):
                 ativo=ativo)
             except Exception as e:
                 print(e)
+                
+                
+        elif tipo == 'cadastro_categoria_contas_receber':
+            nome = request.POST.get('categoria_nome')
+            ativo = True
+            try:
+                CategoriaContasReceber.objects.create(nome=nome,ativo=ativo,)
+            except Exception as e:
+                print(e)
+            
         '''
         =====================================================================================
                                             EDIÇÃO
@@ -231,11 +241,15 @@ def configuracao_view(request):
     especialidades, total_especialidades_ativas, mostrar_todos_especialidade, filtra_inativo_especialidade = filtrar_ativos_inativos(request, Especialidade, prefixo='especialidade')
     fornecedores, total_fornecedores_ativas, mostrar_todos_fornecedores, filtra_inativo_fornecedores = filtrar_ativos_inativos(request, Fornecedor, prefixo='fornecedor')
     
+    
+    
+    
     usuarios = User.objects.filter(ativo=True).all().select_related('profissional')
     bancos = ContaBancaria.objects.all()
     profissionais = Profissional.objects.all()
-  
     fornecedores = Fornecedor.objects.all()
+    categorias = CategoriaContasReceber.objects.all()
+    print(categorias)
  
     
     
@@ -253,6 +267,7 @@ def configuracao_view(request):
         'bancos':bancos,
         'fornecedores':fornecedores,
         'profissionais':profissionais,
+        'categorias':categorias,
       
     })
 

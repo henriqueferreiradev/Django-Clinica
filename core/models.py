@@ -17,6 +17,7 @@ from django.forms import CharField
 from core.services.status_beneficios import calcular_beneficio
 from django.db.models import Sum
 from django.core.validators import MaxValueValidator, MinValueValidator
+ 
 def caminho_foto_paciente(instance, filename):
     nome = slugify(instance.nome)
     extensao = os.path.splitext(filename)[1]
@@ -516,6 +517,9 @@ class Pagamento(models.Model):
         ref = self.pacote.codigo if self.pacote else f"Sessão {self.agendamento.id}" if self.agendamento else "Avulso"
         return f"{self.paciente} - R$ {self.valor} - {ref} - {self.data.strftime('%d/%m/%Y')}"
 
+class CategoriaContasReceber(models.Model):
+    nome = models.CharField(max_length=50)
+    ativo = models.BooleanField(default=False)
 
 class LogAcao(models.Model):
     usuario = models.ForeignKey('User',on_delete=models.SET_NULL, null=True)
