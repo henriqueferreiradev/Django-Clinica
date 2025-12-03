@@ -1239,3 +1239,352 @@ class AvaliacaoFisioterapeutica(models.Model):
     
     def __str__(self):
         return f"Avaliação {self.paciente} - {self.data_avaliacao.date()}"
+    
+    
+    
+    
+    
+    
+# ADICIONE ISSO AO FINAL DO SEU models.py (antes da última linha)
+
+class CategoriaConta(models.Model):
+    """
+    Categoria principal: Receita ou Despesa
+    Simplificando o que você já tem em CategoriaFinanceira
+    """
+    TIPO_CHOICES = (
+        ('receita', 'Receita'),
+        ('despesa', 'Despesa'),
+    )
+    
+    nome = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    ativo = models.BooleanField(default=True)
+    ordem = models.IntegerField(default=0)
+    
+    class Meta:
+        verbose_name = 'Categoria de Conta'
+        verbose_name_plural = 'Categorias de Conta'
+        ordering = ['tipo', 'ordem', 'nome']
+    
+    def __str__(self):
+        return f"{self.nome} ({self.get_tipo_display()})"
+
+
+class GrupoConta(models.Model):
+    """
+    Grupo dentro de uma categoria
+    Ex: Para Receita -> ATENDIMENTOS, PRODUTOS, OUTRAS RECEITAS
+    """
+    categoria = models.ForeignKey(CategoriaConta, on_delete=models.CASCADE, related_name='grupos')
+    codigo = models.CharField(max_length=10, help_text="Código do grupo (ex: 1, 2, 3)")
+    descricao = models.CharField(max_length=100)
+    ativo = models.BooleanField(default=True)
+    ordem = models.IntegerField(default=0)
+    
+    class Meta:
+        verbose_name = 'Grupo de Conta'
+        verbose_name_plural = 'Grupos de Conta'
+        ordering = ['categoria', 'ordem', 'codigo']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['categoria', 'codigo'],
+                name='unique_grupo_por_categoria'
+            )
+        ]
+    
+    def __str__(self):
+        return f"{self.codigo} - {self.descricao}"
+
+
+class SubgrupoConta(models.Model):
+    """
+    Conta específica dentro de um grupo
+    Ex: 1.1 - Sessões Avulsas de Fisioterapia
+    """
+    grupo = models.ForeignKey(GrupoConta, on_delete=models.CASCADE, related_name='subgrupos')
+    codigo = models.CharField(max_length=10, help_text="Código do subgrupo (ex: 1, 2, 3)")
+    descricao = models.CharField(max_length=200)
+    codigo_completo = models.CharField(max_length=20, unique=True, editable=False)
+    ativo = models.BooleanField(default=True)
+    ordem = models.IntegerField(default=0)
+    
+    # Campos para controle financeiro
+    permite_lancamento_direto = models.BooleanField(default=True)
+    eh_centro_custo = models.BooleanField(default=False, help_text="Se é um centro de custo específico")
+    
+    # Metadados
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
+    criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, 
+                                   related_name='contas_criadas')
+    
+    class Meta:
+        verbose_name = 'Conta'
+        verbose_name_plural = 'Contas'
+        ordering = ['grupo__categoria', 'grupo__ordem', 'ordem', 'codigo']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['grupo', 'codigo'],
+                name='unique_conta_por_grupo'
+            )
+        ]
+    
+    def __str__(self):
+        return f"{self.codigo_completo} - {self.descricao}"
+    
+    def save(self, *args, **kwargs):
+        # Gera o código completo automaticamente: Tipo.Grupo.Subgrupo
+        # Ex: R.1.1 para Receitas > Atendimentos > Sessões Avulsas
+        # Ex: D.1.1 para Despesas > Atendimento (Custos Diretos) > Insumos
+        
+        # Primeira letra do tipo (R ou D)
+        tipo_codigo = self.grupo.categoria.tipo[0].upper()
+        self.codigo_completo = f"{tipo_codigo}.{self.grupo.codigo}.{self.codigo}"
+        super().save(*args, **kwargs)
+    
+    @property
+    def tipo(self):
+        """Retorna o tipo da conta (receita/despesa)"""
+        return self.grupo.categoria.tipo
+    
+    @property
+    def categoria_nome(self):
+        """Retorna o nome da categoria"""
+        return self.grupo.categoria.nome
+    
+    @property
+    def grupo_descricao(self):
+        """Retorna a descrição do grupo"""
+        return self.grupo.descricao
+
+
+class LancamentoConta(models.Model):
+    """
+    Lançamento financeiro vinculado a uma conta específica
+    """
+    conta = models.ForeignKey(SubgrupoConta, on_delete=models.PROTECT, related_name='lancamentos')
+    tipo_movimento = models.CharField(max_length=1, choices=[
+        ('C', 'Crédito'),
+        ('D', 'Débito')
+    ])
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    data_lancamento = models.DateField()
+    data_vencimento = models.DateField(null=True, blank=True)
+    descricao = models.TextField()
+    
+    # Vinculação com outros modelos do sistema
+    paciente = models.ForeignKey('Paciente', on_delete=models.SET_NULL, null=True, blank=True)
+    profissional = models.ForeignKey('Profissional', on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.ForeignKey('Agendamento', on_delete=models.SET_NULL, null=True, blank=True)
+    pacote = models.ForeignKey('PacotePaciente', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Status
+    STATUS_CHOICES = [
+        ('pendente', 'Pendente'),
+        ('pago', 'Pago'),
+        ('cancelado', 'Cancelado'),
+        ('atrasado', 'Atrasado'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
+    
+    # Forma de pagamento (se for receita)
+    forma_pagamento = models.CharField(max_length=30, blank=True, null=True, choices=[
+        ('pix', 'Pix'),
+        ('credito', 'Cartão de Crédito'),
+        ('debito', 'Cartão de Débito'),
+        ('dinheiro', 'Dinheiro'),
+        ('transferencia', 'Transferência'),
+        ('boleto', 'Boleto'),
+        ('outro', 'Outro'),
+    ])
+    
+    # Dados do pagamento
+    data_pagamento = models.DateField(null=True, blank=True)
+    comprovante = models.FileField(upload_to='comprovantes/lancamentos/', null=True, blank=True)
+    
+    # Metadados
+    observacoes = models.TextField(blank=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
+    criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    
+    class Meta:
+        verbose_name = 'Lançamento Contábil'
+        verbose_name_plural = 'Lançamentos Contábeis'
+        ordering = ['-data_lancamento', '-data_criacao']
+        indexes = [
+            models.Index(fields=['conta', 'data_lancamento']),
+            models.Index(fields=['status', 'data_vencimento']),
+        ]
+    
+    def __str__(self):
+        return f"{self.conta.codigo_completo} - {self.descricao} - R$ {self.valor}"
+    
+    def save(self, *args, **kwargs):
+        # Verifica se a conta está ativa
+        if not self.conta.ativo:
+            raise ValueError("Não é possível lançar em uma conta inativa")
+        
+        # Atualiza status se a data de vencimento passou
+        if self.data_vencimento and self.status == 'pendente':
+            from datetime import date
+            if self.data_vencimento < date.today():
+                self.status = 'atrasado'
+        
+        super().save(*args, **kwargs)
+
+
+# Função para popular o plano de contas inicial
+def popular_plano_contas_inicial():
+    """
+    Popula o banco de dados com o plano de contas da clínica
+    """
+    from datetime import date
+    
+    # Criar usuário admin para usar como criado_por
+    try:
+        admin_user = User.objects.filter(username='admin').first()
+    except:
+        admin_user = None
+    
+    # Dados do plano de contas
+    plano_contas = {
+        'receita': {
+            '1': {
+                'descricao': 'ATENDIMENTOS',
+                'subgrupos': {
+                    '1': 'Sessões Avulsas de Fisioterapia',
+                    '2': 'Pacotes de Fisioterapia',
+                    '3': 'Pilates / RPG',
+                    '4': 'Atendimentos Online / Teleatendimento',
+                    '5': 'Avaliações e Reavaliações',
+                }
+            },
+            '2': {
+                'descricao': 'PRODUTOS',
+                'subgrupos': {
+                    '1': 'Produtos Terapêuticos (faixas, kinesio, cremes)',
+                    '2': 'Kits / Combos de Produtos',
+                }
+            },
+            '3': {
+                'descricao': 'OUTRAS RECEITAS',
+                'subgrupos': {
+                    '1': 'Receitas Financeiras',
+                    '2': 'Multas / Juros Recebidos',
+                    '3': 'Outras Receitas Operacionais',
+                    '4': 'Receitas Não Operacionais',
+                }
+            }
+        },
+        'despesa': {
+            '1': {
+                'descricao': 'ATENDIMENTO (CUSTOS DIRETOS)',
+                'subgrupos': {
+                    '1': 'Insumos (kinesio, cremes, bandagens)',
+                    '2': 'Equipamentos e Manutenção',
+                    '3': 'EPIs e Descartáveis',
+                    '4': 'Comissões de Profissionais',
+                    '5': 'Profissionais Terceirizados',
+                }
+            },
+            '2': {
+                'descricao': 'OPERACIONAL (DESPESAS FIXAS)',
+                'subgrupos': {
+                    '1': 'Aluguel',
+                    '2': 'Energia',
+                    '3': 'Água',
+                    '4': 'Internet / Telefonia',
+                    '5': 'IPTU / Seguro',
+                    '6': 'Limpeza / Manutenção',
+                    '7': 'Estrutura / Mobiliário',
+                }
+            },
+            '3': {
+                'descricao': 'ADMINISTRATIVO',
+                'subgrupos': {
+                    '1': 'Folha de Pagamento',
+                    '2': 'Encargos Trabalhistas',
+                    '3': 'Contabilidade',
+                    '4': 'Softwares / Sistemas / Hospedagem',
+                    '5': 'Material de Escritório',
+                    '6': 'Cursos / Certificações',
+                    '7': 'Licenças Profissionais (CREFITO etc.)',
+                }
+            },
+            '4': {
+                'descricao': 'COMERCIAL / MARKETING',
+                'subgrupos': {
+                    '1': 'Marketing Digital',
+                    '2': 'Impulsionamentos (Instagram, TikTok etc.)',
+                    '3': 'Eventos / Ações Comerciais',
+                    '4': 'Brindes / Materiais Promocionais',
+                }
+            },
+            '5': {
+                'descricao': 'FINANCEIRO',
+                'subgrupos': {
+                    '1': 'Taxas de Cartão',
+                    '2': 'Tarifas Bancárias',
+                    '3': 'Juros / Multas Pagas',
+                    '4': 'Inadimplência (Perdas)',
+                }
+            },
+            '6': {
+                'descricao': 'TRIBUTOS',
+                'subgrupos': {
+                    '1': 'ISS',
+                    '2': 'Simples Nacional',
+                    '3': 'Taxas Municipais',
+                    '4': 'Outros Tributos',
+                }
+            }
+        }
+    }
+    
+    created_count = 0
+    
+    for tipo, grupos_data in plano_contas.items():
+        # Criar ou obter categoria
+        nome_categoria = 'Receitas' if tipo == 'receita' else 'Despesas'
+        categoria, created = CategoriaConta.objects.get_or_create(
+            nome=nome_categoria,
+            tipo=tipo,
+            defaults={'ordem': 1 if tipo == 'receita' else 2}
+        )
+        
+        for codigo_grupo, dados_grupo in grupos_data.items():
+            # Criar ou obter grupo
+            grupo, created = GrupoConta.objects.get_or_create(
+                categoria=categoria,
+                codigo=codigo_grupo,
+                defaults={
+                    'descricao': dados_grupo['descricao'],
+                    'ordem': int(codigo_grupo)
+                }
+            )
+            
+            for codigo_sub, desc_sub in dados_grupo['subgrupos'].items():
+                # Criar subgrupo
+                subgrupo, created = SubgrupoConta.objects.get_or_create(
+                    grupo=grupo,
+                    codigo=codigo_sub,
+                    defaults={
+                        'descricao': desc_sub,
+                        'ordem': int(codigo_sub),
+                        'criado_por': admin_user
+                    }
+                )
+                if created:
+                    created_count += 1
+    
+    return created_count
+
+    
+    
+    
+    
+    
+
+

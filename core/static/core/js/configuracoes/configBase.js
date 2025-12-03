@@ -1,16 +1,35 @@
-function copiarTexto(texto) {
-    navigator.clipboard.writeText(texto).then(function () {
-        const feedback = document.getElementById("feedback");
-        feedback.style.display = "block";
-        setTimeout(() => {
-            feedback.style.display = "none";
-        }, 1500);
-    }).catch(function (err) {
-        console.error("Erro ao copiar: ", err);
-    });
+    function mostrarMensagem(mensagem, tipo = 'success') {
+    const toastContainer = document.getElementById('toast-container') || criarToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo} toast-slide-in`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    ${getIcon(tipo)}
+                </div>
+                <div class="toast-title">
+                    ${getTitle(tipo)}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div>${mensagem}</div>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Remove após 5 segundos
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('toast-slide-out');
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 5000);
 }
-
- 
     // Sistema de tabs com URL e persistência
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', (e) => {
@@ -365,23 +384,7 @@ function copiarTexto(texto) {
         });
     });
 
-    // Função para mostrar mensagens
-    function mostrarMensagem(mensagem, tipo) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `form-message ${tipo}`;
-        messageDiv.textContent = mensagem;
-        messageDiv.style.position = 'fixed';
-        messageDiv.style.top = '20px';
-        messageDiv.style.right = '20px';
-        messageDiv.style.zIndex = '1000';
-
-        document.body.appendChild(messageDiv);
-
-        setTimeout(() => {
-            messageDiv.remove();
-        }, 5000);
-    }
-
+    
     // Tecla ESC para cancelar edição
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && editingRow) {
@@ -391,4 +394,213 @@ function copiarTexto(texto) {
             }
         }
     });
- 
+
+
+    // =============================
+// SISTEMA DE SEÇÕES RETRÁTEIS
+// =============================
+
+// Função para alternar uma seção
+function toggleFormSection(header) {
+    const formSection = header.parentElement;
+    const content = formSection.querySelector('.form-content');
+    const icon = header.querySelector('.form-toggle i');
+    
+    // Fecha todas as outras seções na mesma aba (opcional - descomente se quiser accordion)
+    /*
+    const parentTab = formSection.closest('.tab-content');
+    if (parentTab) {
+        parentTab.querySelectorAll('.form.expanded').forEach(otherSection => {
+            if (otherSection !== formSection) {
+                otherSection.classList.remove('expanded');
+                otherSection.querySelector('.form-content').style.maxHeight = "0";
+                otherSection.querySelector('.form-content').style.opacity = "0";
+                otherSection.querySelector('.form-content').style.padding = "0";
+            }
+        });
+    }
+    */
+    
+    // Alterna a seção atual
+    if (formSection.classList.contains('expanded')) {
+        // Fecha a seção
+        formSection.classList.remove('expanded');
+        content.style.maxHeight = "0";
+        content.style.opacity = "0";
+        content.style.padding = "0";
+        
+        // Animação suave para o ícone
+        icon.style.transform = "rotate(0deg)";
+    } else {
+        // Abre a seção
+        formSection.classList.add('expanded');
+        const scrollHeight = content.scrollHeight;
+        content.style.maxHeight = scrollHeight + "px";
+        content.style.opacity = "1";
+        content.style.padding = "var(--espaco-lg)";
+        
+        // Animação suave para o ícone
+        icon.style.transform = "rotate(180deg)";
+    }
+}
+
+// Função para abrir todas as seções de uma aba
+function expandAllSections(tabId) {
+    const tab = document.getElementById(tabId);
+    if (tab) {
+        tab.querySelectorAll('.form').forEach(formSection => {
+            if (!formSection.classList.contains('expanded')) {
+                const content = formSection.querySelector('.form-content');
+                const icon = formSection.querySelector('.form-toggle i');
+                
+                formSection.classList.add('expanded');
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.style.opacity = "1";
+                content.style.padding = "var(--espaco-lg)";
+                icon.style.transform = "rotate(180deg)";
+            }
+        });
+    }
+}
+
+// Função para fechar todas as seções de uma aba
+function collapseAllSections(tabId) {
+    const tab = document.getElementById(tabId);
+    if (tab) {
+        tab.querySelectorAll('.form.expanded').forEach(formSection => {
+            const content = formSection.querySelector('.form-content');
+            const icon = formSection.querySelector('.form-toggle i');
+            
+            formSection.classList.remove('expanded');
+            content.style.maxHeight = "0";
+            content.style.opacity = "0";
+            content.style.padding = "0";
+            icon.style.transform = "rotate(0deg)";
+        });
+    }
+}
+
+// Inicialização das seções
+document.addEventListener('DOMContentLoaded', function() {
+    // Abre a primeira seção da primeira aba ativa
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab) {
+        const firstForm = activeTab.querySelector('.form');
+        if (firstForm) {
+            firstForm.classList.add('expanded');
+            const content = firstForm.querySelector('.form-content');
+            content.style.maxHeight = content.scrollHeight + "px";
+            content.style.opacity = "1";
+            content.style.padding = "var(--espaco-lg)";
+            
+            // Ajusta o ícone
+            const icon = firstForm.querySelector('.form-toggle i');
+            if (icon) icon.style.transform = "rotate(180deg)";
+        }
+    }
+    
+    // Adiciona botões de expandir/recolher todos (opcional)
+    addExpandCollapseButtons();
+    
+    // Ajusta altura das seções ao redimensionar
+    window.addEventListener('resize', function() {
+        document.querySelectorAll('.form.expanded .form-content').forEach(content => {
+            content.style.maxHeight = content.scrollHeight + "px";
+        });
+    });
+    
+    // Atalhos de teclado
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + E expande todas as seções da aba ativa
+        if (e.ctrlKey && e.key === 'e') {
+            e.preventDefault();
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                expandAllSections(activeTab.id);
+            }
+        }
+        
+        // Ctrl + R recolhe todas as seções da aba ativa
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                collapseAllSections(activeTab.id);
+            }
+        }
+    });
+});
+
+// Função para adicionar botões de expandir/recolher todos (opcional)
+function addExpandCollapseButtons() {
+    const tabsContainer = document.querySelector('.tabs');
+    if (tabsContainer) {
+        // Cria container para os botões
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'expand-collapse-buttons';
+        buttonsContainer.style.display = 'flex';
+        buttonsContainer.style.gap = '10px';
+        buttonsContainer.style.marginLeft = 'auto';
+        buttonsContainer.style.alignItems = 'center';
+        
+        // Botão Expandir Todos
+        const expandBtn = document.createElement('button');
+        expandBtn.className = 'btn-small';
+        expandBtn.innerHTML = '<i class="bx bx-chevrons-down"></i> Expandir';
+        expandBtn.title = 'Expandir todas as seções (Ctrl+E)';
+        expandBtn.onclick = function() {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) expandAllSections(activeTab.id);
+        };
+        
+        // Botão Recolher Todos
+        const collapseBtn = document.createElement('button');
+        collapseBtn.className = 'btn-small';
+        collapseBtn.innerHTML = '<i class="bx bx-chevrons-up"></i> Recolher';
+        collapseBtn.title = 'Recolher todas as seções (Ctrl+R)';
+        collapseBtn.onclick = function() {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) collapseAllSections(activeTab.id);
+        };
+        
+        buttonsContainer.appendChild(expandBtn);
+        buttonsContainer.appendChild(collapseBtn);
+        
+        // Adiciona após o último elemento nas tabs
+        tabsContainer.appendChild(buttonsContainer);
+    }
+}
+
+// Estilo para os botões pequenos
+const style = document.createElement('style');
+style.textContent = `
+.btn-small {
+    background: var(--roxoPrincipal);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--borda-radius);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: var(--transicao);
+}
+
+.btn-small:hover {
+    background: var(--roxo-primary-hover);
+    transform: translateY(-1px);
+}
+
+.expand-collapse-buttons {
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .expand-collapse-buttons {
+        display: none !important;
+    }
+}
+`;
+document.head.appendChild(style);

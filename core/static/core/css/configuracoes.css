@@ -659,7 +659,7 @@ select.input-field {
     align-items: center;
     padding: 1.25rem 1.5rem;
     background: linear-gradient(135deg, var(--roxoPrincipal), var(--roxo-primary-hover));
-    color: var(--branco);
+    color: white;
     cursor: pointer;
     border-radius: var(--borda-arredondada) var(--borda-arredondada) 0 0;
     transition: all 0.3s ease;
@@ -1109,3 +1109,11 @@ select.input-field {
 .toast-close:hover {
     color: white;
 }
+
+
+
+
+
+
+
+
