@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
 <link rel="stylesheet" href="{% static 'core/css/configuracoes.css' %}" />
- 
+
 {% endblock %}
 
 {% block topbar_title %}<span class="text"><i class='bx bx-cog'></i>Configurações</span>{% endblock %}
@@ -16,160 +16,165 @@
 <div class="content multipage">
 
     <!-- Abas -->
-<div class="tabs">
-    <button class="tab active" data-target="especialidades" data-section="especialidades"
+    <div class="tabs">
+        <button class="tab active" data-target="especialidades" data-section="especialidades"
             data-tooltip="Especialidades">
-        <i class='bx bx-book-content'></i>
-    </button>
+            <i class='bx bx-book-content'></i>
+        </button>
 
-    <button class="tab" data-target="servicos" data-section="servicos"
-            data-tooltip="Serviços">
-        <i class='bx bx-cog'></i>
-    </button>
+        <button class="tab" data-target="servicos" data-section="servicos" data-tooltip="Serviços">
+            <i class='bx bx-cog'></i>
+        </button>
 
-    <button class="tab" data-target="acessos" data-section="acessos"
-            data-tooltip="Acessos & Valores">
-        <i class='bx bx-user'></i>
-    </button>
+        <button class="tab" data-target="acessos" data-section="acessos" data-tooltip="Acessos & Valores">
+            <i class='bx bx-user'></i>
+        </button>
 
-    <a href="#agenda" class="tab" data-target="agenda" data-section="agenda"
-       data-tooltip="Agenda" role="button">
-        <i class='bx bx-calendar'></i>
-    </a>
+        <a href="#agenda" class="tab" data-target="agenda" data-section="agenda" data-tooltip="Agenda" role="button">
+            <i class='bx bx-calendar'></i>
+        </a>
 
-    <button class="tab" data-target="financeiro" data-section="financeiro"
-            data-tooltip="Financeiro">
-        <i class='bx bx-dollar-circle'></i>
-    </button>
+        <button class="tab" data-target="financeiro" data-section="financeiro" data-tooltip="Financeiro">
+            <i class='bx bx-dollar-circle'></i>
+        </button>
 
-    <button class="tab" data-target="notificacoes" data-section="notificacoes"
-            data-tooltip="Notificações">
-        <i class='bx bx-bell'></i>
-    </button>
+        <button class="tab" data-target="notificacoes" data-section="notificacoes" data-tooltip="Notificações">
+            <i class='bx bx-bell'></i>
+        </button>
 
-    <button class="tab" data-target="pacotes" data-section="pacotes"
-            data-tooltip="Pacotes & Benefícios">
-        <i class='bx bx-gift'></i>
-    </button>
+        <button class="tab" data-target="pacotes" data-section="pacotes" data-tooltip="Pacotes & Benefícios">
+            <i class='bx bx-gift'></i>
+        </button>
 
-    <button class="tab" data-target="empresa" data-section="empresa"
-            data-tooltip="Empresa & Franquia">
-        <i class='bx bx-building'></i>
-    </button>
+        <button class="tab" data-target="empresa" data-section="empresa" data-tooltip="Empresa & Franquia">
+            <i class='bx bx-building'></i>
+        </button>
 
-    <button class="tab" data-target="estoque" data-section="estoque"
-            data-tooltip="Estoque">
-        <i class='bx bx-box'></i>
-    </button>
+        <button class="tab" data-target="estoque" data-section="estoque" data-tooltip="Estoque">
+            <i class='bx bx-box'></i>
+        </button>
 
-    <button class="tab" data-target="sistema" data-section="sistema"
-            data-tooltip="Sistema">
-        <i class='bx bx-paint'></i>
-    </button>
+        <button class="tab" data-target="sistema" data-section="sistema" data-tooltip="Sistema">
+            <i class='bx bx-paint'></i>
+        </button>
 
-    <button class="tab" data-target="seguranca" data-section="seguranca"
-            data-tooltip="Segurança">
-        <i class='bx bx-shield'></i>
-    </button>
-</div>
+        <button class="tab" data-target="seguranca" data-section="seguranca" data-tooltip="Segurança">
+            <i class='bx bx-shield'></i>
+        </button>
+    </div>
 
 
     <!-- Aba Especialidades -->
     <div class="tab-content active" id="especialidades">
         <div class="form">
-
-            <h2 class="form_titulo"><i class='bx bx-book-content'></i> Gerenciar Especialidades</h2>
-
-            <form method="post" id="form-especialidade">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="especialidade" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="especialidade-nome"><i class='bx bx-rename'></i> Nome da Especialidade</label>
-                        <input class="input-field" id="especialidade-nome" name="nome"
-                            placeholder="Digite o nome da especialidade" type="text" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="especialidade-cor"><i class='bx bx-palette'></i> Cor de Identificação</label>
-                        <div class="color-input-wrapper">
-                            <input class="input-field color-input" id="especialidade-cor" type="color" name="cor"
-                                value="#7F4396" />
-                            <div class="color-preview" id="color-preview" style="background-color: #7F4396"></div>
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-book-content'></i> Gerenciar Especialidades</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <form method="post" id="form-especialidade">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="especialidade" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="especialidade-nome"><i class='bx bx-rename'></i> Nome da Especialidade</label>
+                            <input class="input-field" id="especialidade-nome" name="nome"
+                                placeholder="Digite o nome da especialidade" type="text" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="especialidade-cor"><i class='bx bx-palette'></i> Cor de Identificação</label>
+                            <div class="color-input-wrapper">
+                                <input class="input-field color-input" id="especialidade-cor" type="color" name="cor"
+                                    value="#7F4396" />
+                                <div class="color-preview" id="color-preview" style="background-color: #7F4396"></div>
+                            </div>
                         </div>
                     </div>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Especialidade</button>
+                </form>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class='bx bx-search'></i>
+                        <input type="text" placeholder="Buscar especialidade..." onkeyup="filtrarTabela(this, 'especialidades')">
+                    </div>
+                    <div class="table-info">
+                        <span class="badge active-count">{{ especialidades_ativas }} ativas</span>
+                        <span class="badge inactive-count">{{ especialidades_inativas }} inativas</span>
+                    </div>
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Especialidade</button>
-            </form>
-
-            <div class="tabela-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Especialidade</th>
-                            <th>Cor</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for especialidade in especialidades %}
-                        <tr class="{% if not especialidade.ativo %}inativo{% endif %}">
-                            <td class="editable" data-field="nome" data-id="{{ especialidade.id }}"
-                                data-model="especialidade">
-                                <span class="display-text">{{ especialidade.nome }}</span>
-                                <input type="text" class="edit-input" value="{{ especialidade.nome }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="cor" data-id="{{ especialidade.id }}"
-                                data-model="especialidade">
-                                <span class="display-text">
-                                    <div
-                                        style="background-color: {{ especialidade.cor }}; width: 60px; height: 24px; border-radius: var(--borda-radius); border: 2px solid var(--cinza-borda);">
-                                    </div>
-                                </span>
-                                <input type="color" class="edit-input" value="{{ especialidade.cor }}"
-                                    style="display: none; width: 60px; height: 30px;">
-                            </td>
-                            <td>
-                                <span
-                                    class="status-badge {% if especialidade.ativo %}active{% else %}inactive{% endif %}">
-                                    {{ especialidade.ativo|yesno:"Ativo,Inativo" }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="acoes-cell">
-                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
-                                        onclick="salvarEdicao(this)">
-                                        <i class='bx bx-check'></i>
-                                    </button>
-                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
-                                        onclick="cancelarEdicao(this)">
-                                        <i class='bx bx-x'></i>
-                                    </button>
-                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
-                                        <i class='bx bx-edit'></i>
-                                    </button>
-                                    <form method="post" style="display: inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="especialidade_id" value="{{ especialidade.id }}">
-                                        <button type="submit" name="tipo" value="inativar_especialidade"
-                                            class="btn-acao excluir" title="Inativar">
-                                            <i class='bx bx-trash'></i>
+                <div class="tabela-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Especialidade</th>
+                                <th>Cor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for especialidade in especialidades %}
+                            <tr class="{% if not especialidade.ativo %}inativo{% endif %}">
+                                <td class="editable" data-field="nome" data-id="{{ especialidade.id }}"
+                                    data-model="especialidade">
+                                    <span class="display-text">{{ especialidade.nome }}</span>
+                                    <input type="text" class="edit-input" value="{{ especialidade.nome }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="cor" data-id="{{ especialidade.id }}"
+                                    data-model="especialidade">
+                                    <span class="display-text">
+                                        <div
+                                            style="background-color: {{ especialidade.cor }}; width: 60px; height: 24px; border-radius: var(--borda-radius); border: 2px solid var(--cinza-borda);">
+                                        </div>
+                                    </span>
+                                    <input type="color" class="edit-input" value="{{ especialidade.cor }}"
+                                        style="display: none; width: 60px; height: 30px;">
+                                </td>
+                                <td>
+                                    <span
+                                        class="status-badge {% if especialidade.ativo %}active{% else %}inactive{% endif %}">
+                                        {{ especialidade.ativo|yesno:"Ativo,Inativo" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="acoes-cell">
+                                        <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                            onclick="salvarEdicao(this)">
+                                            <i class='bx bx-check'></i>
                                         </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="empty-state">
-                                <i class='bx bx-inbox'></i>
-                                <p>Nenhuma especialidade cadastrada</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                        <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                            onclick="cancelarEdicao(this)">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                        <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                            <i class='bx bx-edit'></i>
+                                        </button>
+                                        <form method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="especialidade_id" value="{{ especialidade.id }}">
+                                            <button type="submit" name="tipo" value="inativar_especialidade"
+                                                class="btn-acao excluir" title="Inativar">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="empty-state">
+                                    <i class='bx bx-inbox'></i>
+                                    <p>Nenhuma especialidade cadastrada</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -177,101 +182,107 @@
     <!-- Aba Serviços -->
     <div class="tab-content" id="servicos">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-cog'></i> Gerenciar Serviços</h2>
-            <form method="post" id="form-servico">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="servico" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="servico-nome"><i class='bx bx-rename'></i> Nome do Serviço</label>
-                        <input class="input-field capitalize-input" id="servico-nome" name="nome"
-                            placeholder="Digite o nome do serviço" type="text" required />
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-cog'></i> Gerenciar Serviços</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <form method="post" id="form-servico">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="servico" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="servico-nome"><i class='bx bx-rename'></i> Nome do Serviço</label>
+                            <input class="input-field capitalize-input" id="servico-nome" name="nome"
+                                placeholder="Digite o nome do serviço" type="text" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="servico-sessoes"><i class='bx bx-calendar'></i> Quantidade de Sessões</label>
+                            <input class="input-field" id="servico-sessoes" name="qtd_sessoes"
+                                placeholder="Número de sessões" type="number" min="1" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="servico-valor"><i class='bx bx-dollar'></i> Valor (R$)</label>
+                            <input class="input-field" id="servico-valor" name="valor" placeholder="0.00" type="number"
+                                step="0.01" min="0" required />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="servico-sessoes"><i class='bx bx-calendar'></i> Quantidade de Sessões</label>
-                        <input class="input-field" id="servico-sessoes" name="qtd_sessoes"
-                            placeholder="Número de sessões" type="number" min="1" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="servico-valor"><i class='bx bx-dollar'></i> Valor (R$)</label>
-                        <input class="input-field" id="servico-valor" name="valor" placeholder="0.00" type="number"
-                            step="0.01" min="0" required />
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Serviço</button>
-            </form>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Serviço</button>
+                </form>
 
-            <div class="tabela-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Serviço</th>
-                            <th>Sessões</th>
-                            <th>Valor</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
+                <div class="tabela-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Serviço</th>
+                                <th>Sessões</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        {% for servico in servicos %}
-                        <tr class="{% if not servico.ativo %} inactive{% endif %}">
-                            <td class="editable" data-field="nome" data-id='{{servico.id}}' data-model="servico">
-                                <span class="display-text">{{ servico.nome }}</span>
-                                <input type="text" class="edit-input" value="{{ servico.nome }}" style="display: none;">
-                            </td>
-                            <td class="editable" data-field="valor" data-id='{{servico.id}}' data-model="servico">
-                                <span class="display-text">{{ servico.valor }}</span>
-                                <input type="text" class="edit-input" value="{{ servico.valor }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="qtd_sessoes" data-id='{{servico.id}}' data-model="servico">
-                                <span class="display-text">{{ servico.qtd_sessoes }}</span>
-                                <input type="text" class="edit-input" value="{{ servico.qtd_sessoes  }}"
-                                    style="display: none;">
-                            </td>
-
-
-                            <td>
-                                <span class="status-badge {% if servico.ativo %}active{% else %}inactive{% endif %}">
-                                    {{ servico.ativo|yesno:"Ativo,Inativo" }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="acoes-cell">
-                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
-                                        onclick="salvarEdicao(this)">
-                                        <i class='bx bx-check'></i>
-                                    </button>
-                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
-                                        onclick="cancelarEdicao(this)">
-                                        <i class='bx bx-x'></i>
-                                    </button>
-                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
-                                        <i class='bx bx-edit'></i>
-                                    </button>
-                                    <!-- Botão de inativar -->
-                                    <form method="post" style="display: inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="servico_id" value="{{ servico.id }}">
-                                        <button type="submit" name="tipo" value="inativar_servico"
-                                            class="btn-acao excluir" title="Inativar">
-                                            <i class='bx bx-trash'></i>
+                        <tbody>
+                            {% for servico in servicos %}
+                            <tr class="{% if not servico.ativo %} inactive{% endif %}">
+                                <td class="editable" data-field="nome" data-id='{{servico.id}}' data-model="servico">
+                                    <span class="display-text">{{ servico.nome }}</span>
+                                    <input type="text" class="edit-input" value="{{ servico.nome }}" style="display: none;">
+                                </td>
+                                <td class="editable" data-field="qtd_sessoes" data-id='{{servico.id}}' data-model="servico">
+                                    <span class="display-text">{{ servico.qtd_sessoes }}</span>
+                                    <input type="text" class="edit-input" value="{{ servico.qtd_sessoes }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="valor" data-id='{{servico.id}}' data-model="servico">
+                                    <span class="display-text">R$ {{ servico.valor }}</span>
+                                    <input type="text" class="edit-input" value="{{ servico.valor }}"
+                                        style="display: none;">
+                                </td>
+                                <td>
+                                    <span class="status-badge {% if servico.ativo %}active{% else %}inactive{% endif %}">
+                                        {{ servico.ativo|yesno:"Ativo,Inativo" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="acoes-cell">
+                                        <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                            onclick="salvarEdicao(this)">
+                                            <i class='bx bx-check'></i>
                                         </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="empty-state">
-                                <i class='bx bx-inbox'></i>
-                                <p>Nenhum fornecedor cadastrado</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                        <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                            onclick="cancelarEdicao(this)">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                        <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                            <i class='bx bx-edit'></i>
+                                        </button>
+                                        <!-- Botão de inativar -->
+                                        <form method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="servico_id" value="{{ servico.id }}">
+                                            <button type="submit" name="tipo" value="inativar_servico"
+                                                class="btn-acao excluir" title="Inativar">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <i class='bx bx-inbox'></i>
+                                    <p>Nenhum serviço cadastrado</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -279,285 +290,323 @@
     <!-- Aba Acessos -->
     <div class="tab-content" id="acessos">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-user'></i> Gerenciar Acessos & Valores</h2>
-            <form method="POST" id="form-usuario">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="usuario_config" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="usuario-select"><i class='bx bx-user-circle'></i> Selecione o Profissional</label>
-                        <select class="input-field" name="usuario_id" id="usuario-select"
-                            onchange="carregarDadosUsuario()" required>
-                            <option value="" disabled selected>Selecione um profissional</option>
-                            {% for u in usuarios %}
-                            <option value="{{ u.id }}" data-tipo="{{ u.tipo }}"
-                                data-hora="{{ u.profissional.valor_hora|default_if_none:'' }}">
-                                {{ u.get_full_name|default:u.username }} ({{ u.username }})
-                            </option>
-                            {% endfor %}
-                        </select>
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-user'></i> Gerenciar Acessos & Valores</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <form method="POST" id="form-usuario">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="usuario_config" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="usuario-select"><i class='bx bx-user-circle'></i> Selecione o Profissional</label>
+                            <select class="input-field" name="usuario_id" id="usuario-select"
+                                onchange="carregarDadosUsuario()" required>
+                                <option value="" disabled selected>Selecione um profissional</option>
+                                {% for u in usuarios %}
+                                <option value="{{ u.id }}" data-tipo="{{ u.tipo }}"
+                                    data-hora="{{ u.profissional.valor_hora|default_if_none:'' }}">
+                                    {{ u.get_full_name|default:u.username }} ({{ u.username }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo-select"><i class='bx bx-cog'></i> Tipo de Usuário</label>
+                            <select class="input-field" name="tipo_usuario" id="tipo-select" disabled>
+                                <option value="" disabled selected>Selecione o tipo</option>
+                                {% for valor, label in user_tipo_choices %}
+                                <option value="{{ valor }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="valor-hora-input"><i class='bx bx-dollar-circle'></i> Valor da Hora (R$)</label>
+                            <input class="input-field" type="number" name="valor_hora" id="valor-hora-input"
+                                placeholder="0.00" step="0.01" min="0" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="nova_senha"><i class='bx bx-lock-alt'></i> Nova Senha</label>
+                            <input class="input-field" type="password" id="nova_senha" name="nova_senha"
+                                placeholder="Deixe em branco para manter a atual" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="confirma_senha"><i class='bx bx-lock'></i> Confirmar Senha</label>
+                            <input class="input-field" type="password" id="confirma_senha" name="confirma_senha"
+                                placeholder="Confirme a nova senha" disabled />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="tipo-select"><i class='bx bx-cog'></i> Tipo de Usuário</label>
-                        <select class="input-field" name="tipo_usuario" id="tipo-select" disabled>
-                            <option value="" disabled selected>Selecione o tipo</option>
-                            {% for valor, label in user_tipo_choices %}
-                            <option value="{{ valor }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="valor-hora-input"><i class='bx bx-dollar-circle'></i> Valor da Hora (R$)</label>
-                        <input class="input-field" type="number" name="valor_hora" id="valor-hora-input"
-                            placeholder="0.00" step="0.01" min="0" disabled />
-                    </div>
-                    <div class="form-group">
-                        <label for="nova_senha"><i class='bx bx-lock-alt'></i> Nova Senha</label>
-                        <input class="input-field" type="password" id="nova_senha" name="nova_senha"
-                            placeholder="Deixe em branco para manter a atual" disabled />
-                    </div>
-                    <div class="form-group">
-                        <label for="confirma_senha"><i class='bx bx-lock'></i> Confirmar Senha</label>
-                        <input class="input-field" type="password" id="confirma_senha" name="confirma_senha"
-                            placeholder="Confirme a nova senha" disabled />
-                    </div>
-                </div>
-                <div id="senha-msg" class="form-message"></div>
-                <button type="submit" class="btn-submit" id="btn-salvar-usuario" disabled><i class='bx bx-save'></i>
-                    Salvar Alterações</button>
-            </form>
+                    <div id="senha-msg" class="form-message"></div>
+                    <button type="submit" class="btn-submit" id="btn-salvar-usuario" disabled><i class='bx bx-save'></i>
+                        Salvar Alterações</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Aba Agenda -->
     <div class="tab-content" id="agenda">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-calendar'></i> Configurações de Agenda</h2>
-            <div class="config-info">
-                <i class='bx bx-info-circle'></i> Configure os horários padrão e dias de funcionamento da clínica.
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-calendar'></i> Configurações de Agenda</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
             </div>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="config_agenda" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-time-five'></i> Horário de Abertura</label>
-                        <input class="input-field" type="time" name="hora_abertura" value="08:00" required>
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-time'></i> Horário de Fechamento</label>
-                        <input class="input-field" type="time" name="hora_fechamento" value="18:00" required>
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-refresh'></i> Intervalo Padrão (min)</label>
-                        <input class="input-field" type="number" name="intervalo" min="5" value="30" required>
-                    </div>
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-calendar-week'></i> Dias de Funcionamento</label>
-                        <select class="input-field" multiple name="dias_semana" required>
-                            <option value="1" selected>Segunda-feira</option>
-                            <option value="2" selected>Terça-feira</option>
-                            <option value="3" selected>Quarta-feira</option>
-                            <option value="4" selected>Quinta-feira</option>
-                            <option value="5" selected>Sexta-feira</option>
-                            <option value="6">Sábado</option>
-                            <option value="0">Domingo</option>
-                        </select>
-                    </div>
+            
+            <div class="form-content">
+                <div class="config-info">
+                    <i class='bx bx-info-circle'></i> Configure os horários padrão e dias de funcionamento da clínica.
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
-            </form>
-        </div>
-        <div class="form mt-6">
-            <div class="form_titulo"><i class='bx bx-user-check'></i> Disponibilidade por Profissional (escala
-                base)</div>
-            <div class="config-info">
-                <i class='bx bx-info-circle'></i> Marque os dias padrão de cada profissional. Os horários por dia são
-                opcionais —
-                se deixados em branco, valem os horários gerais da clínica definidos acima.
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="config_agenda" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-time-five'></i> Horário de Abertura</label>
+                            <input class="input-field" type="time" name="hora_abertura" value="08:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-time'></i> Horário de Fechamento</label>
+                            <input class="input-field" type="time" name="hora_fechamento" value="18:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-refresh'></i> Intervalo Padrão (min)</label>
+                            <input class="input-field" type="number" name="intervalo" min="5" value="30" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label><i class='bx bx-calendar-week'></i> Dias de Funcionamento</label>
+                            <select class="input-field" multiple name="dias_semana" required>
+                                <option value="1" selected>Segunda-feira</option>
+                                <option value="2" selected>Terça-feira</option>
+                                <option value="3" selected>Quarta-feira</option>
+                                <option value="4" selected>Quinta-feira</option>
+                                <option value="5" selected>Sexta-feira</option>
+                                <option value="6">Sábado</option>
+                                <option value="0">Domingo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+                </form>
             </div>
-
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="escala_base" />
-
-                {% for prof in profissionais %}
-                <div class="disp-card">
-
-                    <div class="pill"><i class='bx bx-user'></i> {{ prof.nome }}</div>
-                    <div class="pill"><i class='bx bx-id-card'></i> ID: {{ prof.id }}</div>
-
-
-                    <div class="week-grid">
-                        <div class="day-label">
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="disp[{{prof.id}}][seg][ativo]">
-                                Segunda
-                            </label>
-                        </div>
-                        <!--
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][seg][inicio]"
-                            placeholder="Início">
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][seg][fim]" placeholder="Fim">
-                        -->
-                        <div class="day-label">
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="disp[{{prof.id}}][ter][ativo]">
-                                Terça
-                            </label>
-                        </div>
-                        <!--
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][ter][inicio]">
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][ter][fim]">
--->
-                        <div class="day-label">
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="disp[{{prof.id}}][qua][ativo]">
-                                Quarta
-                            </label>
-                        </div>
-                        <!--
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][qua][inicio]">
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][qua][fim]">
--->
-                        <div class="day-label">
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="disp[{{prof.id}}][qui][ativo]">
-                                Quinta
-                            </label>
-                        </div>
-                        <!--
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][qui][inicio]">
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][qui][fim]">
--->
-                        <div class="day-label">
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="disp[{{prof.id}}][sex][ativo]">
-                                Sexta
-                            </label>
-                        </div>
-                        <!--
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][sex][inicio]">
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][sex][fim]">
--->
-                        <div class="day-label">
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="disp[{{prof.id}}][sab][ativo]">
-                                Sábado
-                            </label>
-                        </div>
-                        <!--
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][sab][inicio]">
-                        <input class="input-field" type="time" name="disp[{{prof.id}}][sab][fim]">
--->
-
-                    </div>
-                </div>
-                {% empty %}
-                <div class="config-info"><i class='bx bx-info-circle'></i> Nenhum profissional encontrado.</div>
-                {% endfor %}
-
-                <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Escala Base</button>
-            </form>
         </div>
 
-        <div class="form mt-6">
-            <div class="form_titulo"><i class='bx bx-calendar-plus'></i> Exceções de Disponibilidade por Data</div>
-            <div class="config-info">
-                <i class='bx bx-info-circle'></i> Use para ajustes pontuais (ex.: veio numa terça excepcionalmente ou
-                faltou num dia fixo).
-                Marque <b>Disponível</b> para forçar presença no dia; desmarcado significa <b>Indisponível</b>
-                (sobrescreve a escala).
+        <div class="form">
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-user-check'></i> Disponibilidade por Profissional (Escala Base)</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
             </div>
-
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="excecao_add" />
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-calendar'></i> Data</label>
-                        <input class="input-field" type="date" name="exc[0][data]" required>
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-user'></i> Profissional</label>
-                        <select class="input-field" name="exc[0][profissional_id]" required>
-                            <option value="" selected disabled>Selecione</option>
-                            {% for p in profissionais %}
-                            <option value="{{ p.id }}">{{ p.nome }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-toggle-left'></i> Disponível no dia?</label>
-                        <label class="pill"><input type="checkbox" name="exc[0][ativo]" checked> Disponível</label>
-                    </div>
-
-                    {# segunda linha extra opcional, sem JS #}
-                    <div class="form-group">
-                        <input class="input-field" type="date" name="exc[1][data]">
-                    </div>
-                    <div class="form-group">
-                        <select class="input-field" name="exc[1][profissional_id]">
-                            <option value="" selected disabled>Selecione</option>
-                            {% for p in profissionais %}
-                            <option value="{{ p.id }}">{{ p.nome }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="pill"><input type="checkbox" name="exc[1][ativo]"> Disponível</label>
-                    </div>
+            
+            <div class="form-content">
+                <div class="config-info">
+                    <i class='bx bx-info-circle'></i> Marque os dias padrão de cada profissional. Os horários por dia são
+                    opcionais — se deixados em branco, valem os horários gerais da clínica definidos acima.
                 </div>
 
-                <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Exceções</button>
-            </form>
-        </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="escala_base" />
 
+                    {% for prof in profissionais %}
+                    <div class="disp-card">
+                        <div class="pill"><i class='bx bx-user'></i> {{ prof.nome }}</div>
+                        <div class="pill"><i class='bx bx-id-card'></i> ID: {{ prof.id }}</div>
 
-        <div class="form mt-6">
-            <div class="subsection-title"><i class='bx bx-calendar-event'></i> Exceções cadastradas (mês atual)</div>
-
-            <table class="table-compact">
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Profissional</th>
-                        <th>Status no dia</th>
-                        <th>Observação</th>
-                        <th style="width:1%"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for e in excecoes_mes %}
-                    <tr>
-                        <td>{{ e.data|date:"d/m/Y" }}</td>
-                        <td>{{ e.profissional.nome }}</td>
-                        <td>
-                            {% if e.ativo %}
-                            <span class="badge-on">Disponível</span>
-                            {% else %}
-                            <span class="badge-off">Indisponível</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ e.observacao }}</td>
-                        <td>
-                            <form method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="tipo" value="excecao_delete" />
-                                <input type="hidden" name="excecao_id" value="{{ e.id }}" />
-                                <button class="btn-submit" style="padding:.35rem .6rem"><i
-                                        class='bx bx-trash'></i></button>
-                            </form>
-                        </td>
-                    </tr>
+                        <div class="week-grid">
+                            <div class="day-label">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" name="disp[{{prof.id}}][seg][ativo]">
+                                    Segunda
+                                </label>
+                            </div>
+                            <!--
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][seg][inicio]"
+                                placeholder="Início">
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][seg][fim]" placeholder="Fim">
+                            -->
+                            <div class="day-label">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" name="disp[{{prof.id}}][ter][ativo]">
+                                    Terça
+                                </label>
+                            </div>
+                            <!--
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][ter][inicio]">
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][ter][fim]">
+                            -->
+                            <div class="day-label">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" name="disp[{{prof.id}}][qua][ativo]">
+                                    Quarta
+                                </label>
+                            </div>
+                            <!--
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][qua][inicio]">
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][qua][fim]">
+                            -->
+                            <div class="day-label">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" name="disp[{{prof.id}}][qui][ativo]">
+                                    Quinta
+                                </label>
+                            </div>
+                            <!--
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][qui][inicio]">
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][qui][fim]">
+                            -->
+                            <div class="day-label">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" name="disp[{{prof.id}}][sex][ativo]">
+                                    Sexta
+                                </label>
+                            </div>
+                            <!--
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][sex][inicio]">
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][sex][fim]">
+                            -->
+                            <div class="day-label">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" name="disp[{{prof.id}}][sab][ativo]">
+                                    Sábado
+                                </label>
+                            </div>
+                            <!--
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][sab][inicio]">
+                            <input class="input-field" type="time" name="disp[{{prof.id}}][sab][fim]">
+                            -->
+                        </div>
+                    </div>
                     {% empty %}
-                    <tr>
-                        <td colspan="5">Nenhuma exceção cadastrada este mês.</td>
-                    </tr>
+                    <div class="config-info"><i class='bx bx-info-circle'></i> Nenhum profissional encontrado.</div>
                     {% endfor %}
-                </tbody>
-            </table>
+
+                    <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Escala Base</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="form">
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-calendar-plus'></i> Exceções de Disponibilidade por Data</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <div class="config-info">
+                    <i class='bx bx-info-circle'></i> Use para ajustes pontuais (ex.: veio numa terça excepcionalmente ou
+                    faltou num dia fixo).
+                    Marque <b>Disponível</b> para forçar presença no dia; desmarcado significa <b>Indisponível</b>
+                    (sobrescreve a escala).
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="excecao_add" />
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-calendar'></i> Data</label>
+                            <input class="input-field" type="date" name="exc[0][data]" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-user'></i> Profissional</label>
+                            <select class="input-field" name="exc[0][profissional_id]" required>
+                                <option value="" selected disabled>Selecione</option>
+                                {% for p in profissionais %}
+                                <option value="{{ p.id }}">{{ p.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-toggle-left'></i> Disponível no dia?</label>
+                            <label class="pill"><input type="checkbox" name="exc[0][ativo]" checked> Disponível</label>
+                        </div>
+
+                        {# segunda linha extra opcional, sem JS #}
+                        <div class="form-group">
+                            <label><i class='bx bx-calendar'></i> Data (Opcional)</label>
+                            <input class="input-field" type="date" name="exc[1][data]">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-user'></i> Profissional (Opcional)</label>
+                            <select class="input-field" name="exc[1][profissional_id]">
+                                <option value="" selected disabled>Selecione</option>
+                                {% for p in profissionais %}
+                                <option value="{{ p.id }}">{{ p.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-toggle-left'></i> Disponível no dia? (Opcional)</label>
+                            <label class="pill"><input type="checkbox" name="exc[1][ativo]"> Disponível</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Exceções</button>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="form">
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-calendar-event'></i> Exceções Cadastradas (Mês Atual)</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <table class="table-compact">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Profissional</th>
+                            <th>Status no dia</th>
+                            <th>Observação</th>
+                            <th style="width:1%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in excecoes_mes %}
+                        <tr>
+                            <td>{{ e.data|date:"d/m/Y" }}</td>
+                            <td>{{ e.profissional.nome }}</td>
+                            <td>
+                                {% if e.ativo %}
+                                <span class="badge-on">Disponível</span>
+                                {% else %}
+                                <span class="badge-off">Indisponível</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ e.observacao }}</td>
+                            <td>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="tipo" value="excecao_delete" />
+                                    <input type="hidden" name="excecao_id" value="{{ e.id }}" />
+                                    <button class="btn-submit" style="padding:.35rem .6rem"><i
+                                            class='bx bx-trash'></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">Nenhuma exceção cadastrada este mês.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -565,736 +614,706 @@
     <div class="tab-content" id="financeiro">
         <!-- Seção Bancos -->
         <div class="form">
-            <form method="post" id="form-bancos">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="cadastro_bancos" />
-                <h2 class="form_titulo"><i class='bx bx-dollar-circle'></i> Cadastro de Bancos</h2>
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-dollar-circle'></i> Cadastro de Bancos</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <form method="post" id="form-bancos">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="cadastro_bancos" />
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-analyse'></i> Código</label>
+                            <input class="input-field" type="number" name="codigo_banco" placeholder="Ex.: 001">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-pie-chart-alt-2'></i> Nome Banco</label>
+                            <input class="input-field" type="text" name="nome_banco" placeholder="Ex.: Banco do Brasil">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-error'></i> Agência</label>
+                            <input class="input-field" type="number" step="0.1" name="agencia_banco"
+                                placeholder="Ex.: 1234">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-error'></i> Conta</label>
+                            <input class="input-field" type="number" step="0.1" name="conta_banco" placeholder="Ex.: 56789">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-error'></i> Dígito</label>
+                            <input class="input-field" type="number" step="0.1" name="digito_banco" placeholder="Ex.: 1">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-analyse'></i> Tipo</label>
+                            <select class="input-field" name="tipo_conta_banco">
+                                <option disabled selected>-- Selecione --</option>
+                                <option value="corrente">Conta Corrente</option>
+                                <option value="poupanca">Conta Poupança</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-error'></i> Chave Pix</label>
+                            <input class="input-field" type="text" name="chave_pix_banco"
+                                placeholder="Ex.: CPF, CNPJ, telefone, e-mail ou aleatória">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Banco</button>
+                </form>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-analyse'></i> Código</label>
-                        <input class="input-field" type="number" name="codigo_banco" placeholder="Ex.: 001">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-pie-chart-alt-2'></i> Nome Banco</label>
-                        <input class="input-field" type="text" name="nome_banco" placeholder="Ex.: Banco do Brasil">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i> Agência</label>
-                        <input class="input-field" type="number" step="0.1" name="agencia_banco"
-                            placeholder="Ex.: 1234">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i> Conta</label>
-                        <input class="input-field" type="number" step="0.1" name="conta_banco" placeholder="Ex.: 56789">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i> Dígito</label>
-                        <input class="input-field" type="number" step="0.1" name="digito_banco" placeholder="Ex.: 1">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-analyse'></i> Tipo</label>
-                        <select class="input-field" name="tipo_conta_banco">
-                            <option disabled selected>-- Selecione --</option>
-                            <option value="corrente">Conta Corrente</option>
-                            <option value="poupanca">Conta Poupança</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i> Chave Pix</label>
-                        <input class="input-field" type="text" name="chave_pix_banco"
-                            placeholder="Ex.: CPF, CNPJ, telefone, e-mail ou aleatória">
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Banco</button>
-            </form>
+                <!-- Tabela de Bancos DENTRO da div.form -->
+                <div class="tabela-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Código</th>
+                                <th>Nome</th>
+                                <th>Conta</th>
+                                <th>Digito</th>
+                                <th>Chave Pix</th>
+                                <th>Situação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for banco in bancos %}
+                            <tr class="{% if not banco.ativo %} inactive{% endif %}">
+                                <td class="editable" data-field="tipo_conta_banco" data-id='{{banco.id}}'
+                                    data-model="banco">
+                                    <span class="display-text">{{ banco.get_tipo_conta_banco_display }}</span>
+                                    <input type="text" class="edit-input" value="{{ banco.tipo_conta_banco }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="codigo_banco" data-id='{{banco.id}}' data-model="banco">
+                                    <span class="display-text">{{ banco.codigo_banco }}</span>
+                                    <input type="text" class="edit-input" value="{{ banco.codigo_banco }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="nome_banco" data-id='{{banco.id}}' data-model="banco">
+                                    <span class="display-text">{{ banco.nome_banco }}</span>
+                                    <input type="text" class="edit-input" value="{{ banco.nome_banco }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="conta_banco" data-id='{{banco.id}}' data-model="banco">
+                                    <span class="display-text">{{ banco.conta_banco }}</span>
+                                    <input type="text" class="edit-input" value="{{ fbanco.conta_banco }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="digito_banco" data-id='{{banco.id}}' data-model="banco">
+                                    <span class="display-text">{{ banco.digito_banco }}</span>
+                                    <input type="text" class="edit-input" value="{{ banco.digito_banco }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="chave_pix_banco" data-id='{{banco.id}}' data-model="banco">
+                                    <span class="display-text">{{ banco.chave_pix_banco }}</span>
+                                    <input type="text" class="edit-input" value="{{ banco.chave_pix_banco }}"
+                                        style="display: none;">
+                                </td>
 
-            <!-- Tabela de Bancos DENTRO da div.form -->
-            <div class="tabela-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Código</th>
-                            <th>Nome</th>
-                            <th>Conta</th>
-                            <th>Digito</th>
-                            <th>Chave Pix</th>
-                            <th>Situação</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for banco in bancos %}
-                        <tr class="{% if not banco.ativo %} inactive{% endif %}">
-                            <td class="editable" data-field="tipo_conta_banco" data-id='{{banco.id}}'
-                                data-model="banco">
-                                <span class="display-text">{{ banco.get_tipo_conta_banco_display }}</span>
-                                <input type="text" class="edit-input" value="{{ banco.tipo_conta_banco }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="codigo_banco" data-id='{{banco.id}}' data-model="banco">
-                                <span class="display-text">{{ banco.codigo_banco }}</span>
-                                <input type="text" class="edit-input" value="{{ banco.codigo_banco }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="nome_banco" data-id='{{banco.id}}' data-model="banco">
-                                <span class="display-text">{{ banco.nome_banco }}</span>
-                                <input type="text" class="edit-input" value="{{ banco.nome_banco  }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="conta_banco" data-id='{{banco.id}}' data-model="banco">
-                                <span class="display-text">{{ banco.conta_banco }}</span>
-                                <input type="text" class="edit-input" value="{{ fbanco.conta_banco }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="digito_banco" data-id='{{banco.id}}' data-model="banco">
-                                <span class="display-text">{{ banco.digito_banco }}</span>
-                                <input type="text" class="edit-input" value="{{ banco.digito_banco  }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="chave_pix_banco" data-id='{{banco.id}}' data-model="banco">
-                                <span class="display-text">{{ banco.chave_pix_banco }}</span>
-                                <input type="text" class="edit-input" value="{{ banco.chave_pix_banco }}"
-                                    style="display: none;">
-                            </td>
-
-                            <td>
-                                <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
-                                    {{ banco.ativo|yesno:"Ativo,Inativo" }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="acoes-cell">
-                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
-                                        onclick="salvarEdicao(this)">
-                                        <i class='bx bx-check'></i>
-                                    </button>
-                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
-                                        onclick="cancelarEdicao(this)">
-                                        <i class='bx bx-x'></i>
-                                    </button>
-                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
-                                        <i class='bx bx-edit'></i>
-                                    </button>
-                                    <!-- Botão de inativar -->
-                                    <form method="post" style="display: inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="banco_id" value="{{ banco.id }}">
-                                        <button type="submit" name="tipo" value="inativar_banco"
-                                            class="btn-acao excluir" title="Inativar">
-                                            <i class='bx bx-trash'></i>
+                                <td>
+                                    <span class="status-badge {% if banco.ativo %}active{% else %}inactive{% endif %}">
+                                        {{ banco.ativo|yesno:"Ativo,Inativo" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="acoes-cell">
+                                        <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                            onclick="salvarEdicao(this)">
+                                            <i class='bx bx-check'></i>
                                         </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="empty-state">
-                                <i class='bx bx-inbox'></i>
-                                <p>Nenhum fornecedor cadastrado</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                        <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                            onclick="cancelarEdicao(this)">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                        <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                            <i class='bx bx-edit'></i>
+                                        </button>
+                                        <!-- Botão de inativar -->
+                                        <form method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="banco_id" value="{{ banco.id }}">
+                                            <button type="submit" name="tipo" value="inativar_banco"
+                                                class="btn-acao excluir" title="Inativar">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    <i class='bx bx-inbox'></i>
+                                    <p>Nenhum fornecedor cadastrado</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <!-- Seção Fornecedores -->
         <div class="form">
-            <form method="post" id="form-fornecedores">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="cadastro_fornecedores" />
-                <h2 class="form_titulo"><i class='bx bx-building'></i> Cadastro de Fornecedores</h2>
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-building'></i> Cadastro de Fornecedores</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <form method="post" id="form-fornecedores">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="cadastro_fornecedores" />
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-analyse'></i> Tipo</label>
+                            <select class="input-field" name="tipo_pessoa">
+                                <option disabled selected>-- Selecione --</option>
+                                <option value="juridica">Pessoa Jurídica</option>
+                                <option value="fisica">Pessoa Física</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-pie-chart-alt-2'></i> Documento</label>
+                            <input class="input-field" type="text" name="documento_fornecedor"
+                                placeholder="12.345.678/0000-00">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-pie-chart-alt-2'></i> Razão Social</label>
+                            <input class="input-field" type="text" name="razao_social_fornecedor"
+                                placeholder="Ex.: Empresa XYZ Ltda">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-error'></i> Nome Fantasia</label>
+                            <input class="input-field" type="text" name="fantasia_fornecedor"
+                                placeholder="Nome fantasia da empresa">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-error'></i> Telefone</label>
+                            <input class="input-field" type="text" name="telefone_fornecedor" placeholder="(11) 99999-9999">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-error'></i> Email</label>
+                            <input class="input-field" type="email" name="email_fornecedor"
+                                placeholder="exemplo@empresa.com">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Fornecedor</button>
+                </form>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-analyse'></i> Tipo</label>
-                        <select class="input-field" name="tipo_pessoa">
-                            <option disabled selected>-- Selecione --</option>
-                            <option value="juridica">Pessoa Jurídica</option>
-                            <option value="fisica">Pessoa Física</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-pie-chart-alt-2'></i> Documento</label>
-                        <input class="input-field" type="text" name="documento_fornecedor"
-                            placeholder="12.345.678/0000-00">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-pie-chart-alt-2'></i> Razão Social</label>
-                        <input class="input-field" type="text" name="razao_social_fornecedor"
-                            placeholder="Ex.: Empresa XYZ Ltda">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i> Nome Fantasia</label>
-                        <input class="input-field" type="text" name="fantasia_fornecedor"
-                            placeholder="Nome fantasia da empresa">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i> Telefone</label>
-                        <input class="input-field" type="text" name="telefone_fornecedor" placeholder="(11) 99999-9999">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-error'></i> Email</label>
-                        <input class="input-field" type="email" name="email_fornecedor"
-                            placeholder="exemplo@empresa.com">
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Fornecedor</button>
-            </form>
-
-            <!-- Tabela de Fornecedores DENTRO da div.form -->
-            <div class="tabela-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Documento</th>
-                            <th>Razão Social</th>
-                            <th>Nome Fantasia</th>
-                            <th>Telefone</th>
-                            <th>Email</th>
-                            <th>Situação</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for fornecedor in fornecedores %}
-                        <tr class="{% if not fornecedor.ativo %} inactive{% endif %}">
-                            <td class="editable" data-field="tipo_pessoa" data-id='{{fornecedor.id}}'
-                                data-model="fornecedor">
-                                <span class="display-text">{{ fornecedor.tipo_pessoa }}</span>
-                                <input type="text" class="edit-input" value="{{ fornecedor.tipo_pessoa }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="documento" data-id='{{fornecedor.id}}'
-                                data-model="fornecedor">
-                                <span class="display-text">{{ fornecedor.documento }}</span>
-                                <input type="text" class="edit-input" value="{{ fornecedor.documento }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="razao_social" data-id='{{fornecedor.id}}'
-                                data-model="fornecedor">
-                                <span class="display-text">{{ fornecedor.razao_social }}</span>
-                                <input type="text" class="edit-input" value="{{ fornecedor.razao_social }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="nome_fantasia" data-id='{{fornecedor.id}}'
-                                data-model="fornecedor">
-                                <span class="display-text">{{ fornecedor.nome_fantasia }}</span>
-                                <input type="text" class="edit-input" value="{{ fornecedor.nome_fantasia }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="telefone" data-id='{{fornecedor.id}}'
-                                data-model="fornecedor">
-                                <span class="display-text">{{ fornecedor.telefone }}</span>
-                                <input type="text" class="edit-input" value="{{ fornecedor.telefone }}"
-                                    style="display: none;">
-                            </td>
-                            <td class="editable" data-field="email" data-id='{{fornecedor.id}}' data-model="fornecedor">
-                                <span class="display-text">{{ fornecedor.email }}</span>
-                                <input type="text" class="edit-input" value="{{ fornecedor.email }}"
-                                    style="display: none;">
-                            </td>
-                            <td>
-                                <span class="status-badge {% if fornecedor.ativo %}active{% else %}inactive{% endif %}">
-                                    {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="acoes-cell">
-                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
-                                        onclick="salvarEdicao(this)">
-                                        <i class='bx bx-check'></i>
-                                    </button>
-                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
-                                        onclick="cancelarEdicao(this)">
-                                        <i class='bx bx-x'></i>
-                                    </button>
-                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
-                                        <i class='bx bx-edit'></i>
-                                    </button>
-                                    <!-- Botão de inativar -->
-                                    <form method="post" style="display: inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="fornecedor_id" value="{{ fornecedor.id }}">
-                                        <button type="submit" name="tipo" value="inativar_fornecedor"
-                                            class="btn-acao excluir" title="Inativar">
-                                            <i class='bx bx-trash'></i>
+                <!-- Tabela de Fornecedores DENTRO da div.form -->
+                <div class="tabela-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Documento</th>
+                                <th>Razão Social</th>
+                                <th>Nome Fantasia</th>
+                                <th>Telefone</th>
+                                <th>Email</th>
+                                <th>Situação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fornecedor in fornecedores %}
+                            <tr class="{% if not fornecedor.ativo %} inactive{% endif %}">
+                                <td class="editable" data-field="tipo_pessoa" data-id='{{fornecedor.id}}'
+                                    data-model="fornecedor">
+                                    <span class="display-text">{{ fornecedor.tipo_pessoa }}</span>
+                                    <input type="text" class="edit-input" value="{{ fornecedor.tipo_pessoa }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="documento" data-id='{{fornecedor.id}}'
+                                    data-model="fornecedor">
+                                    <span class="display-text">{{ fornecedor.documento }}</span>
+                                    <input type="text" class="edit-input" value="{{ fornecedor.documento }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="razao_social" data-id='{{fornecedor.id}}'
+                                    data-model="fornecedor">
+                                    <span class="display-text">{{ fornecedor.razao_social }}</span>
+                                    <input type="text" class="edit-input" value="{{ fornecedor.razao_social }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="nome_fantasia" data-id='{{fornecedor.id}}'
+                                    data-model="fornecedor">
+                                    <span class="display-text">{{ fornecedor.nome_fantasia }}</span>
+                                    <input type="text" class="edit-input" value="{{ fornecedor.nome_fantasia }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="telefone" data-id='{{fornecedor.id}}'
+                                    data-model="fornecedor">
+                                    <span class="display-text">{{ fornecedor.telefone }}</span>
+                                    <input type="text" class="edit-input" value="{{ fornecedor.telefone }}"
+                                        style="display: none;">
+                                </td>
+                                <td class="editable" data-field="email" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                                    <span class="display-text">{{ fornecedor.email }}</span>
+                                    <input type="text" class="edit-input" value="{{ fornecedor.email }}"
+                                        style="display: none;">
+                                </td>
+                                <td>
+                                    <span class="status-badge {% if fornecedor.ativo %}active{% else %}inactive{% endif %}">
+                                        {{ fornecedor.ativo|yesno:"Ativo,Inativo" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="acoes-cell">
+                                        <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                            onclick="salvarEdicao(this)">
+                                            <i class='bx bx-check'></i>
                                         </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="empty-state">
-                                <i class='bx bx-inbox'></i>
-                                <p>Nenhum fornecedor cadastrado</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                        <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                            onclick="cancelarEdicao(this)">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                        <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                            <i class='bx bx-edit'></i>
+                                        </button>
+                                        <!-- Botão de inativar -->
+                                        <form method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="fornecedor_id" value="{{ fornecedor.id }}">
+                                            <button type="submit" name="tipo" value="inativar_fornecedor"
+                                                class="btn-acao excluir" title="Inativar">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    <i class='bx bx-inbox'></i>
+                                    <p>Nenhum fornecedor cadastrado</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <div class="form">
-            <form method="post" id="form-categorias">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="cadastro_categoria_contas_receber" />
-                <h2 class="form_titulo"><i class='bx bx-building'></i> Cadastro de Categorias Contas a Receber</h2>
-
-                <div class="form-grid">
- 
-                    <div class="form-group">
-                        <label><i class='bx bx-pie-chart-alt-2'></i>Categoria</label>
-                        <input class="input-field" type="text" name="categoria_nome"
-                            placeholder="12.345.678/0000-00">
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-category'></i> Cadastro de Categorias Contas a Receber</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <form method="post" id="form-categorias">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="cadastro_categoria_contas_receber" />
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-pie-chart-alt-2'></i> Categoria</label>
+                            <input class="input-field" type="text" name="categoria_nome" placeholder="Digite o nome da categoria">
+                        </div>
                     </div>
-                     
-                </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Categoria</button>
-            </form>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Categoria</button>
+                </form>
 
-            <!-- Tabela de Fornecedores DENTRO da div.form -->
-            <div class="tabela-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Categoria</th>
-                            <th>Situação</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for categoria in categorias  %}
-                        <tr class="{% if not categoria.ativo %} inactive{% endif %}">
- 
-                            <td class="editable" data-field="documento" data-id='{{categoria.id}}'
-                                data-model="categoria">
-                                <span class="display-text">{{ categoria.nome }}</span>
-                                <input type="text" class="edit-input" value="{{ categoria.documento }}"
-                                    style="display: none;">
-                            </td>
-                            <td>
-                                <span class="status-badge {% if categoria.ativo %}active{% else %}inactive{% endif %}">
-                                    {{ categoria.ativo|yesno:"Ativo,Inativo" }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="acoes-cell">
-                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
-                                        onclick="salvarEdicao(this)">
-                                        <i class='bx bx-check'></i>
-                                    </button>
-                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
-                                        onclick="cancelarEdicao(this)">
-                                        <i class='bx bx-x'></i>
-                                    </button>
-                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
-                                        <i class='bx bx-edit'></i>
-                                    </button>
-                                    <!-- Botão de inativar -->
-                                    <form method="post" style="display: inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="categoria_contas_receber_id" value="{{ categoria.id }}">
-                                        <button type="submit" name="tipo" value="inativar_categoria_contas_receber"
-                                            class="btn-acao excluir" title="Inativar">
-                                            <i class='bx bx-trash'></i>
+                <!-- Tabela de Categorias -->
+                <div class="tabela-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Situação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for categoria in categorias %}
+                            <tr class="{% if not categoria.ativo %} inactive{% endif %}">
+                                <td class="editable" data-field="nome" data-id='{{categoria.id}}' data-model="categoria">
+                                    <span class="display-text">{{ categoria.nome }}</span>
+                                    <input type="text" class="edit-input" value="{{ categoria.nome }}"
+                                        style="display: none;">
+                                </td>
+                                <td>
+                                    <span class="status-badge {% if categoria.ativo %}active{% else %}inactive{% endif %}">
+                                        {{ categoria.ativo|yesno:"Ativo,Inativo" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="acoes-cell">
+                                        <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                            onclick="salvarEdicao(this)">
+                                            <i class='bx bx-check'></i>
                                         </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="empty-state">
-                                <i class='bx bx-inbox'></i>
-                                <p>Nenhuma categoria cadastrado</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                        <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                            onclick="cancelarEdicao(this)">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                        <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                            <i class='bx bx-edit'></i>
+                                        </button>
+                                        <!-- Botão de inativar -->
+                                        <form method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="categoria_contas_receber_id"
+                                                value="{{ categoria.id }}">
+                                            <button type="submit" name="tipo" value="inativar_categoria_contas_receber"
+                                                class="btn-acao excluir" title="Inativar">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="empty-state">
+                                    <i class='bx bx-inbox'></i>
+                                    <p>Nenhuma categoria cadastrada</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
     </div>
     <!-- Aba Notificações -->
     <div class="tab-content" id="notificacoes">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-bell'></i> Configurações de Notificações</h2>
-
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-grid">
-
-                    <!-- Ativar envios automáticos -->
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-toggle-left'></i> Envio Automático de Lembretes</label>
-                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                            <label><input type="checkbox" name="envio_24h" value="1"> Enviar 24h antes</label>
-                            <label><input type="checkbox" name="envio_12h" value="1"> Enviar 12h antes</label>
-                            <label><input type="checkbox" name="envio_4h" value="1"> Enviar 4h antes</label>
-                            <label><input type="checkbox" name="envio_confirmacao" value="1"> Enviar imediatamente ao
-                                agendar</label>
-                        </div>
-                    </div>
-
-                    <!-- Escolha de canais -->
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-message-dots'></i> Canais de Envio</label>
-                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                            <label><input type="checkbox" name="canal_whatsapp" value="1" checked> WhatsApp</label>
-                            <label><input type="checkbox" name="canal_email" value="1"> E-mail</label>
-                            <label><input type="checkbox" name="canal_sms" value="1"> SMS</label>
-                        </div>
-                    </div>
-
-                    <!-- Mensagem WhatsApp -->
-                    <div class="form-group full-width">
-                        <label for="msg_whatsapp"><i class='bx bx-message-rounded-detail'></i> Modelo de Mensagem
-                            (WhatsApp)</label>
-                        <textarea class="input-field" rows="4" id="msg_whatsapp" name="msg_whatsapp"
-                            placeholder="Ex: Olá {{paciente}}, lembramos sua sessão dia {{data}} às {{hora}}"></textarea>
-                        <small style="color:var(--cinza-medio);">Use variáveis: <b>{{paciente}}</b>, <b>{{data}}</b>,
-                            <b>{{hora}}</b></small>
-                    </div>
-
-                    <!-- Assinatura de e-mails -->
-                    <div class="form-group full-width">
-                        <label for="assinatura_email"><i class='bx bx-envelope'></i> Assinatura nos E-mails</label>
-                        <textarea class="input-field" rows="3" id="assinatura_email" name="assinatura_email"
-                            placeholder="Equipe Clínica Ponto de Equilíbrio"></textarea>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">
-                    <i class='bx bx-save'></i> Salvar Configurações
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-bell'></i> Configurações de Notificações</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
                 </button>
-            </form>
+            </div>
+            
+            <div class="form-content">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid">
+
+                        <!-- Ativar envios automáticos -->
+                        <div class="form-group full-width">
+                            <label><i class='bx bx-toggle-left'></i> Envio Automático de Lembretes</label>
+                            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                                <label><input type="checkbox" name="envio_24h" value="1"> Enviar 24h antes</label>
+                                <label><input type="checkbox" name="envio_12h" value="1"> Enviar 12h antes</label>
+                                <label><input type="checkbox" name="envio_4h" value="1"> Enviar 4h antes</label>
+                                <label><input type="checkbox" name="envio_confirmacao" value="1"> Enviar imediatamente ao
+                                    agendar</label>
+                            </div>
+                        </div>
+
+                        <!-- Escolha de canais -->
+                        <div class="form-group full-width">
+                            <label><i class='bx bx-message-dots'></i> Canais de Envio</label>
+                            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                                <label><input type="checkbox" name="canal_whatsapp" value="1" checked> WhatsApp</label>
+                                <label><input type="checkbox" name="canal_email" value="1"> E-mail</label>
+                                <label><input type="checkbox" name="canal_sms" value="1"> SMS</label>
+                            </div>
+                        </div>
+
+                        <!-- Mensagem WhatsApp -->
+                        <div class="form-group full-width">
+                            <label for="msg_whatsapp"><i class='bx bx-message-rounded-detail'></i> Modelo de Mensagem
+                                (WhatsApp)</label>
+                            <textarea class="input-field" rows="4" id="msg_whatsapp" name="msg_whatsapp"
+                                placeholder="Ex: Olá {{paciente}}, lembramos sua sessão dia {{data}} às {{hora}}"></textarea>
+                            <small style="color:var(--cinza-medio);">Use variáveis: <b>{{paciente}}</b>, <b>{{data}}</b>,
+                                <b>{{hora}}</b></small>
+                        </div>
+
+                        <!-- Assinatura de e-mails -->
+                        <div class="form-group full-width">
+                            <label for="assinatura_email"><i class='bx bx-envelope'></i> Assinatura nos E-mails</label>
+                            <textarea class="input-field" rows="3" id="assinatura_email" name="assinatura_email"
+                                placeholder="Equipe Clínica Ponto de Equilíbrio"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class='bx bx-save'></i> Salvar Configurações
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Aba Pacotes & Benefícios -->
     <div class="tab-content" id="pacotes">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-gift'></i> Pacotes & Benefícios</h2>
-            <div class="config-info">
-                <i class='bx bx-info-circle'></i> Configure os pacotes de sessões e benefícios para clientes.
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-gift'></i> Pacotes & Benefícios</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
             </div>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="config_pacotes" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-layer'></i> Nº Sessões Padrão do Pacote</label>
-                        <input class="input-field" type="number" name="qtd_sessoes" min="1" value="10">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-timer'></i> Validade do Pacote (dias)</label>
-                        <input class="input-field" type="number" name="validade_pacote" min="1" value="90">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-purchase-tag'></i> Desconto do Pacote (%)</label>
-                        <input class="input-field" type="number" step="0.1" name="desconto_pacote" value="10.0" min="0"
-                            max="50">
-                    </div>
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-star'></i> Regras de Benefício VIP</label>
-                        <textarea class="input-field" rows="3" name="regras_beneficio"
-                            placeholder="Ex: Cliente VIP após 10 sessões no mês">Cliente VIP: + de 10 sessões/mês\nDesconto especial: 15%\nPrioridade em agendamentos</textarea>
-                    </div>
+            
+            <div class="form-content">
+                <div class="config-info">
+                    <i class='bx bx-info-circle'></i> Configure os pacotes de sessões e benefícios para clientes.
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
-            </form>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="config_pacotes" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-layer'></i> Nº Sessões Padrão do Pacote</label>
+                            <input class="input-field" type="number" name="qtd_sessoes" min="1" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-timer'></i> Validade do Pacote (dias)</label>
+                            <input class="input-field" type="number" name="validade_pacote" min="1" value="90">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-purchase-tag'></i> Desconto do Pacote (%)</label>
+                            <input class="input-field" type="number" step="0.1" name="desconto_pacote" value="10.0" min="0"
+                                max="50">
+                        </div>
+                        <div class="form-group full-width">
+                            <label><i class='bx bx-star'></i> Regras de Benefício VIP</label>
+                            <textarea class="input-field" rows="3" name="regras_beneficio"
+                                placeholder="Ex: Cliente VIP após 10 sessões no mês">Cliente VIP: + de 10 sessões/mês\nDesconto especial: 15%\nPrioridade em agendamentos</textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+                </form>
+            </div>
         </div>
     </div>
     <!-- Aba Empresa & Franquia -->
     <div class="tab-content" id="empresa">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
-
-            <form method="POST" id="form-empresa">
-                {% csrf_token %}
-                <div class="form-grid">
-
-                    <!-- Dados básicos -->
-                    <div class="form-group">
-                        <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
-                        <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
-                            required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
-                        <input class="input-field" id="razao_social" name="razao_social"
-                            placeholder="Nome jurídico da empresa" type="text" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
-                        <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
-                            type="text" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
-                        <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
-                            placeholder="Isento ou número da IE" type="text">
-                    </div>
-
-                    <!-- Contatos -->
-                    <div class="form-group">
-                        <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
-                        <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999"
-                            type="text">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
-                        <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
-                            type="email">
-                    </div>
-
-                    <!-- Endereço -->
-                    <div class="form-group full-width">
-                        <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
-                        <input class="input-field" id="endereco" name="endereco"
-                            placeholder="Rua, nº, Bairro, Cidade - UF" type="text">
-                    </div>
-
-                    <!-- Franquia -->
-                    <div class="form-group">
-                        <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
-                        <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
-                            <option value="matriz">Matriz</option>
-                            <option value="franquia">Franquia</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
-                            aplicável)</label>
-                        <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
-                            <option value="">Nenhuma</option>
-                            {% for f in empresas %}
-                            <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">
-                    <i class='bx bx-save'></i> Salvar Dados
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
                 </button>
-            </form>
+            </div>
+            
+            <div class="form-content">
+                <form method="POST" id="form-empresa">
+                    {% csrf_token %}
+                    <div class="form-grid">
+
+                        <!-- Dados básicos -->
+                        <div class="form-group">
+                            <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
+                            <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
+                            <input class="input-field" id="razao_social" name="razao_social"
+                                placeholder="Nome jurídico da empresa" type="text" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
+                            <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
+                                type="text" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
+                            <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
+                                placeholder="Isento ou número da IE" type="text">
+                        </div>
+
+                        <!-- Contatos -->
+                        <div class="form-group">
+                            <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
+                            <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999"
+                                type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
+                            <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
+                                type="email">
+                        </div>
+
+                        <!-- Endereço -->
+                        <div class="form-group full-width">
+                            <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
+                            <input class="input-field" id="endereco" name="endereco"
+                                placeholder="Rua, nº, Bairro, Cidade - UF" type="text">
+                        </div>
+
+                        <!-- Franquia -->
+                        <div class="form-group">
+                            <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
+                            <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
+                                <option value="matriz">Matriz</option>
+                                <option value="franquia">Franquia</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
+                                aplicável)</label>
+                            <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
+                                <option value="">Nenhuma</option>
+                                {% for f in empresas %}
+                                <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class='bx bx-save'></i> Salvar Dados
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-    <!-- Aba Empresa & Franquia -->
-    <div class="tab-content" id="empresa">
-        <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-building'></i> Dados da Empresa & Franquia</h2>
-
-            <form method="POST" id="form-empresa">
-                {% csrf_token %}
-                <div class="form-grid">
-
-                    <!-- Dados básicos -->
-                    <div class="form-group">
-                        <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
-                        <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
-                            required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i> Razão Social</label>
-                        <input class="input-field" id="razao_social" name="razao_social"
-                            placeholder="Nome jurídico da empresa" type="text" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nome_fantasia"><i class='bx bx-store'></i> Nome Fantasia</label>
-                        <input class="input-field" id="nome_fantasia" name="nome_fantasia" placeholder="Nome comercial"
-                            type="text" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inscricao_estadual"><i class='bx bx-certification'></i> Inscrição Estadual</label>
-                        <input class="input-field" id="inscricao_estadual" name="inscricao_estadual"
-                            placeholder="Isento ou número da IE" type="text">
-                    </div>
-
-                    <!-- Contatos -->
-                    <div class="form-group">
-                        <label for="telefone"><i class='bx bx-phone'></i> Telefone / WhatsApp</label>
-                        <input class="input-field" id="telefone" name="telefone" placeholder="(21) 99999-9999"
-                            type="text">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email"><i class='bx bx-envelope'></i> E-mail</label>
-                        <input class="input-field" id="email" name="email" placeholder="contato@empresa.com.br"
-                            type="email">
-                    </div>
-
-                    <!-- Endereço -->
-                    <div class="form-group full-width">
-                        <label for="endereco"><i class='bx bx-map'></i> Endereço Completo</label>
-                        <input class="input-field" id="endereco" name="endereco"
-                            placeholder="Rua, nº, Bairro, Cidade - UF" type="text">
-                    </div>
-
-                    <!-- Franquia -->
-                    <div class="form-group">
-                        <label for="tipo_unidade"><i class='bx bx-network-chart'></i> Tipo de Unidade</label>
-                        <select class="input-field" id="tipo_unidade" name="tipo_unidade" required>
-                            <option value="matriz">Matriz</option>
-                            <option value="franquia">Franquia</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="franquia_vinculo"><i class='bx bx-link'></i> Vincular à Franquia (se
-                            aplicável)</label>
-                        <select class="input-field" id="franquia_vinculo" name="franquia_vinculo">
-                            <option value="">Nenhuma</option>
-                            {% for f in empresas %}
-                            <option value="{{ f.id }}">{{ f.nome_fantasia }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">
-                    <i class='bx bx-save'></i> Salvar Dados
-                </button>
-            </form>
-        </div>
-    </div>
+ 
     <!-- Aba Estoque -->
     <div class="tab-content" id="estoque">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-box'></i> Controle de Estoque</h2>
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-box'></i> Controle de Estoque</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <!-- Cadastro de Produtos -->
+                <form method="POST" id="form-produto">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="produto_cadastro" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="produto-nome"><i class='bx bx-rename'></i> Nome do Produto</label>
+                            <input class="input-field" id="produto-nome" name="nome" placeholder="Ex: Creme Hidratante"
+                                type="text" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-codigo"><i class='bx bx-barcode'></i> Código / EAN</label>
+                            <input class="input-field" id="produto-codigo" name="codigo" placeholder="Código de barras"
+                                type="text" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-categoria"><i class='bx bx-category'></i> Categoria</label>
+                            <input class="input-field" id="produto-categoria" name="categoria" placeholder="Ex: Cosméticos"
+                                type="text" />
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-custo"><i class='bx bx-dollar'></i> Custo Unitário</label>
+                            <input class="input-field" id="produto-custo" name="custo" placeholder="0.00" type="number"
+                                step="0.01" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-preco"><i class='bx bx-dollar-circle'></i> Preço de Venda</label>
+                            <input class="input-field" id="produto-preco" name="preco" placeholder="0.00" type="number"
+                                step="0.01" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-minimo"><i class='bx bx-error-circle'></i> Estoque Mínimo</label>
+                            <input class="input-field" id="produto-minimo" name="estoque_minimo" placeholder="Qtd mínima"
+                                type="number" min="0" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Cadastrar Produto</button>
+                </form>
 
-            <!-- Cadastro de Produtos -->
-            <form method="POST" id="form-produto">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="produto_cadastro" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="produto-nome"><i class='bx bx-rename'></i> Nome do Produto</label>
-                        <input class="input-field" id="produto-nome" name="nome" placeholder="Ex: Creme Hidratante"
-                            type="text" required />
+                <!-- Movimentação de Estoque -->
+                <form method="POST" id="form-movimentacao" style="margin-top:2rem;">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="estoque_movimentacao" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="produto-id"><i class='bx bx-box'></i> Produto</label>
+                            <select class="input-field" id="produto-id" name="produto_id" required>
+                                <option value="" disabled selected>Selecione</option>
+                                {% for p in produtos %}
+                                <option value="{{ p.id }}">{{ p.nome }} - {{ p.codigo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mov-tipo"><i class='bx bx-transfer'></i> Tipo</label>
+                            <select class="input-field" id="mov-tipo" name="tipo_mov" required>
+                                <option value="entrada">Entrada</option>
+                                <option value="saida">Saída</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mov-quantidade"><i class='bx bx-plus-minus'></i> Quantidade</label>
+                            <input class="input-field" id="mov-quantidade" name="quantidade" type="number" min="1"
+                                required />
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="mov-observacao"><i class='bx bx-note'></i> Observação</label>
+                            <textarea class="input-field" id="mov-observacao" name="observacao" rows="2"
+                                placeholder="Motivo da movimentação"></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="produto-codigo"><i class='bx bx-barcode'></i> Código / EAN</label>
-                        <input class="input-field" id="produto-codigo" name="codigo" placeholder="Código de barras"
-                            type="text" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-categoria"><i class='bx bx-category'></i> Categoria</label>
-                        <input class="input-field" id="produto-categoria" name="categoria" placeholder="Ex: Cosméticos"
-                            type="text" />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-custo"><i class='bx bx-dollar'></i> Custo Unitário</label>
-                        <input class="input-field" id="produto-custo" name="custo" placeholder="0.00" type="number"
-                            step="0.01" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-preco"><i class='bx bx-dollar-circle'></i> Preço de Venda</label>
-                        <input class="input-field" id="produto-preco" name="preco" placeholder="0.00" type="number"
-                            step="0.01" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="produto-minimo"><i class='bx bx-error-circle'></i> Estoque Mínimo</label>
-                        <input class="input-field" id="produto-minimo" name="estoque_minimo" placeholder="Qtd mínima"
-                            type="number" min="0" />
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Cadastrar Produto</button>
-            </form>
+                    <button type="submit" class="btn-submit"><i class='bx bx-check'></i> Registrar Movimentação</button>
+                </form>
 
-            <!-- Movimentação de Estoque -->
-            <form method="POST" id="form-movimentacao" style="margin-top:2rem;">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="estoque_movimentacao" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="produto-id"><i class='bx bx-box'></i> Produto</label>
-                        <select class="input-field" id="produto-id" name="produto_id" required>
-                            <option value="" disabled selected>Selecione</option>
+                <!-- Tabela de Estoque -->
+                <div class="tabela-wrapper" style="margin-top:2rem;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Código</th>
+                                <th>Categoria</th>
+                                <th>Estoque Atual</th>
+                                <th>Custo</th>
+                                <th>Preço Venda</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             {% for p in produtos %}
-                            <option value="{{ p.id }}">{{ p.nome }} - {{ p.codigo }}</option>
+                            <tr class="{% if p.estoque_atual <= p.estoque_minimo %}inativo{% endif %}">
+                                <td>{{ p.nome }}</td>
+                                <td>{{ p.codigo }}</td>
+                                <td>{{ p.categoria }}</td>
+                                <td>{{ p.estoque_atual }}</td>
+                                <td>R$ {{ p.custo|floatformat:2 }}</td>
+                                <td>R$ {{ p.preco|floatformat:2 }}</td>
+                                <td>
+                                    <div class="acoes-cell">
+                                        <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
+                                        <button class="btn-acao excluir" title="Excluir"><i
+                                                class='bx bx-trash'></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="empty-state">
+                                    <i class='bx bx-package'></i>
+                                    <p>Nenhum produto cadastrado</p>
+                                </td>
+                            </tr>
                             {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mov-tipo"><i class='bx bx-transfer'></i> Tipo</label>
-                        <select class="input-field" id="mov-tipo" name="tipo_mov" required>
-                            <option value="entrada">Entrada</option>
-                            <option value="saida">Saída</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mov-quantidade"><i class='bx bx-plus-minus'></i> Quantidade</label>
-                        <input class="input-field" id="mov-quantidade" name="quantidade" type="number" min="1"
-                            required />
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="mov-observacao"><i class='bx bx-note'></i> Observação</label>
-                        <textarea class="input-field" id="mov-observacao" name="observacao" rows="2"
-                            placeholder="Motivo da movimentação"></textarea>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-check'></i> Registrar Movimentação</button>
-            </form>
-
-            <!-- Tabela de Estoque -->
-            <div class="tabela-wrapper" style="margin-top:2rem;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Código</th>
-                            <th>Categoria</th>
-                            <th>Estoque Atual</th>
-                            <th>Custo</th>
-                            <th>Preço Venda</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in produtos %}
-                        <tr class="{% if p.estoque_atual <= p.estoque_minimo %}inativo{% endif %}">
-                            <td>{{ p.nome }}</td>
-                            <td>{{ p.codigo }}</td>
-                            <td>{{ p.categoria }}</td>
-                            <td>{{ p.estoque_atual }}</td>
-                            <td>R$ {{ p.custo|floatformat:2 }}</td>
-                            <td>R$ {{ p.preco|floatformat:2 }}</td>
-                            <td>
-                                <div class="acoes-cell">
-                                    <button class="btn-acao editar" title="Editar"><i class='bx bx-edit'></i></button>
-                                    <button class="btn-acao excluir" title="Excluir"><i
-                                            class='bx bx-trash'></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="empty-state">
-                                <i class='bx bx-package'></i>
-                                <p>Nenhum produto cadastrado</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
@@ -1302,71 +1321,87 @@
     <!-- Aba Sistema -->
     <div class="tab-content" id="sistema">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-paint'></i> Aparência do Sistema</h2>
-            <div class="config-info">
-                <i class='bx bx-info-circle'></i> Personalize a aparência e identidade visual do sistema.
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-paint'></i> Aparência do Sistema</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
             </div>
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="config_sistema" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-image'></i> Logo da Clínica</label>
-                        <input class="input-field" type="file" name="logo" accept="image/*">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-brightness'></i> Tema do Sistema</label>
-                        <select class="input-field" name="tema">
-                            <option value="claro">Claro</option>
-                            <option value="escuro" selected>Escuro</option>
-                            <option value="auto">Automático</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-file'></i> Cabeçalho de Relatórios</label>
-                        <textarea class="input-field" rows="3"
-                            name="cabecalho_relatorio">Clínica Ponto de Equilíbrio\nCNPJ: 12.345.678/0001-90\nTel: (11) 99999-9999 | www.pontodeequilibrio.com</textarea>
-                    </div>
+            
+            <div class="form-content">
+                <div class="config-info">
+                    <i class='bx bx-info-circle'></i> Personalize a aparência e identidade visual do sistema.
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
-            </form>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="config_sistema" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-image'></i> Logo da Clínica</label>
+                            <input class="input-field" type="file" name="logo" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-brightness'></i> Tema do Sistema</label>
+                            <select class="input-field" name="tema">
+                                <option value="claro">Claro</option>
+                                <option value="escuro" selected>Escuro</option>
+                                <option value="auto">Automático</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label><i class='bx bx-file'></i> Cabeçalho de Relatórios</label>
+                            <textarea class="input-field" rows="3"
+                                name="cabecalho_relatorio">Clínica Ponto de Equilíbrio\nCNPJ: 12.345.678/0001-90\nTel: (11) 99999-9999 | www.pontodeequilibrio.com</textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Aba Segurança -->
     <div class="tab-content" id="seguranca">
         <div class="form">
-            <h2 class="form_titulo"><i class='bx bx-shield'></i> Segurança</h2>
-            <div class="config-info warning">
-                <i class='bx bx-error-circle'></i> Configure as políticas de segurança e acesso ao sistema.
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-shield'></i> Segurança</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
             </div>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="tipo" value="config_seguranca" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class='bx bx-lock'></i> Expiração de Sessão (minutos)</label>
-                        <input class="input-field" type="number" name="expiracao_sessao" value="30" min="5" max="480">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-key'></i> Comprimento mínimo da senha</label>
-                        <input class="input-field" type="number" name="min_senha" value="8" min="6" max="20">
-                    </div>
-                    <div class="form-group">
-                        <label><i class='bx bx-check-shield'></i> Exigir senha forte</label>
-                        <select class="input-field" name="senha_forte">
-                            <option value="1" selected>Sim - Letras + Números</option>
-                            <option value="0">Não</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label><i class='bx bx-history'></i> Logs de Auditoria</label>
-                        <textarea class="input-field" rows="4"
-                            disabled>Último acesso: {{ user.last_login|default:"Nunca" }}\nIP: 192.168.1.1\nNavegador: Chrome 120.0\nAtivar exibição detalhada de logs no painel administrativo</textarea>
-                    </div>
+            
+            <div class="form-content">
+                <div class="config-info warning">
+                    <i class='bx bx-error-circle'></i> Configure as políticas de segurança e acesso ao sistema.
                 </div>
-                <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
-            </form>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="config_seguranca" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-lock'></i> Expiração de Sessão (minutos)</label>
+                            <input class="input-field" type="number" name="expiracao_sessao" value="30" min="5" max="480">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-key'></i> Comprimento mínimo da senha</label>
+                            <input class="input-field" type="number" name="min_senha" value="8" min="6" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-check-shield'></i> Exigir senha forte</label>
+                            <select class="input-field" name="senha_forte">
+                                <option value="1" selected>Sim - Letras + Números</option>
+                                <option value="0">Não</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label><i class='bx bx-history'></i> Logs de Auditoria</label>
+                            <textarea class="input-field" rows="4"
+                                disabled>Último acesso: {{ user.last_login|default:"Nunca" }}\nIP: 192.168.1.1\nNavegador: Chrome 120.0\nAtivar exibição detalhada de logs no painel administrativo</textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -1376,6 +1411,38 @@
 {% block scripts %}
 
 <script>
+    function mostrarMensagem(mensagem, tipo = 'success') {
+    const toastContainer = document.getElementById('toast-container') || criarToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo} toast-slide-in`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    ${getIcon(tipo)}
+                </div>
+                <div class="toast-title">
+                    ${getTitle(tipo)}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div>${mensagem}</div>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Remove após 5 segundos
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('toast-slide-out');
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 5000);
+}
     // Sistema de tabs com URL e persistência
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', (e) => {
@@ -1730,23 +1797,7 @@
         });
     });
 
-    // Função para mostrar mensagens
-    function mostrarMensagem(mensagem, tipo) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `form-message ${tipo}`;
-        messageDiv.textContent = mensagem;
-        messageDiv.style.position = 'fixed';
-        messageDiv.style.top = '20px';
-        messageDiv.style.right = '20px';
-        messageDiv.style.zIndex = '1000';
-
-        document.body.appendChild(messageDiv);
-
-        setTimeout(() => {
-            messageDiv.remove();
-        }, 5000);
-    }
-
+    
     // Tecla ESC para cancelar edição
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && editingRow) {
@@ -1756,5 +1807,215 @@
             }
         }
     });
+
+
+    // =============================
+// SISTEMA DE SEÇÕES RETRÁTEIS
+// =============================
+
+// Função para alternar uma seção
+function toggleFormSection(header) {
+    const formSection = header.parentElement;
+    const content = formSection.querySelector('.form-content');
+    const icon = header.querySelector('.form-toggle i');
+    
+    // Fecha todas as outras seções na mesma aba (opcional - descomente se quiser accordion)
+    /*
+    const parentTab = formSection.closest('.tab-content');
+    if (parentTab) {
+        parentTab.querySelectorAll('.form.expanded').forEach(otherSection => {
+            if (otherSection !== formSection) {
+                otherSection.classList.remove('expanded');
+                otherSection.querySelector('.form-content').style.maxHeight = "0";
+                otherSection.querySelector('.form-content').style.opacity = "0";
+                otherSection.querySelector('.form-content').style.padding = "0";
+            }
+        });
+    }
+    */
+    
+    // Alterna a seção atual
+    if (formSection.classList.contains('expanded')) {
+        // Fecha a seção
+        formSection.classList.remove('expanded');
+        content.style.maxHeight = "0";
+        content.style.opacity = "0";
+        content.style.padding = "0";
+        
+        // Animação suave para o ícone
+        icon.style.transform = "rotate(0deg)";
+    } else {
+        // Abre a seção
+        formSection.classList.add('expanded');
+        const scrollHeight = content.scrollHeight;
+        content.style.maxHeight = scrollHeight + "px";
+        content.style.opacity = "1";
+        content.style.padding = "var(--espaco-lg)";
+        
+        // Animação suave para o ícone
+        icon.style.transform = "rotate(180deg)";
+    }
+}
+
+// Função para abrir todas as seções de uma aba
+function expandAllSections(tabId) {
+    const tab = document.getElementById(tabId);
+    if (tab) {
+        tab.querySelectorAll('.form').forEach(formSection => {
+            if (!formSection.classList.contains('expanded')) {
+                const content = formSection.querySelector('.form-content');
+                const icon = formSection.querySelector('.form-toggle i');
+                
+                formSection.classList.add('expanded');
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.style.opacity = "1";
+                content.style.padding = "var(--espaco-lg)";
+                icon.style.transform = "rotate(180deg)";
+            }
+        });
+    }
+}
+
+// Função para fechar todas as seções de uma aba
+function collapseAllSections(tabId) {
+    const tab = document.getElementById(tabId);
+    if (tab) {
+        tab.querySelectorAll('.form.expanded').forEach(formSection => {
+            const content = formSection.querySelector('.form-content');
+            const icon = formSection.querySelector('.form-toggle i');
+            
+            formSection.classList.remove('expanded');
+            content.style.maxHeight = "0";
+            content.style.opacity = "0";
+            content.style.padding = "0";
+            icon.style.transform = "rotate(0deg)";
+        });
+    }
+}
+
+// Inicialização das seções
+document.addEventListener('DOMContentLoaded', function() {
+    // Abre a primeira seção da primeira aba ativa
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab) {
+        const firstForm = activeTab.querySelector('.form');
+        if (firstForm) {
+            firstForm.classList.add('expanded');
+            const content = firstForm.querySelector('.form-content');
+            content.style.maxHeight = content.scrollHeight + "px";
+            content.style.opacity = "1";
+            content.style.padding = "var(--espaco-lg)";
+            
+            // Ajusta o ícone
+            const icon = firstForm.querySelector('.form-toggle i');
+            if (icon) icon.style.transform = "rotate(180deg)";
+        }
+    }
+    
+    // Adiciona botões de expandir/recolher todos (opcional)
+    addExpandCollapseButtons();
+    
+    // Ajusta altura das seções ao redimensionar
+    window.addEventListener('resize', function() {
+        document.querySelectorAll('.form.expanded .form-content').forEach(content => {
+            content.style.maxHeight = content.scrollHeight + "px";
+        });
+    });
+    
+    // Atalhos de teclado
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + E expande todas as seções da aba ativa
+        if (e.ctrlKey && e.key === 'e') {
+            e.preventDefault();
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                expandAllSections(activeTab.id);
+            }
+        }
+        
+        // Ctrl + R recolhe todas as seções da aba ativa
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                collapseAllSections(activeTab.id);
+            }
+        }
+    });
+});
+
+// Função para adicionar botões de expandir/recolher todos (opcional)
+function addExpandCollapseButtons() {
+    const tabsContainer = document.querySelector('.tabs');
+    if (tabsContainer) {
+        // Cria container para os botões
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'expand-collapse-buttons';
+        buttonsContainer.style.display = 'flex';
+        buttonsContainer.style.gap = '10px';
+        buttonsContainer.style.marginLeft = 'auto';
+        buttonsContainer.style.alignItems = 'center';
+        
+        // Botão Expandir Todos
+        const expandBtn = document.createElement('button');
+        expandBtn.className = 'btn-small';
+        expandBtn.innerHTML = '<i class="bx bx-chevrons-down"></i> Expandir';
+        expandBtn.title = 'Expandir todas as seções (Ctrl+E)';
+        expandBtn.onclick = function() {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) expandAllSections(activeTab.id);
+        };
+        
+        // Botão Recolher Todos
+        const collapseBtn = document.createElement('button');
+        collapseBtn.className = 'btn-small';
+        collapseBtn.innerHTML = '<i class="bx bx-chevrons-up"></i> Recolher';
+        collapseBtn.title = 'Recolher todas as seções (Ctrl+R)';
+        collapseBtn.onclick = function() {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) collapseAllSections(activeTab.id);
+        };
+        
+        buttonsContainer.appendChild(expandBtn);
+        buttonsContainer.appendChild(collapseBtn);
+        
+        // Adiciona após o último elemento nas tabs
+        tabsContainer.appendChild(buttonsContainer);
+    }
+}
+
+// Estilo para os botões pequenos
+const style = document.createElement('style');
+style.textContent = `
+.btn-small {
+    background: var(--roxoPrincipal);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--borda-radius);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: var(--transicao);
+}
+
+.btn-small:hover {
+    background: var(--roxo-primary-hover);
+    transform: translateY(-1px);
+}
+
+.expand-collapse-buttons {
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .expand-collapse-buttons {
+        display: none !important;
+    }
+}
+`;
+document.head.appendChild(style);
 </script>
 {% endblock %}
