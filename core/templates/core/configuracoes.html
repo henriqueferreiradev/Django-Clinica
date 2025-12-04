@@ -209,6 +209,25 @@
                             <input class="input-field" id="servico-valor" name="valor" placeholder="0.00" type="number"
                                 step="0.01" min="0" required />
                         </div>
+                        <div class="form-group">
+                            <label>Conta:</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" 
+                                    id="conta_selecionada_desc" 
+                                    class="form-control" 
+                                    readonly 
+                                    placeholder="Nenhuma conta selecionada">
+                                <input type="hidden" 
+                                    id="conta_selecionada_codigo" 
+                                    name="conta_codigo">
+                                <button type="button" 
+                                        class="btn btn-secondary" 
+                                        onclick="abrirModalSelecao()">
+                                    <i class="fas fa-search"></i> Selecionar
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                     <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Serviço</button>
                 </form>
@@ -285,8 +304,52 @@
                 </div>
             </div>
         </div>
+        
+
     </div>
 
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-sitemap"></i>
+                    Plano de Contas - Clínica
+                </h2>
+                <button class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Buscar conta por código ou descrição..." id="searchInput">
+                </div>
+                
+                <div class="selected-account" id="selectedAccount">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Nenhuma conta selecionada</span>
+                </div>
+                
+                <div class="account-tree" id="accountTree">
+                    <!-- Conteúdo será carregado dinamicamente -->
+                    <div class="loading-container" id="loadingContainer">
+                        <div class="loading-spinner"></div>
+                        <p>Carregando plano de contas...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" id="confirmBtn">
+                    <i class="fas fa-check"></i>
+                    Confirmar Conta
+                </button>
+            </div>
+        </div>
+    </div>
     <!-- Aba Acessos -->
     <div class="tab-content" id="acessos">
         <div class="form">
@@ -992,6 +1055,37 @@
             </div>
         </div>
 
+        <div class="form">
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-category'></i> Cadastro de Planos de Conta</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <form method="post" id="form-categorias">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="cadastro_categoria_contas_receber" />
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-pie-chart-alt-2'></i> Código</label>
+                            <input class="input-field" type="text" name="categoria_nome" placeholder="Digite o nome da categoria">
+                        </div>
+                    </div>
+                                        <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-pie-chart-alt-2'></i> Código</label>
+                            <input class="input-field" type="text" name="categoria_nome" placeholder="Digite o nome da categoria">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Conta</button>
+                </form>
+ 
+            </div>
+        </div>
     </div>
     <!-- Aba Notificações -->
     <div class="tab-content" id="notificacoes">
@@ -1406,6 +1500,7 @@
     </div>
 
 </div>
+{% include "core/partials/_modal_plano_contas.html" %} 
 {% endblock %}
 
 {% block scripts %}

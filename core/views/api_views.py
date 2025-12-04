@@ -1230,4 +1230,78 @@ def listar_imagens(request, paciente_id):
     
 def criar_pasta_imagem(request, paciente_id):
     ...
+
+
+# views.py
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt
+from core.models import CategoriaConta, GrupoConta, SubgrupoConta
+
+@csrf_exempt
+@require_GET
+def api_plano_contas(request):
+    """API para retornar o plano de contas no formato esperado pelo frontend"""
+    try:
+        # Buscar todas as categorias, grupos e contas ativas
+        categorias = CategoriaConta.objects.filter(ativo=True)
+        grupos = GrupoConta.objects.filter(ativo=True).select_related('categoria')
+        contas = SubgrupoConta.objects.filter(ativo=True).select_related('grupo', 'grupo__categoria')
+        
+        # Formato 1: Simples (array de contas)
+        if request.GET.get('formato') == 'simples':
+            dados_simples = []
+            for conta in contas:
+                dados_simples.append({
+                    'id': conta.id,
+                    'codigo_completo': conta.codigo_completo,
+                    'codigo': conta.codigo,
+                    'descricao': conta.descricao,
+                    'tipo': conta.grupo.categoria.tipo,
+                    'grupo_id': conta.grupo.id,
+                    'grupo_descricao': conta.grupo.descricao,
+                    'categoria_nome': conta.grupo.categoria.nome,
+                    'ativo': conta.ativo,
+                    'ordem': conta.ordem
+                })
+            return JsonResponse(dados_simples, safe=False)
+        
+        # Formato 2: Hierárquico (formato original do frontend)
+        else:
+            estrutura = {
+                "centros_de_custo": {
+                    "receitas": {},
+                    "despesas": {}
+                }
+            }
+            
+            # Processar cada categoria
+            for categoria in categorias:
+                tipo_key = "receitas" if categoria.tipo == "receita" else "despesas"
+                
+                # Filtrar grupos desta categoria
+                grupos_categoria = grupos.filter(categoria=categoria)
+                
+                for grupo in grupos_categoria:
+                    estrutura["centros_de_custo"][tipo_key][grupo.codigo] = {
+                        "descricao": grupo.descricao,
+                        "subgrupos": {}
+                    }
+                    
+                    # Filtrar contas deste grupo
+                    contas_grupo = contas.filter(grupo=grupo)
+                    
+                    for conta in contas_grupo:
+                        codigo_display = f"{grupo.codigo}.{conta.codigo}"
+                        estrutura["centros_de_custo"][tipo_key][grupo.codigo]["subgrupos"][codigo_display] = conta.descricao
+            
+            return JsonResponse(estrutura)
     
+    except Exception as e:
+        return JsonResponse({
+            "error": str(e),
+            "centros_de_custo": {
+                "receitas": {},
+                "despesas": {}
+            }
+        }, status=500)

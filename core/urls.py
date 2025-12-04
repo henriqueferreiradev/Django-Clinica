@@ -38,7 +38,7 @@ urlpatterns = [
     path('api/paciente/<int:paciente_id>/detalhe/', api_views.paciente_detalhes_basicos, name='paciente_detalhes_basicos' ),
     
     
-    
+    path('api/plano-contas/', api_views.api_plano_contas, name='api_plano_contas'),
     path('api/contar-pendencias-dia/', api_views.contar_pendencias_dia, name='contar_pendencias_dia'),
     
     path('api/salvar-evolucao/', api_views.salvar_evolucao, name='salvar_evolucao'),
@@ -135,6 +135,8 @@ urlpatterns = [
     
     path("frequencias", frequencia_views.frequencias_get, name="frequencias_get"),
     path("frequencias/salvar", frequencia_views.frequencias_post, name="frequencias_post"),
+
+    
       
 
 ]
