@@ -1153,12 +1153,7 @@ select.input-field {
 }
 
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-}
+ 
 
 .open-modal-btn {
     background: linear-gradient(to right, #FF416C, #FF4B2B);
@@ -1240,7 +1235,7 @@ select.input-field {
 
 .modal-header {
     padding: 25px 30px;
-    background: linear-gradient(to right, #4776E6, #8E54E9);
+    background: var(--branco);
     color: white;
     display: flex;
     justify-content: space-between;
@@ -1279,7 +1274,7 @@ select.input-field {
     padding: 25px 30px;
     overflow-y: auto;
     flex-grow: 1;
-    background-color: #f8fafc;
+    background-color: var(--branco);
 }
 
 .search-container {
@@ -1294,13 +1289,13 @@ select.input-field {
     border-radius: 12px;
     font-size: 16px;
     transition: all 0.3s;
-    background-color: white;
+    background-color: var(--backgroundCard);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .search-input:focus {
     outline: none;
-    border-color: #8E54E9;
+    border-color: var(--roxoPrincipal);
     box-shadow: 0 5px 15px rgba(142, 84, 233, 0.2);
 }
 
@@ -1316,7 +1311,7 @@ select.input-field {
 .selected-account {
     margin: 20px 0;
     padding: 18px 20px;
-    background: white;
+    background: var(--backgroundCard);
     border-radius: 12px;
     border-left: 5px solid #8E54E9;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -1335,7 +1330,7 @@ select.input-field {
 .account-tree {
     list-style: none;
     padding-left: 0;
-    background: white;
+    background: var(--branco);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -1359,7 +1354,7 @@ select.input-field {
 }
 
 .account-content:hover {
-    background-color: #f8fafc;
+    background-color: var(--backgroundCard);;
 }
 
 .account-content.selected {
@@ -1456,7 +1451,7 @@ select.input-field {
     display: flex;
     justify-content: flex-end;
     gap: 15px;
-    background: white;
+    background: var(--branco);
 }
 
 .btn {
@@ -1472,10 +1467,10 @@ select.input-field {
 }
 
 .btn-primary {
-    background: linear-gradient(to right, #4776E6, #8E54E9);
+    background: var(--roxoPrincipal);
     color: white;
     border: none;
-    box-shadow: 0 5px 15px rgba(71, 118, 230, 0.4);
+    box-shadow: 0 5px 15px rgba(145, 71, 230, 0.4);
 }
 
 .btn-primary:hover {
@@ -1511,15 +1506,17 @@ select.input-field {
 }
 
 .category-header {
-    background: linear-gradient(to right, #f8fafc, #e2e8f0);
+    background: var(--roxoPrincipal-hover);;
     padding: 12px 20px;
     font-weight: 700;
-    color: #334155;
+    color: var(--preto);
     display: flex;
     align-items: center;
     gap: 10px;
     border-bottom: 2px solid #cbd5e1;
 }
+
+
 
 .category-header i {
     color: #4776E6;
