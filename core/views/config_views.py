@@ -48,6 +48,7 @@ def configuracao_view(request):
                     print('SALVO COM SUCESSO')
                 except Exception as e:
                     print("Erro ao salvar serviço:", e)
+           
                     
         elif tipo == "usuario_config":
             

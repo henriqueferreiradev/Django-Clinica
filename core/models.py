@@ -166,6 +166,10 @@ STATUS_CHOICES = [
     ('falta_cobrada', '❌ FC - Falta cobrada'),
 ]
 
+
+
+
+
 class User(AbstractUser):
     tipo = models.CharField(max_length=20, choices=TIPOS_USUARIO)
     telefone = models.CharField(max_length=20, blank=True, null=True)
@@ -377,11 +381,199 @@ class Profissional(models.Model):
                 # Log do erro sem quebrar a aplicação
                 print(f"Erro ao criar usuário para profissional: {e}")    
 
+class CategoriaConta(models.Model):
+    """
+    Categoria principal: Receita ou Despesa
+    Simplificando o que você já tem em CategoriaFinanceira
+    """
+    TIPO_CHOICES = (
+        ('receita', 'Receita'),
+        ('despesa', 'Despesa'),
+    )
+    
+    nome = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    ativo = models.BooleanField(default=True)
+    ordem = models.IntegerField(default=0)
+    
+    class Meta:
+        verbose_name = 'Categoria de Conta'
+        verbose_name_plural = 'Categorias de Conta'
+        ordering = ['tipo', 'ordem', 'nome']
+    
+    def __str__(self):
+        return f"{self.nome} ({self.get_tipo_display()})"
+
+
+class GrupoConta(models.Model):
+    """
+    Grupo dentro de uma categoria
+    Ex: Para Receita -> ATENDIMENTOS, PRODUTOS, OUTRAS RECEITAS
+    """
+    categoria = models.ForeignKey(CategoriaConta, on_delete=models.CASCADE, related_name='grupos')
+    codigo = models.CharField(max_length=10, help_text="Código do grupo (ex: 1, 2, 3)")
+    descricao = models.CharField(max_length=100)
+    ativo = models.BooleanField(default=True)
+    ordem = models.IntegerField(default=0)
+    
+    class Meta:
+        verbose_name = 'Grupo de Conta'
+        verbose_name_plural = 'Grupos de Conta'
+        ordering = ['categoria', 'ordem', 'codigo']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['categoria', 'codigo'],
+                name='unique_grupo_por_categoria'
+            )
+        ]
+    
+    def __str__(self):
+        return f"{self.codigo} - {self.descricao}"
+
+
+class SubgrupoConta(models.Model):
+    """
+    Conta específica dentro de um grupo
+    Ex: 1.1 - Sessões Avulsas de Fisioterapia
+    """
+    grupo = models.ForeignKey(GrupoConta, on_delete=models.CASCADE, related_name='subgrupos')
+    codigo = models.CharField(max_length=10, help_text="Código do subgrupo (ex: 1, 2, 3)")
+    descricao = models.CharField(max_length=200)
+    codigo_completo = models.CharField(max_length=20, unique=True, editable=False)
+    ativo = models.BooleanField(default=True)
+    ordem = models.IntegerField(default=0)
+    
+    # Campos para controle financeiro
+    permite_lancamento_direto = models.BooleanField(default=True)
+    eh_centro_custo = models.BooleanField(default=False, help_text="Se é um centro de custo específico")
+    
+    # Metadados
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
+    criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, 
+                                   related_name='contas_criadas')
+    
+    class Meta:
+        verbose_name = 'Conta'
+        verbose_name_plural = 'Contas'
+        ordering = ['grupo__categoria', 'grupo__ordem', 'ordem', 'codigo']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['grupo', 'codigo'],
+                name='unique_conta_por_grupo'
+            )
+        ]
+    
+    def __str__(self):
+        return f"{self.codigo_completo} - {self.descricao}"
+    
+    def save(self, *args, **kwargs):
+        # Gera o código completo automaticamente: Tipo.Grupo.Subgrupo
+        # Ex: R.1.1 para Receitas > Atendimentos > Sessões Avulsas
+        # Ex: D.1.1 para Despesas > Atendimento (Custos Diretos) > Insumos
+        
+        # Primeira letra do tipo (R ou D)
+        tipo_codigo = self.grupo.categoria.tipo[0].upper()
+        self.codigo_completo = f"{tipo_codigo}.{self.grupo.codigo}.{self.codigo}"
+        super().save(*args, **kwargs)
+    
+    @property
+    def tipo(self):
+        """Retorna o tipo da conta (receita/despesa)"""
+        return self.grupo.categoria.tipo
+    
+    @property
+    def categoria_nome(self):
+        """Retorna o nome da categoria"""
+        return self.grupo.categoria.nome
+    
+    @property
+    def grupo_descricao(self):
+        """Retorna a descrição do grupo"""
+        return self.grupo.descricao
+
+
+class LancamentoConta(models.Model):
+    """
+    Lançamento financeiro vinculado a uma conta específica
+    """
+    conta = models.ForeignKey(SubgrupoConta, on_delete=models.PROTECT, related_name='lancamentos')
+    tipo_movimento = models.CharField(max_length=1, choices=[
+        ('C', 'Crédito'),
+        ('D', 'Débito')
+    ])
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    data_lancamento = models.DateField()
+    data_vencimento = models.DateField(null=True, blank=True)
+    descricao = models.TextField()
+    
+    # Vinculação com outros modelos do sistema
+    paciente = models.ForeignKey('Paciente', on_delete=models.SET_NULL, null=True, blank=True)
+    profissional = models.ForeignKey('Profissional', on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.ForeignKey('Agendamento', on_delete=models.SET_NULL, null=True, blank=True)
+    pacote = models.ForeignKey('PacotePaciente', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Status
+    STATUS_CHOICES = [
+        ('pendente', 'Pendente'),
+        ('pago', 'Pago'),
+        ('cancelado', 'Cancelado'),
+        ('atrasado', 'Atrasado'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
+    
+    # Forma de pagamento (se for receita)
+    forma_pagamento = models.CharField(max_length=30, blank=True, null=True, choices=[
+        ('pix', 'Pix'),
+        ('credito', 'Cartão de Crédito'),
+        ('debito', 'Cartão de Débito'),
+        ('dinheiro', 'Dinheiro'),
+        ('transferencia', 'Transferência'),
+        ('boleto', 'Boleto'),
+        ('outro', 'Outro'),
+    ])
+    
+    # Dados do pagamento
+    data_pagamento = models.DateField(null=True, blank=True)
+    comprovante = models.FileField(upload_to='comprovantes/lancamentos/', null=True, blank=True)
+    
+    # Metadados
+    observacoes = models.TextField(blank=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
+    criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    
+    class Meta:
+        verbose_name = 'Lançamento Contábil'
+        verbose_name_plural = 'Lançamentos Contábeis'
+        ordering = ['-data_lancamento', '-data_criacao']
+        indexes = [
+            models.Index(fields=['conta', 'data_lancamento']),
+            models.Index(fields=['status', 'data_vencimento']),
+        ]
+    
+    def __str__(self):
+        return f"{self.conta.codigo_completo} - {self.descricao} - R$ {self.valor}"
+    
+    def save(self, *args, **kwargs):
+        # Verifica se a conta está ativa
+        if not self.conta.ativo:
+            raise ValueError("Não é possível lançar em uma conta inativa")
+        
+        # Atualiza status se a data de vencimento passou
+        if self.data_vencimento and self.status == 'pendente':
+            from datetime import date
+            if self.data_vencimento < date.today():
+                self.status = 'atrasado'
+        
+        super().save(*args, **kwargs)
+
 
 class Servico(models.Model):
     nome = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=8, decimal_places=2)
     qtd_sessoes = models.PositiveIntegerField(default=1)
+    conta_contabil = models.ForeignKey(SubgrupoConta)
     ativo = models.BooleanField(default=True)
 
     def __str__(self):
@@ -1246,193 +1438,6 @@ class AvaliacaoFisioterapeutica(models.Model):
     
     
 # ADICIONE ISSO AO FINAL DO SEU models.py (antes da última linha)
-
-class CategoriaConta(models.Model):
-    """
-    Categoria principal: Receita ou Despesa
-    Simplificando o que você já tem em CategoriaFinanceira
-    """
-    TIPO_CHOICES = (
-        ('receita', 'Receita'),
-        ('despesa', 'Despesa'),
-    )
-    
-    nome = models.CharField(max_length=100)
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
-    ativo = models.BooleanField(default=True)
-    ordem = models.IntegerField(default=0)
-    
-    class Meta:
-        verbose_name = 'Categoria de Conta'
-        verbose_name_plural = 'Categorias de Conta'
-        ordering = ['tipo', 'ordem', 'nome']
-    
-    def __str__(self):
-        return f"{self.nome} ({self.get_tipo_display()})"
-
-
-class GrupoConta(models.Model):
-    """
-    Grupo dentro de uma categoria
-    Ex: Para Receita -> ATENDIMENTOS, PRODUTOS, OUTRAS RECEITAS
-    """
-    categoria = models.ForeignKey(CategoriaConta, on_delete=models.CASCADE, related_name='grupos')
-    codigo = models.CharField(max_length=10, help_text="Código do grupo (ex: 1, 2, 3)")
-    descricao = models.CharField(max_length=100)
-    ativo = models.BooleanField(default=True)
-    ordem = models.IntegerField(default=0)
-    
-    class Meta:
-        verbose_name = 'Grupo de Conta'
-        verbose_name_plural = 'Grupos de Conta'
-        ordering = ['categoria', 'ordem', 'codigo']
-        constraints = [
-            models.UniqueConstraint(
-                fields=['categoria', 'codigo'],
-                name='unique_grupo_por_categoria'
-            )
-        ]
-    
-    def __str__(self):
-        return f"{self.codigo} - {self.descricao}"
-
-
-class SubgrupoConta(models.Model):
-    """
-    Conta específica dentro de um grupo
-    Ex: 1.1 - Sessões Avulsas de Fisioterapia
-    """
-    grupo = models.ForeignKey(GrupoConta, on_delete=models.CASCADE, related_name='subgrupos')
-    codigo = models.CharField(max_length=10, help_text="Código do subgrupo (ex: 1, 2, 3)")
-    descricao = models.CharField(max_length=200)
-    codigo_completo = models.CharField(max_length=20, unique=True, editable=False)
-    ativo = models.BooleanField(default=True)
-    ordem = models.IntegerField(default=0)
-    
-    # Campos para controle financeiro
-    permite_lancamento_direto = models.BooleanField(default=True)
-    eh_centro_custo = models.BooleanField(default=False, help_text="Se é um centro de custo específico")
-    
-    # Metadados
-    data_criacao = models.DateTimeField(auto_now_add=True)
-    data_atualizacao = models.DateTimeField(auto_now=True)
-    criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, 
-                                   related_name='contas_criadas')
-    
-    class Meta:
-        verbose_name = 'Conta'
-        verbose_name_plural = 'Contas'
-        ordering = ['grupo__categoria', 'grupo__ordem', 'ordem', 'codigo']
-        constraints = [
-            models.UniqueConstraint(
-                fields=['grupo', 'codigo'],
-                name='unique_conta_por_grupo'
-            )
-        ]
-    
-    def __str__(self):
-        return f"{self.codigo_completo} - {self.descricao}"
-    
-    def save(self, *args, **kwargs):
-        # Gera o código completo automaticamente: Tipo.Grupo.Subgrupo
-        # Ex: R.1.1 para Receitas > Atendimentos > Sessões Avulsas
-        # Ex: D.1.1 para Despesas > Atendimento (Custos Diretos) > Insumos
-        
-        # Primeira letra do tipo (R ou D)
-        tipo_codigo = self.grupo.categoria.tipo[0].upper()
-        self.codigo_completo = f"{tipo_codigo}.{self.grupo.codigo}.{self.codigo}"
-        super().save(*args, **kwargs)
-    
-    @property
-    def tipo(self):
-        """Retorna o tipo da conta (receita/despesa)"""
-        return self.grupo.categoria.tipo
-    
-    @property
-    def categoria_nome(self):
-        """Retorna o nome da categoria"""
-        return self.grupo.categoria.nome
-    
-    @property
-    def grupo_descricao(self):
-        """Retorna a descrição do grupo"""
-        return self.grupo.descricao
-
-
-class LancamentoConta(models.Model):
-    """
-    Lançamento financeiro vinculado a uma conta específica
-    """
-    conta = models.ForeignKey(SubgrupoConta, on_delete=models.PROTECT, related_name='lancamentos')
-    tipo_movimento = models.CharField(max_length=1, choices=[
-        ('C', 'Crédito'),
-        ('D', 'Débito')
-    ])
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
-    data_lancamento = models.DateField()
-    data_vencimento = models.DateField(null=True, blank=True)
-    descricao = models.TextField()
-    
-    # Vinculação com outros modelos do sistema
-    paciente = models.ForeignKey('Paciente', on_delete=models.SET_NULL, null=True, blank=True)
-    profissional = models.ForeignKey('Profissional', on_delete=models.SET_NULL, null=True, blank=True)
-    agendamento = models.ForeignKey('Agendamento', on_delete=models.SET_NULL, null=True, blank=True)
-    pacote = models.ForeignKey('PacotePaciente', on_delete=models.SET_NULL, null=True, blank=True)
-    
-    # Status
-    STATUS_CHOICES = [
-        ('pendente', 'Pendente'),
-        ('pago', 'Pago'),
-        ('cancelado', 'Cancelado'),
-        ('atrasado', 'Atrasado'),
-    ]
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
-    
-    # Forma de pagamento (se for receita)
-    forma_pagamento = models.CharField(max_length=30, blank=True, null=True, choices=[
-        ('pix', 'Pix'),
-        ('credito', 'Cartão de Crédito'),
-        ('debito', 'Cartão de Débito'),
-        ('dinheiro', 'Dinheiro'),
-        ('transferencia', 'Transferência'),
-        ('boleto', 'Boleto'),
-        ('outro', 'Outro'),
-    ])
-    
-    # Dados do pagamento
-    data_pagamento = models.DateField(null=True, blank=True)
-    comprovante = models.FileField(upload_to='comprovantes/lancamentos/', null=True, blank=True)
-    
-    # Metadados
-    observacoes = models.TextField(blank=True)
-    data_criacao = models.DateTimeField(auto_now_add=True)
-    data_atualizacao = models.DateTimeField(auto_now=True)
-    criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    
-    class Meta:
-        verbose_name = 'Lançamento Contábil'
-        verbose_name_plural = 'Lançamentos Contábeis'
-        ordering = ['-data_lancamento', '-data_criacao']
-        indexes = [
-            models.Index(fields=['conta', 'data_lancamento']),
-            models.Index(fields=['status', 'data_vencimento']),
-        ]
-    
-    def __str__(self):
-        return f"{self.conta.codigo_completo} - {self.descricao} - R$ {self.valor}"
-    
-    def save(self, *args, **kwargs):
-        # Verifica se a conta está ativa
-        if not self.conta.ativo:
-            raise ValueError("Não é possível lançar em uma conta inativa")
-        
-        # Atualiza status se a data de vencimento passou
-        if self.data_vencimento and self.status == 'pendente':
-            from datetime import date
-            if self.data_vencimento < date.today():
-                self.status = 'atrasado'
-        
-        super().save(*args, **kwargs)
 
 
 # Função para popular o plano de contas inicial
