@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from core.models import CategoriaContasReceber, Fornecedor,Paciente, User,Especialidade,Profissional, ContaBancaria, Servico,PacotePaciente,Agendamento,Pagamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ContaBancaria, ESTADO_CIVIL, Especialidade, Fornecedor, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, User, VINCULO
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -36,19 +36,70 @@ def configuracao_view(request):
                     print('SALVO COM SUCESSO')
                 except Exception as e:
                     print("Erro ao salvar especialidade:", e)
-
+        
         elif tipo == "servico":
             nome = request.POST.get('nome')
             valor = request.POST.get('valor')
             qtd_sessoes = request.POST.get('qtd_sessoes')
+            conta_codigo = request.POST.get('conta_codigo')  # Vem como "R11"
+            
             if nome and valor and qtd_sessoes:
                 try:
                     valor = float(valor.replace(',', '.'))
-                    Servico.objects.create(nome=nome, valor=valor, qtd_sessoes=qtd_sessoes, ativo=True)
+                    
+                    # Inicializa a variável da conta
+                    conta_contabil = None
+                    
+                    # Se foi selecionada uma conta, busca-a
+                    if conta_codigo:
+                        try:
+                            # Formata o código para o formato com pontos
+                            # Se veio "R11", transforma em "R.1.1"
+                            if len(conta_codigo) >= 3:
+                                tipo_codigo = conta_codigo[0]  # R ou D
+                                grupo_codigo = conta_codigo[1]  # primeiro dígito do grupo
+                                subgrupo_codigo = conta_codigo[2:]  # restante para subgrupo
+                                codigo_formatado = f"{tipo_codigo}.{grupo_codigo}.{subgrupo_codigo}"
+                            else:
+                                codigo_formatado = conta_codigo
+                            
+                            # Procura a conta pelo código formatado
+                            conta_contabil = SubgrupoConta.objects.get(
+                                codigo_completo=codigo_formatado,
+                                ativo=True
+                            )
+                        except SubgrupoConta.DoesNotExist:
+                            print(f"Conta não encontrada: {conta_codigo} (formatado: {codigo_formatado})")
+                            # Tenta buscar sem formatação também
+                            try:
+                                conta_contabil = SubgrupoConta.objects.get(
+                                    codigo_completo=conta_codigo,
+                                    ativo=True
+                                )
+                            except SubgrupoConta.DoesNotExist:
+                                return JsonResponse({
+                                    'success': False, 
+                                    'message': f'Conta contábil não encontrada: {conta_codigo}'
+                                })
+                    
+                    # Cria o serviço com a conta
+                    Servico.objects.create(
+                        nome=nome, 
+                        valor=valor, 
+                        qtd_sessoes=qtd_sessoes, 
+                        ativo=True,
+                        conta_contabil=conta_contabil
+                    )
                     print('SALVO COM SUCESSO')
+                    
+                    return JsonResponse({'success': True})
+                    
                 except Exception as e:
                     print("Erro ao salvar serviço:", e)
-           
+                    return JsonResponse({
+                        'success': False, 
+                        'message': str(e)
+                    })
                     
         elif tipo == "usuario_config":
             

@@ -221,7 +221,7 @@
                                     id="conta_selecionada_codigo" 
                                     name="conta_codigo">
                                 <button type="button" 
-                                        class="btn btn-primary" 
+                                        class=" btn btn-primary " 
                                         onclick="abrirModalSelecao()">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -260,6 +260,11 @@
                                 <td class="editable" data-field="valor" data-id='{{servico.id}}' data-model="servico">
                                     <span class="display-text">R$ {{ servico.valor }}</span>
                                     <input type="text" class="edit-input" value="{{ servico.valor }}"
+                                        style="display: none;">
+                                </td>
+                                <td data-model="servico">
+                                    <span class="display-text">{{ servico.conta_contabil }}</span>
+                                    <input type="text" class="edit-input" value="{{ servico.conta_contabil }}"
                                         style="display: none;">
                                 </td>
                                 <td>
@@ -1193,6 +1198,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Aba Empresa & Franquia -->
     <div class="tab-content" id="empresa">
         <div class="form">

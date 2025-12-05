@@ -573,7 +573,7 @@ class Servico(models.Model):
     nome = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=8, decimal_places=2)
     qtd_sessoes = models.PositiveIntegerField(default=1)
-    conta_contabil = models.ForeignKey(SubgrupoConta)
+    conta_contabil = models.ForeignKey(SubgrupoConta, on_delete=models.SET_NULL, null=True, blank=True, related_name='servicos', verbose_name="Conta Contábil")
     ativo = models.BooleanField(default=True)
 
     def __str__(self):
@@ -1433,14 +1433,6 @@ class AvaliacaoFisioterapeutica(models.Model):
         return f"Avaliação {self.paciente} - {self.data_avaliacao.date()}"
     
     
-    
-    
-    
-    
-# ADICIONE ISSO AO FINAL DO SEU models.py (antes da última linha)
-
-
-# Função para popular o plano de contas inicial
 def popular_plano_contas_inicial():
     """
     Popula o banco de dados com o plano de contas da clínica
