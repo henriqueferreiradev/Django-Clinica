@@ -225,11 +225,12 @@
                                         onclick="abrirModalSelecao()">
                                     <i class="fas fa-search"></i>
                                 </button>
+                                x
                             </div>
                         </div>
-
+                        
                     </div>
-                    <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Serviço</button>
+                   <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Serviço</button>
                 </form>
 
                 <div class="tabela-wrapper">
@@ -874,6 +875,24 @@
                             <label><i class='bx bx-error'></i> Email</label>
                             <input class="input-field" type="email" name="email_fornecedor"
                                 placeholder="exemplo@empresa.com">
+                        </div>
+                                                <div class="form-group">
+                            <label for="servico-sessoes"><i class='bx bx-category'></i> Plano de Contas</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" 
+                                    id="conta_selecionada_desc" 
+                                    class="input-field" 
+                                    readonly 
+                                    placeholder="Nenhuma conta selecionada">
+                                <input type="hidden" 
+                                    id="conta_selecionada_codigo" 
+                                    name="conta_codigo">
+                                <button type="button" 
+                                        class=" btn btn-primary " 
+                                        onclick="abrirModalSelecao()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Fornecedor</button>
