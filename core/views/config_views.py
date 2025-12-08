@@ -50,11 +50,8 @@ def configuracao_view(request):
                     # Inicializa a variável da conta
                     conta_contabil = None
                     
-                    # Se foi selecionada uma conta, busca-a
                     if conta_codigo:
                         try:
-                            # Formata o código para o formato com pontos
-                            # Se veio "R11", transforma em "R.1.1"
                             if len(conta_codigo) >= 3:
                                 tipo_codigo = conta_codigo[0]  # R ou D
                                 grupo_codigo = conta_codigo[1]  # primeiro dígito do grupo
@@ -152,9 +149,21 @@ def configuracao_view(request):
             digito_banco = request.POST.get('digito_banco')
             chave_pix_banco = request.POST.get('chave_pix_banco')
             tipo_conta_banco = request.POST.get('tipo_conta_banco')
+            
             ativo = True
+            
             try:
-                ContaBancaria.objects.create(codigo_banco=codigo_banco,nome_banco=nome_banco,agencia_banco=agencia_banco,conta_banco=conta_banco,digito_banco=digito_banco,tipo_conta_banco=tipo_conta_banco,chave_pix_banco=chave_pix_banco, ativo=ativo)
+                
+               
+                ContaBancaria.objects.create(codigo_banco=codigo_banco,
+                                            nome_banco=nome_banco,
+                                            agencia_banco=agencia_banco,
+                                            conta_banco=conta_banco,
+                                            digito_banco=digito_banco,
+                                            tipo_conta_banco=tipo_conta_banco,
+                                            chave_pix_banco=chave_pix_banco,
+                                            ativo=ativo)
+
             except Exception as e:
                 print(e)
 
@@ -168,12 +177,51 @@ def configuracao_view(request):
             fantasia_fornecedor = request.POST.get('fantasia_fornecedor')
             telefone_fornecedor = request.POST.get('telefone_fornecedor')
             email_fornecedor = request.POST.get('email_fornecedor')
+            conta_codigo = request.POST.get('conta_codigo')
             ativo = True
             
              
             try:
-                Fornecedor.objects.create(tipo_pessoa=tipo_pessoa,razao_social=razao_social_fornecedor,nome_fantasia=fantasia_fornecedor,documento=documento_fornecedor,telefone=telefone_fornecedor,email=email_fornecedor,
-                ativo=ativo)
+                
+                conta_contabil = None
+                
+                if conta_codigo:
+                    try:
+                        if len(conta_codigo) >= 3:
+                            tipo_codigo = conta_codigo[0]  # R ou D
+                            grupo_codigo = conta_codigo[1]  # primeiro dígito do grupo
+                            subgrupo_codigo = conta_codigo[2:]  # restante para subgrupo
+                            codigo_formatado = f"{tipo_codigo}.{grupo_codigo}.{subgrupo_codigo}"
+                        else:
+                            codigo_formatado = conta_codigo
+                        
+                        # Procura a conta pelo código formatado
+                        conta_contabil = SubgrupoConta.objects.get(
+                            codigo_completo=codigo_formatado,
+                            ativo=True
+                        )
+                    except SubgrupoConta.DoesNotExist:
+                        print(f"Conta não encontrada: {conta_codigo} (formatado: {codigo_formatado})")
+                        # Tenta buscar sem formatação também
+                        try:
+                            conta_contabil = SubgrupoConta.objects.get(
+                                codigo_completo=conta_codigo,
+                                ativo=True
+                            )
+                        except SubgrupoConta.DoesNotExist:
+                            return JsonResponse({
+                                'success': False, 
+                                'message': f'Conta contábil não encontrada: {conta_codigo}'
+                            })
+                            
+                Fornecedor.objects.create(tipo_pessoa=tipo_pessoa,
+                                            razao_social=razao_social_fornecedor,
+                                            nome_fantasia=fantasia_fornecedor,
+                                            documento=documento_fornecedor,
+                                            telefone=telefone_fornecedor,
+                                            email=email_fornecedor,
+                                            conta_contabil=conta_contabil,
+                                            ativo=ativo)
             except Exception as e:
                 print(e)
                 

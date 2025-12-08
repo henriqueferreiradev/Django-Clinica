@@ -636,17 +636,15 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-function abrirModalSelecao() {
-    // Obtém valores atuais se houver
-    const codigoAtual = document.getElementById('conta_selecionada_codigo').value;
-    const descricaoAtual = document.getElementById('conta_selecionada_desc').value;
+function abrirModalSelecao(botao) {
+    const form = botao.closest('form');
 
-    // Abre o modal
+    campoCodigoAtual = form.querySelector('.conta-codigo');
+    campoDescAtual = form.querySelector('.conta-desc');
+
     window.PlanoContasModal.open(function (contaSelecionada) {
-        // Preenche os campos quando uma conta é selecionada
-        document.getElementById('conta_selecionada_codigo').value = contaSelecionada.codigo;
-        document.getElementById('conta_selecionada_desc').value =
-            `${contaSelecionada.codigo_display} - ${contaSelecionada.descricao}`;
+        campoCodigoAtual.value = contaSelecionada.codigo;
+        campoDescAtual.value = `${contaSelecionada.codigo_display} - ${contaSelecionada.descricao}`;
     });
 }
 

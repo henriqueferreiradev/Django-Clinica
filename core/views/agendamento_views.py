@@ -85,8 +85,6 @@ def agenda_board(request):
     }
     return render(request, "core/agendamentos/agenda_board.html", context)
 
-
-
 def proxima_data_semana(data_inicial, dia_semana_index):
     if data_inicial is None:
         raise ValueError("Data inicial não pode ser None.")
@@ -95,8 +93,6 @@ def proxima_data_semana(data_inicial, dia_semana_index):
     
     delta_dias = (dia_semana_index - data_inicial.weekday() + 7) % 7
     return data_inicial + timedelta(days=delta_dias)
-
-
 
 @login_required(login_url='login')
 def criar_agendamento(request):
@@ -416,8 +412,6 @@ def criar_agendamento(request):
     # Caso contrário (usuário via navegador), abre a página normal
     return redirect('confirmacao_agendamento', agendamento_id=ultimo_agendamento.id)
 
-
-
 def verificar_pacotes_ativos(request, paciente_id):
     pacotes = PacotePaciente.objects.filter(paciente_id=paciente_id, ativo=True)
     
@@ -454,6 +448,7 @@ def verificar_pacotes_ativos(request, paciente_id):
         "pacotes": pacotes_data, 
         "saldos_desmarcacoes": saldos_desmarcacoes,
     })
+
 def listar_agendamentos(filtros=None, query=None):
     filtros = filtros or {}
 

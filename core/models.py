@@ -468,11 +468,7 @@ class SubgrupoConta(models.Model):
         return f"{self.codigo_completo} - {self.descricao}"
     
     def save(self, *args, **kwargs):
-        # Gera o código completo automaticamente: Tipo.Grupo.Subgrupo
-        # Ex: R.1.1 para Receitas > Atendimentos > Sessões Avulsas
-        # Ex: D.1.1 para Despesas > Atendimento (Custos Diretos) > Insumos
-        
-        # Primeira letra do tipo (R ou D)
+ 
         tipo_codigo = self.grupo.categoria.tipo[0].upper()
         self.codigo_completo = f"{tipo_codigo}.{self.grupo.codigo}.{self.codigo}"
         super().save(*args, **kwargs)
@@ -998,6 +994,8 @@ class Fornecedor(models.Model):
     documento = models.CharField(max_length=20, blank=True,null=True)
     telefone = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(blank=True,null=True)
+    conta_contabil = models.ForeignKey(SubgrupoConta, on_delete=models.SET_NULL, null=True, blank=True, related_name='fornecedor', verbose_name="Conta Contábil")
+
     ativo = models.BooleanField(default=False)
     def __str__(self):
         return self.razao_social

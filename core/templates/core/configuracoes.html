@@ -214,18 +214,19 @@
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="text" 
                                     id="conta_selecionada_desc" 
-                                    class="input-field" 
+                                    class="conta-desc input-field" 
                                     readonly 
                                     placeholder="Nenhuma conta selecionada">
                                 <input type="hidden" 
                                     id="conta_selecionada_codigo" 
-                                    name="conta_codigo">
+                                    name="conta_codigo"
+                                    class='conta-codigo'>
+
                                 <button type="button" 
-                                        class=" btn btn-primary " 
-                                        onclick="abrirModalSelecao()">
+                                        class="btn btn-primary" 
+                                        onclick="abrirModalSelecao(this)">
                                     <i class="fas fa-search"></i>
                                 </button>
-                                x
                             </div>
                         </div>
                         
@@ -876,20 +877,22 @@
                             <input class="input-field" type="email" name="email_fornecedor"
                                 placeholder="exemplo@empresa.com">
                         </div>
-                                                <div class="form-group">
+                        <div class="form-group">
                             <label for="servico-sessoes"><i class='bx bx-category'></i> Plano de Contas</label>
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="text" 
                                     id="conta_selecionada_desc" 
-                                    class="input-field" 
+                                    class="conta-desc input-field" 
                                     readonly 
                                     placeholder="Nenhuma conta selecionada">
                                 <input type="hidden" 
                                     id="conta_selecionada_codigo" 
-                                    name="conta_codigo">
+                                    name="conta_codigo"
+                                    class='conta-codigo'>
+
                                 <button type="button" 
-                                        class=" btn btn-primary " 
-                                        onclick="abrirModalSelecao()">
+                                        class="btn btn-primary" 
+                                        onclick="abrirModalSelecao(this)">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -909,6 +912,8 @@
                                 <th>Nome Fantasia</th>
                                 <th>Telefone</th>
                                 <th>Email</th>
+                                <th>Plano de contas</th>
+                                
                                 <th>Situação</th>
                                 <th>Ações</th>
                             </tr>
@@ -948,6 +953,11 @@
                                 </td>
                                 <td class="editable" data-field="email" data-id='{{fornecedor.id}}' data-model="fornecedor">
                                     <span class="display-text">{{ fornecedor.email }}</span>
+                                    <input type="text" class="edit-input" value="{{ fornecedor.email }}"
+                                        style="display: none;">
+                                </td>
+                                <td data-model="fornecedor">
+                                    <span class="display-text">{{ fornecedor.conta_contabil }}</span>
                                     <input type="text" class="edit-input" value="{{ fornecedor.email }}"
                                         style="display: none;">
                                 </td>
