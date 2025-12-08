@@ -1288,7 +1288,6 @@ def api_plano_contas(request):
                         "subgrupos": {}
                     }
                     
-                    # Filtrar contas deste grupo
                     contas_grupo = contas.filter(grupo=grupo)
                     
                     for conta in contas_grupo:
