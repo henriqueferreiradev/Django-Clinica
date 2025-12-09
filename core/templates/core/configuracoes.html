@@ -970,7 +970,27 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label><i class='bx bx-pie-chart-alt-2'></i> Categoria</label>
-                            <input class="input-field" type="text" name="categoria_nome" placeholder="Digite o nome da categoria">
+                            <input class="capitalize-input input-field" type="text" name="categoria_nome" placeholder="Digite o nome da categoria">
+                        </div>
+                        <div class="form-group">
+                            <label for="servico-sessoes"><i class='bx bx-category'></i> Plano de Contas</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" 
+                                    id="conta_selecionada_desc" 
+                                    class="conta-desc input-field" 
+                                    readonly 
+                                    placeholder="Nenhuma conta selecionada">
+                                <input type="hidden" 
+                                    id="conta_selecionada_codigo" 
+                                    name="conta_codigo"
+                                    class='conta-codigo'>
+
+                                <button type="button" 
+                                        class="btn btn-primary" 
+                                        onclick="abrirModalSelecao(this)">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Categoria</button>

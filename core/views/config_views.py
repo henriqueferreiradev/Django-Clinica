@@ -166,10 +166,7 @@ def configuracao_view(request):
 
             except Exception as e:
                 print(e)
-
- 
-            
-            
+        
         elif tipo == 'cadastro_fornecedores':
             tipo_pessoa = request.POST.get('tipo_pessoa')
             documento_fornecedor = request.POST.get('documento_fornecedor')
@@ -224,13 +221,45 @@ def configuracao_view(request):
                                             ativo=ativo)
             except Exception as e:
                 print(e)
-                
-                
+                            
         elif tipo == 'cadastro_categoria_contas_receber':
             nome = request.POST.get('categoria_nome')
             ativo = True
+            conta_codigo = request.POST.get('conta_codigo')
+            
             try:
-                CategoriaContasReceber.objects.create(nome=nome,ativo=ativo,)
+                conta_contabil = None
+                
+                if conta_codigo:
+                    try:
+                        if len(conta_codigo) >= 3:
+                            tipo_codigo = conta_codigo[0]  # R ou D
+                            grupo_codigo = conta_codigo[1]  # primeiro dígito do grupo
+                            subgrupo_codigo = conta_codigo[2:]  # restante para subgrupo
+                            codigo_formatado = f"{tipo_codigo}.{grupo_codigo}.{subgrupo_codigo}"
+                        else:
+                            codigo_formatado = conta_codigo
+                        
+                        # Procura a conta pelo código formatado
+                        conta_contabil = SubgrupoConta.objects.get(
+                            codigo_completo=codigo_formatado,
+                            ativo=True
+                        )
+                    except SubgrupoConta.DoesNotExist:
+                        print(f"Conta não encontrada: {conta_codigo} (formatado: {codigo_formatado})")
+                        # Tenta buscar sem formatação também
+                        try:
+                            conta_contabil = SubgrupoConta.objects.get(
+                                codigo_completo=conta_codigo,
+                                ativo=True
+                            )
+                        except SubgrupoConta.DoesNotExist:
+                            return JsonResponse({
+                                'success': False, 
+                                'message': f'Conta contábil não encontrada: {conta_codigo}'
+                            })
+                            
+                CategoriaContasReceber.objects.create(nome=nome,ativo=ativo,conta_contabil=conta_contabil,)
             except Exception as e:
                 print(e)
             

@@ -708,6 +708,7 @@ class Pagamento(models.Model):
 class CategoriaContasReceber(models.Model):
     nome = models.CharField(max_length=50)
     ativo = models.BooleanField(default=False)
+    conta_contabil = models.ForeignKey(SubgrupoConta, on_delete=models.SET_NULL, null=True, blank=True, related_name='categoria_conta_receber', verbose_name="Conta Contábil")
 
 class LogAcao(models.Model):
     usuario = models.ForeignKey('User',on_delete=models.SET_NULL, null=True)
