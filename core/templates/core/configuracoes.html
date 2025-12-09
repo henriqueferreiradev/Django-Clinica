@@ -95,16 +95,7 @@
                     </div>
                     <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Especialidade</button>
                 </form>
-                <div class="table-controls">
-                    <div class="search-box">
-                        <i class='bx bx-search'></i>
-                        <input type="text" placeholder="Buscar especialidade..." onkeyup="filtrarTabela(this, 'especialidades')">
-                    </div>
-                    <div class="table-info">
-                        <span class="badge active-count">{{ especialidades_ativas }} ativas</span>
-                        <span class="badge inactive-count">{{ especialidades_inativas }} inativas</span>
-                    </div>
-                </div>
+ 
                 <div class="tabela-wrapper">
                     <table>
                         <thead>
@@ -316,48 +307,6 @@
 
     </div>
 
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    <i class="fas fa-sitemap"></i>
-                    Plano de Contas - Clínica
-                </h2>
-                <button class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="search-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" placeholder="Buscar conta por código ou descrição..." id="searchInput">
-                </div>
-                
-                <div class="selected-account" id="selectedAccount">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Nenhuma conta selecionada</span>
-                </div>
-                
-                <div class="account-tree" id="accountTree">
-                    <!-- Conteúdo será carregado dinamicamente -->
-                    <div class="loading-container" id="loadingContainer">
-                        <div class="loading-spinner"></div>
-                        <p>Carregando plano de contas...</p>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelBtn">
-                    <i class="fas fa-times"></i>
-                    Cancelar
-                </button>
-                <button class="btn btn-primary" id="confirmBtn">
-                    <i class="fas fa-check"></i>
-                    Confirmar Conta
-                </button>
-            </div>
-        </div>
-    </div>
     <!-- Aba Acessos -->
     <div class="tab-content" id="acessos">
         <div class="form">
