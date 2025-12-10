@@ -1161,3 +1161,38 @@ body {
     background-color: var(--primary-color, #6D398E);
     border-radius: 4px;
 }
+
+.form-group {
+    position: relative;
+}
+
+#sugestoes {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--branco);
+    border: 2px solid var(--roxoPrincipal);
+    border-top: none;
+    border-radius: 0 0 var(--borda-radius) var(--borda-radius);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    display: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+#sugestoes div {
+    padding: var(--espaco-sm);
+    cursor: pointer;
+    transition: var(--transicao);
+    border-bottom: 1px solid var(--cinza-claro);
+}
+
+#sugestoes div:hover {
+    background-color: var(--roxoPrincipal-hover);
+}
+
+#sugestoes div:last-child {
+    border-bottom: none;
+}

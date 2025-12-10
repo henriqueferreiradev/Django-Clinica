@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.db.models import Sum, Q
 from django.utils import timezone
-from core.models import Pagamento, Receita, Despesa
+from numpy import true_divide
+from core.models import CategoriaContasReceber, Pagamento, Receita, Despesa
 
 
 
@@ -70,6 +71,7 @@ def contas_a_receber_view(request):
         .filter(ativo=True)
     )
 
+    categorias = CategoriaContasReceber.objects.filter(ativo=True)
     pacotes_pendentes = [p for p in pacotes_todos if p.valor_restante and p.valor_restante > Decimal('0.00')]
     # ---- KPIs ----
     total_pendente = Pagamento.objects.filter(status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
@@ -182,6 +184,7 @@ def contas_a_receber_view(request):
         'total_pendente': f"R$ {total_a_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
         'total_atrasado': f"R$ {total_atrasado:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
         'total_vence_hoje': f"R$ {total_vence_hoje:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'categorias':categorias,
     }
 
     return render(request, 'core/financeiro/contas_receber.html', context)

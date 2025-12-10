@@ -309,28 +309,35 @@
         <div class="modal-body">
             <form id="formRecebimento">
                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="busca"><i class="fas fa-user"></i> Paciente *</label>
+                        <input required class="capitalize-input form-control input-wrapper" 
+                               type="text" id="busca" 
+                               placeholder="Buscar paciente por nome..." 
+                               autocomplete="off">
+                        <input type="hidden" id="paciente_id" name="paciente_id">
+                        <div id="sugestoes"></div>
+                    </div>
                     <div class="form-row">
+                        <div class="form-group">
+                            
+                            <label class="form-label">Tipo</label>
+                            <select class="form-select" required>
+                                {% for categoria in categorias %}
+                                <option value="{{ categoria.id }}">{{categoria.nome}}</option>
+                                {% endfor %}
+                            </select>
+                            
+                        </div>
                         <div class="form-group">
                             <label class="form-label">Data do Recebimento</label>
                             <input type="date" class="form-control" value="2023-05-16" required>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Tipo</label>
-                            <select class="form-select" required>
-                                <option value="">Selecione...</option>
-                                <option value="consulta">Consulta</option>
-                                <option value="pacote">Pacote de Sessões</option>
-                                <option value="exame">Exame</option>
-                                <option value="procedimento">Procedimento</option>
-                                <option value="outros">Outros</option>
-                            </select>
-                        </div>
+
+
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Paciente</label>
-                        <input type="text" class="form-control" placeholder="Nome do paciente" required>
-                    </div>
+
 
                     <div class="form-row">
                         <div class="form-group">

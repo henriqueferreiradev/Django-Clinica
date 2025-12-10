@@ -1002,6 +1002,7 @@
                         <thead>
                             <tr>
                                 <th>Categoria</th>
+                                <th>Plano de contas</th>
                                 <th>Situação</th>
                                 <th>Ações</th>
                             </tr>
@@ -1012,6 +1013,11 @@
                                 <td class="editable" data-field="nome" data-id='{{categoria.id}}' data-model="categoria">
                                     <span class="display-text">{{ categoria.nome }}</span>
                                     <input type="text" class="edit-input" value="{{ categoria.nome }}"
+                                        style="display: none;">
+                                </td>
+                                <td>
+                                    <span class="display-text">{{ categoria.conta_contabil }}</span>
+                                    <input type="text" class="edit-input" value="{{ categoria.conta_contabil }}"
                                         style="display: none;">
                                 </td>
                                 <td>

@@ -175,7 +175,49 @@ function getCSRFToken() {
         ?.split('=')[1];
     return cookieValue || '';
 }
+function configurarAutocompletePacientes() {
+    const input = document.getElementById('busca');
+    const sugestoes = document.getElementById('sugestoes');
+    const pacienteIdInput = document.getElementById('paciente_id');
 
+
+    if (!input || !sugestoes || !pacienteIdInput) return;
+
+    input.addEventListener('input', async () => {
+        const query = input.value.trim();
+
+
+
+        try {
+            const res = await fetch(`/api/buscar-pacientes/?q=${encodeURIComponent(query)}`);
+            if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
+
+            const data = await res.json();
+            sugestoes.innerHTML = '';
+            sugestoes.style.display = 'block';
+
+            (data.resultados || []).forEach(paciente => {
+                const div = document.createElement('div');
+                div.textContent = `${paciente.nome} ${paciente.sobrenome}`;
+                div.style.padding = '.7em';
+                div.style.cursor = 'pointer';
+
+                div.addEventListener('click', () => {
+                    input.value = `${paciente.nome} ${paciente.sobrenome}`;
+                    pacienteIdInput.value = paciente.id;
+                    sugestoes.innerHTML = '';
+                    sugestoes.style.display = 'none';
+                    verificarPacoteAtivo();
+                    verificarBeneficiosAtivos(pacienteIdInput.value); // <-- chama aqui também
+                });
+
+                sugestoes.appendChild(div);
+            });
+        } catch (error) {
+            console.error('Erro ao buscar pacientes:', error);
+        }
+    });
+}
 // Sistema de modais do segundo script (mantido intacto)
 document.addEventListener('DOMContentLoaded', function () {
     // Bulk selection functionality
@@ -312,5 +354,12 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             openMenus.forEach(m => m.classList.remove('show'));
         }
+        if (document.getElementById('busca')) {
+            configurarAutocompletePacientes();
+        }
     });
+
+
 });
+
+
