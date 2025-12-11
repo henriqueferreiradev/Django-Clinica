@@ -310,7 +310,7 @@
             <form id="formRecebimento">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="busca"><i class="fas fa-user"></i> Paciente *</label>
+                        <label  class="form-label" for="busca"><i class="fas fa-user"></i> Paciente *</label>
                         <input required class="capitalize-input form-control input-wrapper" 
                                type="text" id="busca" 
                                placeholder="Buscar paciente por nome..." 
@@ -321,7 +321,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             
-                            <label class="form-label">Tipo</label>
+                            <label class="form-label"><i class="fa fa-tags"></i>Tipo</label>
                             <select class="form-select" required>
                                 <option disabled selected value="">Selecione...</option>
                                 {% for categoria in categorias %}
@@ -331,34 +331,32 @@
                             
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Data do Recebimento</label>
-                            <input type="date" class="form-control" value="2023-05-16" required>
+                            <label class="form-label">	<i class="fas fa-calendar-check"></i>Vencimento</label>
+                            <input type="date" class="form-control" required>
                         </div>
-
-
                     </div>
 
 
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Valor (R$)</label>
+                            <label class="form-label"><i class="fas fa-dollar-sign"></i>Valor (R$)</label>
                             <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Vencimento</label>
+                            <label class="form-label"><i class="fas fa-calendar-alt"></i>Data do Recebimento</label>
                             <input type="date" class="form-control" required>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Descrição</label>
+                        <label class="form-label"><i class="fa fa-align-left"></i>Descrição</label>
                         <input type="text" class="form-control" placeholder="Descrição detalhada">
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Forma de Pagamento</label>
+                            <label class="form-label"><i class="fa fa-credit-card"></i>Forma de Pagamento</label>
                             <select class="form-select" required>
                                 <option value="" disabled selected>Selecione...</option>
                                 <option value="pix">Pix</option>
@@ -369,7 +367,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Status</label>
+                            <label class="form-label"><i class="fa fa-hourglass-half"></i>Status</label>
                             <select class="form-select" required>
                                 <option disabled selected value="">Selecione...</option>
                                 <option value="pendente">Pendente</option>
@@ -384,7 +382,7 @@
                         <div class="form-check">
                             <label class='checkbox-option'>
                                 <input type="checkbox" class="checkbox-option" id="gerarBoleto"></label>
-                            <label class="form-check-label" for="gerarBoleto">Gerar boleto automaticamente</label>
+                            <label class="form-check-label" for="gerarBoleto"><i class="fa fa-barcode"></i>Gerar boleto automaticamente</label>
                         </div>
                     </div>
                 </div>
