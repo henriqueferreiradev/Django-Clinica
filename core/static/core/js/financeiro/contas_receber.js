@@ -86,29 +86,29 @@ async function openReceitaPayment(receitaId) {
                 <input type="hidden" id="receitaId" value="${receitaId}">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label">Paciente</label>
+                        <label class="form-label"><i class="fas fa-user"></i>Paciente</label>
                         <input type="text" class="form-control" value="${data.paciente.nome}" readonly>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Descrição</label>
+                        <label class="form-label"><i class="fa fa-align-left"></i>Descrição</label>
                         <input type="text" class="form-control" value="${data.receita.descricao}" readonly>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Valor Original</label>
+                            <label class="form-label"><i class="fas fa-dollar-sign"></i>Valor Original</label>
                             <input type="text" class="form-control" value="${data.receita.saldo}" readonly>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Data do Recebimento *</label>
+                            <label class="form-label">Data do Recebimento<span class='required'>*</span></label>
                             <input type="date" class="form-control" id="dataPagamento" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Forma de Pagamento *</label>
+                            <label class="form-label"><i class="fa fa-credit-card"></i>Forma de Pagamento<span class='required'>*</span></label>
                             <select class="form-select" id="formaPagamento" required>
                                 <option value="" disabled selected>Selecione...</option>
                                 <option value="pix">Pix</option>
@@ -119,8 +119,8 @@ async function openReceitaPayment(receitaId) {
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Valor Recebido *</label>
-                            <input type="number" class="form-control" id="valorPago" step="0.01" required>
+                            <label class="form-label"><i class="fas fa-dollar-sign"></i>Valor Recebido<span class='required'>*</span></label>
+                            <input type="number" class="form-control" id="valorPago" placeholder='0,00'step="0.01" required>
                         </div>
                     </div>
 
@@ -193,7 +193,8 @@ async function processarRecebimento() {
 
     // Validação básica
     if (!dataPagamento || !formaPagamento || !valorPago || valorPago <= 0) {
-        alert('Por favor, preencha todos os campos obrigatórios com valores válidos.');
+        mostrarMensagem('Por favor, preencha todos os campos obrigatórios com valores válidos.', 'info')
+         
         return;
     }
 
@@ -216,7 +217,7 @@ async function processarRecebimento() {
 
         if (result.success) {
             mostrarMensagem('Recebimento registrado com sucesso!', 'success')
-            alert('Recebimento registrado com sucesso!');
+            
             // Fecha o modal usando o sistema do segundo script
             document.getElementById('modalPagamento').classList.remove('active');
 
@@ -225,14 +226,30 @@ async function processarRecebimento() {
                 window.location.reload();
             }, 1000);
         } else {
-            alert('Erro ao registrar recebimento: ' + (result.message || 'Erro desconhecido'));
+            mostrarMensagem('Erro ao registrar recebimento: ' + (result.message || 'Erro desconhecido'), 'error')
+             
         }
     } catch (error) {
         console.error('Erro:', error);
-        alert('Erro ao processar recebimento.');
+        mostrarMensagem('Erro ao processar recebimento.', 'error')
+         
     }
 }
+async function processarRecebimentoManual() {
+    const pacienteId    = document.getElementById('paciente_id').value
+    const tipoCategoria = document.getElementById('categoria_tipo').value
+    const dataVencimento = document.getElementById('data_vencimento').value
+    const valor = document.getElementById('valor_recebido').value
+    const dataRecebimento = document.getElementById('data_recebimento').value
+    const descricao = document.getElementById('descricao_produto').value
+    const formaPagamento = document.getElementById('descricao_produto').value
+    const statusPagamento = document.getElementById('status_pagamento').value
+    const gerarComprovante = document.getElementById('gerarComprovante').value
 
+
+
+
+}
 // Função para obter token CSRF
 function getCSRFToken() {
     const cookieValue = document.cookie
