@@ -1075,11 +1075,13 @@ class Receita(models.Model):
         ('pago', 'Pago'),
         ('atrasado', 'Atrasado'),
     )
-    paciente = models.ForeignKey("core.Paciente", on_delete=models.SET_NULL, null=True, blank=True)  
+    paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True, blank=True)  
     categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'receita'})
+    categoria_receita = models.ForeignKey(CategoriaContasReceber, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Categoria da Receita")
     descricao = models.CharField(max_length=255)
     agendamento_codigo = models.CharField(max_length=50, blank=True, null=True)
     vencimento = models.DateField()
+    data_recebimento = models.DateField(null=True, blank=True)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
     forma_pagamento = models.CharField(max_length=30, blank=True, null=True)

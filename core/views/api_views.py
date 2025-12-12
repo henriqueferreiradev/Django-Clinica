@@ -193,10 +193,6 @@ def registrar_recebimento(request, pagamento_id):
         return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
 
 
-
-
- 
- 
 @require_POST
 @csrf_exempt
 def registrar_pagamento(request, receita_id):
@@ -339,6 +335,24 @@ def registrar_recebimento(request, paciente_id):
     data = json.loads(request.body)
     print("Dados recebidos:", data)
 
+    paciente_id = data.get('paciente_id')
+    
+    paciente = Paciente.objects.get(id=paciente_id)
+    print(f"Paciente encontrado: {paciente.nome}")
+    
+    descricao = data.get('descricao', "Recebimento Manual")
+    categoria = data.get('tipo_categoria')
+    vencimento = data.get('data_vencimento')
+    valor = Decimal(str(data.get('valor')))
+    data_recebimento = data.get('data_recebimento')
+    status = data.get('status_pagamento')
+    forma_pagamento = data.get('forma_pagamento')
+    
+    print(descricao, categoria, vencimento, valor, data_recebimento,status,forma_pagamento )
+    
+    
+    
+    
 def salvar_prontuario(request):
     try:
  
