@@ -303,7 +303,7 @@
             <h3 class="modal-title">
                 <i class="fas fa-plus-circle"></i> Novo Recebimento
             </h3>
-            <button class="modal-close" id="closeModal">&times;</button>
+            <button class="modal-close" id="closeRecebimentoModal">&times;</button>
         </div>
 
         <div class="modal-body">
@@ -325,7 +325,7 @@
                             <select class="form-select" required>
                                 <option disabled selected value="">Selecione...</option>
                                 {% for categoria in categorias %}
-                                <option id='tipo' value="{{ categoria.id }}">{{categoria.nome}}</option>
+                                <option id='categoria_tipo' value="{{ categoria.id }}">{{categoria.nome}}</option>
                                 {% endfor %}
                             </select>
                             
@@ -390,7 +390,7 @@
         </div>
 
         <div class="modal-footer">
-            <button class="btn btn-outline" id="cancelModal">Cancelar</button>
+            <button class="btn btn-outline" id="cancelRecebimentoModal">Cancelar</button>
             <button class="btn btn-primary" id="saveRecebimento">
                 <i class="fas fa-save"></i> Salvar Recebimento
             </button>

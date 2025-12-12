@@ -27,7 +27,7 @@ function temporizadorAlerta() {
     if (alert) alert.style.display = "none";
   }, 4000);
 }
- 
+
 
 temporizadorAlerta()
 

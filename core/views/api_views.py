@@ -206,19 +206,16 @@ def registrar_pagamento(request, receita_id):
         
         receita = Receita.objects.get(id=receita_id)
         print("Receita encontrada:", receita.id)
-        
-        # Pega os dados do formulário
+
         data_pagamento = data.get('data_pagamento') or timezone.now().date()
         valor_pago = Decimal(str(data.get('valor_pago')))
         forma_pagamento = data.get('forma_pagamento')
         
         print(f"Criando pagamento: Paciente={receita.paciente.id}, Valor={valor_pago}, Data={data_pagamento}")
-        
-        # BUSCAR AGENDAMENTO E PACOTE VINCULADOS À RECEITA
+
         agendamento = None
         pacote = None
-        
-        # Tenta encontrar agendamento pelo código
+
         if receita.agendamento_codigo:
             try:
                
@@ -254,8 +251,7 @@ def registrar_pagamento(request, receita_id):
             'status': 'pago',
             'vencimento': receita.vencimento
         }
-        
-        # Adiciona agendamento e pacote se encontrados
+
         if agendamento:
             pagamento_data['agendamento'] = agendamento
         if pacote:
@@ -338,7 +334,11 @@ def dados_receita_pagamento(request, receita_id):
         
     except Receita.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Receita não encontrada'}, status=404)
-    
+
+def registrar_recebimento(request, paciente_id):
+    data = json.loads(request.body)
+    print("Dados recebidos:", data)
+
 def salvar_prontuario(request):
     try:
  

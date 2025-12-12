@@ -182,6 +182,41 @@ function setupPaymentModal() {
         dataInput.valueAsDate = new Date();
     }
 }
+function setupRecebimentoModal() {
+    console.log('setupRecebimentoModal chamado!'); // MOVER PARA AQUI
+
+    const closeBtn = document.getElementById('closeRecebimentoModal');
+    const cancelBtn = document.getElementById('cancelRecebimentoModal');
+    const saveBtnManual = document.getElementById('saveRecebimento');
+
+    // REMOVER esta linha daqui:
+    // console.log('processarRecebimentoManual chamado!'); // ADICIONE ESTA LINHA
+
+    if (closeBtn) {
+        console.log('Close button encontrado');
+        closeBtn.addEventListener('click', function () {
+            document.getElementById('modalRecebimento').classList.remove('active');
+        });
+    }
+
+    if (cancelBtn) {
+        console.log('Cancel button encontrado');
+        cancelBtn.addEventListener('click', function () {
+            document.getElementById('modalRecebimento').classList.remove('active');
+        });
+    }
+
+    if (saveBtnManual) {
+        console.log('Save button encontrado, configurando evento...');
+        saveBtnManual.addEventListener('click', function (e) {
+            e.preventDefault(); // Adicionar para prevenir comportamento padrão
+            console.log('Botão Salvar clicado!');
+            processarRecebimentoManual();
+        });
+    } else {
+        console.error('Botão saveRecebimento NÃO encontrado!');
+    }
+}
 
 // Função para processar o recebimento
 async function processarRecebimento() {
@@ -194,7 +229,7 @@ async function processarRecebimento() {
     // Validação básica
     if (!dataPagamento || !formaPagamento || !valorPago || valorPago <= 0) {
         mostrarMensagem('Por favor, preencha todos os campos obrigatórios com valores válidos.', 'info')
-         
+
         return;
     }
 
@@ -217,7 +252,7 @@ async function processarRecebimento() {
 
         if (result.success) {
             mostrarMensagem('Recebimento registrado com sucesso!', 'success')
-            
+
             // Fecha o modal usando o sistema do segundo script
             document.getElementById('modalPagamento').classList.remove('active');
 
@@ -227,25 +262,76 @@ async function processarRecebimento() {
             }, 1000);
         } else {
             mostrarMensagem('Erro ao registrar recebimento: ' + (result.message || 'Erro desconhecido'), 'error')
-             
+
         }
     } catch (error) {
         console.error('Erro:', error);
         mostrarMensagem('Erro ao processar recebimento.', 'error')
-         
+
     }
 }
 async function processarRecebimentoManual() {
-    const pacienteId    = document.getElementById('paciente_id').value
+
+    const pacienteId = document.getElementById('paciente_id').value
     const tipoCategoria = document.getElementById('categoria_tipo').value
     const dataVencimento = document.getElementById('data_vencimento').value
     const valor = document.getElementById('valor_recebido').value
     const dataRecebimento = document.getElementById('data_recebimento').value
     const descricao = document.getElementById('descricao_produto').value
-    const formaPagamento = document.getElementById('descricao_produto').value
+    const formaPagamento = document.getElementById('forma_pagamento').value
     const statusPagamento = document.getElementById('status_pagamento').value
-    const gerarComprovante = document.getElementById('gerarComprovante').value
+    const gerarComprovante = document.getElementById('gerarComprovante').checked;
 
+
+
+    if (!dataRecebimento || !formaPagamento || !valor || valor <= 0) {
+        mostrarMensagem('Por favor, preencha todos os campos obrigatórios com valores válidos.', 'info')
+
+        return;
+    }
+
+    try {
+        const response = await fetch(`/receita/${pacienteId}/registrar-recebimento/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                paciente_id: pacienteId,
+                tipo_categoria: tipoCategoria,
+                data_vencimento: dataVencimento,
+                valor: valor,
+                data_recebimento: dataRecebimento,
+                descricao: descricao,
+                forma_pagamento: formaPagamento,
+                status_pagamento: statusPagamento,
+                gerar_comprovante: gerarComprovante
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            mostrarMensagem('Recebimento registrado com sucesso!', 'success')
+
+            // Fecha o modal usando o sistema do segundo script
+            document.getElementById('modalPagamento').classList.remove('active');
+
+            // Recarrega a página para ver as mudanças
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            mostrarMensagem('Erro ao registrar recebimento: ' + (result.message || 'Erro desconhecido'), 'error')
+
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        mostrarMensagem('Erro ao processar recebimento.', 'error')
+
+    }
+    console.log(pacienteId, tipoCategoria, dataVencimento, valor, dataRecebimento, descricao, formaPagamento, statusPagamento, gerarComprovante)
 
 
 
@@ -290,8 +376,7 @@ function configurarAutocompletePacientes() {
                     pacienteIdInput.value = paciente.id;
                     sugestoes.innerHTML = '';
                     sugestoes.style.display = 'none';
-                    verificarPacoteAtivo();
-                    verificarBeneficiosAtivos(pacienteIdInput.value); // <-- chama aqui também
+
                 });
 
                 sugestoes.appendChild(div);
@@ -396,21 +481,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Form submission
-    document.getElementById('saveRecebimento')?.addEventListener('click', function (e) {
-        e.preventDefault();
-        const form = document.getElementById('formRecebimento');
-        // Add form validation and submission logic here
-        modals.recebimento.classList.remove('active');
-    });
-
-    // REMOVI esta linha pois usamos processarRecebimento
-    // document.getElementById('savePagamento')?.addEventListener('click', function (e) {
-    //     e.preventDefault();
-    //     const form = document.getElementById('formPagamento');
-    //     modals.pagamento.classList.remove('active');
-    // });
-
+    if (document.getElementById('modalRecebimento')) {
+        setupRecebimentoModal();
+        console.log('Modal de recebimento configurado');
+    }
     // Export functionality
     document.getElementById('btnExport')?.addEventListener('click', function () {
         alert('Exportando dados...');
