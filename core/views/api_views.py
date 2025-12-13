@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
-from core.models import Agendamento, AvaliacaoFisioterapeutica, Evolucao, Paciente, PacotePaciente, Pagamento, Profissional, Prontuario, Receita
+from core.models import Agendamento, AvaliacaoFisioterapeutica, CategoriaContasReceber, CategoriaFinanceira, Evolucao, Paciente, PacotePaciente, Pagamento, Profissional, Prontuario, Receita
 from django.utils import timezone
 from django.templatetags.static import static
 from django.http import JsonResponse
@@ -112,6 +112,7 @@ def contar_pendencias_dia(request):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
 def paciente_detalhes_basicos(request, paciente_id):
     try:
         paciente = Paciente.objects.get(id=paciente_id)
@@ -142,9 +143,10 @@ def paciente_detalhes_basicos(request, paciente_id):
         return JsonResponse(dados)
     except Paciente.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Paciente não encontrado'})
-
+'''
 @login_required
 @require_POST
+
 def registrar_recebimento(request, pagamento_id):
     try:
         data = json.loads(request.body)
@@ -192,6 +194,10 @@ def registrar_recebimento(request, pagamento_id):
     except Exception as e:
         return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
 
+
+
+
+'''
 
 @require_POST
 @csrf_exempt
@@ -331,28 +337,87 @@ def dados_receita_pagamento(request, receita_id):
     except Receita.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Receita não encontrada'}, status=404)
 
-def registrar_recebimento(request, paciente_id):
-    data = json.loads(request.body)
-    print("Dados recebidos:", data)
 
-    paciente_id = data.get('paciente_id')
-    
-    paciente = Paciente.objects.get(id=paciente_id)
-    print(f"Paciente encontrado: {paciente.nome}")
-    
-    descricao = data.get('descricao', "Recebimento Manual")
-    categoria = data.get('tipo_categoria')
-    vencimento = data.get('data_vencimento')
-    valor = Decimal(str(data.get('valor')))
-    data_recebimento = data.get('data_recebimento')
-    status = data.get('status_pagamento')
-    forma_pagamento = data.get('forma_pagamento')
-    
-    print(descricao, categoria, vencimento, valor, data_recebimento,status,forma_pagamento )
-    
-    
-    
-    
+
+def registrar_recebimento(request, paciente_id):
+    try:
+        data = json.loads(request.body)
+        print("Dados recebidos:", data)
+
+        # NOTA: Você já tem paciente_id como parâmetro da função, então pode usar diretamente
+        # Mas se está recebendo no JSON também, vamos usar o do parâmetro
+        paciente = Paciente.objects.get(id=paciente_id)
+        print(f"Paciente encontrado: {paciente.nome}")
+        
+        descricao = data.get('descricao', "Recebimento Manual")
+        categoria = CategoriaFinanceira.objects.filter(tipo='receita').first()  # Você precisa buscar a categoria
+        categoria_receita_id = data.get('categoria_receita')  # ID da categoria
+        categoria_receita = None
+        
+        if categoria_receita_id:
+            categoria_receita = CategoriaContasReceber.objects.get(id=categoria_receita_id)
+        
+        vencimento = data.get('data_vencimento') or timezone.now().date()
+        valor = Decimal(str(data.get('valor', 0)))
+        data_recebimento = data.get('data_recebimento')
+        status = data.get('status_pagamento', 'pendente')
+        forma_pagamento = data.get('forma_pagamento')
+        
+        receita = None
+        pagamento = None
+        
+        # SEMPRE cria a receita primeiro
+        receita = Receita.objects.create(
+            paciente=paciente,
+            categoria=categoria,
+            categoria_receita=categoria_receita,
+            descricao=descricao,
+            vencimento=vencimento,
+            data_recebimento=data_recebimento,
+            valor=valor,
+            status=status if status != 'pago' else 'pendente',  # Inicia como pendente se for pago
+            forma_pagamento=forma_pagamento if status == 'pago' else None
+        )
+        print(f"Receita criada: ID {receita.id}")
+        
+        # Se o status for 'pago', cria o pagamento também
+        if status == 'pago' and valor > 0:
+            pagamento = Pagamento.objects.create(
+                paciente=paciente,
+                receita=receita,
+                valor=valor,
+                data=data_recebimento or timezone.now().date(),
+                forma_pagamento=forma_pagamento,
+                status='pago',
+                vencimento=vencimento
+            )
+            print(f"Pagamento criado: ID {pagamento.id}")
+            
+            # Atualiza status da receita baseado no pagamento
+            receita.atualizar_status_por_pagamentos()
+            print(f"Status atualizado para: {receita.status}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Recebimento registrado com sucesso!',
+            'receita_id': receita.id,
+            'pagamento_id': pagamento.id if pagamento else None,
+            'status': receita.status,
+            'saldo': float(receita.saldo)
+        })
+        
+    except Paciente.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Paciente não encontrado'})
+    except Exception as e:
+        print("ERRO:", str(e))
+        import traceback
+        print("TRACEBACK:", traceback.format_exc())
+        
+        return JsonResponse({'success': False, 'message': f'Erro: {str(e)}'})
+
+
+
+
 def salvar_prontuario(request):
     try:
  

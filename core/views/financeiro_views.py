@@ -58,6 +58,20 @@ def contas_a_receber_view(request):
         .order_by('vencimento')
     )
 
+    # ---- RECEITAS PENDENTES (INCLUI AS MANUAIS) ----
+    receitas_pendentes = (
+        Receita.objects
+        .select_related('paciente', 'categoria_receita')
+        .filter(
+            Q(status='pendente') | Q(status='atrasado'),
+            paciente__isnull=False  # Apenas receitas com paciente vinculado
+        )
+        .exclude(
+            # Exclui receitas que já têm pagamento vinculado (para não duplicar)
+            id__in=Pagamento.objects.filter(receita__isnull=False).values('receita_id')
+        )
+        .order_by('vencimento')
+    )
 
     # ---- CARREGA PACOTES + SESSÕES ----
     agqs = Agendamento.objects.filter(
@@ -73,14 +87,32 @@ def contas_a_receber_view(request):
 
     categorias = CategoriaContasReceber.objects.filter(ativo=True)
     pacotes_pendentes = [p for p in pacotes_todos if p.valor_restante and p.valor_restante > Decimal('0.00')]
+    
     # ---- KPIs ----
+    # Pagamentos pendentes
     total_pendente = Pagamento.objects.filter(status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
-    total_atrasado = Pagamento.objects.filter(
+    total_atrasado_pag = Pagamento.objects.filter(
         Q(status='atrasado') | Q(vencimento__lt=hoje),
         ~Q(status='pago')
     ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
-    total_vence_hoje = Pagamento.objects.filter(vencimento=hoje, status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
+    total_vence_hoje_pag = Pagamento.objects.filter(vencimento=hoje, status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
 
+    # Receitas pendentes (manuais)
+    total_pendente_rec = receitas_pendentes.filter(
+        vencimento__gt=hoje,
+        status='pendente'
+    ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
+    
+    total_atrasado_rec = receitas_pendentes.filter(
+        Q(vencimento__lt=hoje) | Q(status='atrasado')
+    ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
+    
+    total_vence_hoje_rec = receitas_pendentes.filter(
+        vencimento=hoje,
+        status='pendente'
+    ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
+
+    # Pacotes pendentes
     saldo_pacotes = saldo_pacotes_atrasados = saldo_pacotes_hoje = Decimal('0')
     for pac in pacotes_pendentes:
         primeira_sessao = pac.agds[0] if getattr(pac, 'agds', []) else None
@@ -94,14 +126,16 @@ def contas_a_receber_view(request):
         else:
             saldo_pacotes += saldo
 
-    total_pendente += saldo_pacotes
-    total_atrasado += saldo_pacotes_atrasados
-    total_vence_hoje += saldo_pacotes_hoje
+    # Soma todos os totais
+    total_pendente = total_pendente + total_pendente_rec + saldo_pacotes
+    total_atrasado = total_atrasado_pag + total_atrasado_rec + saldo_pacotes_atrasados
+    total_vence_hoje = total_vence_hoje_pag + total_vence_hoje_rec + saldo_pacotes_hoje
     total_a_receber = total_pendente + total_atrasado + total_vence_hoje
 
     # ---- MONTAGEM DOS LANÇAMENTOS ----
     lancamentos = []
     
+    # 1. PAGAMENTOS (do modelo Pagamento)
     for p in pagamentos:
         if p.vencimento:
             if p.vencimento < hoje:
@@ -113,35 +147,42 @@ def contas_a_receber_view(request):
         else:
             status_calc = 'Pendente'
 
-        # BUSCAR RECEITA PARA PAGAMENTOS
-        receita_id = None
-        
-        # 1. Se já tem receita vinculada
-        if p.receita:
-            receita_id = p.receita.id
-            
-        # 2. Se é pagamento de pacote, buscar receita do pacote
-        elif p.pacote:
-            receita_pacote = Receita.objects.filter(
-                paciente=p.paciente,
-                descricao__icontains=p.pacote.codigo
-            ).first()
-            if receita_pacote:
-                receita_id = receita_pacote.id
-                # Atualiza o pagamento com a receita encontrada
-                p.receita = receita_pacote
-                p.save()
-
         lancamentos.append({
             'tipo': 'pagamento',
-            'id': receita_id,
+            'id': p.receita.id if p.receita else None,
             'paciente': p.paciente,
             'descricao': p.descricao or (p.agendamento and f"Sessão {p.agendamento.id}") or 'Pagamento',
             'valor': p.valor,
             'vencimento': p.vencimento,
             'status': status_calc,
+            'origem': 'pagamento'
         })
 
+    # 2. RECEITAS MANUAIS PENDENTES
+    for receita in receitas_pendentes:
+        if receita.vencimento:
+            if receita.vencimento < hoje:
+                status_calc = 'Atrasado'
+            elif receita.vencimento == hoje:
+                status_calc = 'Vence Hoje'
+            else:
+                status_calc = 'Pendente'
+        else:
+            status_calc = 'Pendente'
+
+        lancamentos.append({
+            'tipo': 'receita_manual',
+            'id': receita.id,
+            'paciente': receita.paciente,
+            'descricao': receita.descricao,
+            'valor': receita.valor,
+            'vencimento': receita.vencimento,
+            'status': status_calc,
+            'categoria': receita.categoria_receita.descricao if receita.categoria_receita else 'Manual',
+            'origem': 'receita'
+        })
+
+    # 3. PACOTES PENDENTES
     for pac in pacotes_pendentes:
         primeira_sessao = pac.agds[0] if getattr(pac, 'agds', []) else None
         venc = primeira_sessao.data if primeira_sessao else pac.data_inicio
@@ -154,41 +195,35 @@ def contas_a_receber_view(request):
         else:
             status_calc = 'Pendente'
 
-        # BUSCAR RECEITA DO PACOTE (AGORA FUNCIONA!)
-        receita_pacote = Receita.objects.filter(
-            paciente=pac.paciente,
-            descricao__icontains=pac.codigo  # Busca pelo código do pacote
-        ).first()
-        
-        receita_id = receita_pacote.id if receita_pacote else None
-
         lancamentos.append({
             'tipo': 'pacote',
-            'id': receita_id,  # Agora vai encontrar a receita!
+            'id': None,  # Pacotes não têm receita própria
             'paciente': pac.paciente,
             'descricao': f"Pacote {pac.codigo} ({pac.servico.nome if pac.servico else '—'})",
             'valor': saldo,
             'vencimento': venc,
             'status': status_calc,
+            'origem': 'pacote'
         })
 
+    # Ordena por vencimento (os sem vencimento vão para o final)
     lancamentos.sort(key=lambda x: x['vencimento'] or date(9999, 12, 31))
- 
+
     # ---- PAGINAÇÃO ----
-    paginator = Paginator(lancamentos,10)   
+    paginator = Paginator(lancamentos, 10)   
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     context = {
         'page_obj': page_obj,
-        'total_pendente': f"R$ {total_a_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'total_pendente': f"R$ {total_pendente:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
         'total_atrasado': f"R$ {total_atrasado:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
         'total_vence_hoje': f"R$ {total_vence_hoje:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
-        'categorias':categorias,
+        'total_a_receber': f"R$ {total_a_receber:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'categorias': categorias,
     }
 
     return render(request, 'core/financeiro/contas_receber.html', context)
-
 def contas_a_pagar_view(request):
  
     return render(request, 'core/financeiro/contas_pagar.html')
