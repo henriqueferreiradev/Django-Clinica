@@ -5,7 +5,7 @@ from django.http import HttpResponseForbidden
 from django.db.models import Sum, Q
 from django.utils import timezone
 from numpy import true_divide
-from core.models import CategoriaContasReceber, Pagamento, Receita, Despesa
+from core.models import CategoriaContasReceber, ContaBancaria, Fornecedor, Pagamento, Receita, Despesa
 
 
 
@@ -244,8 +244,16 @@ def contas_a_receber_view(request):
 
 
 def contas_a_pagar_view(request):
- 
-    return render(request, 'core/financeiro/contas_pagar.html')
+    
+    fornecedores = Fornecedor.objects.filter(ativo=True)
+    contas_bancarias = ContaBancaria.objects.filter(ativo=True)
+    
+    context = {
+        'fornecedores':fornecedores,
+        'contas_bancarias':contas_bancarias,
+    }
+    
+    return render(request, 'core/financeiro/contas_pagar.html', context)
 
     
 def faturamento_view(request):
