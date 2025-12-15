@@ -227,7 +227,7 @@ body {
 
 .btn-primary {
     background: var(--roxoPrincipal);
-    color: var(--branco);
+    color: white;
     border-color: transparent;
     box-shadow: var(--shadowRoxo);
 }
@@ -801,9 +801,8 @@ body {
     padding: 1em;
     text-align: left;
     font-size: 0.8rem;
-    color: var(--cinza-escuro);
+    color: white;
     font-weight: 700;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: 1px solid var(--cinza-borda);
 }

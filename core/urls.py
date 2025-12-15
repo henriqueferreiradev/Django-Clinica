@@ -26,7 +26,7 @@ urlpatterns = [
     path('api/agendamentos/', agendamento_views.criar_agendamento, name='criar_agendamento'),
     path('api/verificar_pacotes_ativos/<int:paciente_id>/', agendamento_views.verificar_pacotes_ativos, name='verificar_pacotes_ativos'),
     path('api/verificar-cpf/', api_views.verificar_cpf, name='verificar_cpf'),
-    path('api/registrar_recebimento/<int:pagamento_id>/', api_views.registrar_recebimento, name='registrar_recebimento'),
+     
     path('api/lista_status/<int:paciente_id>', pacientes_views.lista_status, name='lista_status'),
 
     path('api/salvar-prontuario/', api_views.salvar_prontuario, name='salvar_prontuario'),
@@ -51,10 +51,10 @@ urlpatterns = [
     path('api/listar-imagens/<int:paciente_id>/', api_views.listar_imagens, name='listar_imagens'),
     path('api/criar-pasta/', api_views.criar_pasta_imagem, name='criar_pasta_imagem'),
     
- 
+     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_pagamento, name='dados_pagamento'),
+
     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_receita_pagamento, name='dados_receita_pagamento'),
-    path('receita/<int:receita_id>/registrar-pagamento/', api_views.registrar_pagamento, name='registrar_pagamento'),
-    path('receita/<int:paciente_id>/registrar-recebimento/', api_views.registrar_recebimento, name='registrar_recebimento'),
+    path('receita/<int:item_id>/registrar-pagamento/', api_views.registrar_pagamento, name='registrar_pagamento'),
     path('login/', auth_views.login_view, name='login'),
     path('logout/', auth_views.logout_view, name='logout'), 
     

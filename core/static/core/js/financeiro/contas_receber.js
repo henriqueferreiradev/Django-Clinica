@@ -61,97 +61,147 @@ function getTitle(tipo) {
     return titles[tipo] || 'Mensagem';
 }
 
-async function openReceitaPayment(receitaId) {
+async function openReceitaPayment(itemId, tipo) {
+    console.log('Abrindo item:', tipo, 'ID:', itemId);
 
+    let endpoint;
 
-    console.log('Abrindo receita:', receitaId);
+    // Decide qual endpoint chamar baseado no tipo
+    if (tipo === 'pacote_direto') {
+        endpoint = `/pacote/${itemId}/dados-pagamento/`;
+    } else if (tipo === 'pacote_via_receita') {
+        endpoint = `/receita/${itemId}/dados-pagamento/`;
+    } else if (tipo === 'receita_manual') {
+        endpoint = `/receita/${itemId}/dados-pagamento/`;
+    } else {
+        // Fallback para compatibilidade
+        endpoint = `/receita/${itemId}/dados-pagamento/`;
+    }
 
-    const container = document.getElementById('modalPagamento')
-    const resp = await fetch(`/receita/${receitaId}/dados-pagamento/`);
-    const data = await resp.json();
-    console.log(data)
+    try {
+        const resp = await fetch(endpoint);
+        const data = await resp.json();
+        console.log('Dados recebidos:', data);
 
-    if (data.success) {
-        container.innerHTML = `
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3 class="modal-title">
-                <i class="fas fa-cash-register"></i> Registrar Recebimento
-            </h3>
-            <button class="modal-close" id="closePaymentModal">&times;</button>
-        </div>
+        if (data.success) {
+            const container = document.getElementById('modalPagamento');
 
-        <div class="modal-body">
-            <form id="formPagamento">
-                <input type="hidden" id="receitaId" value="${receitaId}">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label"><i class="fas fa-user"></i>Paciente</label>
-                        <input type="text" class="form-control" value="${data.paciente.nome}" readonly>
-                    </div>
+            // Template com informações mais completas
+            const descricaoExtra = tipo === 'receita_manual' ?
+                '<small class="text-muted d-block mt-1">(Receita Manual)</small>' :
+                '';
 
-                    <div class="form-group">
-                        <label class="form-label"><i class="fa fa-align-left"></i>Descrição</label>
-                        <input type="text" class="form-control" value="${data.receita.descricao}" readonly>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label"><i class="fas fa-dollar-sign"></i>Valor Original</label>
-                            <input type="text" class="form-control" value="${data.receita.saldo}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Data do Recebimento<span class='required'>*</span></label>
-                            <input type="date" class="form-control" id="dataPagamento" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label"><i class="fa fa-credit-card"></i>Forma de Pagamento<span class='required'>*</span></label>
-                            <select class="form-select" id="formaPagamento" required>
-                                <option value="" disabled selected>Selecione...</option>
-                                <option value="pix">Pix</option>
-                                <option value="credito">Cartão de Crédito</option>
-                                <option value="debito">Cartão de Débito</option>
-                                <option value="dinheiro">Dinheiro</option>
-                                <option value="outro">Outro</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label"><i class="fas fa-dollar-sign"></i>Valor Recebido<span class='required'>*</span></label>
-                            <input type="number" class="form-control" id="valorPago" placeholder='0,00'step="0.01" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="form-check">
-                            <label class='checkbox-option'>
-                                <input type="checkbox" class="form-check-input" id="gerarRecibo">
-                            </label>
-                            <label class="form-check-label" for="gerarRecibo">Gerar recibo</label>
-                        </div>
-                    </div>
+            container.innerHTML = `
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-cash-register"></i> Registrar Recebimento
+                        ${tipo === 'receita_manual' ? '<span class="badge bg-info ms-2">Manual</span>' : ''}
+                        ${tipo === 'pacote_via_receita' ? '<span class="badge bg-warning ms-2">Pacote</span>' : ''}
+                        ${tipo === 'pacote_direto' ? '<span class="badge bg-warning ms-2">Pacote Direto</span>' : ''}
+                    </h3>
+                    <button class="modal-close" id="closePaymentModal">&times;</button>
                 </div>
-            </form>
-        </div>
 
-        <div class="modal-footer">
-            <button class="btn btn-outline" id="cancelPaymentModal">Cancelar</button>
-            <button class="btn btn-primary" id="savePagamento">
-                <i class="fas fa-check-circle"></i> Confirmar Recebimento
-            </button>
-        </div>
-    </div>`;
+                <div class="modal-body">
+                    <form id="formPagamento">
+                        <input type="hidden" id="receitaId" value="${itemId}">
+                        <input type="hidden" id="tipoReceita" value="${tipo}">
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Paciente</label>
+                                <input type="text" class="form-control" 
+                                       value="${data.paciente.nome}" readonly>
+                            </div>
 
-        // Mostra o modal usando o sistema do segundo script
-        container.classList.add('active');
+                            <div class="form-group">
+                                <label class="form-label"><i class="fa fa-align-left"></i> Descrição</label>
+                                <input type="text" class="form-control" 
+                                       value="${data.receita.descricao}" readonly>
+                                ${descricaoExtra}
+                            </div>
 
-        // Configura os eventos específicos deste modal
-        setupPaymentModal();
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fas fa-dollar-sign"></i> Valor Total</label>
+                                    <input type="text" class="form-control" 
+                                           value="R$ ${parseFloat(data.receita.valor).toFixed(2)}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fas fa-dollar-sign"></i> Saldo Restante</label>
+                                    <input type="text" class="form-control" 
+                                           value="R$ ${parseFloat(data.receita.saldo).toFixed(2)}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Data do Recebimento<span class='required'>*</span></label>
+                                    <input type="date" class="form-control" id="dataPagamento" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Data de Vencimento</label>
+                                    <input type="date" class="form-control" 
+                                           value="${data.receita.vencimento || ''}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fa fa-credit-card"></i> Forma de Pagamento<span class='required'>*</span></label>
+                                    <select class="form-select" id="formaPagamento" required>
+                                        <option value="" disabled selected>Selecione...</option>
+                                        <option value="pix">Pix</option>
+                                        <option value="credito">Cartão de Crédito</option>
+                                        <option value="debito">Cartão de Débito</option>
+                                        <option value="dinheiro">Dinheiro</option>
+                                        <option value="outro">Outro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fas fa-dollar-sign"></i> Valor Recebido<span class='required'>*</span></label>
+                                    <input type="number" class="form-control" id="valorPago" 
+                                           placeholder="0,00" step="0.01" 
+                                           max="${data.receita.saldo}" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Observações</label>
+                                <textarea class="form-control" id="observacoes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelPaymentModal">Cancelar</button>
+                    <button class="btn btn-primary" id="savePagamento">
+                        <i class="fas fa-check-circle"></i> Confirmar Recebimento
+                    </button>
+                </div>
+            </div>`;
+
+            // Mostra o modal
+            container.classList.add('active');
+
+            // Configura eventos
+            setupPaymentModal();
+
+            // Preenche data atual
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('dataPagamento').value = hoje;
+
+        } else {
+            alert('Erro: ' + (data.error || 'Não foi possível carregar os dados'));
+        }
+
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao carregar dados');
     }
 }
-
 // Função para configurar os eventos do modal de pagamento
 function setupPaymentModal() {
     const closeBtn = document.getElementById('closePaymentModal');
@@ -218,124 +268,55 @@ function setupRecebimentoModal() {
     }
 }
 
-// Função para processar o recebimento
 async function processarRecebimento() {
     const receitaId = document.getElementById('receitaId').value;
+    const tipoReceita = document.getElementById('tipoReceita').value;
     const dataPagamento = document.getElementById('dataPagamento').value;
     const formaPagamento = document.getElementById('formaPagamento').value;
     const valorPago = parseFloat(document.getElementById('valorPago').value);
-    const gerarRecibo = document.getElementById('gerarRecibo').checked;
+    const observacoes = document.getElementById('observacoes')?.value || '';
 
     // Validação básica
     if (!dataPagamento || !formaPagamento || !valorPago || valorPago <= 0) {
-        mostrarMensagem('Por favor, preencha todos os campos obrigatórios com valores válidos.', 'info')
-
+        mostrarMensagem('Por favor, preencha todos os campos obrigatórios.', 'info');
         return;
     }
 
     try {
-        const response = await fetch(`/receita/${receitaId}/registrar-pagamento/`, {
+        const endpoint = `/receita/${receitaId}/registrar-pagamento/`;
+
+        const payload = {
+            data_pagamento: dataPagamento,
+            forma_pagamento: formaPagamento,
+            valor_pago: valorPago,
+            observacoes: observacoes,
+            tipo_receita: tipoReceita  // IMPORTANTE: Envia o tipo!
+        };
+
+        const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCSRFToken()
             },
-            body: JSON.stringify({
-                data_pagamento: dataPagamento,
-                forma_pagamento: formaPagamento,
-                valor_pago: valorPago,
-                gerar_recibo: gerarRecibo
-            })
+            body: JSON.stringify(payload)
         });
 
         const result = await response.json();
 
         if (result.success) {
-            mostrarMensagem('Recebimento registrado com sucesso!', 'success')
-
-            // Fecha o modal usando o sistema do segundo script
+            mostrarMensagem('Recebimento registrado com sucesso!', 'success');
             document.getElementById('modalPagamento').classList.remove('active');
-
-            // Recarrega a página para ver as mudanças
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+            setTimeout(() => window.location.reload(), 1000);
         } else {
-            mostrarMensagem('Erro ao registrar recebimento: ' + (result.message || 'Erro desconhecido'), 'error')
-
+            mostrarMensagem('Erro: ' + (result.message || 'Erro desconhecido'), 'error');
         }
     } catch (error) {
         console.error('Erro:', error);
-        mostrarMensagem('Erro ao processar recebimento.', 'error')
-
+        mostrarMensagem('Erro ao processar requisição.', 'error');
     }
 }
-async function processarRecebimentoManual() {
 
-    const pacienteId = document.getElementById('paciente_id').value
-    const tipoCategoria = document.getElementById('categoria_tipo').value
-    const dataVencimento = document.getElementById('data_vencimento').value
-    const valor = document.getElementById('valor_recebido').value
-    const dataRecebimento = document.getElementById('data_recebimento').value
-    const descricao = document.getElementById('descricao_produto').value
-    const formaPagamento = document.getElementById('forma_pagamento').value
-    const statusPagamento = document.getElementById('status_pagamento').value
-    const gerarComprovante = document.getElementById('gerarComprovante').checked;
-
-
-
-    if (!dataRecebimento || !formaPagamento || !valor || valor <= 0) {
-        mostrarMensagem('Por favor, preencha todos os campos obrigatórios com valores válidos.', 'info')
-
-        return;
-    }
-
-    try {
-        const response = await fetch(`/receita/${pacienteId}/registrar-recebimento/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-            },
-            body: JSON.stringify({
-                paciente_id: pacienteId,
-                tipo_categoria: tipoCategoria,
-                data_vencimento: dataVencimento,
-                valor: valor,
-                data_recebimento: dataRecebimento,
-                descricao: descricao,
-                forma_pagamento: formaPagamento,
-                status_pagamento: statusPagamento,
-                gerar_comprovante: gerarComprovante
-            })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            mostrarMensagem('Recebimento registrado com sucesso!', 'success')
-
-            // Fecha o modal usando o sistema do segundo script
-            document.getElementById('modalPagamento').classList.remove('active');
-
-            // Recarrega a página para ver as mudanças
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-        } else {
-            mostrarMensagem('Erro ao registrar recebimento: ' + (result.message || 'Erro desconhecido'), 'error')
-
-        }
-    } catch (error) {
-        console.error('Erro:', error);
-        mostrarMensagem('Erro ao processar recebimento.', 'error')
-
-    }
-    console.log(pacienteId, tipoCategoria, dataVencimento, valor, dataRecebimento, descricao, formaPagamento, statusPagamento, gerarComprovante)
-
-
-
-}
 // Função para obter token CSRF
 function getCSRFToken() {
     const cookieValue = document.cookie

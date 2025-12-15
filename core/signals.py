@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from .models import Paciente, Profissional
+from .models import Paciente, Pagamento, Profissional
 from .utils import criar_pasta_foto_paciente, criar_pasta_foto_profissional
 import os
 
@@ -61,3 +61,11 @@ def deletar_imagem_antiga_profissional(sender, instance, **kwargs):
 
 
 
+@receiver(post_save, sender=Pagamento)
+def atualizar_receita_apos_pagamento(sender, instance, created, **kwargs):
+    """
+    Atualiza automaticamente a receita quando um pagamento é salvo/alterado
+    """
+    if instance.receita:
+        print(f"SIGNAL: Pagamento {instance.id} salvo para receita {instance.receita.id}")
+        instance.receita.atualizar_status_por_pagamentos()

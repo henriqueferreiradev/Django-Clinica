@@ -700,7 +700,7 @@ class Pagamento(models.Model):
         default='pendente'
     )
     vencimento = models.DateField(null=True, blank=True)
-
+    observacoes = models.TextField(null=True, blank=True)
     def __str__(self):
         ref = self.pacote.codigo if self.pacote else f"Sessão {self.agendamento.id}" if self.agendamento else "Avulso"
         return f"{self.paciente} - R$ {self.valor} - {ref} - {self.data.strftime('%d/%m/%Y')}"
@@ -1087,28 +1087,54 @@ class Receita(models.Model):
     forma_pagamento = models.CharField(max_length=30, blank=True, null=True)
     observacoes = models.TextField(blank=True, null=True)
     recibo = models.FileField(upload_to="recibos/receitas/", blank=True, null=True)
+
+
     @property
     def total_pago(self):
-        return self.pagamentos.aggregate(s=Sum('valor'))['s'] or 0
-
- 
+        """Retorna a soma de todos os pagamentos PAGOS desta receita"""
+        total = self.pagamentos.filter(status='pago').aggregate(
+            total=Sum('valor')
+        )['total'] or Decimal('0')
+        return Decimal(str(total))
 
     @property
     def saldo(self):
-        valor = Decimal(str(self.valor or 0))
-        pago = Decimal(str(self.total_pago or 0))
-        return valor - pago
-
+        """Calcula o valor que ainda falta pagar"""
+        return self.valor - self.total_pago
 
     def atualizar_status_por_pagamentos(self):
-        if self.saldo <= 0:
+        """
+        Atualiza o status da receita baseado no saldo e vencimento
+        """
+        from datetime import date
+        from decimal import Decimal
+        
+        print(f"DEBUG - Atualizando receita {self.id}")
+        print(f"  Valor total: {self.valor}")
+        print(f"  Total pago: {self.total_pago}")
+        print(f"  Saldo calculado: {self.saldo}")
+        print(f"  Vencimento: {self.vencimento}")
+        
+        # Verifica se está totalmente pago
+        if self.saldo <= Decimal('0'):
             self.status = 'pago'
+            print(f"  Status -> 'pago' (saldo <= 0)")
         else:
-            self.status = 'atrasado' if (self.vencimento and self.vencimento < date.today()) else 'pendente'
+            # Verifica se está atrasado
+            hoje = date.today()
+            if self.vencimento and self.vencimento < hoje:
+                self.status = 'atrasado'
+                print(f"  Status -> 'atrasado' (vencimento {self.vencimento} < {hoje})")
+            else:
+                self.status = 'pendente'
+                print(f"  Status -> 'pendente' (saldo positivo)")
+        
+        # SALVA A ALTERAÇÃO
         self.save(update_fields=['status'])
-    def __str__(self):
-        return f"{self.paciente} - {self.descricao} ({self.valor})"
-
+        print(f"  Status salvo: {self.status}")
+        
+        # Retorna o saldo atual para possível uso
+        return self.saldo
 
 class Lancamento(models.Model):
     TIPO_CHOICES = (

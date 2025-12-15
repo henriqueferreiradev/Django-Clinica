@@ -20,7 +20,7 @@ from core.models import Pagamento
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
-from core.services.financeiro import registrar_pagamento
+ 
 from core.models import Pagamento
 from django.http import JsonResponse
 import json
@@ -143,148 +143,114 @@ def paciente_detalhes_basicos(request, paciente_id):
         return JsonResponse(dados)
     except Paciente.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Paciente não encontrado'})
-'''
-@login_required
-@require_POST
-
-def registrar_recebimento(request, pagamento_id):
-    try:
-        data = json.loads(request.body)
-        pagamento = Pagamento.objects.get(pk=pagamento_id)
-
-        data_recebimento = parse_date(data.get('data_recebimento'))
-        forma_pagamento = data.get('forma_pagamento')
-        valor_recebido = float(data.get('valor_recebido', 0))
-        gerar_recibo = data.get('gerar_recibo', False)
-
-        # Atualiza o pagamento original
-        pagamento.data_recebimento = data_recebimento
-        pagamento.forma_pagamento = forma_pagamento
-        pagamento.valor_recebido = valor_recebido
-        pagamento.status = 'pago'
-        pagamento.save()
-
-        # Cria movimento financeiro / registro no caixa
-        registrar_pagamento(
-            receita=pagamento,
-            paciente=pagamento.paciente,
-            pacote=pagamento.pacote,
-            agendamento=pagamento.agendamento,
-            valor=valor_recebido,
-            forma_pagamento=forma_pagamento
-        )
-
-        # Registro de log
-        from core.utils import registrar_log
-        registrar_log(
-            usuario=request.user,
-            acao='Recebimento',
-            modelo='Pagamento',
-            objeto_id=pagamento.id,
-            descricao=f"Recebimento de R${valor_recebido:.2f} registrado para {pagamento.paciente.nome}."
-        )
-
-        return JsonResponse({
-            'ok': True,
-            'mensagem': f'Pagamento de R$ {valor_recebido:.2f} confirmado.',
-            'data_recebimento': data_recebimento
-        })
-    except Pagamento.DoesNotExist:
-        return JsonResponse({'ok': False, 'erro': 'Pagamento não encontrado.'}, status=404)
-    except Exception as e:
-        return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
-
-
-
-
-'''
-
+ 
 @require_POST
 @csrf_exempt
-def registrar_pagamento(request, receita_id):
+def registrar_pagamento(request, item_id):
+    """
+    Registra um pagamento - aceita ID de Receita, Pacote via Receita, ou Pacote Direto
+    """
     try:
         data = json.loads(request.body)
-        print("Dados recebidos:", data)
+        print("=== REGISTRAR PAGAMENTO ===")
+        print("Dados:", data)
         
-        receita = Receita.objects.get(id=receita_id)
-        print("Receita encontrada:", receita.id)
-
-        data_pagamento = data.get('data_pagamento') or timezone.now().date()
-        valor_pago = Decimal(str(data.get('valor_pago')))
-        forma_pagamento = data.get('forma_pagamento')
+        # Pega o tipo do item (vindo do JavaScript)
+        tipo_item = data.get('tipo_receita', 'receita_manual')
         
-        print(f"Criando pagamento: Paciente={receita.paciente.id}, Valor={valor_pago}, Data={data_pagamento}")
-
-        agendamento = None
+        receita = None
         pacote = None
-
-        if receita.agendamento_codigo:
-            try:
-               
-                agendamento = Agendamento.objects.get(codigo=receita.agendamento_codigo)
-                print(f"Agendamento encontrado: {agendamento.id}")
-                
-                # Se tem agendamento, pega o pacote dele
-                if agendamento.pacote:
-                    pacote = agendamento.pacote
-                    print(f"Pacote do agendamento: {pacote.id}")
-                    
-            except Agendamento.DoesNotExist:
-                print(f"Agendamento não encontrado para código: {receita.agendamento_codigo}")
         
-        # Se não encontrou agendamento, tenta encontrar pacote diretamente
-        if not pacote:
-            # Verifica se há pagamentos anteriores com pacote
-            pagamentos_anteriores = Pagamento.objects.filter(receita=receita).exclude(pacote=None)
-            if pagamentos_anteriores.exists():
-                pacote = pagamentos_anteriores.first().pacote
-                print(f"Pacote de pagamento anterior: {pacote.id}")
+        # Caso 1: Receita Manual ou Pacote via Receita
+        if tipo_item in ['receita_manual', 'pacote_via_receita']:
+            receita = get_object_or_404(Receita, id=item_id)
+            print(f"Receita encontrada: {receita.descricao}")
         
-        print(f"Agendamento: {agendamento.id if agendamento else 'None'}")
-        print(f"Pacote: {pacote.id if pacote else 'None'}")
-        
-        # CRIA O PAGAMENTO com agendamento e pacote
-        pagamento_data = {
-            'paciente': receita.paciente,
-            'receita': receita,
-            'valor': valor_pago,
-            'data': data_pagamento,
-            'forma_pagamento': forma_pagamento,
-            'status': 'pago',
-            'vencimento': receita.vencimento
-        }
-
-        if agendamento:
-            pagamento_data['agendamento'] = agendamento
-        if pacote:
-            pagamento_data['pacote'] = pacote
+        # Caso 2: Pacote Direto
+        elif tipo_item == 'pacote_direto':
+            pacote = get_object_or_404(PacotePaciente, id=item_id)
+            print(f"Pacote direto encontrado: {pacote.codigo}")
             
-        pagamento = Pagamento.objects.create(**pagamento_data)
+            # Busca ou cria a receita para este pacote
+            receita = Receita.objects.filter(
+                descricao__icontains=pacote.codigo,
+                paciente=pacote.paciente
+            ).first()
+            
+            if not receita:
+                categoria_financeira = CategoriaFinanceira.objects.filter(tipo='receita').first()
+                receita = Receita.objects.create(
+                    paciente=pacote.paciente,
+                    categoria=categoria_financeira,
+                    descricao=f"Pacote {pacote.codigo}",
+                    vencimento=pacote.data_inicio,
+                    valor=pacote.valor_final,
+                    status='pendente'
+                )
+                print(f"Receita criada para pacote: #{receita.id}")
         
-        print(f"Pagamento criado com ID: {pagamento.id}")
-        print(f"Agendamento no pagamento: {pagamento.agendamento}")
-        print(f"Pacote no pagamento: {pagamento.pacote}")
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Tipo de item inválido'
+            }, status=400)
         
-        # ATUALIZA STATUS DA RECEITA
+        # Dados do pagamento
+        valor_pago = Decimal(str(data.get('valor_pago', 0)))
+        forma_pagamento = data.get('forma_pagamento', 'pix')
+        data_pagamento = data.get('data_pagamento', timezone.now().date())
+        observacoes = data.get('observacoes', '')
+        
+        print(f"Valor a pagar: R$ {valor_pago}")
+        print(f"Saldo atual: R$ {receita.saldo}")
+        
+        # Validação
+        if valor_pago > receita.saldo:
+            return JsonResponse({
+                'success': False,
+                'message': f'Valor (R$ {valor_pago:.2f}) excede o saldo atual (R$ {receita.saldo:.2f})'
+            })
+        
+        # Cria o pagamento
+        pagamento = Pagamento.objects.create(
+            paciente=receita.paciente,
+            receita=receita,
+            valor=valor_pago,
+            data=data_pagamento,
+            forma_pagamento=forma_pagamento,
+            status='pago',
+            vencimento=receita.vencimento,
+            observacoes=observacoes
+        )
+        
+        print(f"Pagamento criado: #{pagamento.id}")
+        
+        # Atualiza status da receita
         receita.atualizar_status_por_pagamentos()
-        print(f"Status da receita atualizado: {receita.status}")
-        print(f"Saldo da receita: {receita.saldo}")
+        
+        # Recarrega para dados atualizados
+        receita.refresh_from_db()
+        
+        print(f"Saldo após pagamento: R$ {receita.saldo}")
+        print(f"Status: {receita.status}")
         
         return JsonResponse({
-            'success': True, 
-            'message': 'Recebimento registrado com sucesso!',
+            'success': True,
+            'message': 'Pagamento registrado com sucesso!',
             'pagamento_id': pagamento.id,
             'receita_id': receita.id,
-            'agendamento_id': agendamento.id if agendamento else None,
-            'pacote_id': pacote.id if pacote else None
+            'saldo_atual': float(receita.saldo),
+            'status_atual': receita.status
         })
         
     except Exception as e:
-        print("ERRO:", str(e))
+        print(f"ERRO: {e}")
         import traceback
-        print("TRACEBACK:", traceback.format_exc())
-        return JsonResponse({'success': False, 'message': f'Erro: {str(e)}'})
-
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro: {str(e)}'
+        }, status=500)
 
 
 @require_GET
@@ -292,132 +258,193 @@ def dados_receita_pagamento(request, receita_id):
     try:
         receita = get_object_or_404(Receita, id=receita_id)
         
-        # ⭐ BUSCA PACOTE PELO CÓDIGO NA DESCRIÇÃO (igual na view que funciona) ⭐
-        import re
-        match = re.search(r'Pacote\s+(\w+)', receita.descricao)
-        if not match:
-            return JsonResponse({'success': False, 'error': 'Pacote não encontrado na descrição'})
-        
-        pacote_codigo = match.group(1)
-        pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
-        
-        if not pacote:
-            import re
-            match = re.search(r'Pacote\s+(\w+)', receita.descricao)
-            if match:
-                pacote_codigo = match.group(1)
-                pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
-            else:
-                return JsonResponse({'success': False, 'error': 'Pacote não encontrado'})
-
-        agqs = Agendamento.objects.filter(
-            pacote=pacote,
-            status__in=['agendado', 'finalizado', 'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
-        ).order_by('data', 'hora_inicio', 'id')
-        
-        primeira_sessao = agqs.first() if agqs.exists() else None
-        vencimento = primeira_sessao.data if primeira_sessao else pacote.data_inicio
- 
+        # Dados base que serão retornados
         dados = {
             'success': True,
             'receita': {
                 'id': receita.id,
                 'descricao': receita.descricao,
-                'valor': str(pacote.valor_total),
-                'vencimento': vencimento.strftime("%Y-%m-%d") if vencimento else None,
-                'saldo': str(pacote.valor_restante)
+                'valor': str(receita.valor),
+                'vencimento': receita.vencimento.strftime("%Y-%m-%d") if receita.vencimento else None,
+                'saldo': str(receita.saldo)
             },
-            'paciente': {
-                'id': pacote.paciente.id,
-                'nome': pacote.paciente.nome
-            }
+            'paciente': None,
+            'tipo': 'manual'  # Default
         }
+        
+        # Tenta buscar pacote (receitas vinculadas a pacotes)
+        import re
+        match = re.search(r'Pacote\s+(\w+)', receita.descricao)
+        
+        if match:
+            # É uma receita de pacote
+            pacote_codigo = match.group(1)
+            try:
+                pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
+                
+                # Busca primeira sessão para vencimento
+                agqs = Agendamento.objects.filter(
+                    pacote=pacote,
+                    status__in=['agendado', 'finalizado', 'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
+                ).order_by('data', 'hora_inicio', 'id')
+                
+                primeira_sessao = agqs.first() if agqs.exists() else None
+                vencimento = primeira_sessao.data if primeira_sessao else pacote.data_inicio
+                
+                dados['tipo'] = 'pacote'
+                dados['paciente'] = {
+                    'id': pacote.paciente.id,
+                    'nome': pacote.paciente.nome
+                }
+                dados['receita'].update({
+                    'valor': str(pacote.valor_total),
+                    'vencimento': vencimento.strftime("%Y-%m-%d") if vencimento else None,
+                    'saldo': str(pacote.valor_restante)
+                })
+                
+            except PacotePaciente.DoesNotExist:
+                # Pacote não encontrado, mantém como manual
+                pass
+        
+        # Se não encontrou pacote OU é manual (tem paciente direto)
+        if not dados['paciente'] and receita.paciente:
+            # Receita manual com paciente vinculado
+            dados['tipo'] = 'manual'
+            dados['paciente'] = {
+                'id': receita.paciente.id,
+                'nome': receita.paciente.nome
+            }
+        
+        # Se nem paciente vinculado, mantém como manual sem paciente
         return JsonResponse(dados)
         
     except Receita.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Receita não encontrada'}, status=404)
-
-
-
-def registrar_recebimento(request, paciente_id):
-    try:
-        data = json.loads(request.body)
-        print("Dados recebidos:", data)
-
-        # NOTA: Você já tem paciente_id como parâmetro da função, então pode usar diretamente
-        # Mas se está recebendo no JSON também, vamos usar o do parâmetro
-        paciente = Paciente.objects.get(id=paciente_id)
-        print(f"Paciente encontrado: {paciente.nome}")
-        
-        descricao = data.get('descricao', "Recebimento Manual")
-        categoria = CategoriaFinanceira.objects.filter(tipo='receita').first()  # Você precisa buscar a categoria
-        categoria_receita_id = data.get('categoria_receita')  # ID da categoria
-        categoria_receita = None
-        
-        if categoria_receita_id:
-            categoria_receita = CategoriaContasReceber.objects.get(id=categoria_receita_id)
-        
-        vencimento = data.get('data_vencimento') or timezone.now().date()
-        valor = Decimal(str(data.get('valor', 0)))
-        data_recebimento = data.get('data_recebimento')
-        status = data.get('status_pagamento', 'pendente')
-        forma_pagamento = data.get('forma_pagamento')
-        
-        receita = None
-        pagamento = None
-        
-        # SEMPRE cria a receita primeiro
-        receita = Receita.objects.create(
-            paciente=paciente,
-            categoria=categoria,
-            categoria_receita=categoria_receita,
-            descricao=descricao,
-            vencimento=vencimento,
-            data_recebimento=data_recebimento,
-            valor=valor,
-            status=status if status != 'pago' else 'pendente',  # Inicia como pendente se for pago
-            forma_pagamento=forma_pagamento if status == 'pago' else None
-        )
-        print(f"Receita criada: ID {receita.id}")
-        
-        # Se o status for 'pago', cria o pagamento também
-        if status == 'pago' and valor > 0:
-            pagamento = Pagamento.objects.create(
-                paciente=paciente,
-                receita=receita,
-                valor=valor,
-                data=data_recebimento or timezone.now().date(),
-                forma_pagamento=forma_pagamento,
-                status='pago',
-                vencimento=vencimento
-            )
-            print(f"Pagamento criado: ID {pagamento.id}")
-            
-            # Atualiza status da receita baseado no pagamento
-            receita.atualizar_status_por_pagamentos()
-            print(f"Status atualizado para: {receita.status}")
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Recebimento registrado com sucesso!',
-            'receita_id': receita.id,
-            'pagamento_id': pagamento.id if pagamento else None,
-            'status': receita.status,
-            'saldo': float(receita.saldo)
-        })
-        
-    except Paciente.DoesNotExist:
-        return JsonResponse({'success': False, 'message': 'Paciente não encontrado'})
     except Exception as e:
-        print("ERRO:", str(e))
-        import traceback
-        print("TRACEBACK:", traceback.format_exc())
-        
-        return JsonResponse({'success': False, 'message': f'Erro: {str(e)}'})
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from decimal import Decimal
+import re
 
-
-
+@require_GET
+def dados_pagamento(request, receita_id):
+    """
+    Retorna dados da receita para o modal de pagamento
+    Compatível com o JavaScript do frontend
+    """
+    try:
+        # Tenta buscar como Receita
+        try:
+            receita = get_object_or_404(Receita, id=receita_id)
+            
+            # Determina o tipo
+            tipo = 'manual'  # default
+            
+            # Verifica se é pacote pela descrição
+            import re
+            match = re.search(r'Pacote\s+(\w+)', receita.descricao)
+            if match:
+                tipo = 'pacote'
+                
+                # Tenta buscar o pacote para dados mais completos
+                try:
+                    pacote_codigo = match.group(1)
+                    pacote = PacotePaciente.objects.get(codigo=pacote_codigo)
+                    
+                    # Busca primeira sessão para vencimento
+                    agqs = Agendamento.objects.filter(
+                        pacote=pacote,
+                        status__in=['agendado', 'finalizado', 'desistencia_remarcacao', 
+                                   'falta_remarcacao', 'falta_cobrada']
+                    ).order_by('data', 'hora_inicio', 'id')
+                    
+                    primeira_sessao = agqs.first() if agqs.exists() else None
+                    vencimento = primeira_sessao.data if primeira_sessao else pacote.data_inicio
+                    
+                    # Formata os dados para pacote
+                    return JsonResponse({
+                        'success': True,
+                        'tipo': 'pacote',
+                        'paciente': {
+                            'id': pacote.paciente.id,
+                            'nome': pacote.paciente.nome
+                        },
+                        'receita': {
+                            'id': receita.id,
+                            'descricao': receita.descricao,
+                            'valor': float(pacote.valor_final),
+                            'saldo': float(pacote.valor_restante),
+                            'vencimento': vencimento.strftime('%Y-%m-%d') if vencimento else None
+                        }
+                    })
+                except PacotePaciente.DoesNotExist:
+                    # Pacote não encontrado, usa dados da receita
+                    pass
+            
+            # Para receitas manuais ou pacotes não encontrados
+            return JsonResponse({
+                'success': True,
+                'tipo': tipo,
+                'paciente': {
+                    'id': receita.paciente.id if receita.paciente else None,
+                    'nome': receita.paciente.nome if receita.paciente else 'Sem paciente vinculado'
+                },
+                'receita': {
+                    'id': receita.id,
+                    'descricao': receita.descricao,
+                    'valor': float(receita.valor),
+                    'saldo': float(receita.saldo),
+                    'vencimento': receita.vencimento.strftime('%Y-%m-%d') if receita.vencimento else None
+                }
+            })
+            
+        except Receita.DoesNotExist:
+            # Se não for receita, pode ser que o ID seja de um pacote direto
+            try:
+                pacote = get_object_or_404(PacotePaciente, id=receita_id)
+                
+                # Busca primeira sessão para vencimento
+                agqs = Agendamento.objects.filter(
+                    pacote=pacote,
+                    status__in=['agendado', 'finalizado', 'desistencia_remarcacao', 
+                               'falta_remarcacao', 'falta_cobrada']
+                ).order_by('data', 'hora_inicio', 'id')
+                
+                primeira_sessao = agqs.first() if agqs.exists() else None
+                vencimento = primeira_sessao.data if primeira_sessao else pacote.data_inicio
+                
+                return JsonResponse({
+                    'success': True,
+                    'tipo': 'pacote',
+                    'paciente': {
+                        'id': pacote.paciente.id,
+                        'nome': pacote.paciente.nome
+                    },
+                    'receita': {
+                        'id': pacote.id,  # ID do pacote, não da receita
+                        'descricao': f"Pacote {pacote.codigo}",
+                        'valor': float(pacote.valor_final),
+                        'saldo': float(pacote.valor_restante),
+                        'vencimento': vencimento.strftime('%Y-%m-%d') if vencimento else None
+                    }
+                })
+                
+            except PacotePaciente.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Registro não encontrado'
+                }, status=404)
+                
+    except Exception as e:
+        print(f"Erro em dados_pagamento: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+ 
+ 
 def salvar_prontuario(request):
     try:
  

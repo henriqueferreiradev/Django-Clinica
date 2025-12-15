@@ -269,6 +269,8 @@ function limparOpcaoPacoteServico() {
 
     if (formValor) formValor.classList.remove('hidden');
     if (infoPacote) infoPacote.classList.add('hidden');
+
+
 }
 
 // =============================================
@@ -313,18 +315,84 @@ function configurarAutocompletePacientes() {
     const pacienteIdInput = document.getElementById('paciente_id');
     const avisoDiv = document.getElementById('aviso-pacote');
     const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
+    const pacoteAtual = document.getElementById('pacote_atual');
+    const avisoBeneficio = document.getElementById('aviso-beneficio'); // Adicione esta linha
 
     if (!input || !sugestoes || !pacienteIdInput) return;
+
+    // Função para resetar tudo quando o campo de busca estiver vazio
+    const resetarFormulario = () => {
+        pacienteIdInput.value = '';
+        if (avisoDiv) avisoDiv.style.display = 'none';
+        if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+        if (avisoBeneficio) avisoBeneficio.style.display = 'none'; // Esconde benefícios
+        if (pacoteAtual) pacoteAtual.style.display = 'none';
+
+        // Resetar todos os campos relacionados ao pacote
+        const servicoSelect = document.getElementById('pacotesInput');
+        const servicoHidden = document.getElementById('servico_id_hidden');
+        const formValor = document.getElementById('formValor');
+        const infoPacote = document.getElementById('info_pacote');
+        const valorFinalInput = document.getElementById('valor_final');
+        const campoPacote = document.getElementById('pacote_codigo');
+
+        if (servicoSelect) {
+            servicoSelect.disabled = false;
+            servicoSelect.readOnly = false;
+            servicoSelect.querySelectorAll('option[data-pacote="true"]').forEach(op => op.remove());
+            servicoSelect.value = '';
+        }
+
+        if (servicoHidden) servicoHidden.value = "";
+        if (formValor) formValor.classList.remove('hidden');
+        if (infoPacote) infoPacote.classList.add('hidden');
+        if (valorFinalInput) valorFinalInput.value = "";
+        if (campoPacote) campoPacote.value = '';
+
+        // Resetar campos de benefício
+        const beneficioTipo = document.getElementById('beneficio_tipo');
+        const beneficioPercentual = document.getElementById('beneficio_percentual');
+        if (beneficioTipo) beneficioTipo.value = '';
+        if (beneficioPercentual) beneficioPercentual.value = '';
+
+        // Resetar tipo de agendamento para "novo"
+        const radioNovo = document.querySelector('input[name="tipo_agendamento"][value="novo"]');
+        if (radioNovo) radioNovo.checked = true;
+
+        // Resetar serviço para mostrar apenas opções normais
+        const servicosBanco = document.querySelectorAll('.servico-banco');
+        const servicosReposicao = document.querySelectorAll('.servico-reposicao');
+        servicosBanco.forEach(opt => opt.hidden = false);
+        servicosReposicao.forEach(opt => opt.hidden = true);
+
+        // Resetar valor do serviço
+        const valorPacote = document.getElementById('valor_pacote');
+        if (valorPacote) valorPacote.value = "";
+
+        // Resetar desconto
+        const desconto = document.getElementById('desconto');
+        if (desconto) desconto.value = "";
+
+        // Esconder info de reposição
+        const infoReposicao = document.getElementById('info_reposicao');
+        if (infoReposicao) infoReposicao.style.display = 'none';
+
+        // Resetar label de tipo de sessão
+        const tipoSessaoLabel = document.getElementById('tipo_sessao');
+        if (tipoSessaoLabel) tipoSessaoLabel.textContent = 'Tipo de sessão';
+
+        // Limpar benefício selecionado
+        limparBeneficioSelecionado();
+    };
 
     input.addEventListener('input', async () => {
         const query = input.value.trim();
 
+        // Se o campo estiver vazio, resetar tudo
         if (query.length === 0) {
             sugestoes.innerHTML = '';
             sugestoes.style.display = 'none';
-            pacienteIdInput.value = '';
-            if (avisoDiv) avisoDiv.style.display = 'none';
-            if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+            resetarFormulario();
             return;
         }
 
@@ -348,7 +416,7 @@ function configurarAutocompletePacientes() {
                     sugestoes.innerHTML = '';
                     sugestoes.style.display = 'none';
                     verificarPacoteAtivo();
-                    verificarBeneficiosAtivos(pacienteIdInput.value); // <-- chama aqui também
+                    verificarBeneficiosAtivos(pacienteIdInput.value);
                 });
 
                 sugestoes.appendChild(div);
@@ -357,8 +425,16 @@ function configurarAutocompletePacientes() {
             console.error('Erro ao buscar pacientes:', error);
         }
     });
-}
 
+    // Adicionar evento para quando o campo perde o foco e está vazio
+    input.addEventListener('blur', () => {
+        setTimeout(() => {
+            if (input.value.trim().length === 0) {
+                resetarFormulario();
+            }
+        }, 200);
+    });
+}
 function configurarSelecaoServico() {
     const pacotesInput = document.getElementById('pacotesInput');
     const valorInput = document.getElementById('valor_pacote');
@@ -725,8 +801,8 @@ function openRecorrente() {
     const divRecorrente = document.getElementById('week-recorrente')
 
     if (!checkRecorrente || !divRecorrente) return;
-        divRecorrente.classList.toggle('active', checkRecorrente.checked)
-        }
- 
+    divRecorrente.classList.toggle('active', checkRecorrente.checked)
+}
 
-        
+
+
