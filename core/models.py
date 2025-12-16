@@ -451,7 +451,7 @@ class SubgrupoConta(models.Model):
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
     criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, 
-                                   related_name='contas_criadas')
+                                    related_name='contas_criadas')
     
     class Meta:
         verbose_name = 'Conta'
@@ -689,9 +689,16 @@ class Pagamento(models.Model):
     data = models.DateTimeField(default=timezone.now)
     receita = models.ForeignKey('Receita', null=True, blank=True,
                                 on_delete=models.SET_NULL, related_name='pagamentos')
-    forma_pagamento = models.CharField(max_length=30, choices=[('pix','Pix'),('credito','Cartão de Crédito'),('debito','Cartão de Débito'),('dinheiro','Dinheiro')],
-        null=True, blank=True)
-    status = models.CharField(max_length=20, choices=[('pendente','Pendente'),('pago','Pago'),('cancelado','Cancelado')],default='pendente')
+    forma_pagamento = models.CharField(
+        max_length=30,
+        choices=[('pix','Pix'),('credito','Cartão de Crédito'),('debito','Cartão de Débito'),('dinheiro','Dinheiro')],
+        null=True, blank=True
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=[('pendente','Pendente'),('pago','Pago'),('cancelado','Cancelado')],
+        default='pendente'
+    )
     vencimento = models.DateField(null=True, blank=True)
     observacoes = models.TextField(null=True, blank=True)
     def __str__(self):

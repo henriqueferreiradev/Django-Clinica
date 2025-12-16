@@ -196,61 +196,13 @@
         </div>
 
         <div class="topbar-div">
-          <div class="notification">
-            <i class="fas fa-bell"></i>
-            <span class="badge">3</span>
-            
-            <div class="notification-dropdown">
-              <div class="notification-header">
-                <h3><i class="fas fa-bell"></i> Notificações</h3>
-              </div>
-              
-              <ul>
-                <li>
-                  <div class="notification-item unread">
-                    <div class="notification-icon info">
-                      <i class="fas fa-info-circle"></i>
-                    </div>
-                    <div class="notification-content">
-                      <div class="notification-title">Nova consulta agendada</div>
-                      <div class="notification-message">João Silva agendou para amanhã às 14:00</div>
-                      <div class="notification-time">Há 5 minutos</div>
-                    </div>
-                  </div>
-                </li>
-                
-                <li>
-                  <div class="notification-item">
-                    <div class="notification-icon success">
-                      <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="notification-content">
-                      <div class="notification-title">Pagamento confirmado</div>
-                      <div class="notification-message">Maria Santos realizou o pagamento</div>
-                      <div class="notification-time">Há 2 horas</div>
-                    </div>
-                  </div>
-                </li>
-                
-                <li>
-                  <div class="notification-item">
-                    <div class="notification-icon warning">
-                      <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="notification-content">
-                      <div class="notification-title">Lembrete importante</div>
-                      <div class="notification-message">3 pacientes com pagamento pendente</div>
-                      <div class="notification-time">Hoje às 09:30</div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-              
-              <div class="notification-footer">
-                <a href="#">Ver todas as notificações</a>
-              </div>
-            </div>
+        <div class="notification-area">
+          <div class="bell-icon" id="bellIcon">
+              <i class="fas fa-bell"></i>
+              <div class="notification-count" id="notificationCount">0</div>
           </div>
+        </div>
+
 
           <!-- Perfil -->
           <div class="dropdown">
@@ -265,7 +217,36 @@
           </div>
         </div>
       </div>
-
+      <div class="notification-modal" id="notificationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Notificações da Clínica</h3>
+            <div class="close-modal" id="closeModal">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="modal-body">
+            <!-- Notificações serão carregadas dinamicamente -->
+            <div id="notificationsList"></div>
+            
+            <!-- Template para notificação (oculto) -->
+            <div class="notification-item template" style="display: none;">
+                <div class="notification-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="notification-text">
+                    <h4>Título da Notificação</h4>
+                    <p>Descrição da notificação</p>
+                    <div class="notification-time">Horário</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="mark-all-read" id="markAllRead">Marcar todas como lidas</button>
+            <button class="clear-all" id="clearAll">Limpar todas</button>
+        </div>
+    </div>
+</div>
       {% endblock %}
       {% block content %}
       {% include "core/partials/alertas.html" %} {% endblock %}
