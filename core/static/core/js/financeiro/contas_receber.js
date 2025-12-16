@@ -202,6 +202,92 @@ async function openReceitaPayment(itemId, tipo) {
         alert('Erro ao carregar dados');
     }
 }
+
+async function processarRecebimentoManual() {
+    console.log('processarRecebimentoManual chamado!');
+
+    // Coletar dados do formulário
+    const pacienteId = document.getElementById('paciente_id').value;
+    const categoriaId = document.getElementById('categoria_tipo').value;
+    const dataVencimento = document.getElementById('data_vencimento').value;
+    const descricao = document.getElementById('descricao_produto').value;
+    const valor = parseFloat(document.getElementById('valor_recebido').value);
+    const formaPagamento = document.getElementById('forma_pagamento').value;
+    const dataRecebimento = document.getElementById('data_recebimento').value;
+    const statusPagamento = document.getElementById('status_pagamento').value;
+    const gerarComprovante = document.getElementById('gerarComprovante').checked;
+
+    // Validações básicas
+    if (!pacienteId || !categoriaId || !dataVencimento || !descricao || !valor || !formaPagamento || !statusPagamento) {
+        mostrarMensagem('Por favor, preencha todos os campos obrigatórios.', 'warning');
+        return;
+    }
+
+    if (valor <= 0) {
+        mostrarMensagem('O valor deve ser maior que zero.', 'warning');
+        return;
+    }
+
+    try {
+        // Preparar payload para envio
+        const payload = {
+            paciente_id: pacienteId,
+            categoria_id: categoriaId,
+            data_vencimento: dataVencimento,
+            descricao: descricao,
+            valor: valor,
+            forma_pagamento: formaPagamento,
+            status: statusPagamento,
+            gerar_comprovante: gerarComprovante,
+            tipo: 'receita_manual'  // Importante para identificar que é uma receita manual
+        };
+
+        // Se já foi recebido (status = "pago"), incluir data do recebimento
+        if (statusPagamento === 'pago' && dataRecebimento) {
+            payload.data_pagamento = dataRecebimento;
+        } else if (statusPagamento === 'pago') {
+            // Se não informou data de recebimento, usa a data atual
+            const hoje = new Date().toISOString().split('T')[0];
+            payload.data_pagamento = hoje;
+        }
+
+        console.log('Enviando dados:', payload);
+
+        // Enviar para o backend
+        const response = await fetch('/receita/criar-receita-manual/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            mostrarMensagem('Receita manual criada com sucesso!', 'success');
+
+            // Fechar modal
+            document.getElementById('modalRecebimento').classList.remove('active');
+
+            // Limpar formulário
+            document.getElementById('formRecebimento').reset();
+            document.getElementById('paciente_id').value = '';
+
+            // Recarregar a página após 1 segundo para ver os novos dados
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+
+        } else {
+            mostrarMensagem('Erro: ' + (result.message || 'Erro desconhecido'), 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao processar recebimento manual:', error);
+        mostrarMensagem('Erro ao processar requisição. Tente novamente.', 'error');
+    }
+}
 // Função para configurar os eventos do modal de pagamento
 function setupPaymentModal() {
     const closeBtn = document.getElementById('closePaymentModal');
@@ -239,8 +325,7 @@ function setupRecebimentoModal() {
     const cancelBtn = document.getElementById('cancelRecebimentoModal');
     const saveBtnManual = document.getElementById('saveRecebimento');
 
-    // REMOVER esta linha daqui:
-    // console.log('processarRecebimentoManual chamado!'); // ADICIONE ESTA LINHA
+
 
     if (closeBtn) {
         console.log('Close button encontrado');

@@ -204,11 +204,16 @@ def contas_a_receber_view(request):
         else:
             saldo_pacotes += saldo
 
+    pagamentos_hoje = Pagamento.objects.filter(data=hoje)
+    print(pagamentos_hoje)
+
     # Totais
     total_pendente = total_pendente_rec + saldo_pacotes
     total_atrasado = total_atrasado_rec + saldo_pacotes_atrasados
     total_vence_hoje = total_vence_hoje_rec + saldo_pacotes_hoje
     total_a_receber = total_pendente + total_atrasado + total_vence_hoje
+
+
 
     # ---- PAGINAÇÃO ----
     paginator = Paginator(lancamentos, 10)   

@@ -55,6 +55,7 @@ urlpatterns = [
 
     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_receita_pagamento, name='dados_receita_pagamento'),
     path('receita/<int:item_id>/registrar-pagamento/', api_views.registrar_pagamento, name='registrar_pagamento'),
+    path('receita/criar-receita-manual/', api_views.criar_receita_manual, name='criar_receita_manual'),
     path('login/', auth_views.login_view, name='login'),
     path('logout/', auth_views.logout_view, name='logout'), 
     

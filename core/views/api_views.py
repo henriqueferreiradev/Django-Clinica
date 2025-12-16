@@ -443,7 +443,118 @@ def dados_pagamento(request, receita_id):
             'success': False,
             'error': str(e)
         }, status=500)
- 
+@require_POST
+@csrf_exempt
+def criar_receita_manual(request):
+    """
+    Cria uma receita manual para um paciente
+    """
+    try:
+        data = json.loads(request.body)
+        print("=== CRIAR RECEITA MANUAL ===")
+        print("Dados recebidos:", data)
+        
+        # Validação de campos obrigatórios
+        required_fields = ['paciente_id', 'categoria_id', 'descricao', 'valor', 'forma_pagamento']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Campo obrigatório faltando: {field}'
+                }, status=400)
+        
+        # Buscar paciente
+        paciente = get_object_or_404(Paciente, id=data['paciente_id'])
+        
+        # Buscar categoria
+        categoria = get_object_or_404(CategoriaFinanceira, id=data['categoria_id'])
+        
+        # Preparar dados para a receita
+        descricao = data['descricao'].strip()
+        valor = Decimal(str(data['valor']))
+        forma_pagamento = data['forma_pagamento']
+        data_vencimento = data.get('data_vencimento', timezone.now().date())
+        status = data.get('status', 'pendente')
+        
+        # Criar a receita
+        receita = Receita.objects.create(
+            paciente=paciente,
+            categoria=categoria,
+            descricao=descricao,
+            valor=valor,
+            vencimento=data_vencimento,
+            status=status,
+            forma_pagamento=forma_pagamento if status == 'pago' else None  # Só preenche se já pago
+        )
+        
+        print(f"Receita criada: ID #{receita.id} - {descricao}")
+        
+        # Se já foi marcado como pago, criar pagamento
+        if status == 'pago' and data.get('data_pagamento'):
+            pagamento = Pagamento.objects.create(
+                paciente=paciente,
+                receita=receita,
+                valor=valor,
+                data=data.get('data_pagamento'),
+                forma_pagamento=forma_pagamento,
+                status='pago',
+                vencimento=data_vencimento,
+                observacoes=data.get('observacoes', f'Receita manual: {descricao}')
+            )
+            print(f"Pagamento criado: ID #{pagamento.id}")
+            
+            # Atualizar status da receita
+            receita.atualizar_status_por_pagamentos()
+        
+        # Gerar comprovante se solicitado
+        comprovante_url = None
+        if data.get('gerar_comprovante'):
+            comprovante_url = gerar_comprovante_pagamento(pagamento.id if status == 'pago' else None)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Receita manual criada com sucesso!',
+            'receita_id': receita.id,
+            'pagamento_id': pagamento.id if status == 'pago' else None,
+            'comprovante_url': comprovante_url
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Erro ao processar JSON da requisição'
+        }, status=400)
+    except Paciente.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Paciente não encontrado'
+        }, status=404)
+    except CategoriaFinanceira.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Categoria financeira não encontrada'
+        }, status=404)
+    except Exception as e:
+        print(f"ERRO ao criar receita manual: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro interno: {str(e)}'
+        }, status=500)
+
+
+def gerar_comprovante_pagamento(pagamento_id=None):
+    """
+    Função auxiliar para gerar comprovante de pagamento
+    (Implementação básica - você pode expandir conforme necessário)
+    """
+    if not pagamento_id:
+        return None
+    
+    # Aqui você pode implementar a geração de PDF
+    # Por enquanto, retorna uma URL fictícia
+    return f"/comprovantes/pagamento/{pagamento_id}/"
  
 def salvar_prontuario(request):
     try:

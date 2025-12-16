@@ -17,7 +17,7 @@ from django.db import transaction
 from django.template.context_processors import request
 import uuid
 from django.utils.timezone import now
-
+from decimal import Decimal, InvalidOperation
 
 
 @login_required(login_url='login')
@@ -121,17 +121,23 @@ def criar_agendamento(request):
     beneficio_percentual = Decimal(data.get('beneficio_percentual') or 0)
 
     # valores
-    def _f(v, default=0.0):
-        try: return float(v)
-        except: return default
-    valor_pacote  = _f(data.get('valor_pacote'))
-    desconto      = _f(data.get('desconto'))
-    valor_final   = _f(data.get('valor_final'))
-    modo_desconto = data.get('modo_desconto')
+    
 
+    def _d(v, default=Decimal('0.00')):
+        try:
+            return Decimal(str(v))
+        except (InvalidOperation, TypeError):
+            return default
+
+    valor_pacote  = _d(data.get('valor_pacote'))
+    desconto      = _d(data.get('desconto'))
+    valor_final   = _d(data.get('valor_final'))
+    valor_pago    = _d(data.get('valor_pago'), Decimal('0.00'))
+    modo_desconto = data.get('modo_desconto')
     # pagamento
-    valor_pago       = _f(data.get('valor_pago'), None)
-    forma_pagamento  = data.get('forma_pagamento')
+    forma_pagamento = data.get('forma_pagamento')
+    
+ 
 
     # recorrência
     agendamento_recorrente = data.get('recorrente') == 'on'
