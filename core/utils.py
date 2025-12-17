@@ -12,6 +12,8 @@ from django.shortcuts import get_object_or_404, redirect
 from .models import Agendamento, LogAcao
 from django.contrib import messages
 
+from django.core.paginator import Paginator
+
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 def criar_pasta_foto_paciente(id_paciente, nome_paciente):
@@ -203,3 +205,11 @@ def calcular_porcentagem_formas(queryset):
 
 def registrar_log(usuario, acao, modelo, objeto_id, descricao=''):
     LogAcao.objects.create(usuario=usuario, acao=acao, modelo=modelo, objeto_id=objeto_id, descricao=descricao)
+
+
+
+
+def paginate(request, items, per_page=10, page_param='page'):
+    paginator = Paginator(items, per_page)
+    page_number = request.GET.get(page_param)
+    return paginator.get_page(page_number)

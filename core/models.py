@@ -1040,8 +1040,6 @@ class ContaBancaria(models.Model):
     
     def __str__(self):
         return f"{self.nome_banco} - CC {self.agencia_banco}"
-
-
 class Despesa(models.Model):
     STATUS_CHOICES = (
         ('pendente', 'Pendente'),

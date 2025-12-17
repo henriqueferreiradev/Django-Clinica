@@ -218,7 +218,7 @@ async function processarRecebimentoManual() {
     const gerarComprovante = document.getElementById('gerarComprovante').checked;
 
     // Validações básicas
-    if (!pacienteId || !categoriaId || !dataVencimento || !descricao || !valor || !formaPagamento || !statusPagamento) {
+    if (!pacienteId || !categoriaId || !dataVencimento || !descricao || !valor || !statusPagamento) {
         mostrarMensagem('Por favor, preencha todos os campos obrigatórios.', 'warning');
         return;
     }

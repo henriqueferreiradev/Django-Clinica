@@ -354,9 +354,12 @@ def criar_agendamento(request):
     # =====================================================
     # PAGAMENTO — cria pendente (conta a receber) ou pago
     # =====================================================
-
+    
     primeira_data = agendamentos_criados[0].data
-
+    messages.warning(request, f'Todas as sessões deste pacote foram usadas.')
+  
+    
+    
     # 1) SEMPRE crie a Receita do pacote (conta a receber)
     receita = criar_receita_pacote(
         paciente=paciente,

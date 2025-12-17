@@ -339,8 +339,20 @@
                             <input id='valor_recebido' type="number" step="0.01" class="form-control" placeholder="0,00" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label"><i class="fa fa-credit-card"></i>Forma de Pagamento<span class='required'>*</span></label>
-                            <select id='forma_pagamento' class="form-select" required>
+                            <label class="form-label"><i class="fa fa-hourglass-half"></i>Status<span class='required'>*</span></label>
+                            <select id='status_pagamento' class="form-select" required>
+                                <option disabled selected value="">Selecione...</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="pago">Pago</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                                                <div class="form-group">
+                            <label class="form-label"><i class="fa fa-credit-card"></i>Forma de Pagamento</label>
+                            <select id='forma_pagamento' class="form-select">
                                 <option value="" disabled selected>Selecione...</option>
                                 <option value="pix">Pix</option>
                                 <option value="credito">Cartão de Crédito</option>
@@ -349,23 +361,12 @@
                                 <option value="outro">Outro</option>
                             </select>
                         </div>
-                    </div>
-
-
-                    <div class="form-row">
                                                 <div class="form-group">
                             <label class="form-label"><i class="fas fa-calendar-alt"></i>Data do Recebimento</label>
                             <input id='data_recebimento' type="date" class="form-control">
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label"><i class="fa fa-hourglass-half"></i>Status<span class='required'>*</span></label>
-                            <select id='status_pagamento' class="form-select" required>
-                                <option disabled selected value="">Selecione...</option>
-                                <option value="pendente">Pendente</option>
-                                <option value="pago">Pago</option>
-                            </select>
-                        </div>
+
                     </div>
 
  

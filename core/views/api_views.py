@@ -455,7 +455,7 @@ def criar_receita_manual(request):
         print("Dados recebidos:", data)
         
         # Validação de campos obrigatórios
-        required_fields = ['paciente_id', 'categoria_id', 'descricao', 'valor', 'forma_pagamento']
+        required_fields = ['paciente_id', 'categoria_id', 'descricao', 'valor']
         for field in required_fields:
             if field not in data or not data[field]:
                 return JsonResponse({

@@ -6,7 +6,7 @@ from django.db.models import Sum, Q
 from django.utils import timezone
 from numpy import true_divide
 from core.models import CategoriaContasReceber, ContaBancaria, Fornecedor, Pagamento, Receita, Despesa
-
+from core.utils import paginate
 
 
 @login_required(login_url='login')
@@ -50,26 +50,22 @@ from datetime import date
 def contas_a_receber_view(request):
     hoje = timezone.localdate()
 
-    # ---- RECEITAS PENDENTES (COM SALDO > 0) ----
-    # CORREÇÃO: Remove os filtros que limitam a "Pacote"
     receitas_pendentes = (
         Receita.objects
         .select_related('paciente', 'categoria_receita')
         .filter(
             Q(status='pendente') | Q(status='atrasado'),
             paciente__isnull=False,
-            # REMOVI: descricao__icontains='Pacote'
+          
         )
         .order_by('vencimento')
     )
 
-    # Filtra apenas receitas que têm saldo pendente
     receitas_com_saldo = []
     for receita in receitas_pendentes:
         if receita.saldo > Decimal('0.00'):
             receitas_com_saldo.append(receita)
 
-    # ---- PACOTES PENDENTES ----
     agqs = Agendamento.objects.filter(
         status__in=['agendado', 'finalizado', 'desistencia_remarcacao', 
                     'falta_remarcacao', 'falta_cobrada']
@@ -83,8 +79,7 @@ def contas_a_receber_view(request):
     )
 
     categorias = CategoriaContasReceber.objects.filter(ativo=True)
-    
-    # Filtra pacotes que NÃO têm receita criada
+
     pacotes_pendentes = []
     for pac in pacotes_todos:
         if pac.valor_restante > Decimal('0.00'):
@@ -249,13 +244,90 @@ def contas_a_receber_view(request):
 
 
 def contas_a_pagar_view(request):
+    hoje = timezone.localdate()
+
+    despesas_qs  = (Despesa.objects.select_related('fornecedor','categoria', 'conta_bancaria'))
+
+    status = request.GET.get('status')
+    fornecedor = request.GET.get('fornecedor')
+    #categoria = request.GET.get('categoria')
     
+    if status:
+        despesas_qs = despesas_qs.filter(status=status)
+    if fornecedor:
+        despesas_qs = despesas_qs.filter(fornecedor__razao_social__icontains=fornecedor)
+    #if categoria:
+    #    despesas_qs = despesas_qs.filter(categoria=categoria)    
+
+    despesas_qs = despesas_qs.order_by('vencimento')
+
+    lancamentos = []
+    
+    for despesa in despesas_qs:
+        if despesa.status == 'pago':
+            status_calculado = 'Pago'
+        elif despesa.status == 'agendado':
+            status_calculado = 'Agendado'
+        else:
+            if despesa.vencimento < hoje:
+                status_calculado = "Atrasado"
+            elif despesa.vencimento == hoje:
+                status_calculado = 'Vence Hoje'
+            else:
+                status_calculado = 'Pendente'
+    
+
+        lancamentos.append({
+            'id':despesa.id,
+            'fornecedor':despesa.razao_social,
+            'categoria':despesa.categoria,
+            'valor': despesa.valor,
+            'vencimento':despesa.vencimento,
+            'status': despesa.status,
+            'status_calculado': status_calculado,
+            'item_id':despesa.id,
+            }
+
+        )
+
+
+
+    total_atrasado = Decimal('0')
+    total_vence_hoje = Decimal('0')
+    total_pendente = Decimal('0')
+    total_agendado = Decimal('0')
+
+    for despesa in despesas_qs.exclude(status='pago'):
+        if despesa.status == 'agendado':
+            total_agendado += despesa.valor
+        elif despesa.vencimento < hoje:
+            total_atrasado += despesa.valor
+        elif despesa.vencimento == hoje:
+            total_vence_hoje += despesa.valor
+        else:
+            total_pendente +=despesa.valor
+
+    
+    total_a_pagar = (
+        total_atrasado + total_vence_hoje + total_pendente + total_agendado
+    )
+
+    page_obj = paginate(request, lancamentos, per_page=10)
+
+
+
     fornecedores = Fornecedor.objects.filter(ativo=True)
     contas_bancarias = ContaBancaria.objects.filter(ativo=True)
     
     context = {
+        'page_obj':page_obj,
         'fornecedores':fornecedores,
         'contas_bancarias':contas_bancarias,
+        'total_atrasado':total_atrasado,
+        'total_vence_hoje':total_vence_hoje,
+        'total_a_pagar':total_a_pagar,
+        'total_pendente':total_pendente,
+        'total_agendado':total_agendado,
     }
     
     return render(request, 'core/financeiro/contas_pagar.html', context)

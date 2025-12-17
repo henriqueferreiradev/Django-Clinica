@@ -227,81 +227,7 @@
     background: var(--success-gradient);
   }
 
-  /* Enhanced Table */
-  .table-container {
-    background: var(--branco);
-    border: 1px solid var(--cinza-borda);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: var(--card-shadow);
-    margin-bottom: 2rem;
-  }
-
-  .table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--cinza-borda);
-    background: var(--cinza-claro);
-  }
-
-  .table-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--titulo-perfil);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .table-actions {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-  }
-
-  .table-content {
-    padding: 0;
-  }
-
-  .table-scroll {
-    overflow-x: auto;
-  }
-
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 1000px;
-  }
-
-  .table th {
-    background: var(--cinza-claro);
-    padding: 1rem 1.25rem;
-    text-align: left;
-    font-size: 0.8rem;
-    color: var(--cinza-escuro);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--cinza-borda);
-  }
-
-  .table td {
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--cinza-borda);
-    transition: background-color 0.2s ease;
-  }
-
-  .table tr:last-child td {
-    border-bottom: none;
-  }
-
-  .table tbody tr:hover {
-    background: var(--hover-dropdown);
-  }
-
+ 
   /* Enhanced Status Rows */
   .row-status {
     border-left: 4px solid transparent;
@@ -846,7 +772,7 @@
     <div class="table-header">
       <h3 class="table-title">
         <i class="fa-solid fa-list"></i>
-        Lançamentos
+        Despesas a pagar
       </h3>
       <div class="table-actions">
         <div class="dropdown">
@@ -1138,7 +1064,7 @@
             {% for fornecedor in fornecedores %}
             <option value="{{ fornecedor.id }}">{{ fornecedor.razao_social }}</option>
             {% endfor %}
-        </select>
+        
             </select>
           </div>
           <div class="form-group">
