@@ -152,23 +152,15 @@ window.getFrequencias = async function () {
   try {
     const mes = document.getElementById('mes')?.value;
     const ano = document.getElementById('ano')?.value;
-    const data = await pegarFrequencias({ mes, ano });
-
-
-    const items = Array.isArray(data) ? data : (data.items ?? data.results ?? []);
-
-    const tbody = document.querySelector('table tbody');
-    if (!tbody) return console.warn('tbody não encontrado');
-
-    if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center">Sem dados</td></tr>`;
+    
+    // Verifica se mês foi selecionado
+    if (!mes || mes === "") {
+      const tbody = document.querySelector('table tbody');
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center">Por favor, selecione um mês para visualizar as frequências</td></tr>`;
       return;
     }
-
-    tbody.innerHTML = items.map(linhaHTML).join('');
-
-    // se usa Feather icons
-    if (window.feather?.replace) feather.replace();
+    
+    const data = await pegarFrequencias({ mes, ano });
   } catch (e) {
     console.error(e);
     alert('Erro ao carregar frequências.');
@@ -263,23 +255,43 @@ document.addEventListener('DOMContentLoaded', () => {
     filtroAno.appendChild(opt);
   }
 
-  // Selecionar valores atuais vindos do hidden (template)
-  const mesInicial = parseInt(hiddenMes.value || '{{ mes|default:9 }}', 10);
-  const anoInicial = parseInt(hiddenAno.value || '{{ ano|default:2025 }}', 10);
-  filtroMes.value = String(mesInicial);
-  filtroAno.value = String(anoInicial);
+  // VERIFICA SE TEM VALOR VÁLIDO antes de selecionar
+  const mesInicial = hiddenMes.value;
+  const anoInicial = hiddenAno.value;
+  
+  // Só seleciona se tiver um valor válido (não vazio)
+  if (mesInicial && mesInicial !== "") {
+    filtroMes.value = String(mesInicial);
+  }
+  
+  if (anoInicial && anoInicial !== "") {
+    filtroAno.value = String(anoInicial);
+  } else {
+    // Se não tiver ano, seleciona o ano atual
+    filtroAno.value = String(anoAtual);
+  }
 
   function syncFiltroParaHidden() {
-    hiddenMes.value = filtroMes.value;
-    hiddenAno.value = filtroAno.value;
+    // Só atualiza os hidden se os filtros tiverem valor
+    if (filtroMes.value && filtroMes.value !== "") {
+      hiddenMes.value = filtroMes.value;
+    }
+    if (filtroAno.value && filtroAno.value !== "") {
+      hiddenAno.value = filtroAno.value;
+    }
   }
 
   function aplicarFiltro() {
+    // Verifica se mês foi selecionado
+    if (!filtroMes.value || filtroMes.value === "") {
+      alert("Por favor, selecione um mês.");
+      filtroMes.focus();
+      return;
+    }
+    
     syncFiltroParaHidden();
     // Se sua função de busca já existir, chama com os novos filtros
     if (typeof getFrequencias === 'function') {
-      // Ideal: ela ler os hiddens ou aceitar querystring / params
-      // Ex.: getFrequencias({ mes: hiddenMes.value, ano: hiddenAno.value });
       getFrequencias();
     }
   }

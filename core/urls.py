@@ -51,11 +51,17 @@ urlpatterns = [
     path('api/listar-imagens/<int:paciente_id>/', api_views.listar_imagens, name='listar_imagens'),
     path('api/criar-pasta/', api_views.criar_pasta_imagem, name='criar_pasta_imagem'),
     
-     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_pagamento, name='dados_pagamento'),
-
+    
+    #RECEITAS    
+    path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_pagamento, name='dados_pagamento'),
     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_receita_pagamento, name='dados_receita_pagamento'),
     path('receita/<int:item_id>/registrar-pagamento/', api_views.registrar_pagamento, name='registrar_pagamento'),
     path('receita/criar-receita-manual/', api_views.criar_receita_manual, name='criar_receita_manual'),
+    
+    #DESPESAS
+    
+    
+
     path('login/', auth_views.login_view, name='login'),
     path('logout/', auth_views.logout_view, name='logout'), 
     
@@ -137,8 +143,5 @@ urlpatterns = [
     
     path("frequencias", frequencia_views.frequencias_get, name="frequencias_get"),
     path("frequencias/salvar", frequencia_views.frequencias_post, name="frequencias_post"),
-
     
-      
-
 ]
