@@ -467,8 +467,8 @@ def criar_receita_manual(request):
         paciente = get_object_or_404(Paciente, id=data['paciente_id'])
         
         # Buscar categoria
-        categoria = get_object_or_404(CategoriaFinanceira, id=data['categoria_id'])
-        
+        categoria = get_object_or_404(CategoriaContasReceber, id=data['categoria_id'])
+        print(categoria)
         # Preparar dados para a receita
         descricao = data['descricao'].strip()
         valor = Decimal(str(data['valor']))
@@ -479,7 +479,7 @@ def criar_receita_manual(request):
         # Criar a receita
         receita = Receita.objects.create(
             paciente=paciente,
-            categoria=categoria,
+            categoria_receita=categoria,
             descricao=descricao,
             valor=valor,
             vencimento=data_vencimento,

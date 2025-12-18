@@ -531,7 +531,7 @@ textarea {
 .dropdown:hover .dropdown-content {
   display: block;
 }
- 
+
 .content::-webkit-scrollbar-thumb {
   background: var(--roxo-primary-hover);
   border-radius: 50px;
@@ -573,6 +573,7 @@ textarea {
   color: var(--roxoPrincipal);
   animation: gentleRing 5s infinite ease-in-out;
 }
+
 .bell-icon:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(33, 150, 243, 0.3);
@@ -580,11 +581,27 @@ textarea {
   border: 2px solid var(--preto);
   color: white
 }
+
 @keyframes gentleRing {
-  0%, 100% { transform: rotate(0deg); }
-  2%, 6% { transform: rotate(10deg); }
-  4%, 8% { transform: rotate(-10deg); }
-  10% { transform: rotate(0deg); }
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  2%,
+  6% {
+    transform: rotate(10deg);
+  }
+
+  4%,
+  8% {
+    transform: rotate(-10deg);
+  }
+
+  10% {
+    transform: rotate(0deg);
+  }
 }
 
 .notification-count {
@@ -621,8 +638,13 @@ textarea {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
@@ -636,8 +658,15 @@ textarea {
 }
 
 @keyframes slideIn {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-header {
@@ -822,22 +851,40 @@ textarea {
 /* Responsividade */
 @media (max-width: 768px) {
   .bell-icon {
-      width: 46px;
-      height: 46px;
+    width: 46px;
+    height: 46px;
   }
-  
+
   .bell-icon i {
-      font-size: 20px;
+    font-size: 20px;
   }
-  
+
   .notification-count {
-      width: 20px;
-      height: 20px;
-      font-size: 10px;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
   }
-  
+
   .modal-content {
-      width: 95%;
-      max-width: 95%;
+    width: 95%;
+    max-width: 95%;
   }
+}
+
+.sub-menu a i {
+  font-size: 14px;
+  width: 20px;
+  margin-right: 10px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+/* Ajuste de espaçamento */
+.sub-menu li {
+  padding-left: 10px;
+}
+
+.sub-menu li a {
+  padding: 8px 15px;
+  font-size: 0.95em;
 }
