@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from core.models import AvaliacaoFisioterapeutica, Paciente, Especialidade,Prontuario,Profissional, Evolucao,Agendamento, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import Agendamento, AvaliacaoFisioterapeutica, CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, Evolucao, MIDIA_ESCOLHA, Paciente, Profissional, Prontuario, SEXO_ESCOLHA, UF_ESCOLHA, VINCULO
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.db.models import Min, Max,Count 
 from django.utils import timezone
+from django.contrib.auth.models import User
 import json
 from core.views.agendamento_views import listar_agendamentos
 
@@ -164,47 +165,45 @@ def cadastrar_profissionais_view(request):
 
 
 def editar_profissional_view(request, id):
-
-
     profissional = get_object_or_404(Profissional, id=id)
 
     if request.method == 'POST':
- 
-
-        # Criação de novo profissional
+        # Capturar o email ANTES de salvar o profissional
+        email_antigo = profissional.email
+        novo_email = request.POST.get('email')
+        
+        # Atualização do profissional
         profissional.sobrenome = request.POST.get('sobrenome')
         profissional.nome = request.POST.get('nome')
         profissional.nomeSocial = request.POST.get('nomeSocial')
         profissional.rg = request.POST.get('rg')
         profissional.cpf = request.POST.get('cpf')
         profissional.cnpj = request.POST.get('cnpj')
+        
+        # Data de nascimento
         nascimento = request.POST.get('nascimento')
         try:
-            profissional.nascimento_formatada = datetime.strptime( nascimento, "%d/%m/%Y").date()
+            profissional.data_nascimento = datetime.strptime(nascimento, "%d/%m/%Y").date()
         except ValueError:
-            messages.error(request, 'Formato de data inválido (use DD/MM/AAAA)')  # Adicionar
+            messages.error(request, 'Formato de data inválido (use DD/MM/AAAA)')
             return redirect('editar_profissional', id=id)
             
         profissional.cor_raca = request.POST.get('cor')
-    
         profissional.sexo = request.POST.get('sexo')
         profissional.estado_civil = request.POST.get('estado_civil')
         profissional.naturalidade = request.POST.get('naturalidade')
         profissional.uf = request.POST.get('uf')
         profissional.especialidade_id = request.POST.get('especialidade')
-        profissional.especialidade_obj = Especialidade.objects.get(id= profissional.especialidade_id) if  profissional.especialidade_id else None
+        profissional.especialidade_obj = Especialidade.objects.get(id=profissional.especialidade_id) if profissional.especialidade_id else None
         profissional.conselho1 = request.POST.get('conselho1')
         profissional.conselho2 = request.POST.get('conselho2')
         profissional.conselho3 = request.POST.get('conselho3')
         profissional.conselho4 = request.POST.get('conselho4')
-
         profissional.num1_conselho = request.POST.get("num1_conselho")
         profissional.num2_conselho = request.POST.get("num2_conselho")
         profissional.num3_conselho = request.POST.get("num3_conselho")
         profissional.num4_conselho = request.POST.get("num4_conselho")
-
         profissional.observacao = request.POST.get('observacao')
-
         profissional.cep = request.POST.get('cep')
         profissional.rua = request.POST.get('rua')
         profissional.numero = request.POST.get('numero')
@@ -212,26 +211,96 @@ def editar_profissional_view(request, id):
         profissional.bairro = request.POST.get('bairro')
         profissional.cidade = request.POST.get('cidade')
         profissional.estado = request.POST.get('estado')
-
         profissional.telefone = request.POST.get('telefone')
         profissional.celular = request.POST.get('celular')
-        profissional.email = request.POST.get('email')
+        profissional.email = novo_email  # Atualiza o email
         profissional.nomeEmergencia = request.POST.get('nomeEmergencia')
         profissional.vinculo = request.POST.get('vinculo')
         profissional.telEmergencia = request.POST.get('telEmergencia')
 
-
         if 'foto' in request.FILES:
             profissional.foto = request.FILES['foto']
             messages.info(request, 'Foto atualizada com sucesso') 
+        
+        # SALVAR O PROFISSIONAL
         profissional.save()
+
+        # ATUALIZAR O USUÁRIO ASSOCIADO
+        if profissional.user:
+            try:
+                user = profissional.user
+                atualizou = False
+                
+                # Atualizar nome e sobrenome
+                if user.first_name != profissional.nome:
+                    user.first_name = profissional.nome
+                    atualizou = True
+                
+                if user.last_name != profissional.sobrenome:
+                    user.last_name = profissional.sobrenome
+                    atualizou = True
+                
+                # Atualizar email E username (pois username = email)
+                if novo_email and novo_email != email_antigo:
+                    user.email = novo_email
+                    user.username = novo_email  # Importante: username também é email!
+                    atualizou = True
+                
+                # Atualizar senha se a data de nascimento mudou
+                data_nascimento_str = profissional.data_nascimento.strftime("%d%m%Y") if profissional.data_nascimento else "123456"
+                if not user.check_password(data_nascimento_str):
+                    user.set_password(data_nascimento_str)
+                    atualizou = True
+                    # Nota: se o usuário mudou a senha manualmente, isso vai sobrescrever
+                    # Se não quiser isso, remova este bloco
+                
+                if atualizou:
+                    user.save()
+                    messages.info(request, 'Usuário atualizado com sucesso!')
+                
+            except Exception as e:
+                messages.warning(request, f'Profissional atualizado, mas houve erro no usuário: {str(e)}')
+                print(f"Erro: {e}")
+        
+        # Se não tem usuário mas tem email, criar um novo
+        elif not profissional.user and novo_email:
+            try:
+                data_nascimento_str = profissional.data_nascimento.strftime("%d%m%Y") if profissional.data_nascimento else "123456"
+                
+                # Verificar se já existe usuário com este email
+                if User.objects.filter(username=novo_email).exists():
+                    # Associar usuário existente
+                    user_existente = User.objects.get(username=novo_email)
+                    profissional.user = user_existente
+                    profissional.save()
+                    messages.info(request, 'Profissional associado a usuário existente')
+                else:
+                    # Criar novo usuário
+                    user = User.objects.create_user(
+                        username=novo_email,
+                        email=novo_email,
+                        first_name=profissional.nome,
+                        last_name=profissional.sobrenome,
+                        password=data_nascimento_str,
+                        # Se tiver campos personalizados no User:
+                        # tipo='profissional',
+                        # ativo=True
+                    )
+                    profissional.user = user
+                    profissional.save()
+                    messages.info(request, 'Novo usuário criado automaticamente')
+                    
+            except Exception as e:
+                messages.warning(request, f'Usuário não pôde ser criado: {str(e)}')
+                print(f"Erro criação usuário: {e}")
+
         messages.success(request, f'Dados do profissional {profissional.nome} atualizados!')
         registrar_log(usuario=request.user,
                 acao='Edição',
                 modelo='Profissional',
                 objeto_id=profissional.id,
                 descricao=f'Profissional {profissional.nome} editado.')
-        return redirect('profissionais')  
+        return redirect('profissionais')
     
 
     especialidades = Especialidade.objects.all()

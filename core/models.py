@@ -166,6 +166,16 @@ STATUS_CHOICES = [
     ('falta_cobrada', '❌ FC - Falta cobrada'),
 ]
 
+TIPO_VINCULO = [
+    ('pai', 'Pai'),
+    ('mae', 'Mãe'),
+    ('responsavel_legal', 'Responsável legal'),
+    ('avo', 'Avô/Avó'),
+    ('tio', 'Tio/Tia'),
+    ('irmao', 'Irmão/Irmã'),
+    ('conjuge', 'Cônjuge'),
+    ('outro', 'Outro'),
+]
 
 
 
@@ -284,7 +294,10 @@ class Paciente(models.Model):
     def endereco_formatado(self):
         return f'{self.rua}, {self.numero}, {self.complemento} - {self.bairro}, {self.cidade}/{self.uf} - {self.cep}'
 
-     
+class VinculoFamiliar(models.Model):
+    paciente = models.ForeignKey(Paciente, related_name='vinculos', on_delete=models.CASCADE)
+    familiar = models.ForeignKey(Paciente, related_name='familiares', on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=30, choices=TIPO_VINCULO)
     
 class Profissional(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -349,7 +362,37 @@ class Profissional(models.Model):
         # Salva primeiro para ter o ID
         super().save(*args, **kwargs)
         
-        # Depois do save, cria o usuário se necessário
+        if self.user:
+            try:
+                user = self.user
+                atualizar = False
+                
+                # Verificar se precisa atualizar o nome
+                if user.first_name != self.nome:
+                    user.first_name = self.nome
+                    atualizar = True
+                
+                # Verificar se precisa atualizar o sobrenome
+                if user.last_name != self.sobrenome:
+                    user.last_name = self.sobrenome
+                    atualizar = True
+                
+                # Verificar se precisa atualizar email
+                if self.email and user.email != self.email:
+                    user.email = self.email
+                    # Se o username é baseado no email, atualizar também
+                    if user.username == self.user.email:  # Email antigo
+                        user.username = self.email
+                    atualizar = True
+                
+                if atualizar:
+                    user.save()
+                    
+            except Exception as e:
+                # Log do erro sem quebrar a aplicação
+                print(f"Erro ao atualizar usuário do profissional: {e}")
+        
+        # Criação de novo usuário (seu código atual mantido)
         if criando and not self.user and self.email:
             try:
                 username = self.email
@@ -369,18 +412,14 @@ class Profissional(models.Model):
                         ativo=True
                     )
                     self.user = user
-                    # Salva novamente para atualizar o campo user
                     super().save(update_fields=['user'])
                 else:
-                    # Se o usuário já existe, associa
                     existing_user = User.objects.get(username=username)
                     self.user = existing_user
                     super().save(update_fields=['user'])
                     
             except Exception as e:
-                # Log do erro sem quebrar a aplicação
-                print(f"Erro ao criar usuário para profissional: {e}")    
-
+                print(f"Erro ao criar usuário para profissional: {e}")
 class CategoriaConta(models.Model):
     """
     Categoria principal: Receita ou Despesa
@@ -728,26 +767,7 @@ class Pendencia(models.Model):
     resolvido = models.BooleanField(default=False)
     criado_em = models.DateTimeField(auto_now_add=True)
     responsavel = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
-
-
-
-
-
-
-
- 
 
 TIPO_PERGUNTA = (
     ('short-text', 'Texto Curto'),
