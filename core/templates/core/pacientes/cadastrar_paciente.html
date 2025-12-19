@@ -37,16 +37,11 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
         {% csrf_token %}
 
         <!-- ETAPA 1 -->
-        <div
-          class="form-step active"
-          id="step-1"
-          role="tabpanel"
-          aria-labelledby="step-1-tab"
-        >
+        <div class="form-step active" id="step-1" role="tabpanel" aria-labelledby="step-1-tab">
           <h2 class="form-step-title">Informações Pessoais</h2>
 
           <div class="form-step-content">
-            <!-- Nome, Sobrenome, Nome Social -->
+
             <div class="form-row">
               <div class="form-field">
                 <label for="nome" class="form-label">
@@ -104,15 +99,7 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                 <label for="cpf" class="form-label">
                   CPF <span class="required">*</span>
                 </label>
-                <input
-                  id="cpf"
-                  class="form-input cpf-mask"
-                  type="text"
-                  name="cpf"
-                  required
-                  aria-required="true"
-                  inputmode="numeric"
-                />
+                <input id="cpf" class="form-input cpf-mask" type="text" name="cpf" required aria-required="true" inputmode="numeric"/>
                 <span id="cpf-feedback" class="error-message"></span>
               </div>
 
@@ -298,6 +285,288 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
               </div>
             </div>
           </div>
+          <!-- RESPONSÁVEL (APARECE SÓ SE FOR MENOR) -->
+          <div id="responsavelBox" class="responsavel-box hidden">
+            <h3 class="form-step-title">Dados do Responsável</h3>
+            <p class="form-info-text" style="margin-top: 0;">
+              Como o paciente é menor de idade, é necessário cadastrar os dados do responsável legal.
+            </p>
+
+            <!-- Nome / Sobrenome / Nome Social -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="resp_nome" class="form-label">
+                  Nome <span class="required">*</span>
+                </label>
+                <input
+                  id="resp_nome"
+                  class="form-input capitalize-input "
+                  type="text"
+                  name="resp_nome"
+                  required
+                  aria-required="true"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="resp_sobrenome" class="form-label">
+                  Sobrenome <span class="required">*</span>
+                </label>
+                <input
+                  id="resp_sobrenome"
+                  class="form-input capitalize-input"
+                  type="text"
+                  name="resp_sobrenome"
+                  required
+                  aria-required="true"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="resp_nomeSocial" class="form-label">Nome Social</label>
+                <input
+                  id="resp_nomeSocial"
+                  class="form-input capitalize-input"
+                  type="text"
+                  name="resp_nomeSocial"
+                />
+              </div>
+            </div>
+
+            <!-- RG, CPF, Nascimento -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="resp_rg" class="form-label">RG</label>
+                <input
+                  id="resp_rg"
+                  class="form-input"
+                  type="text"
+                  name="resp_rg"
+                  inputmode="numeric"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="resp_cpf" class="form-label">
+                  CPF <span class="required">*</span>
+                </label>
+                <input 
+                  id="resp_cpf" 
+                  class="form-input cpf-mask" 
+                  type="text" 
+                  name="resp_cpf" 
+                  required 
+                  aria-required="true" 
+                  inputmode="numeric"
+                />
+                <span id="resp_cpf-feedback" class="error-message"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="resp_nascimento" class="form-label">
+                  Nascimento <span class="required">*</span>
+                </label>
+                <input
+                  id="resp_nascimento"
+                  class="form-input date-mask"
+                  type="text"
+                  name="resp_nascimento"
+                  required
+                  aria-required="true"
+                  placeholder="DD/MM/AAAA"
+                />
+              </div>
+            </div>
+
+            <!-- Cor, Sexo, Estado Civil, Profissão -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="resp_cor" class="form-label">Cor/Raça</label>
+                <select 
+                  id="resp_cor" 
+                  name="resp_cor" 
+                  class="form-select"
+                >
+                  <option value="" disabled selected>Selecione</option>
+                  {% for value, label in cor_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="resp_sexo" class="form-label">Sexo</label>
+                <select 
+                  id="resp_sexo" 
+                  name="resp_sexo" 
+                  class="form-select"
+                >
+                  <option value="" disabled selected>Selecione</option>
+                  {% for value, label in sexo_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="resp_estado_civil" class="form-label">
+                  Estado Civil <span class="required">*</span>
+                </label>
+                <select
+                  id="resp_estado_civil"
+                  name="resp_estado_civil"
+                  class="form-select"
+                  required
+                  aria-required="true"
+                >
+                  <option value="" disabled selected>Selecione</option>
+                  {% for value, label in estado_civil_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="resp_profissao" class="form-label">Profissão</label>
+                <input
+                  id="resp_profissao"
+                  class="form-input"
+                  type="text"
+                  name="resp_profissao"
+                />
+              </div>
+            </div>
+
+            <!-- Naturalidade, UF, Mídia, Rede Social -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="resp_naturalidade" class="form-label">
+                  Naturalidade <span class="required">*</span>
+                </label>
+                <input
+                  id="resp_naturalidade"
+                  class="form-input"
+                  type="text"
+                  name="resp_naturalidade"
+                  required
+                  aria-required="true"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="resp_uf" class="form-label">
+                  UF <span class="required">*</span>
+                </label>
+                <select
+                  id="resp_uf"
+                  name="resp_uf"
+                  class="form-select"
+                  required
+                  aria-required="true"
+                >
+                  <option value="" disabled selected>Selecione</option>
+                  {% for value, label in uf_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="resp_midia" class="form-label">
+                  Como nos conheceu? <span class="required">*</span>
+                </label>
+                <select
+                  id="resp_midia"
+                  name="resp_midia"
+                  class="form-select"
+                  required
+                  aria-required="true"
+                >
+                  <option value="" disabled selected>Selecione</option>
+                  {% for value, label in midia_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="resp_redeSocial" class="form-label">Rede Social</label>
+                <input
+                  id="resp_redeSocial"
+                  class="form-input"
+                  type="text"
+                  name="resp_redeSocial"
+                />
+              </div>
+            </div>
+
+            <!-- Foto + Observação -->
+            <div class="form-row">
+              <div class="form-field form-field-file">
+                <label for="resp_foto" class="form-label">Foto do responsável (opcional)</label>
+                <div class="file-upload-wrapper">
+                  <input
+                    id="resp_foto"
+                    name="resp_foto"
+                    type="file"
+                    accept="image/*"
+                    onchange="previewImage(event)"
+                    aria-describedby="resp_fileHelp"
+                  />
+                  <label for="resp_foto" class="file-upload-label">
+                    <span class="file-upload-icon">
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="#7F4396" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </span>
+                    <span class="file-upload-text">Selecione uma foto</span>
+                  </label>
+                  <div id="filePreviewResp" class="file-preview"></div>
+                  <small id="resp_fileHelp" class="form-help-text">
+                    Formatos aceitos: JPG, PNG (máx. 2MB)
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="resp_observacao" class="form-label">Observação</label>
+                <textarea
+                  id="resp_observacao"
+                  class="form-textarea"
+                  name="resp_observacao"
+                  maxlength="500"
+                  aria-describedby="resp_charCount"
+                ></textarea>
+                <div id="resp_charCount" class="char-count">
+                  <span class="current-count">0</span>/500 caracteres
+                </div>
+              </div>
+            </div>
+
+            <!-- Vínculo -->
+            <div class="form-row">
+              <div class="form-field">
+                <label for="resp_vinculo" class="form-label">
+                  Vínculo com o paciente <span class="required">*</span>
+                </label>
+                <select
+                  id="resp_vinculo"
+                  name="resp_vinculo"
+                  class="form-select"
+                  required
+                  aria-required="true"
+                >
+                  <option value="" disabled selected>Selecione</option>
+                  <option value="pai">Pai</option>
+                  <option value="mae">Mãe</option>
+                  <option value="responsavel">Responsável legal</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
+
 
           <div class="form-navigation">
             <button type="button" class="btn btn-next" aria-controls="step-2">
@@ -317,15 +586,11 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
               </svg>
             </button>
           </div>
+          
         </div>
 
         <!-- ETAPA 2 -->
-        <div
-          class="form-step"
-          id="step-2"
-          role="tabpanel"
-          aria-labelledby="step-2-tab"
-        >
+        <div class="form-step" id="step-2" role="tabpanel" aria-labelledby="step-2-tab">
           <h2 class="form-step-title">Endereço e Contato</h2>
 
           <div class="form-step-content">
@@ -610,61 +875,62 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
               </section>
               
 
-<section class="lgpd-section" style="margin-top: 1.5rem">
-  <div class="lgpd-box" style="
-        background: var(--branco);
-        border: 1px solid #e9d9f5;
-        border-radius: 12px;
-        padding: 16px;
-      ">
-    <p class="lgpd-title" style="
-          margin: 0 0 0.5rem 0;
-          font-weight: 600;
-          color: #5b2b75;
-        ">
-      Emissão de Nota Fiscal
-    </p>
-    <p class="lgpd-text" style="
-          margin: 0 0 0.75rem 0;
-          color: #4a4a4a;
-          font-size: 0.95rem;
-          line-height: 1.5;
-        ">
-      Informe abaixo se você precisa que seja emitida nota fiscal e para qual finalidade.
-      Isso nos ajuda a realizar o registro fiscal corretamente conforme a sua necessidade.
-      Para mais detalhes sobre o uso dos seus dados, consulte nossa
-      <a href="/politica-de-privacidade" target="_blank" rel="noopener"
-        style="color: #7f4396; text-decoration: underline">
-        Política de Privacidade
-      </a>.
-    </p>
+            <section class="lgpd-section" style="margin-top: 1.5rem">
+              <div class="lgpd-box" style="
+                    background: var(--branco);
+                    border: 1px solid #e9d9f5;
+                    border-radius: 12px;
+                    padding: 16px;
+                  ">
+                <p class="lgpd-title" style="
+                      margin: 0 0 0.5rem 0;
+                      font-weight: 600;
+                      color: #5b2b75;
+                    ">
+                  Emissão de Nota Fiscal
+                </p>
+                <p class="lgpd-text" style="
+                      margin: 0 0 0.75rem 0;
+                      color: #4a4a4a;
+                      font-size: 0.95rem;
+                      line-height: 1.5;
+                    ">
+                  Informe abaixo se você precisa que seja emitida nota fiscal e para qual finalidade.
+                  Isso nos ajuda a realizar o registro fiscal corretamente conforme a sua necessidade.
+                  Para mais detalhes sobre o uso dos seus dados, consulte nossa
+                  <a href="/politica-de-privacidade" target="_blank" rel="noopener"
+                    style="color: #7f4396; text-decoration: underline">
+                    Política de Privacidade
+                  </a>.
+                </p>
 
-    <label class="checkbox-option">
-      <input type="checkbox" name="nf_reembolso_plano" />
-      <span>Reembolso de plano de saúde</span>
-    </label>
+                <label class="checkbox-option">
+                  <input type="checkbox" name="nf_reembolso_plano" />
+                  <span>Reembolso de plano de saúde</span>
+                </label>
 
-    <label class="checkbox-option">
-      <input type="checkbox" name="nf_imposto_renda" />
-      <span>Declaração de imposto de renda</span>
-    </label>
+                <label class="checkbox-option">
+                  <input type="checkbox" name="nf_imposto_renda" />
+                  <span>Declaração de imposto de renda</span>
+                </label>
 
-    <label class="checkbox-option">
-      <input type="checkbox" name="nf_nao_aplica" />
-      <span>Não se aplica</span>
-    </label>
+                <label class="checkbox-option">
+                  <input type="checkbox" name="nf_nao_aplica" />
+                  <span>Não se aplica</span>
+                </label>
 
-    <input type="hidden" name="politica_privacidade_versao" value="v1.0-2025-08-20" />
-  </div>
+                <input type="hidden" name="politica_privacidade_versao" value="v1.0-2025-08-20" />
+              </div>
 
-  <small style="display: block; margin-top: 0.5rem; color: #666">
-    Você pode solicitar a emissão, correção ou cancelamento da nota fiscal,
-    bem como exercer seus direitos de privacidade, pelos canais informados
-    na Política de Privacidade.
-  </small>
-</section>
+              <small style="display: block; margin-top: 0.5rem; color: #666">
+                Você pode solicitar a emissão, correção ou cancelamento da nota fiscal,
+                bem como exercer seus direitos de privacidade, pelos canais informados
+                na Política de Privacidade.
+              </small>
+            </section>
 
           </div>
+
 
           <div class="form-navigation">
             <button type="button" class="btn btn-prev" aria-controls="step-1">
@@ -701,7 +967,7 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
             </button>
           </div>
         </div>
-      </form>
+        
     </div>
   
 </main>

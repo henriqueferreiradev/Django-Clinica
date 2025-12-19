@@ -62,9 +62,11 @@ img {
   max-width: 100%;
   height: auto;
 }
+
 .checkbox-option {
   padding: 0;
 }
+
 #file {
   display: none;
 }
@@ -725,3 +727,24 @@ input.error {
 
 }
 
+.hidden {
+  display: none;
+}
+
+.responsavel-box {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border: 1px solid #e9d9f5;
+  border-radius: 12px;
+  background: #faf7fc;
+}
+
+.form-info-text {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #7F4396;
+  border-radius: 4px;
+}

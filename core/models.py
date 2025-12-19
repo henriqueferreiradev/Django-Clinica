@@ -298,6 +298,9 @@ class VinculoFamiliar(models.Model):
     paciente = models.ForeignKey(Paciente, related_name='vinculos', on_delete=models.CASCADE)
     familiar = models.ForeignKey(Paciente, related_name='familiares', on_delete=models.CASCADE)
     tipo = models.CharField(max_length=30, choices=TIPO_VINCULO)
+    responsavel_legal = models.BooleanField(default=False)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
     
 class Profissional(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)

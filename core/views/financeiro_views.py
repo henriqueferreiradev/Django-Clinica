@@ -291,7 +291,6 @@ def contas_a_pagar_view(request):
         )
 
 
-
     total_atrasado = Decimal('0')
     total_vence_hoje = Decimal('0')
     total_pendente = Decimal('0')
@@ -327,7 +326,7 @@ def contas_a_pagar_view(request):
         'total_vence_hoje':total_vence_hoje,
         'total_a_pagar':total_a_pagar,
         'total_pendente':total_pendente,
-        'total_agendado':total_agendado,
+        'total_agendado':total_agendado, 
     }
     
     return render(request, 'core/financeiro/contas_pagar.html', context)

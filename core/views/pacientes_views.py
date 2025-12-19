@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import HistoricoStatus, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA
+from core.models import HistoricoStatus, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA, VinculoFamiliar
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -116,6 +116,12 @@ def pacientes_view(request):
         'total_filtrados': total_filtrados,
     })
  
+def calcular_idade(data_nascimento):
+    hoje = date.today()
+    idade = hoje.year - data_nascimento.year
+    if (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day):
+        idade -= 1
+    return idade
     
 @login_required(login_url='login')
 def cadastrar_pacientes_view(request):
@@ -201,10 +207,66 @@ def cadastrar_pacientes_view(request):
                         modelo='Paciente',
                         objeto_id=paciente.id,
                         descricao=f'Paciente {paciente.nome} cadastrado.')
+            
+            idade = calcular_idade(nascimento_formatada)
+            eh_menor = idade < 18
+
+            if eh_menor:
+                resp_nascimento = request.POST.get('resp_nascimento')
+
+                try: 
+                    resp_nascimento_dt = datetime.strptime(resp_nascimento, '%d/%m/%Y').date()
+                except ValueError:
+                    messages.error(request, 'Data de nascimeno do responsável inválida')
+                    raise Exception('Data inválida responsável')
+
+
+                resp_cpf = request.POST.get('resp_cpf')
+
+                responsavel = Paciente.objects.filter(cpf=resp_cpf).first()
+
+                if not responsavel:
+                    responsavel = Paciente.objects.create(
+                        nome=request.POST.get('resp_nome'),
+                        sobrenome=request.POST.get('resp_sobrenome'),
+                        nomeSocial=request.POST.get('resp_nomeSocial'),
+                        cpf=resp_cpf,
+                        rg=request.POST.get('resp_rg'),
+                        data_nascimento=resp_nascimento_dt,
+                        cor_raca=request.POST.get('resp_cor'),
+                        sexo=request.POST.get('resp_sexo'),
+                        estado_civil=request.POST.get('resp_estado_civil'),
+                        profissao=request.POST.get('resp_profissao'),
+                        naturalidade=request.POST.get('resp_naturalidade'),
+                        uf=request.POST.get('resp_uf'),
+                        midia=request.POST.get('resp_midia'),
+                        redeSocial=request.POST.get('resp_redeSocial'),
+                        observacao=request.POST.get('resp_observacao'),
+                        cep=request.POST.get('cep'),  # copia endereço
+                        rua=request.POST.get('rua'),
+                        numero=request.POST.get('numero'),
+                        complemento=request.POST.get('complemento'),
+                        bairro=request.POST.get('bairro'),
+                        cidade=request.POST.get('cidade'),
+                        estado=request.POST.get('estado'),
+                        telefone=request.POST.get('telefone'),
+                        celular=request.POST.get('celular'),
+                        ativo=True,
+                    )
+                if request.FILES.get('resp_foto'):
+                    responsavel.foto = request.FILES['resp_foto']
+                    responsavel.save()
+                
+            
+                VinculoFamiliar.objects.create(
+                    paciente=paciente,
+                    familiar=responsavel,
+                    tipo=request.POST.get('resp_vinculo'),
+                    responsavel_legal = True,
+                )
+
+            messages.success(request, 'Paciente cadastrado com sucesso!')
             return redirect('pacientes')
-
-
-    
    
 
     return render(request, 'core/pacientes/cadastrar_paciente.html', {

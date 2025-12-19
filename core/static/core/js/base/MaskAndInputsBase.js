@@ -21,60 +21,40 @@ document.querySelectorAll('.form-input, .form-textarea,.form-select').forEach(el
     atualizarClasse();
 });
 function inputMasks() {
-    const cpfInput = document.getElementById('cpf');
-    if (cpfInput) {
-        IMask(cpfInput, {
-            mask: '000.000.000-00'
-        });
-    }
+    // CPF - use a classe .cpf-mask
+    document.querySelectorAll('.cpf-mask').forEach(input => {
+        IMask(input, { mask: '000.000.000-00' });
+    });
 
-    const telefoneInput = document.getElementById('telefone');
-    if (telefoneInput) {
-        IMask(telefoneInput, {
-            mask: '(00) 0000-0000'
-        });
-    }
+    // Data - use a classe .date-mask
+    document.querySelectorAll('.date-mask').forEach(input => {
+        IMask(input, { mask: '00/00/0000' });
+    });
 
-    const cepInput = document.getElementById('cep');
-    if (cepInput) {
-        IMask(cepInput, {
-            mask: '00.000-000'
-        });
-    }
+    // Telefone fixo
+    document.querySelectorAll('.phone-mask').forEach(input => {
+        IMask(input, { mask: '(00) 0000-0000' });
+    });
 
-    const celularInput = document.getElementById('celular');
-    if (celularInput) {
-        IMask(celularInput, {
-            mask: '(00) 00000-0000'
-        });
-    }
+    // Celular
+    document.querySelectorAll('.cel-mask').forEach(input => {
+        IMask(input, { mask: '(00) 00000-0000' });
+    });
 
-    const rgInput = document.getElementById('rg');
-    if (rgInput) {
-        IMask(rgInput, {
-            mask: '00.000.000-0'
-        });
-    }
-    const telEmergenciaInput = document.getElementById('telEmergencia');
-    if (telEmergenciaInput) {
-        IMask(telEmergenciaInput, {
-            mask: '(00) 00000-0000'
-        });
-    }
-    const nascimentoInput = document.getElementById('nascimento');
-    if (nascimentoInput) {
-        IMask(nascimentoInput, {
-            mask: '00/00/0000'
-        });
-    }
-    const cnpjInput = document.getElementById('cnpj');
-    if (cnpjInput) {
-        IMask(cnpjInput, {
-            mask: '00.000.000/0000-00'
-        });
-    }
+    // RG
+    document.querySelectorAll('.rg-mask').forEach(input => {
+        IMask(input, { mask: '00.000.000-0' });
+    });
 
+    // CEP
+    document.querySelectorAll('.cep-mask').forEach(input => {
+        IMask(input, { mask: '00.000-000' });
+    });
 
+    // CNPJ
+    document.querySelectorAll('.cnpj-mask').forEach(input => {
+        IMask(input, { mask: '00.000.000/0000-00' });
+    });
 }
 function capitalizeWords(str) {
     const lowercaseWords = ['da', 'de', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'com'];
