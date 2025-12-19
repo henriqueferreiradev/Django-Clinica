@@ -230,6 +230,7 @@ class Paciente(models.Model):
     vinculo = models.CharField(max_length=100, choices=VINCULO)
     telEmergencia = models.CharField(max_length=20, blank=True, null=True)
     
+    consentimento_tratamento = models.BooleanField(default=False)
     consentimento_lgpd = models.BooleanField(default=False)
     consentimento_marketing = models.BooleanField(default=False)
     

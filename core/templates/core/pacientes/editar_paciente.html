@@ -567,6 +567,135 @@
                 />
               </div>
             </div>
+            <section class="lgpd-section" style="margin-top: 1.5rem">
+
+              <div class="lgpd-box" style="
+                    background: var(--branco);
+                    border: 1px solid #e9d9f5;
+                    border-radius: 12px;
+                    padding: 16px;
+                  ">
+                <p class="lgpd-title" style="
+                      margin: 0 0 0.5rem 0;
+                      font-weight: 600;
+                      color: #5b2b75;
+                    ">
+                  Proteção de Dados e Imagem (LGPD)
+                </p>
+                <p class="lgpd-text" style="
+                      margin: 0 0 0.75rem 0;
+                      color: #4a4a4a;
+                      font-size: 0.95rem;
+                      line-height: 1.5;
+                    ">
+                  As informações deste formulário serão utilizadas
+                  exclusivamente para cadastro, contato e organização do seu
+                  atendimento nesta clínica. Seus dados são tratados
+                  conforme a Lei nº 13.709/2018 (LGPD), com medidas de
+                  segurança e acesso restrito. Não compartilhamos com
+                  terceiros sem sua autorização, salvo nas hipóteses
+                  previstas em lei.
+                  <a href="/politica-de-privacidade" target="_blank" rel="noopener"
+                    style="color: #7f4396; text-decoration: underline">Leia a Política de Privacidade</a>.
+                </p>
+
+                  
+                <label class="checkbox-option">
+                  <input  type="checkbox" name="consentimento_tratamento" required aria-required="true"  value='true' {% if paciente.consentimento_tratamento %}checked{% endif %}>
+                  <span>
+                    Declaro que <strong>li</strong> e
+                    <strong>concordo</strong> com o tratamento dos meus
+                    dados <em>pessoais e sensíveis</em> para as finalidades
+                    informadas acima.
+                  </span>
+                </label>
+
+                
+                <label class="checkbox-option">
+                  <input type="checkbox" name="consentimento_imagem" value='true' {% if paciente.consentimento_imagem %}checked{% endif %}>
+                  <span>
+                    Autorizo, de forma livre e opcional, o uso da minha
+                    imagem (fotos/vídeos) pela clínica, inclusive em
+                    materiais de divulgação, redes sociais e campanhas
+                    institucionais. Estou ciente de que posso revogar esta
+                    autorização a qualquer momento.
+                  </span>
+                </label>
+
+                
+                <label class="checkbox-option">
+                  <input type="checkbox" name="consentimento_marketing" value='true' {% if paciente.consentimento_marketing %}checked{% endif %} />
+                  <span>
+                    Aceito receber comunicações sobre orientações, conteúdos
+                    e novidades da clínica por e-mail/WhatsApp. (Opcional)
+                  </span>
+                </label>
+
+                
+                <input type="hidden" name="politica_privacidade_versao" value="v1.0-2025-08-20" />
+              </div>
+
+              <small style="display: block; margin-top: 0.5rem; color: #666">
+                Você pode solicitar acesso, correção ou exclusão de dados,
+                bem como revogar o uso de imagem ou marketing, pelos canais
+                informados na Política de Privacidade.
+              </small>
+            </section>
+              
+
+            <section class="lgpd-section" style="margin-top: 1.5rem">
+              <div class="lgpd-box" style="
+                    background: var(--branco);
+                    border: 1px solid #e9d9f5;
+                    border-radius: 12px;
+                    padding: 16px;
+                  ">
+                <p class="lgpd-title" style="
+                      margin: 0 0 0.5rem 0;
+                      font-weight: 600;
+                      color: #5b2b75;
+                    ">
+                  Emissão de Nota Fiscal
+                </p>
+                <p class="lgpd-text" style="
+                      margin: 0 0 0.75rem 0;
+                      color: #4a4a4a;
+                      font-size: 0.95rem;
+                      line-height: 1.5;
+                    ">
+                  Informe abaixo se você precisa que seja emitida nota fiscal e para qual finalidade.
+                  Isso nos ajuda a realizar o registro fiscal corretamente conforme a sua necessidade.
+                  Para mais detalhes sobre o uso dos seus dados, consulte nossa
+                  <a href="/politica-de-privacidade" target="_blank" rel="noopener"
+                    style="color: #7f4396; text-decoration: underline">
+                    Política de Privacidade
+                  </a>.
+                </p>
+
+                <label class="checkbox-option">
+                  <input type="checkbox" name="nf_reembolso_plano" value='true' {% if paciente.nf_reembolso_plano %}checked{% endif %}/>
+                  <span>Reembolso de plano de saúde</span>
+                </label>
+
+                <label class="checkbox-option">
+                  <input type="checkbox" name="nf_imposto_renda" value='true' {% if paciente.nf_imposto_renda %}checked{% endif %}/>
+                  <span>Declaração de imposto de renda</span>
+                </label>
+
+                <label class="checkbox-option">
+                  <input type="checkbox" name="nf_nao_aplica" value='true'{% if paciente.nf_nao_aplica %}checked{% endif %}/>
+                  <span>Não se aplica</span>
+                </label>
+
+                <input type="hidden" name="politica_privacidade_versao" value="v1.0-2025-08-20" />
+              </div>
+
+              <small style="display: block; margin-top: 0.5rem; color: #666">
+                Você pode solicitar a emissão, correção ou cancelamento da nota fiscal,
+                bem como exercer seus direitos de privacidade, pelos canais informados
+                na Política de Privacidade.
+              </small>
+            </section>
           </div>
 
           <div class="form-navigation">
@@ -588,7 +717,7 @@
             </button>
 
             <button type="submit" class="btn btn-submit" id="submitBtn">
-              <span class="btn-text">Enviar Cadastro</span>
+              <span class="btn-text">Atualizar Cadastro</span>
               <span class="btn-loading hidden">
                 <svg class="spinner" viewBox="0 0 50 50">
                   <circle

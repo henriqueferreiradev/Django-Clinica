@@ -80,21 +80,6 @@ function montarEndereco(data) {
 }
 
 
-
-document.querySelector('input[name="q"]').addEventListener('keyup', function () {
-    const search = this.value.toLowerCase();
-    const rows = document.querySelectorAll("table tbody tr");
-
-    rows.forEach(function (row) {
-        const nome = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
-        const cpf = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
-
-        const match = nome.includes(search) || cpf.includes(search);
-        row.style.display = match ? "" : "none";
-    });
-
-})
-
 function toggleDropdown(button) {
     const wrapper = button.closest(".dropdown-wrapper");
     const dropdown = wrapper.querySelector(".dropdown_menu");
@@ -145,18 +130,19 @@ function toggleDropdown(button) {
         }
     }
 
-    function handleClickOutside(event) {
-        if (!wrapper.contains(event.target)) {
-            dropdown.style.display = "none";
-            document.removeEventListener("click", handleClickOutside);
-        }
-    }
 
-    setTimeout(() => {
-        if (dropdown.style.display === "flex") {
-            document.addEventListener("click", handleClickOutside);
-        }
-    }, 10);
+function handleClickOutside(event) {
+    if (!wrapper.contains(event.target)) {
+        dropdown.style.display = "none";
+        document.removeEventListener("click", handleClickOutside);
+    }
+}
+
+setTimeout(() => {
+    if (dropdown.style.display === "flex") {
+        document.addEventListener("click", handleClickOutside);
+    }
+}, 10);
 }
 
 function temporizadorAlerta() {
@@ -183,46 +169,7 @@ function ocultarPopup(elemento) {
     const popup = elemento.querySelector('.tooltip-popup');
     popup.style.display = 'none';
 }
-// main-admin.js (crie este novo arquivo)
-import { showStep } from './formSteps.js';
-import { setupFormNavigation, setupCEPHandler, setupImagePreview, setupCPFValidation } from './formHandlers.js';
-
-document.addEventListener("DOMContentLoaded", function () {
-    // Debug inicial
-    console.log("Admin JS carregado");
-
-    // Verifica elementos críticos
-    const elements = {
-        formSection: document.querySelector("#form-section"),
-        steps: document.querySelectorAll(".form-step"),
-        cpfField: document.getElementById("cpf")
-    };
-    console.log("Elementos encontrados:", elements);
-
-    // Inicializa o formulário
-    if (elements.steps.length > 0) {
-        showStep(0);
-        setupFormNavigation();
-        setupCEPHandler();
-        setupImagePreview();
-        setupCPFValidation();
-    } else {
-        console.error("Elementos do formulário não encontrados!");
-    }
-
-    // Animação opcional (se existir #form-section)
-    if (elements.formSection) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("slide-up");
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        observer.observe(elements.formSection);
-    }
-});
+ 
 
 // ===== DEBUG RESPONSÁVEL MENOR DE IDADE =====
 (function () {
@@ -320,3 +267,20 @@ document.addEventListener("DOMContentLoaded", function () {
     window.__toggleResponsavel = toggleResponsavel;
     console.log("🧰 Use no console: __toggleResponsavel()");
 })();
+
+
+
+
+document.querySelector('input[name="q"]').addEventListener('keyup', function () {
+    const search = this.value.toLowerCase();
+    const rows = document.querySelectorAll("table tbody tr");
+
+    rows.forEach(function (row) {
+        const nome = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
+        const cpf = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+
+        const match = nome.includes(search) || cpf.includes(search);
+        row.style.display = match ? "" : "none";
+    });
+
+})

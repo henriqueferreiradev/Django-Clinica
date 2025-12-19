@@ -12,6 +12,7 @@ from django.contrib import messages
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
 from django.template.context_processors import request
+ 
 from core.tokens import gerar_token_acesso_unico, verificar_token_acesso
 
 import qrcode
@@ -126,13 +127,21 @@ def calcular_idade(data_nascimento):
 @login_required(login_url='login')
 def cadastrar_pacientes_view(request):
     if request.method == 'POST':
-         
-        consent_marketing = bool(request.POST.get('consentimento_marketing'))
-        politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
-        nf_nao_aplica = request.POST.get('nf_nao_aplica')
-        nf_imposto_renda =request.POST.get('nf_imposto_renda')
-        nf_reembolso_plano =request.POST.get('nf_reembolso_plano')
+        consentimento_tratamento = request.POST.get('consentimento_tratamento') == 'true'
+        consentimento_imagem = request.POST.get('consentimento_imagem') == 'true'
+        consent_marketing = request.POST.get('consentimento_marketing') == 'true'
+        nf_nao_aplica = request.POST.get('nf_nao_aplica') == 'true'
+        nf_imposto_renda =request.POST.get('nf_imposto_renda') == 'true'
+        nf_reembolso_plano =request.POST.get('nf_reembolso_plano') == 'true'
         
+        politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
+        
+        print(consentimento_tratamento)
+        print(consentimento_imagem)
+        print(consent_marketing)
+        print(nf_nao_aplica)
+        print(nf_imposto_renda)
+        print(nf_reembolso_plano)
         
         paciente_id = request.POST.get('paciente_id')
         nome = request.POST.get('nome')
@@ -181,14 +190,15 @@ def cadastrar_pacientes_view(request):
                 telEmergencia=request.POST.get('telEmergencia'),
                 email=request.POST.get('email'),
                 observacao=request.POST.get('observacao'),
-                consentimento_lgpd=True,
+                consentimento_tratamento=consentimento_tratamento,
+                consentimento_lgpd=consentimento_imagem,
                 consentimento_marketing=consent_marketing,
                 politica_privacidade_versao=politica_ver,
                 data_consentimento=timezone.now(),
                 ip_consentimento=request.META.get('REMOTE_ADDR'),
-                nf_nao_aplica = True,
-                nf_imposto_renda = True,
-                nf_reembolso_plano = True,
+                nf_nao_aplica = nf_nao_aplica,
+                nf_imposto_renda = nf_imposto_renda,
+                nf_reembolso_plano = nf_reembolso_plano,
                 pre_cadastro=False,         
                 conferido=True,
                 ativo=True,
@@ -217,7 +227,7 @@ def cadastrar_pacientes_view(request):
                 try: 
                     resp_nascimento_dt = datetime.strptime(resp_nascimento, '%d/%m/%Y').date()
                 except ValueError:
-                    messages.error(request, 'Data de nascimeno do responsável inválida')
+                    messages.error(request, 'Data de nascimento do responsável inválida')
                     raise Exception('Data inválida responsável')
 
 
@@ -251,7 +261,20 @@ def cadastrar_pacientes_view(request):
                         estado=request.POST.get('estado'),
                         telefone=request.POST.get('telefone'),
                         celular=request.POST.get('celular'),
+                        consentimento_tratamento=consentimento_tratamento,
+                        consentimento_lgpd=consentimento_imagem,
+                        consentimento_marketing=consent_marketing,
+                        politica_privacidade_versao=politica_ver,
+                        data_consentimento=timezone.now(),
+                        ip_consentimento=request.META.get('REMOTE_ADDR'),
+                        nf_nao_aplica = nf_nao_aplica,
+                        nf_imposto_renda = nf_imposto_renda,
+                        nf_reembolso_plano = nf_reembolso_plano,
+                        pre_cadastro=False,         
+                        conferido=True,
                         ativo=True,
+                     
+
                     )
                 if request.FILES.get('resp_foto'):
                     responsavel.foto = request.FILES['resp_foto']
@@ -329,8 +352,17 @@ def editar_paciente_view(request,id):
         paciente.telEmergencia = request.POST.get('telEmergencia')
 
         paciente.pre_cadastro=False         
-        paciente.conferido=True         
+        paciente.conferido=True     
+        paciente.consentimento_tratamento = request.POST.get('consentimento_tratamento') == 'true'
+        paciente.consentimento_imagem = request.POST.get('consentimento_imagem') == 'true'
+        paciente.consent_marketing = request.POST.get('consentimento_marketing') == 'true'
+        paciente.nf_nao_aplica = request.POST.get('nf_nao_aplica') == 'true'
+        paciente.nf_imposto_renda =request.POST.get('nf_imposto_renda') == 'true'
+        paciente.nf_reembolso_plano =request.POST.get('nf_reembolso_plano') == 'true'    
         paciente.ativo = True
+        
+        
+        
         if 'foto' in request.FILES:
             paciente.foto = request.FILES['foto']
         
@@ -380,7 +412,6 @@ def buscar_pacientes(request):
 
     return JsonResponse({'resultados': resultados})
 
-
 def dados_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
     
@@ -425,17 +456,18 @@ def dados_paciente(request, paciente_id):
     }
     return JsonResponse(data)
 
-
-
- 
 def pre_cadastro(request):
     if request.method == 'POST':
         
-        consent_trat = request.POST.get('consentimento_tratamento')
-        consent_mark = bool(request.POST.get('consentimento_marketing'))
+        consentimento_tratamento = request.POST.get('consentimento_tratamento') == 'true'
+        consentimento_imagem = request.POST.get('consentimento_imagem') == 'true'
+        consent_marketing = request.POST.get('consentimento_marketing') == 'true'
+        nf_nao_aplica = request.POST.get('nf_nao_aplica') == 'true'
+        nf_imposto_renda =request.POST.get('nf_imposto_renda') == 'true'
+        nf_reembolso_plano =request.POST.get('nf_reembolso_plano') == 'true'
         politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
         
-        if consent_trat:
+        if consentimento_tratamento:
             messages.error(request, 'Você precisa aceitar o termo de consentimento (LGPD) para continuar')
             
         nome = request.POST.get('nome')
@@ -482,14 +514,18 @@ def pre_cadastro(request):
             telEmergencia=request.POST.get('telEmergencia'),
             email=request.POST.get('email'),
             observacao=request.POST.get('observacao'),
-            consentimento_lgpd=True,
-            consentimento_marketing=consent_mark,
+            consentimento_tratamento=consentimento_tratamento,
+            consentimento_lgpd=consentimento_imagem,
+            consentimento_marketing=consent_marketing,
             politica_privacidade_versao=politica_ver,
             data_consentimento=timezone.now(),
             ip_consentimento=request.META.get('REMOTE_ADDR'),
-            ativo=True,
-            pre_cadastro=True,         
-            conferido=False            
+            nf_nao_aplica = nf_nao_aplica,
+            nf_imposto_renda = nf_imposto_renda,
+            nf_reembolso_plano = nf_reembolso_plano,
+            pre_cadastro=False,         
+            conferido=True,
+            ativo=True,     
         )
 
         if foto:
@@ -515,7 +551,6 @@ def pre_cadastro(request):
         'cor_choices': COR_RACA,
         'vinculo_choices': VINCULO,
     })
-
 
 def pre_cadastro_tokenizado(request, token):
     valido = verificar_token_acesso(token)
