@@ -247,7 +247,7 @@ th {
 .badge {
   padding: .4em .8em;
   border-radius: 20px;
-  color: white !important;
+  color: white;
   font-size: 12px;
   font-weight: 600;
 }

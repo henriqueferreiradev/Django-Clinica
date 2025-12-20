@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import HistoricoStatus, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, CONSELHO_ESCOLHA, VinculoFamiliar
+from core.models import HistoricoStatus, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, TIPO_VINCULO, VinculoFamiliar
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -719,7 +719,9 @@ def perfil_paciente(request,paciente_id):
         paciente_id=paciente_id
     ).select_related('formulario').order_by('-enviado_em')
     
- 
+    vinculos_como_dependente = VinculoFamiliar.objects.filter(paciente=paciente)
+    vinculos_como_responsavel = VinculoFamiliar.objects.filter(familiar=paciente)
+    
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
@@ -745,6 +747,8 @@ def perfil_paciente(request,paciente_id):
                 'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
                 'respostas_formularios':respostas_formularios,
                 'historico_status':historico_status,
+                'vinculos_dependente':vinculos_como_dependente,
+                'vinculos_responsavel':vinculos_como_responsavel,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
 
@@ -768,11 +772,6 @@ def gerar_link_publico_precadastro(request):
         'qrcode_base64':img_base64,
         'pacientes':pacientes
     })
-
-
- 
-
-
 
 def visualizar_respostas_formulario(request, resposta_id):
     resposta = get_object_or_404(RespostaFormulario, id=resposta_id)
@@ -807,7 +806,6 @@ def paciente_status(request):
          
     }
     return render(request, 'core/pacientes/status-mensal/status_mensal.html', context)
-
  
 def lista_status(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)

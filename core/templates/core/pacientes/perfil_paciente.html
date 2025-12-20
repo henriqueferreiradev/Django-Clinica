@@ -35,6 +35,8 @@
                     <div>
                         <h1 class="patient-name">{{ paciente.nome }} {{ paciente.sobrenome }}</h1>
                         <p class="patient-id">ID: {{ paciente.id }}</p>
+                         
+                        
                     </div>
                 </div>
                 <div class="header-actions">
@@ -316,6 +318,139 @@
 
             <!-- Right Column -->
             <div class="space-y-6">
+                <section class="section">
+                    <h2 class="section-title">Vínculos Familiares</h2>
+
+                    <ul class="timeline space-y-4">
+
+                        {# ================= PACIENTE É DEPENDENTE (MENOR / VINCULADO) ================= #}
+                        {% if vinculos_dependente %}
+                            {% for vinculo in vinculos_dependente %}
+                                <li class="timeline-item">
+                                    <div class="timeline-dot"></div>
+
+                                    <div class="timeline-content">
+                                        <div class="timeline-header">
+                                            <div>
+                                                <h3 class="timeline-title">
+                                                    {{ paciente.nome }} {{ paciente.sobrenome }}
+                                                </h3>
+
+                                                <p class="timeline-date text-sm">
+                                                    {% if vinculo.tipo == 'pai' or vinculo.tipo == 'mae' %}
+                                                        Filho(a) de
+                                                    {% elif vinculo.tipo == 'avo' %}
+                                                        Neto(a) de
+                                                    {% elif vinculo.tipo == 'tio' %}
+                                                        Sobrinho(a) de
+                                                    {% elif vinculo.tipo == 'irmao' %}
+                                                        Irmão(ã) de
+                                                    {% elif vinculo.tipo == 'conjuge' %}
+                                                        Cônjuge de
+                                                    {% elif vinculo.tipo == 'responsavel_legal' %}
+                                                        Sob responsabilidade de
+                                                    {% else %}
+                                                        Vinculado(a) a
+                                                    {% endif %}
+                                                    {{ vinculo.familiar.nome }} {{ vinculo.familiar.sobrenome }}
+                                                </p>
+                                            </div>
+
+                                            <span class="badge badge-info">
+                                                {{ vinculo.get_tipo_display }}
+                                            </span>
+                                        </div>
+
+                                        <p class="timeline-meta text-sm">
+                                            Responsável / Familiar
+                                        </p>
+
+                                        <p class="timeline-note">
+                                            <a href="{% url 'ficha_paciente' vinculo.familiar.id %}">
+                                                Ver ficha de {{ vinculo.familiar.nome }}
+                                            </a>
+                                        </p>
+                                    </div>
+                                </li>
+                            {% endfor %}
+
+                        {# ================= PACIENTE É RESPONSÁVEL ================= #}
+                        {% elif vinculos_responsavel %}
+                        {% for vinculo in vinculos_responsavel %}
+                            <li class="timeline-item">
+                            <div class="timeline-dot"></div>
+
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                <div>
+                                    <h3 class="timeline-title">
+                                    {{ vinculo.paciente.nome }} {{ vinculo.paciente.sobrenome }}
+                                    </h3>
+
+                                    <p class="timeline-date text-sm">
+                                    {% if vinculo.tipo == 'pai' or vinculo.tipo == 'mae' %}
+                                        Filho(a)
+                                    {% elif vinculo.tipo == 'avo' %}
+                                        Neto(a)
+                                    {% elif vinculo.tipo == 'tio' %}
+                                        Sobrinho(a)
+                                    {% elif vinculo.tipo == 'irmao' %}
+                                        Irmão(ã)
+                                    {% elif vinculo.tipo == 'conjuge' %}
+                                        Cônjuge
+                                    {% elif vinculo.tipo == 'responsavel_legal' %}
+                                        Dependente legal
+                                    {% else %}
+                                        Familiar
+                                    {% endif %}
+                                    </p>
+                                </div>
+
+                                {# ✅ BADGE INVERTIDA (mostra o dependente, não "Mãe/Pai") #}
+                                <span class="badge badge-success">
+                                    {% if vinculo.tipo == 'pai' or vinculo.tipo == 'mae' %}
+                                    Filho(a)
+                                    {% elif vinculo.tipo == 'avo' %}
+                                    Neto(a)
+                                    {% elif vinculo.tipo == 'tio' %}
+                                    Sobrinho(a)
+                                    {% elif vinculo.tipo == 'irmao' %}
+                                    Irmão(ã)
+                                    {% elif vinculo.tipo == 'conjuge' %}
+                                    Cônjuge
+                                    {% elif vinculo.tipo == 'responsavel_legal' %}
+                                    Dependente legal
+                                    {% else %}
+                                    Familiar
+                                    {% endif %}
+                                </span>
+                                </div>
+
+                                <p class="timeline-meta text-sm">
+                                Dependente
+                                </p>
+
+                                <p class="timeline-note">
+                                <a href="{% url 'ficha_paciente' vinculo.paciente.id %}">
+                                    Ver ficha de {{ vinculo.paciente.nome }}
+                                </a>
+                                </p>
+                            </div>
+                            </li>
+                        {% endfor %}
+                        
+
+                        {# ================= SEM VÍNCULOS ================= #}
+                        {% else %}
+                            <h3 class="professional-name">
+                                Não há vínculos familiares cadastrados.
+                            </h3>
+                        {% endif %}
+
+                    </ul>
+                </section>
+
+
                 <!-- Section 5: Profissionais que mais atenderam -->
                 <section class="section">
                     <h2 class="section-title">Profissionais que mais atenderam</h2>
