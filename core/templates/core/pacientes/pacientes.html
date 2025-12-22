@@ -44,7 +44,9 @@
                 <div class="tooltip-wrapper"
                      onmouseenter="mostrarPopupComDelay(this)"
                      onmouseleave="ocultarPopup(this)">
-                  <span>{{ paciente.nome }} {{ paciente.sobrenome }}</span>
+              <span> {{ paciente.nome }} {{ paciente.sobrenome }}</span> <br>
+
+
                   <div class="tooltip-popup">
                     <div class="info">
                       {% if paciente.foto %}
@@ -53,7 +55,7 @@
                         <img src="https://via.placeholder.com/50" alt="Sem foto">
                       {% endif %}
                       <div>
-                        <strong>{{ paciente.nome }} {{ paciente.sobrenome }}</strong><br>
+                        <strong>{{ paciente.nome }} {{ paciente.sobrenome }} </strong><br>
                         {{ paciente.celular }}
                       </div>
                     </div>
@@ -62,7 +64,12 @@
               </td>
               <td>{{ paciente.cpf }}</td>
               <td>{{ paciente.celular }}</td>
-              <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
+              <td class='nascimento-chip'>{{ paciente.data_nascimento|date:"d/m/Y" }}<br>
+                  {% if paciente.eh_menor %}
+                    <span class="chip chip-menor">Menor de idade</span>
+                  {% endif %}
+              </td>
+
               <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
               <td>
                 {% if paciente.status_atual == "primeiro_mes" %}

@@ -20,7 +20,12 @@ import base64
 from io import BytesIO
 from core.views.frequencia_views import sync_frequencias_mes
  
- 
+def calcular_idade(data_nascimento):
+    hoje = date.today()
+    idade = hoje.year - data_nascimento.year
+    if (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day):
+        idade -= 1
+    return idade
 
 def pacientes_view(request):
     if request.method == 'POST':
@@ -105,6 +110,7 @@ def pacientes_view(request):
     except EmptyPage:
         page_obj = paginator.get_page(paginator.num_pages)
 
+
     return render(request, 'core/pacientes/pacientes.html', {
         'page_obj': page_obj,
         'query': query,
@@ -115,15 +121,9 @@ def pacientes_view(request):
         'filtra_inativo': filtra_inativo,
         'total_ativos': total_ativos,
         'total_filtrados': total_filtrados,
+        
     })
- 
-def calcular_idade(data_nascimento):
-    hoje = date.today()
-    idade = hoje.year - data_nascimento.year
-    if (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day):
-        idade -= 1
-    return idade
-    
+
 @login_required(login_url='login')
 def cadastrar_pacientes_view(request):
     if request.method == 'POST':
@@ -390,7 +390,6 @@ def editar_paciente_view(request,id):
     }
     return render(request, 'core/pacientes/editar_paciente.html', context)
  
-
 def ficha_paciente(request, id):
     paciente = get_object_or_404(Paciente, id=id)
     
@@ -721,7 +720,8 @@ def perfil_paciente(request,paciente_id):
     
     vinculos_como_dependente = VinculoFamiliar.objects.filter(paciente=paciente)
     vinculos_como_responsavel = VinculoFamiliar.objects.filter(familiar=paciente)
-    
+    idade = calcular_idade(paciente.data_nascimento)
+    eh_menor = idade < 18
     context = {'paciente':paciente,
                 'frequencia_semanal':frequencia_semanal,
                 'quantidade_agendamentos':quantidade_agendamentos,
@@ -749,6 +749,7 @@ def perfil_paciente(request,paciente_id):
                 'historico_status':historico_status,
                 'vinculos_dependente':vinculos_como_dependente,
                 'vinculos_responsavel':vinculos_como_responsavel,
+                'eh_menor':eh_menor,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
 

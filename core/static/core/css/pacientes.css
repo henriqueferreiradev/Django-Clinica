@@ -228,7 +228,10 @@ th {
     padding: 1em;
 }
 
-
+.badge-warning {
+    background-color: #fef08a;
+    color: #854d0e;
+}
 
 thead tr th:first-child {
     border-top-left-radius: 12px;
@@ -461,7 +464,7 @@ thead tr th:last-child {
     background-color: #f39c12;
     padding: .4em .8em;
     border-radius: 20px;
-    color: black !important;
+    color: white !important;
     font-size: 12px;
     font-weight: 600;
 }
@@ -470,7 +473,7 @@ thead tr th:last-child {
     background-color: #4CAF50;
     padding: .4em .8em;
     border-radius: 20px;
-    color: black !important;
+    color: white important;
     font-size: 12px;
     font-weight: 600;
 }
@@ -479,7 +482,17 @@ thead tr th:last-child {
     background-color: #af4c4c;
     padding: .4em .8em;
     border-radius: 20px;
-    color: black !important;
+    color: white !important;
     font-size: 12px;
     font-weight: 600;
+}
+
+
+.chip-menor {
+    background: #CE93D8;
+    padding: .2em .8em;
+    border-radius: 16px;
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
 }

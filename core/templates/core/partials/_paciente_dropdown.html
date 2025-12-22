@@ -22,24 +22,13 @@
         <i class="bx bx-calendar-plus"></i> Enviar Forms
       </button>
     </a>
-    <form
-      method="POST"
-      action="{% url 'pacientes' %}"
-      style="margin: 0"
-      id="inativarForm{{ paciente.id }}"
-    >
+    <span class="btn-divider" aria-hidden="true"></span>
+    <form method="POST" action="{% url 'pacientes' %}" style="margin: 0" id="inativarForm{{ paciente.id }}">
       {% csrf_token %}
-      <input type="hidden" name="delete_id" value="{{ paciente.id }}" />
-      <button
-        type="button"
-        onclick="showConfirmModal(
-    'Inativar Paciente', 
-    'Deseja realmente inativar o paciente {{ paciente.nome }}?', 
-    document.getElementById('inativarForm{{ paciente.id }}')
-  )"
-      >
-        <i class="bx bx-user-x"></i> Inativar
-      </button>
+      <input type="hidden" name="delete_id" value="{{ paciente.id }}">
+      <button class='btn-red' type="button" onclick="showConfirmModal('Inativar Paciente', 'Deseja realmente inativar o paciente {{ paciente.nome }}?',
+      document.getElementById('inativarForm{{ paciente.id }}'))">
+        <i class="bx bx-user-x"></i> Inativar </button>
     </form>
   </div>
 </div>

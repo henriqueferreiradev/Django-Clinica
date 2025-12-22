@@ -120,7 +120,7 @@
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Conselho Principal</label>
-                            <p class="font-medium" >{{ profissional.get_conselho1_display  }} - {{ profissional.num1_conseho }}</p>
+                            <p class="font-medium" >{{ profissional.get_conselho1_display }} - {{ profissional.num1_conseho }}</p>
                         </div>
                         <div class="data-card">
                             <label class="text-sm text-gray-500">Conselho Complementar</label>
@@ -508,6 +508,8 @@
             </table>
         </div>
     </div>
+
+
                     </div>
                 </section>
             </div>
@@ -528,10 +530,84 @@
                 <i class="fas fa-file-pdf"></i>
             </button>
         </div>
+        <!-- BOTÃO PARA ABRIR -->
+<button class="btn-primary" onclick="abrirModalDocumento()">Adicionar documento</button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalDocumento">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Adicionar Documento</h3>
+            <button class="close-btn" onclick="fecharModalDocumento()">×</button>
+        </div>
+
+        <form id="formDocumento">
+            <!-- TIPO -->
+            <div class="form-group">
+                <label>Tipo de documento</label>
+                <select id="tipoDocumento" required>
+                    <option value="">Selecione</option>
+                    <option value="diploma">Diploma</option>
+                    <option value="carteira_conselho">Carteira do Conselho</option>
+                    <option value="comprovante_conselho">Comprovante Pagamento do Conselho</option>
+
+                </select>
+            </div>
+
+            <!-- ARQUIVO -->
+            <div class="form-group">
+                <label>Arquivo</label>
+                <input type="file" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
+
+            <!-- VENCIMENTO (CONDICIONAL) -->
+            <div class="form-group hidden" id="campoVencimento">
+                <label>Data de vencimento</label>
+                <input type="date">
+            </div>
+
+            <!-- OBSERVAÇÃO -->
+            <div class="form-group">
+                <label>Observação</label>
+                <textarea rows="3" placeholder="Opcional"></textarea>
+            </div>
+
+            <!-- AÇÕES -->
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="fecharModalDocumento()">Cancelar</button>
+                <button type="submit" class="btn-primary">Salvar documento</button>
+            </div>
+        </form>
     </div>
+</div>
+
+    </div>
+    
     {% include "core/partials/alertas.html" %}
 
     {% block scripts %}
+    <script>
+function abrirModalDocumento() {
+    document.getElementById('modalDocumento').style.display = 'flex';
+}
+
+function fecharModalDocumento() {
+    document.getElementById('modalDocumento').style.display = 'none';
+}
+
+document.getElementById('tipoDocumento').addEventListener('change', function () {
+    const vencimento = document.getElementById('campoVencimento');
+
+    if (this.value === 'conselho' || this.value === 'comprovante_conselho' ) {
+        vencimento.classList.remove('hidden');
+        vencimento.querySelector('input').required = true;
+    } else {
+        vencimento.classList.add('hidden');
+        vencimento.querySelector('input').required = false;
+    }
+});
+</script>
+
 <script>
 const btnToggleObs = document.getElementById('btnToggleObs');
 const btnCancelObs = document.getElementById('btnCancelObs');

@@ -1,7 +1,8 @@
 .dropdown_menu {
     position: absolute;
 
-    background: var(--cinzaBorda);
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinzaBorda);
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     display: none;
@@ -44,11 +45,22 @@
 
 .dropdown_menu button:hover {
     background: var(--roxoPrincipal);
+    color: white;
 
 
 }
 
+
+
 .dropdown_menu .btn-red:hover {
     background-color: var(--btn-red-exclude);
     color: red;
+}
+
+.btn-divider {
+    height: 1px;
+    width: 100%;
+    background: var(--cinzaBorda);
+    opacity: .9;
+    margin: 0.1em 0;
 }

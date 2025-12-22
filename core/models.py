@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from doctest import BLANKLINE_MARKER
 from urllib.parse import DefragResult
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -294,6 +295,15 @@ class Paciente(models.Model):
     @property
     def endereco_formatado(self):
         return f'{self.rua}, {self.numero}, {self.complemento} - {self.bairro}, {self.cidade}/{self.uf} - {self.cep}'
+    def eh_menor(self):
+        if not self.data_nascimento:
+            return False
+
+        hoje = date.today()
+        idade = hoje.year - self.data_nascimento.year
+        if (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day):
+            idade -= 1
+        return idade < 18
 
 class VinculoFamiliar(models.Model):
     paciente = models.ForeignKey(Paciente, related_name='vinculos', on_delete=models.CASCADE)
@@ -424,6 +434,33 @@ class Profissional(models.Model):
                     
             except Exception as e:
                 print(f"Erro ao criar usuário para profissional: {e}")
+
+class DocumentoProfissional(models.Model):
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE, related_name='documentos')
+    tipo_documento = models.CharField(max_length=50)
+    arquivo = models.FileField(upload_to='profissionais/documentos/')
+    data_vencimento = models.DateField(null=True, blank=True)
+    observacao = models.TextField(blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def status(self):
+        if not self.data_vencimento:
+            return 'sem_validade'
+
+        hoje = timezone.localdate()
+
+        if self.data_vencimento<hoje:
+            return 'vencido'
+        if (self.data_vencimento - hoje).days <= 30:
+            return 'a_vencer'
+        
+        return 'valido'
+
+    def __str__(self):
+        return f'{self.get_tipo_documento_display()} - {self.profissional}'
+    
+
 class CategoriaConta(models.Model):
     """
     Categoria principal: Receita ou Despesa
