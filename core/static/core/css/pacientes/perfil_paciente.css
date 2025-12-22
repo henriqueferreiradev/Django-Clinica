@@ -993,7 +993,7 @@ select {
 
 /* Modal */
 .modal {
-    background: #fff;
+    background: var(--backgroundCard);
     width: 100%;
     max-width: 460px;
     border-radius: 12px;
@@ -1042,24 +1042,7 @@ select {
     gap: 10px;
     margin-top: 20px;
 }
-
-/* Buttons */
-.btn-primary {
-    background: #5b3cc4;
-    color: #fff;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.btn-secondary {
-    background: #eee;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-}
+ 
 
 .hidden {
     display: none;

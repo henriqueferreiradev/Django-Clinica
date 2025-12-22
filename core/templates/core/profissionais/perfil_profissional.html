@@ -42,9 +42,10 @@
                     <button class="btn btn-secondary">
                         <i class="fas fa-plus"></i> Adicionar Observação
                     </button>
-                    <button class="btn btn-gray">
-                        <i class="fas fa-calendar"></i> Voltar para Agenda
+                    <button  onclick="window.location.href='{% url 'agenda' %}'" class="btn btn-gray">
+                        <i class="fas fa-calendar" ></i> Voltar para Agenda
                     </button>
+                    <button class="btn btn-primary" onclick="abrirModalDocumento()"><i class="fas fa-folder-open"></i>Adicionar documento</button>
                 </div>
             </div>
         </header>
@@ -531,55 +532,68 @@
             </button>
         </div>
         <!-- BOTÃO PARA ABRIR -->
-<button class="btn-primary" onclick="abrirModalDocumento()">Adicionar documento</button>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modalDocumento">
-    <div class="modal">
-        <div class="modal-header">
-            <h3>Adicionar Documento</h3>
-            <button class="close-btn" onclick="fecharModalDocumento()">×</button>
+
+        <!-- MODAL -->
+        <div class="modal-overlay" id="modalDocumento">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Adicionar Documento</h3>
+                    <button class="close-btn" onclick="fecharModalDocumento()">×</button>
+                </div>
+
+                <form id="formDocumento" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- TIPO -->
+                    <div class="form-group">
+                        <label>Tipo de documento</label>
+                        <select id="tipoDocumento" name="tipo_documento" required>
+                            <option value="">Selecione</option>
+                            <option value="diploma">Diploma</option>
+                            <option value="carteira_conselho">Carteira do Conselho</option>
+                            <option value="comprovante_conselho">Comprovante Pagamento do Conselho</option>
+                        </select>
+                    </div>
+
+                    <!-- ARQUIVO -->
+                    <div class="form-group">
+                        <label>Arquivo</label>
+                        <input
+                            type="file"
+                            name="arquivo"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                        >
+                    </div>
+
+                    <!-- VENCIMENTO (CONDICIONAL) -->
+                    <div class="form-group hidden" id="campoVencimento">
+                        <label>Data de vencimento</label>
+                        <input
+                            type="date"
+                            name="data_vencimento"
+                        >
+                    </div>
+
+                    <!-- OBSERVAÇÃO -->
+                    <div class="form-group">
+                        <label>Observação</label>
+                        <textarea
+                            name="observacao"
+                            rows="3"
+                            placeholder="Opcional"
+                        ></textarea>
+                    </div>
+
+                    <!-- AÇÕES -->
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="fecharModalDocumento()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar documento</button>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <form id="formDocumento">
-            <!-- TIPO -->
-            <div class="form-group">
-                <label>Tipo de documento</label>
-                <select id="tipoDocumento" required>
-                    <option value="">Selecione</option>
-                    <option value="diploma">Diploma</option>
-                    <option value="carteira_conselho">Carteira do Conselho</option>
-                    <option value="comprovante_conselho">Comprovante Pagamento do Conselho</option>
-
-                </select>
-            </div>
-
-            <!-- ARQUIVO -->
-            <div class="form-group">
-                <label>Arquivo</label>
-                <input type="file" accept=".pdf,.jpg,.jpeg,.png" required>
-            </div>
-
-            <!-- VENCIMENTO (CONDICIONAL) -->
-            <div class="form-group hidden" id="campoVencimento">
-                <label>Data de vencimento</label>
-                <input type="date">
-            </div>
-
-            <!-- OBSERVAÇÃO -->
-            <div class="form-group">
-                <label>Observação</label>
-                <textarea rows="3" placeholder="Opcional"></textarea>
-            </div>
-
-            <!-- AÇÕES -->
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="fecharModalDocumento()">Cancelar</button>
-                <button type="submit" class="btn-primary">Salvar documento</button>
-            </div>
-        </form>
-    </div>
-</div>
 
     </div>
     

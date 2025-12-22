@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from core.models import Agendamento, AvaliacaoFisioterapeutica, CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, Evolucao, MIDIA_ESCOLHA, Paciente, Profissional, Prontuario, SEXO_ESCOLHA, UF_ESCOLHA, VINCULO
+from core.models import Agendamento, AvaliacaoFisioterapeutica, CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, DocumentoProfissional, Especialidade, Evolucao, MIDIA_ESCOLHA, Paciente, Profissional, Prontuario, SEXO_ESCOLHA, UF_ESCOLHA, VINCULO
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
 from django.contrib.auth.decorators import login_required
@@ -9,8 +9,10 @@ from django.contrib import messages
 from django.db.models import Min, Max,Count 
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.template.context_processors import request
 import json
 from core.views.agendamento_views import listar_agendamentos
+from core.management.commands.importar_pacientes import parse_date
 
 
 def cadastrar_profissionais_view(request):
@@ -434,6 +436,35 @@ def perfil_profissional(request, profissional_id):
     # Últimos 3 agendamentos
     tres_ultimos_agendamentos = todos_agendamentos.order_by('-data')[:3]
     
+    if request.method == "POST":
+        try:
+            tipo_documento = request.POST.get('tipo_documento')
+            arquivo = request.FILES.get('arquivo')
+            data_vencimento_raw = request.POST.get('data_vencimento')
+            data_vencimento = parse_date(data_vencimento_raw) if data_vencimento_raw else None
+            observacao = request.POST.get('observacao') or ''
+            
+            
+            
+            if not tipo_documento or not arquivo:
+                messages.error(request, 'Tipo de documento e arquivo são obrigatórios.')
+                return redirect('perfil_profissional', profissional_id=profissional.id)
+            
+            DocumentoProfissional.objects.create(
+                profissional=profissional,
+                tipo_documento = tipo_documento,
+                arquivo = arquivo,
+                data_vencimento = data_vencimento,
+                observacao=observacao,
+            )
+            
+            messages.success(request, 'Documento salvo com sucesso.')
+            return redirect('perfil_profissional', profissional_id=profissional.id)     
+            
+           
+        except Exception as e:
+            print(f'Deu ruim: {e}')    
+            
     context = {
         'profissional': profissional,
         'frequencia_semanal': frequencia_semanal,

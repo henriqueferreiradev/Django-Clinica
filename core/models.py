@@ -30,6 +30,12 @@ def caminho_foto_profissional(instance, filename):
     extensao = os.path.splitext(filename)[1]
     return f'imagens/profissionais/{instance.id}_{nome}/foto_perfil{extensao}'
 
+def caminho_documento_profissional(instance, filename):
+    nome = slugify(instance.profissional.nome)
+    extensao = os.path.splitext(filename)[1].lower()
+    tipo = slugify(instance.tipo_documento) or 'documento'
+    token = uuid.uuid4().hex[:8]
+    return f'imagens/profissionais/{instance.profissional.id}_{nome}/documentos/{tipo}_{token}{extensao}'
 
 TIPOS_USUARIO = [
     ('admin', 'Administrador'),
@@ -438,7 +444,7 @@ class Profissional(models.Model):
 class DocumentoProfissional(models.Model):
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE, related_name='documentos')
     tipo_documento = models.CharField(max_length=50)
-    arquivo = models.FileField(upload_to='profissionais/documentos/')
+    arquivo = models.FileField(upload_to=caminho_documento_profissional)
     data_vencimento = models.DateField(null=True, blank=True)
     observacao = models.TextField(blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
