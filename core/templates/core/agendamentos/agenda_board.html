@@ -1,12 +1,107 @@
+{% load static %}
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agenda da Clínica</title>
+  <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
+  <title>Agenda Matrix - Ponto de  </title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
   <style>
+    .professional-filter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prof-select {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      min-width: 250px;
+    }
+
+    .working-today {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-light);
+    }
+
+    .working-today input[type="checkbox"] {
+      accent-color: var(--primary);
+    }
+
+    .date-filter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .date-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .date-controls button {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .date-controls button:hover {
+      color: var(--primary);
+    }
+
+    #current-date {
+      font-size: 1.2rem;
+      margin: 0;
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .date-picker {
+      display: flex;
+      gap: 1rem;
+    }
+
+    #date-selector {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+
+    #today-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #today-btn:hover {
+      background: var(--primary-hover);
+    }
+
     :root {
       --bg-dark: #0f172a;
       --sidebar-bg: #1e293b;
@@ -68,6 +163,15 @@
       color: white;
     }
 
+    .prof-card.sem-agenda {
+      opacity: 0.7;
+      background: var(--sidebar-bg);
+    }
+
+    .prof-card.sem-agenda i {
+      color: var(--text-light);
+    }
+
     /* Área de horários */
     .horarios {
       overflow: auto;
@@ -89,6 +193,7 @@
       padding: 12px;
       text-align: center;
       min-width: 140px;
+      vertical-align: top;
     }
 
     th {
@@ -114,20 +219,32 @@
 
     .paciente {
       border-radius: 8px;
-      background: gray;
       color: #fff;
       font-size: 0.85rem;
       padding: 8px 12px;
-      display: inline-block;
-      width: auto;
+      display: block;
+     
       transition: all 0.2s ease;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      
+      text-align: left;
     }
 
     .paciente:hover {
-      background: var(--primary-hover);
       transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .paciente small {
+      display: block;
+      font-size: 0.75rem;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .celula-vazia {
+      min-height: 60px;
     }
 
     /* Scrollbar styling */
@@ -148,48 +265,308 @@
     ::-webkit-scrollbar-thumb:hover {
       background: var(--primary-hover);
     }
+
+    .hora-atual {
+      background: var(--primary) !important;
+      color: white !important;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-<div class="agenda-board">
-  <div class="profissionais">
-    {% for prof in profissionais %}
-      <div class="prof-card"><i class="fas fa-user-md"></i> {{ prof.1 }}</div>
-    {% endfor %}
+  <div class="professional-filter">
+    <select id="profissional-select" class="prof-select">
+      <option value="">Todos os profissionais</option>
+      {% for prof in profissionais %}
+        <option value="{{ prof.id }}">{{ prof.nome }}</option>
+      {% endfor %}
+    </select>
+    <div class="working-today">
+      <label>
+        <input type="checkbox" id="working-today-check">
+        Trabalha hoje
+      </label>
+    </div>
   </div>
 
-  <div class="horarios">
-    <table>
-      <thead>
-        <tr>
-          <th class="horario-col">Horário</th>
-          {% for prof in profissionais %}
-            <th>{{ prof.1 }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for hora in horarios %}
+  <div class="date-filter">
+    <div class="date-controls">
+      <button id="prev-day"><i class="fas fa-chevron-left"></i></button>
+      <h2 id="current-date">
+        {% if is_today %}
+          Hoje, {{ selected_date }}
+        {% else %}
+          {{ selected_date }}
+        {% endif %}
+      </h2>
+      <button id="next-day"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="date-picker">
+      <input type="date" id="date-selector" value="{{ selected_date }}">
+      <button id="today-btn">Hoje</button>
+    </div>
+  </div>
+
+  <div class="agenda-board">
+    <!-- Coluna de Profissionais -->
+    <div class="profissionais" id="profissionais-list">
+      {% for prof in profissionais %}
+        <div class="prof-card {% if not prof.tem_agenda %}sem-agenda{% endif %}" 
+             data-prof-id="{{ prof.id }}"
+             data-prof-name="{{ prof.nome }}">
+          <i class="fas fa-user-md"></i> 
+          <span>{{ prof.nome }}</span>
+          {% if prof.tem_agenda %}
+            <span style="font-size: 0.7rem; margin-left: auto; color: var(--primary);">●</span>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div style="color: var(--text-light); text-align: center; padding: 20px;">
+          Nenhum profissional encontrado
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Agenda -->
+    <div class="horarios">
+      <table id="agenda-table">
+        <thead>
           <tr>
-            <td class="horario-col">{{ hora }}</td>
+            <th class="horario-col">Horário</th>
             {% for prof in profissionais %}
-              <td>
-                {% for ag in agendamentos %}
-                  {% if ag.hora_inicio|time:"H:i" == hora and ag.profissional_1.id == prof.0 %}
-                    <span class="paciente" style='background:{{ag.especialidade.cor}};'>
-                      <i class="fas fa-user"></i> {{ ag.paciente.nome }}
-                    </span>
-                  {% endif %}
-                {% endfor %}
-              </td>
+              <th data-prof-id="{{ prof.id }}" data-prof-name="{{ prof.nome }}">{{ prof.nome|truncatechars:20 }}</th>
             {% endfor %}
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody id="agenda-body">
+          {% for hora in horarios %}
+            <tr>
+              <td class="horario-col" data-hora="{{ hora }}">{{ hora }}</td>
+              {% for prof in profissionais %}
+                <td data-prof-id="{{ prof.id }}" data-hora="{{ hora }}">
+                  {% for ag in agendamentos %}
+                    {% if ag.profissional_1.id == prof.id and ag.hora_str == hora %}
+                      <div class="paciente" 
+                           style="background: {{ ag.especialidade.cor|default:'#8b5cf6' }};"
+                           data-agendamento-id="{{ ag.id }}"
+                           onclick="abrirDetalhesAgendamento({{ ag.id }})"
+                           title="Clique para ver detalhes">
+                        <i class="fas fa-user"></i> {{ ag.paciente.nome|truncatechars:15 }}
+                        {% if ag.especialidade %}
+                          <small>{{ ag.especialidade.nome|truncatechars:20 }}</small>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 
+  <script>
+    // Date handling
+    let currentDate = new Date("{{ selected_date }}");
+    
+    function formatarDataParaBR(date) {
+      const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+      const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+      
+      const diaSemana = diasSemana[date.getDay()];
+      const dia = date.getDate();
+      const mes = meses[date.getMonth()];
+      const ano = date.getFullYear();
+      
+      return `${diaSemana}, ${dia} de ${mes} de ${ano}`;
+    }
+    
+    function updateDateDisplay() {
+      const dateStr = formatarDataParaBR(currentDate);
+      const hoje = new Date();
+      const isToday = currentDate.toDateString() === hoje.toDateString();
+      
+      if (isToday) {
+        document.getElementById('current-date').innerHTML = dateStr + ' <span style="color: var(--primary);">(Hoje)</span>';
+      } else {
+        document.getElementById('current-date').textContent = dateStr;
+      }
+      document.getElementById('date-selector').valueAsDate = currentDate;
+    }
 
-  </body>
+    // Navegação por data
+    document.getElementById('prev-day').addEventListener('click', () => {
+      currentDate.setDate(currentDate.getDate() - 1);
+      navigateToDate(currentDate);
+    });
+
+    document.getElementById('next-day').addEventListener('click', () => {
+      currentDate.setDate(currentDate.getDate() + 1);
+      navigateToDate(currentDate);
+    });
+
+    document.getElementById('today-btn').addEventListener('click', () => {
+      currentDate = new Date();
+      navigateToDate(currentDate);
+    });
+    
+    document.getElementById('date-selector').addEventListener('change', (e) => {
+      currentDate = new Date(e.target.value);
+      navigateToDate(currentDate);
+    });
+
+    function navigateToDate(date) {
+      const formattedDate = date.toISOString().split('T')[0];
+      window.location.href = `?date=${formattedDate}`;
+    }
+
+    // Filtro por profissional
+    document.getElementById('profissional-select').addEventListener('change', function() {
+      const selectedProfId = this.value;
+      
+      // Mostrar/ocultar colunas da tabela
+      document.querySelectorAll('th[data-prof-id]').forEach(th => {
+        if (selectedProfId === '' || th.dataset.profId === selectedProfId) {
+          th.style.display = '';
+        } else {
+          th.style.display = 'none';
+        }
+      });
+
+      // Mostrar/ocultar células da tabela
+      document.querySelectorAll('td[data-prof-id]').forEach(td => {
+        const colIndex = Array.from(td.parentNode.children).indexOf(td);
+        const header = document.querySelector(`th:nth-child(${colIndex + 1})`);
+        
+        if (selectedProfId === '' || (header && header.dataset.profId === selectedProfId)) {
+          td.style.display = '';
+        } else {
+          td.style.display = 'none';
+        }
+      });
+      
+      // Destacar profissional selecionado na sidebar
+      document.querySelectorAll('.prof-card').forEach(card => {
+        if (selectedProfId === '' || card.dataset.profId === selectedProfId) {
+          card.style.background = 'var(--primary)';
+          card.style.color = 'white';
+          card.querySelector('i').style.color = 'white';
+        } else {
+          if (card.classList.contains('sem-agenda')) {
+            card.style.background = 'var(--sidebar-bg)';
+            card.querySelector('i').style.color = 'var(--text-light)';
+          } else {
+            card.style.background = 'var(--card-bg)';
+            card.querySelector('i').style.color = 'var(--primary)';
+          }
+          card.style.color = 'var(--text)';
+        }
+      });
+    });
+
+    // Click nos cards de profissional (sidebar)
+    document.querySelectorAll('.prof-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const profId = this.dataset.profId;
+        const select = document.getElementById('profissional-select');
+        select.value = profId;
+        select.dispatchEvent(new Event('change'));
+      });
+    });
+
+    // Filtro "Trabalha hoje" (simulação)
+    document.getElementById('working-today-check').addEventListener('change', function() {
+      if (!this.checked) {
+        document.querySelectorAll('.prof-card').forEach(card => {
+          // Simulação: 30% dos profissionais não trabalham hoje
+          if (Math.random() > 0.7) {
+            card.style.opacity = '0.3';
+            card.style.pointerEvents = 'none';
+          }
+        });
+      } else {
+        document.querySelectorAll('.prof-card').forEach(card => {
+          card.style.opacity = '1';
+          card.style.pointerEvents = 'auto';
+        });
+      }
+    });
+
+    // Função para abrir detalhes do agendamento
+    function abrirDetalhesAgendamento(agendamentoId) {
+      // Aqui você pode redirecionar para a página de detalhes ou abrir um modal
+      // Exemplo: window.location.href = `/agendamento/detalhar/${agendamentoId}/`;
+      alert(`Abrindo detalhes do agendamento ID: ${agendamentoId}\nImplemente a lógica de redirecionamento aqui.`);
+    }
+
+    // Destacar hora atual
+    function highlightCurrentTime() {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      const currentDateStr = now.toISOString().split('T')[0];
+      const selectedDateStr = "{{ selected_date }}";
+      
+      // Só destacar se for a data selecionada
+      if (currentDateStr !== selectedDateStr) {
+        document.querySelectorAll('.horario-col').forEach(td => {
+          td.classList.remove('hora-atual');
+        });
+        return;
+      }
+      
+      // Arredondar para o bloco de 30 minutos mais próximo
+      const roundedMinute = Math.floor(currentMinute / 30) * 30;
+      const currentTimeString = 
+        String(currentHour).padStart(2, '0') + ':' + 
+        String(roundedMinute).padStart(2, '0');
+      
+      // Remover destaque anterior
+      document.querySelectorAll('.horario-col').forEach(td => {
+        td.classList.remove('hora-atual');
+      });
+      
+      // Destacar hora atual
+      const currentTd = document.querySelector(`.horario-col[data-hora="${currentTimeString}"]`);
+      if (currentTd) {
+        currentTd.classList.add('hora-atual');
+      }
+    }
+
+    // Hover effects para células da tabela
+    document.querySelectorAll('td[data-prof-id]').forEach(td => {
+      td.addEventListener('mouseenter', function() {
+        const profId = this.dataset.profId;
+        const card = document.querySelector(`.prof-card[data-prof-id="${profId}"]`);
+        if (card) {
+          card.style.transform = 'translateX(5px)';
+          card.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.3)';
+        }
+      });
+      
+      td.addEventListener('mouseleave', function() {
+        const profId = this.dataset.profId;
+        const card = document.querySelector(`.prof-card[data-prof-id="${profId}"]`);
+        if (card) {
+          card.style.transform = '';
+          card.style.boxShadow = '';
+        }
+      });
+    });
+
+    // Inicializar
+    updateDateDisplay();
+    highlightCurrentTime();
+    
+    // Atualizar hora atual periodicamente
+    setInterval(highlightCurrentTime, 1000 * 30); // Atualizar a cada 30 segundos
+    
+    // Verificar se é hoje
+    {% if is_today %}
+      document.getElementById('current-date').innerHTML += ' <span style="color: var(--primary);">(Hoje)</span>';
+    {% endif %}
+  </script>
+</body>
 </html>

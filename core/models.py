@@ -24,7 +24,6 @@ def caminho_foto_paciente(instance, filename):
     extensao = os.path.splitext(filename)[1]
     return f'imagens/pacientes/{instance.id}_{nome}/foto_perfil{extensao}'
 
-
 def caminho_foto_profissional(instance, filename):
     nome = slugify(instance.nome)
     extensao = os.path.splitext(filename)[1]
@@ -63,7 +62,6 @@ ESTADO_CIVIL = [
     ('viuvo(a))','Viúvo(a)'),
     ('uniao estavel','União estável'),
 ]
-
 COR_RACA = [
     # padrao "Não informado"
     ('branca','Branca'),
@@ -101,7 +99,6 @@ VINCULO = [
     ('colega_trabalho', 'Colega de trabalho'),
     ('outro', 'Outro'),
 ]
-
 SEXO_ESCOLHA = [
     ('masculino','Masculino'),
     ('feminino','Feminino'),
@@ -109,7 +106,6 @@ SEXO_ESCOLHA = [
     ('prefiro não informar','Prefiro não informar'),
 
 ]
-
 UF_ESCOLHA = [
     ('AC', 'Acre'),
     ('AL', 'Alagoas'),
@@ -162,7 +158,6 @@ CONSELHO_ESCOLHA = [
     ("coren", 'COREN'),
     ("cra", 'CRA'),
 ]
-
 STATUS_CHOICES = [
     ('pre', '✅ Pré-Agendado'),
     ('agendado', '✅ Agendado'),
@@ -172,7 +167,6 @@ STATUS_CHOICES = [
     ('falta_remarcacao', '⚠️ FCR - Falta com reposição'),
     ('falta_cobrada', '❌ FC - Falta cobrada'),
 ]
-
 TIPO_VINCULO = [
     ('pai', 'Pai'),
     ('mae', 'Mãe'),
@@ -183,8 +177,6 @@ TIPO_VINCULO = [
     ('conjuge', 'Cônjuge'),
     ('outro', 'Outro'),
 ]
-
-
 
 
 class User(AbstractUser):
@@ -442,8 +434,13 @@ class Profissional(models.Model):
                 print(f"Erro ao criar usuário para profissional: {e}")
 
 class DocumentoProfissional(models.Model):
+    TIPO_DOCUMENTOS_CHOICES = [
+        ('comprovante_conselho','Comprovante de Pagamento Conselho'),
+        ('diploma', 'Diploma'),
+        ('carteira_conselho', 'Carteira do conselho'),
+    ]
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE, related_name='documentos')
-    tipo_documento = models.CharField(max_length=50)
+    tipo_documento = models.CharField(max_length=50, choices=TIPO_DOCUMENTOS_CHOICES)
     arquivo = models.FileField(upload_to=caminho_documento_profissional)
     data_vencimento = models.DateField(null=True, blank=True)
     observacao = models.TextField(blank=True)
@@ -464,9 +461,10 @@ class DocumentoProfissional(models.Model):
         return 'valido'
 
     def __str__(self):
-        return f'{self.get_tipo_documento_display()} - {self.profissional}'
+        return f'{self.tipo_documento} - {self.profissional}'
     
-
+class DocumentoClinica(models.Model):
+    ...
 class CategoriaConta(models.Model):
     """
     Categoria principal: Receita ou Despesa
@@ -489,7 +487,6 @@ class CategoriaConta(models.Model):
     
     def __str__(self):
         return f"{self.nome} ({self.get_tipo_display()})"
-
 
 class GrupoConta(models.Model):
     """
@@ -574,7 +571,6 @@ class SubgrupoConta(models.Model):
         """Retorna a descrição do grupo"""
         return self.grupo.descricao
 
-
 class LancamentoConta(models.Model):
     """
     Lançamento financeiro vinculado a uma conta específica
@@ -650,7 +646,6 @@ class LancamentoConta(models.Model):
         
         super().save(*args, **kwargs)
 
-
 class Servico(models.Model):
     nome = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=8, decimal_places=2)
@@ -660,8 +655,6 @@ class Servico(models.Model):
 
     def __str__(self):
         return f"{self.nome} - R$ {self.valor}" 
-    
-
 
 class PacotePaciente(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
@@ -743,8 +736,6 @@ class PacotePaciente(models.Model):
     def __str__(self):
         return f"Pacote {self.codigo} Valor restante {self.valor_restante} - {self.paciente} "
 
- 
-
 class Agendamento(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     servico = models.ForeignKey(Servico, null=True, blank=True, on_delete=models.SET_NULL)
@@ -815,7 +806,6 @@ class Pendencia(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     responsavel = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
-
 TIPO_PERGUNTA = (
     ('short-text', 'Texto Curto'),
     ('paragraph', 'Parágrafo'),
@@ -852,7 +842,6 @@ class Formulario(models.Model):
     def __str__(self):
         return self.titulo
 
-
 class Pergunta(models.Model):
     formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE, related_name='perguntas')
     texto = models.CharField(max_length=500)
@@ -862,15 +851,12 @@ class Pergunta(models.Model):
     def __str__(self):
         return self.texto
 
-
 class OpcaoResposta(models.Model):
     pergunta = models.ForeignKey(Pergunta, on_delete=models.CASCADE, related_name='opcoes')
     texto = models.CharField(max_length=255)
 
     def __str__(self):
         return self.texto
-
-
 
 class LinkFormularioPaciente(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)

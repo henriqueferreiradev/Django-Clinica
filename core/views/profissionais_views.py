@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from core.models import Agendamento, AvaliacaoFisioterapeutica, CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, DocumentoProfissional, Especialidade, Evolucao, MIDIA_ESCOLHA, Paciente, Profissional, Prontuario, SEXO_ESCOLHA, UF_ESCOLHA, VINCULO
+from core.models import Agendamento, AvaliacaoFisioterapeutica, CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, DocumentoClinica, DocumentoProfissional, Especialidade, Evolucao, MIDIA_ESCOLHA, Paciente, Profissional, Prontuario, SEXO_ESCOLHA, UF_ESCOLHA, VINCULO
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse, HttpResponse 
+from django.contrib.auth import get_user_model
+
 from django.contrib.auth.decorators import login_required
 from core.utils import registrar_log, get_semana_atual
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.db.models import Min, Max,Count 
 from django.utils import timezone
-from django.contrib.auth.models import User
+ 
 from django.template.context_processors import request
 import json
 from core.views.agendamento_views import listar_agendamentos
@@ -168,7 +170,7 @@ def cadastrar_profissionais_view(request):
 
 def editar_profissional_view(request, id):
     profissional = get_object_or_404(Profissional, id=id)
-
+    
     if request.method == 'POST':
         # Capturar o email ANTES de salvar o profissional
         email_antigo = profissional.email
@@ -264,11 +266,12 @@ def editar_profissional_view(request, id):
                 messages.warning(request, f'Profissional atualizado, mas houve erro no usuário: {str(e)}')
                 print(f"Erro: {e}")
         
+        
         # Se não tem usuário mas tem email, criar um novo
         elif not profissional.user and novo_email:
             try:
                 data_nascimento_str = profissional.data_nascimento.strftime("%d%m%Y") if profissional.data_nascimento else "123456"
-                
+                User = get_user_model()
                 # Verificar se já existe usuário com este email
                 if User.objects.filter(username=novo_email).exists():
                     # Associar usuário existente
@@ -465,6 +468,9 @@ def perfil_profissional(request, profissional_id):
         except Exception as e:
             print(f'Deu ruim: {e}')    
             
+    documentos = DocumentoProfissional.objects.filter(profissional_id=profissional_id)
+    print(documentos)
+    
     context = {
         'profissional': profissional,
         'frequencia_semanal': frequencia_semanal,
@@ -477,6 +483,7 @@ def perfil_profissional(request, profissional_id):
         'prontuarios': prontuarios,
         'tres_ultimos_agendamentos': tres_ultimos_agendamentos,
         'todos_agendamentos': todos_agendamentos,
+        'documentos':documentos,
     }
     
     return render(request, 'core/profissionais/perfil_profissional.html', context)

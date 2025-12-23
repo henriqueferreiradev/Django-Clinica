@@ -424,6 +424,54 @@
                     </div>
                 </section>
 
+            <section class="section">
+                <h2 class="section-title">Documentos</h2>
+                <div class="space-y-3">
+                    {% if documentos %}
+                        {% for documento in documentos %}
+                            <div class="note-card">
+                                <div class="note-header">
+                                    <p class="note-author">
+                                        {{ documento.get_tipo_documento_display }}
+                                    </p>
+
+                                </div>
+                                
+                                
+                                
+                                <p class="note-date">
+                                    Vencimento:
+                                    {% if documento.data_vencimento %}
+                                        {{ documento.data_vencimento|date:"d/m/Y" }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </p>
+
+                                <p class="note-content">{{ documento.observacao }}</p>
+                                
+                                {% if documento.arquivo %}
+                                    <div class="mt-3 flex gap-2">
+                                        <a class="btn btn-sm" href="{{ documento.arquivo.url }}" target="_blank" rel="noopener">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-primary" href="{{ documento.arquivo.url }}" download>
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <p class="text-gray-500 mt-2">Sem arquivo anexado.</p>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <p class="text-gray-500">Nenhum documento registrado.</p>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-gray-500">Nenhum documento registrado.</p>
+                    {% endif %}
+                </div>
+            </section>
+
                 <!-- Section 8: Dados Financeiros -->
                 <section class="section">
                     <h2 class="section-title">Dados Financeiros</h2>

@@ -64,26 +64,91 @@ def agenda_view(request):
 
 
 
- 
-
- 
+from django.utils.timezone import now
+from datetime import datetime
 
 def agenda_board(request):
-    hoje = now().date()
-    hoje = '2025-10-03'
-    agendamentos = Agendamento.objects.filter(data=hoje)
-
-    # pega lista única de profissionais que aparecem como profissional_1
-    profissionais = agendamentos.values_list(
-        "profissional_1__id", "profissional_1__nome"
-    ).distinct()
-
+    # Pega a data da query string ou usa hoje
+    date_str = request.GET.get('date')
+    if date_str:
+        try:
+            selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except:
+            selected_date = now().date()
+    else:
+        selected_date = now().date()
+    
+    # Filtra agendamentos pela data selecionada
+    agendamentos = Agendamento.objects.filter(data=selected_date)
+    
+    # Busca todos os profissionais (modelo Profissional)
+    # Mas também filtramos apenas os que têm User com tipo='profissional'
+    profissionais = Profissional.objects.filter(
+        user__tipo='profissional'
+    ).order_by('nome')
+    
+    # Para incluir também profissionais que não têm user (se houver)
+    # profissionais = Profissional.objects.all().order_by('nome')
+    
+    # Criar lista de profissionais com informações
+    profissionais_list = []
+    for prof in profissionais:
+        # Verifica se tem agendamento na data selecionada
+        tem_agenda = agendamentos.filter(profissional_1=prof).exists()
+        
+        # Usa o nome do profissional (do modelo Profissional)
+        nome_completo = f"{prof.nome} {prof.sobrenome}" if prof.sobrenome else prof.nome
+        
+        profissionais_list.append({
+            'id': prof.id,
+            'nome': nome_completo,
+            'user_id': prof.user.id if prof.user else None,
+            'tem_agenda': tem_agenda
+        })
+    
+    # Formatar data para exibição
+    formatted_date = selected_date.strftime('%Y-%m-%d')
+    
+    # Verificar se é hoje
+    is_today = selected_date == now().date()
+    
+    # Gerar horários de 30 em 30 minutos das 07:00 às 19:00
+    horarios = []
+    hora = 7
+    minuto = 0
+    
+    while hora < 19 or (hora == 19 and minuto == 0):
+        horarios.append(f"{hora:02d}:{minuto:02d}")
+        minuto += 30
+        if minuto >= 60:
+            hora += 1
+            minuto = 0
+    
+    # Preparar agendamentos para o template
+    for ag in agendamentos:
+        if ag.hora_inicio:
+            ag.hora_str = ag.hora_inicio.strftime("%H:%M")
+        else:
+            ag.hora_str = "00:00"
+    
     context = {
         "agendamentos": agendamentos,
-        "horarios": gerar_horarios(),
-        "profissionais": profissionais,
+        "horarios": horarios,
+        "profissionais": profissionais_list,
+        "selected_date": formatted_date,
+        "is_today": is_today,
+        "today_date": now().date().strftime('%Y-%m-%d'),
     }
     return render(request, "core/agendamentos/agenda_board.html", context)
+
+
+
+
+
+
+
+
+
 
 def proxima_data_semana(data_inicial, dia_semana_index):
     if data_inicial is None:
