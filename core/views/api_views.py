@@ -191,76 +191,7 @@ def registrar_pagamento(request, receita_id):
         'status_receita': receita.status,
     })
 
-@require_GET
-def dados_receita_pagamento(request, receita_id):
-    try:
-        receita = get_object_or_404(Receita, id=receita_id)
-        
-        # Dados base que serão retornados
-        dados = {
-            'success': True,
-            'receita': {
-                'id': receita.id,
-                'descricao': receita.descricao,
-                'valor': str(receita.valor),
-                'vencimento': receita.vencimento.strftime("%Y-%m-%d") if receita.vencimento else None,
-                'saldo': str(receita.saldo)
-            },
-            'paciente': None,
-            'tipo': 'manual'  # Default
-        }
-        
-        # Tenta buscar pacote (receitas vinculadas a pacotes)
-        import re
-        match = re.search(r'Pacote\s+(\w+)', receita.descricao)
-        
-        if match:
-            # É uma receita de pacote
-            pacote_codigo = match.group(1)
-            try:
-                pacote = get_object_or_404(PacotePaciente, codigo=pacote_codigo)
-                
-                # Busca primeira sessão para vencimento
-                agqs = Agendamento.objects.filter(
-                    pacote=pacote,
-                    status__in=['agendado', 'finalizado', 'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
-                ).order_by('data', 'hora_inicio', 'id')
-                
-                primeira_sessao = agqs.first() if agqs.exists() else None
-                vencimento = primeira_sessao.data if primeira_sessao else pacote.data_inicio
-                
-                dados['tipo'] = 'pacote'
-                dados['paciente'] = {
-                    'id': pacote.paciente.id,
-                    'nome': pacote.paciente.nome
-                }
-                dados['receita'].update({
-                    'valor': str(pacote.valor_total),
-                    'vencimento': vencimento.strftime("%Y-%m-%d") if vencimento else None,
-                    'saldo': str(pacote.valor_restante)
-                })
-                
-            except PacotePaciente.DoesNotExist:
-                # Pacote não encontrado, mantém como manual
-                pass
-        
-        # Se não encontrou pacote OU é manual (tem paciente direto)
-        if not dados['paciente'] and receita.paciente:
-            # Receita manual com paciente vinculado
-            dados['tipo'] = 'manual'
-            dados['paciente'] = {
-                'id': receita.paciente.id,
-                'nome': receita.paciente.nome
-            }
-        
-        # Se nem paciente vinculado, mantém como manual sem paciente
-        return JsonResponse(dados)
-        
-    except Receita.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Receita não encontrada'}, status=404)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
-
+ 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from decimal import Decimal
@@ -381,6 +312,9 @@ def dados_pagamento(request, receita_id):
             'success': False,
             'error': str(e)
         }, status=500)
+
+
+
 @require_POST
 @csrf_exempt
 def criar_receita_manual(request):
