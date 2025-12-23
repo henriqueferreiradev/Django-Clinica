@@ -15,6 +15,7 @@ from dateutil.relativedelta import relativedelta
 import uuid
 from django.db.models import Q
 from django.forms import CharField
+ 
 from core.services.status_beneficios import calcular_beneficio
 from django.db.models import Sum
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -671,17 +672,89 @@ class PacotePaciente(models.Model):
     data_inicio = models.DateField(default=timezone.now)
     ativo = models.BooleanField(default=True)
     eh_reposicao = models.BooleanField(default=False)
-
+    
+    
+    def criar_ou_atualizar_receita(self):
+        """
+        Cria ou atualiza a receita associada a este pacote
+        Garante que não crie duplicações
+        """
+        from decimal import Decimal
+        from django.utils import timezone
+        from core.services.financeiro import criar_receita_pacote
+        
+        if not self.valor_final or self.valor_final <= 0:
+            return None
+        
+        # Busca primeiro agendamento para definir vencimento
+        primeiro_agendamento = self.agendamento_set.order_by('data').first()
+        
+        # Se não tem agendamento ainda, usa data de hoje + 7 dias como vencimento
+        if primeiro_agendamento:
+            vencimento = primeiro_agendamento.data
+        else:
+            vencimento = timezone.localdate() + timezone.timedelta(days=7)
+        
+        # Usa a função centralizada do services/financeiro.py
+        receita = criar_receita_pacote(
+            paciente=self.paciente,
+            pacote=self,
+            valor_final=self.valor_final,
+            vencimento=vencimento,
+            forma_pagamento='pix',  # Default, você pode ajustar
+            valor_pago_inicial=self.total_pago
+        )
+        
+        return receita
     def save(self, *args, **kwargs):
+        from core.models import Receita
+        from decimal import Decimal
+        import re
+        
+        # Verificar se é uma criação (não update)
+        criando = self.pk is None
+        
+        # Valor original antes do save (para comparação)
+        valor_final_original = None
+        if not criando:
+            try:
+                pacote_original = PacotePaciente.objects.get(pk=self.pk)
+                valor_final_original = pacote_original.valor_final
+            except PacotePaciente.DoesNotExist:
+                pass
+        
+        # 1. Configurações iniciais
         if not self.codigo:
             self.codigo = f'PAC{uuid.uuid4().hex[:8].upper()}'
-        if not self.qtd_sessoes:
+        
+        if not self.qtd_sessoes and self.servico:
             self.qtd_sessoes = self.servico.qtd_sessoes
- 
-        if self.valor_final is None:
-            self.valor_final = self.servico.valor 
+        
+        if self.valor_final is None and self.servico:
+            self.valor_final = self.servico.valor
+        
+        # Salva primeiro para ter o ID
         super().save(*args, **kwargs)
         
+        # 2. Depois de salvar, cria/atualiza receita se necessário
+        if self.valor_final and self.valor_final > 0:
+            # Verifica se precisa criar/atualizar receita
+            precisa_criar_atualizar = False
+            
+            if criando:
+                # Nova criação: sempre cria receita
+                precisa_criar_atualizar = True
+                print(f"DEBUG: Pacote criado - criando receita")
+            elif valor_final_original is not None:
+                # Update: verifica se o valor mudou significativamente
+                diferenca = abs(valor_final_original - self.valor_final)
+                if diferenca > Decimal('0.01'):
+                    precisa_criar_atualizar = True
+                    print(f"DEBUG: Valor do pacote alterado - atualizando receita")
+            
+            if precisa_criar_atualizar:
+                self.criar_ou_atualizar_receita() 
+                
     def get_sessao_atual(self, agendamento=None):
         if agendamento:
             agendamentos = self.agendamento_set.filter(
@@ -701,8 +774,8 @@ class PacotePaciente(models.Model):
                 sessao += 1
             return min(sessao, self.qtd_sessoes)  # nunca passa do limite
         return min(self.sessoes_realizadas + 1, self.qtd_sessoes)
-
-        
+    
+ 
     @property
     def sessoes_realizadas(self):
         return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
@@ -724,7 +797,6 @@ class PacotePaciente(models.Model):
         total_pago = Decimal(str(self.total_pago or 0))
         return valor_final - total_pago
 
-
     @property
     def valor_desconto(self):
         if self.desconto_reais:
@@ -735,7 +807,6 @@ class PacotePaciente(models.Model):
     
     def __str__(self):
         return f"Pacote {self.codigo} Valor restante {self.valor_restante} - {self.paciente} "
-
 class Agendamento(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     servico = models.ForeignKey(Servico, null=True, blank=True, on_delete=models.SET_NULL)
@@ -1129,6 +1200,7 @@ class Receita(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True, blank=True)  
     categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'receita'})
     categoria_receita = models.ForeignKey(CategoriaContasReceber, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Categoria da Receita")
+    pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True, related_name='receitas')
     descricao = models.CharField(max_length=255)
     agendamento_codigo = models.CharField(max_length=50, blank=True, null=True)
     vencimento = models.DateField()
@@ -1152,7 +1224,15 @@ class Receita(models.Model):
     def saldo(self):
         """Calcula o valor que ainda falta pagar"""
         return self.valor - self.total_pago
-
+    class Meta:
+        # ADICIONE ESTE CONSTRAINT
+        constraints = [
+            models.UniqueConstraint(
+                fields=['pacote'],
+                name='unique_receita_por_pacote',
+                condition=models.Q(pacote__isnull=False)
+            )
+        ]
     def atualizar_status_por_pagamentos(self):
         """
         Atualiza o status da receita baseado no saldo e vencimento
@@ -1657,9 +1737,4 @@ def popular_plano_contas_inicial():
     return created_count
 
     
-    
-    
-    
-    
-
-
+     

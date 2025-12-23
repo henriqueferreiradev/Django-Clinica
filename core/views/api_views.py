@@ -144,114 +144,52 @@ def paciente_detalhes_basicos(request, paciente_id):
     except Paciente.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Paciente não encontrado'})
  
+@login_required
 @require_POST
-@csrf_exempt
-def registrar_pagamento(request, item_id):
-    """
-    Registra um pagamento - aceita ID de Receita, Pacote via Receita, ou Pacote Direto
-    """
-    try:
-        data = json.loads(request.body)
-        print("=== REGISTRAR PAGAMENTO ===")
-        print("Dados:", data)
-        
-        # Pega o tipo do item (vindo do JavaScript)
-        tipo_item = data.get('tipo_receita', 'receita_manual')
-        
-        receita = None
-        pacote = None
-        
-        # Caso 1: Receita Manual ou Pacote via Receita
-        if tipo_item in ['receita_manual', 'pacote_via_receita']:
-            receita = get_object_or_404(Receita, id=item_id)
-            print(f"Receita encontrada: {receita.descricao}")
-        
-        # Caso 2: Pacote Direto
-        elif tipo_item == 'pacote_direto':
-            pacote = get_object_or_404(PacotePaciente, id=item_id)
-            print(f"Pacote direto encontrado: {pacote.codigo}")
-            
-            # Busca ou cria a receita para este pacote
-            receita = Receita.objects.filter(
-                descricao__icontains=pacote.codigo,
-                paciente=pacote.paciente
-            ).first()
-            
-            if not receita:
-                categoria_financeira = CategoriaFinanceira.objects.filter(tipo='receita').first()
-                receita = Receita.objects.create(
-                    paciente=pacote.paciente,
-                    categoria=categoria_financeira,
-                    descricao=f"Pacote {pacote.codigo}",
-                    vencimento=pacote.data_inicio,
-                    valor=pacote.valor_final,
-                    status='pendente'
-                )
-                print(f"Receita criada para pacote: #{receita.id}")
-        
-        else:
-            return JsonResponse({
-                'success': False,
-                'message': 'Tipo de item inválido'
-            }, status=400)
-        
-        # Dados do pagamento
-        valor_pago = Decimal(str(data.get('valor_pago', 0)))
-        forma_pagamento = data.get('forma_pagamento', 'pix')
-        data_pagamento = data.get('data_pagamento', timezone.now().date())
-        observacoes = data.get('observacoes', '')
-        
-        print(f"Valor a pagar: R$ {valor_pago}")
-        print(f"Saldo atual: R$ {receita.saldo}")
-        
-        # Validação
-        if valor_pago > receita.saldo:
-            return JsonResponse({
-                'success': False,
-                'message': f'Valor (R$ {valor_pago:.2f}) excede o saldo atual (R$ {receita.saldo:.2f})'
-            })
-        
-        # Cria o pagamento
-        pagamento = Pagamento.objects.create(
-            paciente=receita.paciente,
-            receita=receita,
-            valor=valor_pago,
-            data=data_pagamento,
-            forma_pagamento=forma_pagamento,
-            status='pago',
-            vencimento=receita.vencimento,
-            observacoes=observacoes
-        )
-        
-        print(f"Pagamento criado: #{pagamento.id}")
-        
-        # Atualiza status da receita
-        receita.atualizar_status_por_pagamentos()
-        
-        # Recarrega para dados atualizados
-        receita.refresh_from_db()
-        
-        print(f"Saldo após pagamento: R$ {receita.saldo}")
-        print(f"Status: {receita.status}")
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Pagamento registrado com sucesso!',
-            'pagamento_id': pagamento.id,
-            'receita_id': receita.id,
-            'saldo_atual': float(receita.saldo),
-            'status_atual': receita.status
-        })
-        
-    except Exception as e:
-        print(f"ERRO: {e}")
-        import traceback
-        traceback.print_exc()
-        return JsonResponse({
-            'success': False,
-            'message': f'Erro: {str(e)}'
-        }, status=500)
+def registrar_pagamento(request, receita_id):
+    receita = get_object_or_404(Receita, id=receita_id)
 
+    try:
+        valor = Decimal(request.POST.get('valor'))
+    except:
+        return JsonResponse({'error': 'Valor inválido'}, status=400)
+
+    if valor <= 0:
+        return JsonResponse({'error': 'Valor deve ser maior que zero'}, status=400)
+
+    forma_pagamento = request.POST.get('forma_pagamento')
+    data_pagamento  = request.POST.get('data_pagamento') or timezone.localdate()
+
+    # 🔒 Proteção: não pagar receita já quitada
+    if receita.saldo <= Decimal('0.00'):
+        return JsonResponse({'error': 'Receita já está quitada'}, status=400)
+
+    # 🔒 Proteção: não permitir pagar mais do que o saldo
+    if valor > receita.saldo:
+        return JsonResponse({
+            'error': f'Valor excede o saldo da receita (R$ {receita.saldo})'
+        }, status=400)
+
+    pagamento = Pagamento.objects.create(
+        receita=receita,
+        paciente=receita.paciente,
+        pacote=receita.pacote,          # pode ser None (manual)
+        valor=valor,
+        data=timezone.now(),
+        forma_pagamento=forma_pagamento,
+        status='pago',
+        vencimento=receita.vencimento,
+    )
+
+    # Atualiza status da receita com base no novo saldo
+    receita.atualizar_status_por_pagamentos()
+
+    return JsonResponse({
+        'ok': True,
+        'receita_id': receita.id,
+        'novo_saldo': f'{receita.saldo:.2f}',
+        'status_receita': receita.status,
+    })
 
 @require_GET
 def dados_receita_pagamento(request, receita_id):
