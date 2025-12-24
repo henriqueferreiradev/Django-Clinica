@@ -1,7 +1,10 @@
 # core/services/financeiro.py
 from decimal import Decimal
+
+ 
+from clinica_project.settings import TIME_ZONE
 from core.models import CategoriaContasReceber, CategoriaFinanceira, Pagamento, Receita
-from datetime import date
+from datetime import date, timezone
 
 def criar_receita_pacote(paciente, pacote, valor_final, vencimento, 
                         forma_pagamento, valor_pago_inicial=None):
@@ -116,16 +119,21 @@ def criar_receita_pacote(paciente, pacote, valor_final, vencimento,
 
 
 
-def registrar_pagamento(receita, paciente, pacote, agendamento, valor, forma_pagamento):
-    p = Pagamento.objects.create(
+def criar_pagamento(*, receita, paciente, pacote, agendamento, valor, forma_pagamento, data_pagamento=None):
+    if valor <= 0:
+        raise ValueError('Valor inválido')
+
+    pagamento = Pagamento.objects.create(
+        receita=receita,
         paciente=paciente,
         pacote=pacote,
         agendamento=agendamento,
         valor=valor,
         forma_pagamento=forma_pagamento,
         status='pago',
+        data=data_pagamento or timezone.now(),
         vencimento=receita.vencimento,
-        receita=receita,
     )
+
     receita.atualizar_status_por_pagamentos()
-    return p
+    return pagamento

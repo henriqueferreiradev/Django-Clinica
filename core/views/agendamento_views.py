@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt 
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
-from core.services.financeiro import criar_receita_pacote, registrar_pagamento
+from core.services.financeiro import criar_receita_pacote, criar_pagamento
 from core.utils import gerar_horarios,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
 from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
 from datetime import date, datetime, timedelta

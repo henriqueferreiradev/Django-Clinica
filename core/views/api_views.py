@@ -20,7 +20,7 @@ from core.models import Pagamento
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
- 
+from core.services.financeiro import criar_pagamento
 from core.models import Pagamento
 from django.http import JsonResponse
 import json
@@ -144,49 +144,80 @@ def paciente_detalhes_basicos(request, paciente_id):
     except Paciente.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Paciente não encontrado'})
  
+import json
+from decimal import Decimal, InvalidOperation
+
 @login_required
 @require_POST
-def registrar_pagamento(request, receita_id):
+def api_registrar_pagamento(request, receita_id):
     receita = get_object_or_404(Receita, id=receita_id)
 
+    # ---------------------------------
+    # SUPORTE A JSON E FORM-DATA
+    # ---------------------------------
+    data = request.POST
+    if not data:
+        try:
+            data = json.loads(request.body.decode())
+        except:
+            return JsonResponse({'error': 'Dados inválidos'}, status=400)
+
+    # ---------------------------------
+    # VALOR
+    # ---------------------------------
+    valor_raw = (
+        data.get('valor')
+        or data.get('valor_pago')
+    )
+
+    if not valor_raw:
+        return JsonResponse({'error': 'Valor não informado'}, status=400)
+
     try:
-        valor = Decimal(request.POST.get('valor'))
-    except:
+        valor = Decimal(str(valor_raw))
+    except (InvalidOperation, TypeError):
         return JsonResponse({'error': 'Valor inválido'}, status=400)
 
     if valor <= 0:
         return JsonResponse({'error': 'Valor deve ser maior que zero'}, status=400)
 
-    forma_pagamento = request.POST.get('forma_pagamento')
-    data_pagamento  = request.POST.get('data_pagamento') or timezone.localdate()
+    # ---------------------------------
+    # FORMA DE PAGAMENTO
+    # ---------------------------------
+    forma_pagamento = data.get('forma_pagamento')
+    if not forma_pagamento:
+        return JsonResponse({'error': 'Forma de pagamento não informada'}, status=400)
 
-    # 🔒 Proteção: não pagar receita já quitada
+    data_pagamento = data.get('data_pagamento') or timezone.localdate()
+
+    # ---------------------------------
+    # REGRAS DE NEGÓCIO
+    # ---------------------------------
     if receita.saldo <= Decimal('0.00'):
         return JsonResponse({'error': 'Receita já está quitada'}, status=400)
 
-    # 🔒 Proteção: não permitir pagar mais do que o saldo
     if valor > receita.saldo:
         return JsonResponse({
             'error': f'Valor excede o saldo da receita (R$ {receita.saldo})'
         }, status=400)
 
-    pagamento = Pagamento.objects.create(
+    # ---------------------------------
+    # SERVICE
+    # ---------------------------------
+    pagamento = criar_pagamento(
         receita=receita,
         paciente=receita.paciente,
-        pacote=receita.pacote,          # pode ser None (manual)
+        pacote=receita.pacote,
+        agendamento=None,
         valor=valor,
-        data=timezone.now(),
         forma_pagamento=forma_pagamento,
-        status='pago',
-        vencimento=receita.vencimento,
+        data_pagamento=data_pagamento
     )
 
-    # Atualiza status da receita com base no novo saldo
-    receita.atualizar_status_por_pagamentos()
-
     return JsonResponse({
-        'ok': True,
+        'success': True,
         'receita_id': receita.id,
+        'pagamento_id': pagamento.id,
         'novo_saldo': f'{receita.saldo:.2f}',
         'status_receita': receita.status,
     })
