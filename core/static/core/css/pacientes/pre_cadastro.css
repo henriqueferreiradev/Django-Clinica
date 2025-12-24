@@ -732,4 +732,7 @@ input.error {
     transform: translateY(-2px); 
   
   }
-  
+
+.checkbox-option {
+    padding: 0;
+}

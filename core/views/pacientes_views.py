@@ -12,9 +12,7 @@ from django.contrib import messages
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
 from django.template.context_processors import request
- 
 from core.tokens import gerar_token_acesso_unico, verificar_token_acesso
-
 import qrcode
 import base64
 from io import BytesIO
@@ -392,9 +390,6 @@ def editar_paciente_view(request,id):
  
 def ficha_paciente(request, id):
     paciente = get_object_or_404(Paciente, id=id)
-    
- 
- 
     return render(request, 'core/pacientes/ficha_paciente.html', {'paciente': paciente})
 
 @require_GET
@@ -404,7 +399,7 @@ def buscar_pacientes(request):
     resultados = []
 
     if termo:
-        pacientes = Paciente.objects.filter(Q(nome__icontains=termo) | Q(cpf__icontains=termo))[:10]
+        pacientes = Paciente.objects.filter( Q(nome__icontains=termo) | Q(cpf__icontains=termo), ativo=True )[:10]
 
         resultados = [{'id':p.id, 'nome':p.nome,'sobrenome':p.sobrenome, 'cpf':p.cpf}
                       for p in pacientes]
@@ -522,9 +517,9 @@ def pre_cadastro(request):
             nf_nao_aplica = nf_nao_aplica,
             nf_imposto_renda = nf_imposto_renda,
             nf_reembolso_plano = nf_reembolso_plano,
-            pre_cadastro=False,         
-            conferido=True,
-            ativo=True,     
+            pre_cadastro=True,         
+            conferido=False,
+            ativo=False,   
         )
 
         if foto:
@@ -765,7 +760,7 @@ def gerar_link_publico_precadastro(request):
 
     
     
-    pacientes = Paciente.objects.filter(pre_cadastro=True, ativo=True)
+    pacientes = Paciente.objects.filter(pre_cadastro=True)
     print(pacientes)
     
     return render(request, 'core/pacientes/link_gerado.html', {

@@ -147,72 +147,90 @@ def paciente_detalhes_basicos(request, paciente_id):
 import json
 from decimal import Decimal, InvalidOperation
 
+import json
+from decimal import Decimal, InvalidOperation
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
+ 
+
 @login_required
 @require_POST
 def api_registrar_pagamento(request, receita_id):
     receita = get_object_or_404(Receita, id=receita_id)
 
-    # ---------------------------------
-    # SUPORTE A JSON E FORM-DATA
-    # ---------------------------------
-    data = request.POST
-    if not data:
-        try:
-            data = json.loads(request.body.decode())
-        except:
-            return JsonResponse({'error': 'Dados inválidos'}, status=400)
+    # JSON obrigatório
+    try:
+        data = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'JSON inválido'}, status=400)
 
-    # ---------------------------------
-    # VALOR
-    # ---------------------------------
-    valor_raw = (
-        data.get('valor')
-        or data.get('valor_pago')
-    )
+    valor_raw = data.get('valor_pago')
+    forma_pagamento = data.get('forma_pagamento')
+    data_pagamento_raw = data.get('data_pagamento')  # "YYYY-MM-DD"
+    observacoes = data.get('observacoes', '')
 
-    if not valor_raw:
-        return JsonResponse({'error': 'Valor não informado'}, status=400)
+    # ---- validações ----
+    if valor_raw in (None, '', 0, '0'):
+        return JsonResponse({'success': False, 'error': 'Valor não informado'}, status=400)
 
     try:
         valor = Decimal(str(valor_raw))
-    except (InvalidOperation, TypeError):
-        return JsonResponse({'error': 'Valor inválido'}, status=400)
+    except (InvalidOperation, TypeError, ValueError):
+        return JsonResponse({'success': False, 'error': 'Valor inválido'}, status=400)
 
     if valor <= 0:
-        return JsonResponse({'error': 'Valor deve ser maior que zero'}, status=400)
+        return JsonResponse({'success': False, 'error': 'Valor deve ser maior que zero'}, status=400)
 
-    # ---------------------------------
-    # FORMA DE PAGAMENTO
-    # ---------------------------------
-    forma_pagamento = data.get('forma_pagamento')
     if not forma_pagamento:
-        return JsonResponse({'error': 'Forma de pagamento não informada'}, status=400)
+        return JsonResponse({'success': False, 'error': 'Forma de pagamento não informada'}, status=400)
 
-    data_pagamento = data.get('data_pagamento') or timezone.localdate()
+    # data do pagamento
+    if data_pagamento_raw:
+        try:
+            data_pagamento = timezone.datetime.fromisoformat(str(data_pagamento_raw)).date()
+        except Exception:
+            return JsonResponse({'success': False, 'error': 'Data de pagamento inválida'}, status=400)
+    else:
+        data_pagamento = timezone.localdate()
 
-    # ---------------------------------
-    # REGRAS DE NEGÓCIO
-    # ---------------------------------
+    # regras de negócio
     if receita.saldo <= Decimal('0.00'):
-        return JsonResponse({'error': 'Receita já está quitada'}, status=400)
+        return JsonResponse({'success': False, 'error': 'Receita já está quitada'}, status=400)
 
     if valor > receita.saldo:
-        return JsonResponse({
-            'error': f'Valor excede o saldo da receita (R$ {receita.saldo})'
-        }, status=400)
+        return JsonResponse(
+            {'success': False, 'error': f'Valor excede o saldo da receita (R$ {receita.saldo})'},
+            status=400
+        )
 
-    # ---------------------------------
-    # SERVICE
-    # ---------------------------------
-    pagamento = criar_pagamento(
-        receita=receita,
-        paciente=receita.paciente,
-        pacote=receita.pacote,
-        agendamento=None,
-        valor=valor,
-        forma_pagamento=forma_pagamento,
-        data_pagamento=data_pagamento
-    )
+    # service
+    try:
+        pagamento = criar_pagamento(
+            receita=receita,
+            paciente=receita.paciente,
+            pacote=receita.pacote,   # pode ser None (manual)
+            agendamento=None,
+            valor=valor,
+            forma_pagamento=forma_pagamento,
+            data_pagamento=data_pagamento,
+        )
+
+        if observacoes and hasattr(pagamento, 'observacoes'):
+            pagamento.observacoes = observacoes
+            pagamento.save(update_fields=['observacoes'])
+
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'error': 'Erro interno ao registrar pagamento'}, status=500)
+
+    receita.refresh_from_db()
 
     return JsonResponse({
         'success': True,
@@ -222,7 +240,6 @@ def api_registrar_pagamento(request, receita_id):
         'status_receita': receita.status,
     })
 
- 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from decimal import Decimal

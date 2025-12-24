@@ -82,43 +82,6 @@ def criar_receita_pacote(paciente, pacote, valor_final, vencimento,
     
     return receita
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def criar_pagamento(*, receita, paciente, pacote, agendamento, valor, forma_pagamento, data_pagamento=None):
     if valor <= 0:
         raise ValueError('Valor inválido')

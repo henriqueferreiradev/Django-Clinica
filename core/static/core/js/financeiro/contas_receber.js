@@ -282,6 +282,7 @@ async function processarRecebimentoManual() {
 
         } else {
             mostrarMensagem('Erro: ' + (result.message || 'Erro desconhecido'), 'error');
+            console.log('Erro: ' + (result.message || 'Erro desconhecido'), 'error');
         }
     } catch (error) {
         console.error('Erro ao processar recebimento manual:', error);
@@ -394,7 +395,7 @@ async function processarRecebimento() {
             document.getElementById('modalPagamento').classList.remove('active');
             setTimeout(() => window.location.reload(), 1000);
         } else {
-            mostrarMensagem('Erro: ' + (result.message || 'Erro desconhecido'), 'error');
+            mostrarMensagem('Erro: ' + (result.error || 'Erro desconhecido'), 'error');
         }
     } catch (error) {
         console.error('Erro:', error);

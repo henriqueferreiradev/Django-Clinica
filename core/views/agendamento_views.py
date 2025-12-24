@@ -10,11 +10,6 @@ from django.http import JsonResponse
 from django.db.models import Sum, Q, Count
 from collections import defaultdict
 from django.contrib import messages
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from decimal import Decimal
-from django.db import transaction
-from django.template.context_processors import request
 import uuid
 from django.utils.timezone import now
 from decimal import Decimal, InvalidOperation
