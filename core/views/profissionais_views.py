@@ -84,15 +84,12 @@ def cadastrar_profissionais_view(request):
         bairro = request.POST.get('bairro')
         cidade = request.POST.get('cidade')
         estado = request.POST.get('estado')
-
         telefone = request.POST.get('telefone')
         celular = request.POST.get('celular')
         email = request.POST.get('email')
- 
         nomeEmergencia = request.POST.get('nomeEmergencia')
         vinculo = request.POST.get('vinculo')
         telEmergencia = request.POST.get('telEmergencia')
-
         if nome:
             print(f"DEBUG VIEW: Antes de criar Profissional")
             print(f"DEBUG VIEW: Email que será salvo: {email}")
@@ -149,6 +146,61 @@ def cadastrar_profissionais_view(request):
                 objeto_id=profissional.id,
                 descricao=f'Profissional {profissional.nome} cadastrado.')
             
+            
+            paciente = Paciente.objects.create(
+                nome=nome,
+                sobrenome=request.POST.get('sobrenome'),
+                nomeSocial=request.POST.get('nomeSocial'),
+                cpf = request.POST.get('cpf'),
+                vinculo=request.POST.get('vinculo'),
+                redeSocial=request.POST.get('redeSocial'),
+                profissao=especialidade_id,
+                rg=request.POST.get('rg'),
+                data_nascimento=nascimento_formatada,
+                cor_raca=request.POST.get('cor_raca'),
+                sexo=request.POST.get('sexo'),
+                naturalidade=request.POST.get('naturalidade'),
+                uf=request.POST.get('uf'),
+                estado_civil=request.POST.get('estado_civil'),
+                complemento=request.POST.get('complemento'),
+                midia='outro',
+                cep=request.POST.get('cep'),
+                rua=request.POST.get('rua'),
+                numero=request.POST.get('numero'),
+                bairro=request.POST.get('bairro'),
+                cidade=request.POST.get('cidade'),
+                estado=request.POST.get('estado'),
+                telefone=request.POST.get('telefone'),
+                celular=request.POST.get('celular'),
+                nomeEmergencia=request.POST.get('nomeEmergencia'),
+                telEmergencia=request.POST.get('telEmergencia'),
+                email=request.POST.get('email'),
+                observacao=request.POST.get('observacao'),
+                consentimento_tratamento=True,
+                consentimento_lgpd=True,
+                data_consentimento=timezone.now(),
+                ip_consentimento=request.META.get('REMOTE_ADDR'),
+                nf_nao_aplica = False,
+                nf_imposto_renda = False,
+                nf_reembolso_plano = False,
+                pre_cadastro=False,         
+                conferido=True,
+                ativo=True,
+            )
+            print(request.POST.get("cor_raca"))
+            
+            
+            if foto:
+                paciente.foto = foto
+                paciente.save() 
+                messages.info(request, 'Foto do paciente atualizada')
+            messages.success(request, f'Paciente {paciente.nome} cadastrado com sucesso!')
+            
+            registrar_log(usuario=request.user,
+                        acao='Criação',
+                        modelo='Paciente',
+                        objeto_id=paciente.id,
+                        descricao=f'Paciente {paciente.nome} cadastrado.')
             return redirect('cadastrar_profissional')
     
     profissionais = Profissional.objects.all().order_by('-id')

@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lembretes Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header com sininho */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 28px;
+            color: #2575fc;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo h1 {
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Notificação - Sininho */
+        .notification-area {
+            position: relative;
+        }
+        
+        .bell-icon {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .bell-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.3);
+        }
+        
+        .bell-icon i {
+            font-size: 24px;
+            color: #2575fc;
+            animation: gentleRing 3s infinite ease-in-out;
+        }
+        
+        @keyframes gentleRing {
+            0%, 100% { transform: rotate(0deg); }
+            2%, 6% { transform: rotate(10deg); }
+            4%, 8% { transform: rotate(-10deg); }
+            10% { transform: rotate(0deg); }
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(255, 65, 108, 0.4);
+        }
+        
+        /* Conteúdo principal */
+        .content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        /* Cards de lembretes */
+        .reminder-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .reminder-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            padding: 25px 25px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        
+        .card-title h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .reminder-count {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+        }
+        
+        .reminder-list {
+            list-style: none;
+        }
+        
+        .reminder-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .reminder-item:last-child {
+            border-bottom: none;
+        }
+        
+        .reminder-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 5px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .reminder-text {
+            flex-grow: 1;
+        }
+        
+        .reminder-text h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #343a40;
+        }
+        
+        .reminder-text p {
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+        
+        .reminder-time {
+            font-size: 13px;
+            color: #adb5bd;
+            font-weight: 500;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Cores por categoria */
+        .personal {
+            border-top: 4px solid #6a11cb;
+        }
+        
+        .personal .card-icon {
+            background: rgba(106, 17, 203, 0.1);
+            color: #6a11cb;
+        }
+        
+        .personal .reminder-status {
+            background: #6a11cb;
+        }
+        
+        .work {
+            border-top: 4px solid #2575fc;
+        }
+        
+        .work .card-icon {
+            background: rgba(37, 117, 252, 0.1);
+            color: #2575fc;
+        }
+        
+        .work .reminder-status {
+            background: #2575fc;
+        }
+        
+        .health {
+            border-top: 4px solid #00b09b;
+        }
+        
+        .health .card-icon {
+            background: rgba(0, 176, 155, 0.1);
+            color: #00b09b;
+        }
+        
+        .health .reminder-status {
+            background: #00b09b;
+        }
+        
+        .financial {
+            border-top: 4px solid #ff9a00;
+        }
+        
+        .financial .card-icon {
+            background: rgba(255, 154, 0, 0.1);
+            color: #ff9a00;
+        }
+        
+        .financial .reminder-status {
+            background: #ff9a00;
+        }
+        
+        .social {
+            border-top: 4px solid #ff416c;
+        }
+        
+        .social .card-icon {
+            background: rgba(255, 65, 108, 0.1);
+            color: #ff416c;
+        }
+        
+        .social .reminder-status {
+            background: #ff416c;
+        }
+        
+        .other {
+            border-top: 4px solid #8e44ad;
+        }
+        
+        .other .card-icon {
+            background: rgba(142, 68, 173, 0.1);
+            color: #8e44ad;
+        }
+        
+        .other .reminder-status {
+            background: #8e44ad;
+        }
+        
+        /* Botão de adicionar */
+        .add-reminder-btn {
+            display: block;
+            margin: 0 auto 40px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            padding: 16px 35px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(106, 17, 203, 0.3);
+        }
+        
+        .add-reminder-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(106, 17, 203, 0.4);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .content {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .logo {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .card-header {
+                padding: 20px 20px 10px;
+            }
+            
+            .card-content {
+                padding: 20px;
+            }
+        }
+        
+        /* Modal de notificações */
+        .notification-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 25px 30px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .modal-body {
+            padding: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            color: #2575fc;
+            font-size: 18px;
+        }
+        
+        .notification-text h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .notification-text p {
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho com sininho -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-clipboard-list"></i>
+                <h1>Lembretes Premium</h1>
+            </div>
+            
+            <div class="notification-area">
+                <div class="bell-icon" id="bellIcon">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-count" id="notificationCount">3</div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Conteúdo principal -->
+        <main class="content">
+            <!-- Lembretes Pessoais -->
+            <div class="reminder-card personal">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h2>Pessoal</h2>
+                    </div>
+                    <div class="reminder-count">3 lembretes</div>
+                </div>
+                <div class="card-content">
+                    <ul class="reminder-list">
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Aniversário da mãe</h3>
+                                <p>Comprar presente e ligar para parabenizar</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Amanhã, 10:00
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Academia</h3>
+                                <p>Treino de pernas - não esquecer a garrafa de água</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Hoje, 18:30
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Meditação matinal</h3>
+                                <p>15 minutos de meditação antes do café</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Diariamente, 07:00
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Lembretes de Trabalho -->
+            <div class="reminder-card work">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h2>Trabalho</h2>
+                    </div>
+                    <div class="reminder-count">4 lembretes</div>
+                </div>
+                <div class="card-content">
+                    <ul class="reminder-list">
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Reunião com a equipe</h3>
+                                <p>Apresentar os resultados do último trimestre</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Quarta-feira, 14:00
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Relatório mensal</h3>
+                                <p>Enviar para o departamento financeiro</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Sexta-feira, 16:00
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Treinamento novo sistema</h3>
+                                <p>Participar da capacitação online</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Próxima segunda, 10:00
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Lembretes de Saúde -->
+            <div class="reminder-card health">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h2>Saúde</h2>
+                    </div>
+                    <div class="reminder-count">2 lembretes</div>
+                </div>
+                <div class="card-content">
+                    <ul class="reminder-list">
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Consulta médica</h3>
+                                <p>Check-up anual - levar exames anteriores</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    15 de outubro, 09:30
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Tomar vitaminas</h3>
+                                <p>Vitamina D e C - após o café da manhã</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Diariamente, 08:30
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Lembretes Financeiros -->
+            <div class="reminder-card financial">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h2>Financeiro</h2>
+                    </div>
+                    <div class="reminder-count">3 lembretes</div>
+                </div>
+                <div class="card-content">
+                    <ul class="reminder-list">
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Pagamento do cartão</h3>
+                                <p>Vencimento da fatura - pagar até o dia 10</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    10 de outubro, 00:00
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Investir em ações</h3>
+                                <p>Aplicar R$ 500,00 no fundo de dividendos</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Primeira segunda do mês
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Revisão do orçamento</h3>
+                                <p>Analisar gastos do mês e ajustar planejamento</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Último domingo do mês
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Lembretes Sociais -->
+            <div class="reminder-card social">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h2>Social</h2>
+                    </div>
+                    <div class="reminder-count">2 lembretes</div>
+                </div>
+                <div class="card-content">
+                    <ul class="reminder-list">
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Jantar com amigos</h3>
+                                <p>Restaurante italiano - confirmar presença</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Sábado, 20:00
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Chá de bebê da prima</h3>
+                                <p>Comprar presente e enviar mensagem</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    25 de outubro, 15:00
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Outros Lembretes -->
+            <div class="reminder-card other">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <h2>Outros</h2>
+                    </div>
+                    <div class="reminder-count">2 lembretes</div>
+                </div>
+                <div class="card-content">
+                    <ul class="reminder-list">
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Trocar óleo do carro</h3>
+                                <p>Agendar na oficina da concessionária</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Esta semana
+                                </div>
+                            </div>
+                        </li>
+                        <li class="reminder-item">
+                            <div class="reminder-status"></div>
+                            <div class="reminder-text">
+                                <h3>Devolver livro à biblioteca</h3>
+                                <p>"O Poder do Hábito" - vencerá em 5 dias</p>
+                                <div class="reminder-time">
+                                    <i class="far fa-clock"></i>
+                                    Em 5 dias
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Botão para adicionar lembrete -->
+        <button class="add-reminder-btn">
+            <i class="fas fa-plus-circle"></i> Adicionar Novo Lembrete
+        </button>
+    </div>
+    
+    <!-- Modal de notificações -->
+    <div class="notification-modal" id="notificationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Notificações</h3>
+                <div class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="notification-text">
+                        <h4>Reunião de equipe em 1 hora</h4>
+                        <p>Prepare a apresentação dos resultados trimestrais</p>
+                        <div class="notification-time">Há 10 minutos</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="notification-text">
+                        <h4>Aniversário da sua mãe amanhã</h4>
+                        <p>Lembre-se de comprar o presente e ligar para ela</p>
+                        <div class="notification-time">Há 2 horas</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="notification-text">
+                        <h4>Consulta médica agendada</h4>
+                        <p>Sua consulta de check-up está marcada para semana que vem</p>
+                        <div class="notification-time">Há 1 dia</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="notification-text">
+                        <h4>Pagamento do cartão em 3 dias</h4>
+                        <p>Vencimento da fatura no valor de R$ 850,00</p>
+                        <div class="notification-time">Há 2 dias</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos DOM
+        const bellIcon = document.getElementById('bellIcon');
+        const notificationModal = document.getElementById('notificationModal');
+        const closeModal = document.getElementById('closeModal');
+        const notificationCount = document.getElementById('notificationCount');
+        const addReminderBtn = document.querySelector('.add-reminder-btn');
+        
+        // Abrir modal ao clicar no sininho
+        bellIcon.addEventListener('click', () => {
+            notificationModal.style.display = 'flex';
+            // Resetar contador de notificações
+            notificationCount.textContent = '0';
+            notificationCount.style.background = '#6c757d';
+        });
+        
+        // Fechar modal
+        closeModal.addEventListener('click', () => {
+            notificationModal.style.display = 'none';
+        });
+        
+        // Fechar modal ao clicar fora
+        window.addEventListener('click', (event) => {
+            if (event.target === notificationModal) {
+                notificationModal.style.display = 'none';
+            }
+        });
+        
+        // Botão adicionar lembrete
+        addReminderBtn.addEventListener('click', () => {
+            alert('Funcionalidade de adicionar novo lembrete seria implementada aqui!');
+        });
+        
+        // Marcar lembrete como concluído
+        document.querySelectorAll('.reminder-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const status = this.querySelector('.reminder-status');
+                if (status.style.opacity === '0.3') {
+                    status.style.opacity = '1';
+                    this.style.opacity = '1';
+                } else {
+                    status.style.opacity = '0.3';
+                    this.style.opacity = '0.7';
+                }
+            });
+        });
+        
+        // Animação do sininho
+        let ringInterval;
+        
+        function startBellAnimation() {
+            ringInterval = setInterval(() => {
+                bellIcon.querySelector('i').style.animation = 'none';
+                setTimeout(() => {
+                    bellIcon.querySelector('i').style.animation = 'gentleRing 3s infinite ease-in-out';
+                }, 10);
+            }, 10000); // Repete a cada 10 segundos
+        }
+        
+        // Iniciar animação do sininho
+        startBellAnimation();
+        
+        // Simular novas notificações
+        setTimeout(() => {
+            if (notificationCount.textContent === '0') {
+                notificationCount.textContent = '1';
+                notificationCount.style.background = 'linear-gradient(to right, #ff416c, #ff4b2b)';
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

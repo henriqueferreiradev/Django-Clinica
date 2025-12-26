@@ -129,13 +129,6 @@ def contas_a_receber_view(request):
     
     return render(request, 'core/financeiro/contas_receber.html', context)
 
-
-
-
-
-
-
-
 def contas_a_pagar_view(request):
     hoje = timezone.localdate()
 
@@ -234,3 +227,6 @@ def folha_pagamento_view(request):
 
 def relatorios_view(request):
     return render(request, 'core/financeiro/relatorios.html')
+
+
+ 

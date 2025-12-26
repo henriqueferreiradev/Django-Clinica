@@ -100,6 +100,7 @@
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Agenda</a></li>
           <li><a href="{% url 'agenda' %}">Ver agenda</a></li>
+          <li><a href="{% url 'agenda_board' %}">Agenda Matriz</a></li>
         </ul>
       </li>
       {% if request.user.tipo != 'profissional' %}
