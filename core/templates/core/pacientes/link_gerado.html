@@ -7,133 +7,231 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/pacientes/link_gerado.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/pacientes/pacientes.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+ 
 {% endblock %}
 
 {% block content %}
 <div class="content">
-  {% include "core/partials/_loader.html" %}
-  <div class="right_content">
-
-    <!--
-
-    <div class="steps"> 
-      <p><strong>Dicas</strong></p>
-      <p><strong>Passo 1:</strong> Copie o link ou use os botões abaixo</p>
-      <p><strong>Passo 2:</strong> Envie por WhatsApp ou outro canal</p>
-      <p><strong>Passo 3:</strong> Quando o paciente preencher irá aparecer na tabela ao lado</p>
-     </div>
--->
-    <div class="top_btn">
-      <form action="{% url 'gerar_link_publico_precadastro' %}" method="get" style="display:inline;">
-        <button type="submit" class="btn btn-primary">Novo Link</button>
-      </form>
-      <button type="button" class="btn btn-primary">Atualizar tabela</button>
-    </div>
-    <p>Copie o código para enviar</p>
-    <div class="right_link">
-      <div class="right_link-link">
-        <input type="text" id="link" value="{{ link_tokenizado }}" readonly>
-        <button onclick="copiarLink()" class="btn-save">
-          Copiar
-        </button>
-      </div>
-
-      <div class="social-buttons">
-        <form action="{% url 'gerar_link_publico_precadastro' %}" method="get" style="display:inline;">
-          <button type="submit" class="btn btn-primary"><i class='bx bx-folder-open'></i>
-          </button>
-        </form>
-        <button onclick="enviarWhatsapp()"><i class='bx bxl-whatsapp'></i></button>
-        <button onclick="window.open('https://telegram.me/share/url?url=' + encodeURIComponent(link))"><i
-            class='bx bxl-telegram'></i></button>
-        <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link))"><i
-            class='bx bxl-facebook'></i></button>
-        <button onclick="window.open('https://www.instagram.com/')"><i class='bx bxl-instagram'></i></button>
-      </div>
-    </div>
-    <p>Ou leia o QR Code</p>
-    <img style="width: 250px; height:250px;" src=" data:image/png;base64,{{ qrcode_base64 }}" alt="QR Code do Link">
-  </div>
-  <div class="left_content">
-    <div class="table-container" style="max-height: calc(100vh - 220px); overflow-y: auto;">
-      <table>
-
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>CPF</th>
-            <th>Celular</th>
-            <th>Nascimento</th>
-            <th>Cadastro</th>
-            <th>Situação</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% if pacientes %}
-          {% for paciente in pacientes %}
-          <tr>
-            <td>{{ paciente.nome }}</td>
-            <td>{{ paciente.cpf }}</td>
-            <td>{{ paciente.celular }}</td>
-            <td>{{ paciente.data_nascimento|date:"d/m/Y" }}</td>
-            <td>{{ paciente.data_cadastro|date:"d/m/Y" }}</td>
-            <td>
-              {% if paciente.pre_cadastro %}
-              <span class="status-pendente">Pendente</span>
-              {% endif %}
-            </td>
-            <td>
-              <div class="dropdown-wrapper">
-                <button class="action-btn" onclick="toggleDropdown(this)">⋮</button>
-                <div class="dropdown_menu">
-                  <a href="{% url 'perfil_paciente' paciente.id %}">
-                    <button type="button">Ver detalhes</button>
-                  </a>
-                  <button onclick="window.location.href='{% url 'editar_paciente' paciente.id %}'">Editar</button>
-                  <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Gerar Ficha</button>
-                  <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">Novo Agendamento</button>
-                  <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
-                    {% csrf_token %}
-                    <input type="hidden" name="delete_id" value="{{ paciente.id }}">
-                    <button type="submit" onclick="return confirm('Deseja realmente inativar este paciente?')">
-                      Inativar
+   <div class="content-wrapper">
+    <div class="link-card">
+        <div class="link-card-header">
+            <h2>
+                <i class='bx bx-link-alt'></i>
+                Link de Pré-Cadastro
+            </h2>
+            <div class="btn-group">
+                <form action="{% url 'gerar_link_publico_precadastro' %}" method="get" style="display:inline;">
+                    <button type="submit" class="btn-primary">
+                        <i class='bx bx-plus'></i>
+                        Novo Link
                     </button>
-                  </form>
-                </div>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-          {% else %}
-          <tr>
-            <td class='linha-vazia' colspan="8">No momento não existem pré-cadastros a serem verificados.</td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
+                </form>
+                <button type="button" class="btn-secondary" id="refreshTable">
+                    <i class='bx bx-refresh'></i>
+                    Atualizar
+                </button>
+            </div>
+        </div>
 
+        <div class="link-display">
+            <p class="section-title">Compartilhe este link</p>
+            <div class="link-input-group">
+                <input type="text" 
+                       id="linkInput" 
+                       value="{{ link_tokenizado }}" 
+                       readonly 
+                       class="link-input">
+                <button onclick="copiarLink()" class="btn-copy">
+                    <i class='bx bx-copy'></i>
+                    Copiar
+                </button>
+            </div>
+        </div>
+
+        <div class="share-section">
+            <p class="section-title">Compartilhar via</p>
+            <div class="social-buttons-grid">
+                <button onclick="enviarWhatsapp()" class="social-btn whatsapp">
+                    <i class='bx bxl-whatsapp'></i>
+                </button>
+                <button onclick="window.open('https://telegram.me/share/url?url=' + encodeURIComponent(link))" class="social-btn telegram">
+                    <i class='bx bxl-telegram'></i>
+                </button>
+                <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link))" class="social-btn facebook">
+                    <i class='bx bxl-facebook'></i>
+                </button>
+                <button onclick="window.open('https://www.instagram.com/')" class="social-btn instagram">
+                    <i class='bx bxl-instagram'></i>
+                </button>
+                <button onclick="window.open('mailto:?body=' + encodeURIComponent(link))" class="social-btn">
+                    <i class='bx bx-envelope'></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="qrcode-section">
+            <p class="section-title">Ou escaneie o QR Code</p>
+            <div class="qrcode-container">
+                <img src="data:image/png;base64,{{ qrcode_base64 }}" alt="QR Code do Link">
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div id="copiado" class="toast">✅ Link copiado com sucesso!</div>
+    
+    <div class="table-card">
+        <div class="table-header">
+            <h2 class="table-title">
+                <i class='bx bx-list-ul'></i>
+                Pré-Cadastros Recentes
+            </h2>
+            <button class="refresh-btn" onclick="location.reload()">
+                <i class='bx bx-refresh'></i>
+                Atualizar
+            </button>
+        </div>
 
-  <script>
-    const link = document.getElementById("link").value;
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Celular</th>
+                        <th>Nascimento</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if pacientes %}
+                    {% for paciente in pacientes %}
+                    <tr>
+                        <td>{{ paciente.nome }}</td>
+                        <td>{{ paciente.cpf|default:"-" }}</td>
+                        <td>{{ paciente.celular|default:"-" }}</td>
+                        <td>{{ paciente.data_nascimento|date:"d/m/Y"|default:"-" }}</td>
+                        <td>
+                            <span class="status-badge status-pendente">
+                                <i class='bx bx-time'></i>
+                                Pendente
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-dropdown">
+                                <button class="action-btn" onclick="toggleDropdown(this)">
+                                    <i class='bx bx-dots-vertical-rounded'></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a href="{% url 'perfil_paciente' paciente.id %}" class="dropdown-item">
+                                        <i class='bx bx-user'></i>
+                                        Ver Perfil
+                                    </a>
+                                    <a href="{% url 'editar_paciente' paciente.id %}" class="dropdown-item">
+                                        <i class='bx bx-edit'></i>
+                                        Editar
+                                    </a>
+                                    <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')" class="dropdown-item">
+                                        <i class='bx bx-file'></i>
+                                        Gerar Ficha
+                                    </button>
+                                    <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')" class="dropdown-item">
+                                        <i class='bx bx-calendar-plus'></i>
+                                        Novo Agendamento
+                                    </button>
+                                    <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="delete_id" value="{{ paciente.id }}">
+                                        <button type="submit" 
+                                                onclick="return confirm('Deseja realmente inativar este paciente?')"
+                                                class="dropdown-item"
+                                                style="color: #dc3545;">
+                                            <i class='bx bx-user-x'></i>
+                                            Inativar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class='bx bx-user-plus'></i>
+                                <h3>Nenhum pré-cadastro encontrado</h3>
+                                <p>Os pré-cadastros aparecerão aqui automaticamente</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div id="copiado" class="toast">
+    <i class='bx bx-check-circle'></i>
+    Link copiado com sucesso!
+</div>
+
+<script>
+    const link = "{{ link_tokenizado }}";
+    let toastTimeout;
 
     function copiarLink() {
-      navigator.clipboard.writeText(link);
-      const toast = document.getElementById("copiado");
-      toast.style.display = 'block';
-      setTimeout(() => toast.style.display = 'none', 3000);
+        navigator.clipboard.writeText(link);
+        showToast();
     }
 
     function enviarWhatsapp() {
-      const mensagem = `Olá! Para agilizar seu atendimento, preencha o formulário: ${encodeURIComponent(link)}`;
-      window.open(`https://wa.me/?text=${mensagem}`, "_blank");
+        const mensagem = `Olá! Para agilizar seu atendimento, preencha o formulário: ${link}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(mensagem)}`, "_blank");
     }
-  </script>
-  <script src="{% static '/core/js/pacientes/base.js' %}"></script>
 
-  {% endblock %}
+    function showToast() {
+        const toast = document.getElementById('copiado');
+        toast.classList.add('show');
+        
+        if (toastTimeout) clearTimeout(toastTimeout);
+        
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function toggleDropdown(button) {
+        const dropdown = button.nextElementSibling;
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        
+        allDropdowns.forEach(d => {
+            if (d !== dropdown) d.classList.remove('show');
+        });
+        
+        dropdown.classList.toggle('show');
+    }
+
+    // Fecha dropdown ao clicar fora
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.action-dropdown')) {
+            document.querySelectorAll('.dropdown-menu').forEach(d => {
+                d.classList.remove('show');
+            });
+        }
+    });
+
+    document.getElementById('refreshTable').addEventListener('click', function() {
+        location.reload();
+    });
+
+    // Atualiza automaticamente a cada 30 segundos
+    setInterval(() => {
+        location.reload();
+    }, 30000);
+</script>
+
+{% endblock %}
