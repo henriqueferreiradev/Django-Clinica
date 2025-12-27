@@ -1,7 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-
 {% block title %}Contas a Pagar - Sistema{% endblock %}
 
 {% block extra_css %}
@@ -20,7 +19,6 @@
   }
 
   /* Layout Improvements */
-
   .page-header {
     display: flex;
     justify-content: space-between;
@@ -227,7 +225,6 @@
     background: var(--success-gradient);
   }
 
- 
   /* Enhanced Status Rows */
   .row-status {
     border-left: 4px solid transparent;
@@ -484,9 +481,7 @@
     gap: 1.5rem;
   }
 
-  .form-group {
-    margin-bottom: 1.25rem;
-  }
+ 
 
   .form-label {
     display: block;
@@ -533,6 +528,91 @@
     accent-color: var(--roxoPrincipal);
   }
 
+  /* Styles específicos para modal de fornecedor e centro de custo */
+  .modal-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 10px;
+  }
+
+  .modal-item {
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    text-align: left;
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    color: var(--preto);
+  }
+
+  .modal-item:hover {
+    background: var(--cinza-claro);
+    border-color: var(--roxoPrincipal);
+  }
+
+  .modal-item.selected {
+    background: rgba(109, 57, 142, 0.1);
+    border-color: var(--roxoPrincipal);
+    font-weight: 600;
+    color: var(--roxoPrincipal);
+  }
+
+  .input-with-btn {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .input-with-btn .form-control {
+    flex: 1;
+  }
+
+  .input-with-btn .btn {
+    white-space: nowrap;
+    padding: 0.75rem 1rem;
+    height: calc(100% - 2px);
+  }
+
+  /* Campo para centro de custo */
+  .centro-custo-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .centro-custo-display {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cinzaBorda);
+    border-radius: 8px;
+    background: var(--cinza-claro);
+    min-height: 48px;
+  }
+
+  .centro-custo-display .codigo {
+    font-weight: 600;
+    color: var(--roxoPrincipal);
+    background: rgba(109, 57, 142, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  .centro-custo-display .descricao {
+    flex: 1;
+    color: var(--preto);
+  }
+
   /* Responsive Design */
   @media (max-width: 1024px) {
     .filters-grid {
@@ -577,6 +657,16 @@
       gap: 1rem;
       text-align: center;
     }
+
+    .input-with-btn {
+      flex-direction: column;
+    }
+
+    .centro-custo-display {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
   }
 
   /* Loading States */
@@ -591,7 +681,6 @@
     0% {
       background-position: 200% 0;
     }
-
     100% {
       background-position: -200% 0;
     }
@@ -660,11 +749,13 @@
       <div class="filter-group">
         <label class="filter-label">Categoria</label>
         <select class="filter-select" id="filterCategoria">
-          {% for fornecedor in fornecedores %}
           <option value="">Todas as Categorias</option>
-          <option value="{{ fornecedor.id }}">{{ fornecedor.raza_social }}</option>
- 
-          {% endfor %}
+          <option value="aluguel">Aluguel</option>
+          <option value="energia">Energia</option>
+          <option value="agua">Água</option>
+          <option value="telefone">Telefone</option>
+          <option value="folha">Folha de Pagamento</option>
+          <option value="outros">Outros</option>
         </select>
       </div>
 
@@ -807,7 +898,6 @@
           <tbody>
             <!-- Atrasado -->
             <tr class="row-status atrasado">
-               
               <td><span class="valor-atrasado">05/05/2023</span></td>
               <td>Aluguel do Prédio</td>
               <td>Aluguel Maio/2023</td>
@@ -831,7 +921,6 @@
 
             <!-- Atrasado -->
             <tr class="row-status atrasado">
-               
               <td><span class="valor-atrasado">10/05/2023</span></td>
               <td>Energia Elétrica</td>
               <td>Fatura Abril/2023</td>
@@ -855,7 +944,6 @@
 
             <!-- Vence Hoje -->
             <tr class="row-status hoje">
-               
               <td><span class="valor-hoje">16/05/2023</span></td>
               <td>Água e Esgoto</td>
               <td>Fatura Maio/2023</td>
@@ -879,7 +967,6 @@
 
             <!-- Pendente -->
             <tr class="row-status pendente">
-               
               <td>20/05/2023</td>
               <td>Internet</td>
               <td>Fatura Maio/2023</td>
@@ -903,7 +990,6 @@
 
             <!-- Agendado -->
             <tr class="row-status agendado">
-               
               <td>25/05/2023</td>
               <td>Folha de Pagamento</td>
               <td>Salários Maio/2023</td>
@@ -924,7 +1010,6 @@
 
             <!-- Pago -->
             <tr class="row-status pago">
-               
               <td>01/05/2023</td>
               <td>Telefone</td>
               <td>Fatura Abril/2023</td>
@@ -1006,7 +1091,6 @@
           <div class="form-group">
             <label class="form-label">Conta Bancária</label>
             <select class="form-select">
-              
               <option selected disabled value="">Selecione a conta de crédito...</option>
               {% for conta in contas_bancarias %}
               <option value="{{ conta.id }}">{{ conta.conta_bancaria_extenso }}</option>
@@ -1039,8 +1123,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" id="cancelPaymentModal">Cancelar</button>
-      <button class="btn btn-primary" id="savePagamento"><i class="fa-solid fa-check-circle"></i> Registrar
-        Pagamento</button>
+      <button class="btn btn-primary" id="savePagamento"><i class="fa-solid fa-check-circle"></i> Registrar Pagamento</button>
     </div>
   </div>
 </div>
@@ -1054,54 +1137,43 @@
     </div>
     <div class="modal-body">
       <form id="formNovaDespesa">
+          <div class="form-group">
+            <label class="form-label">Fornecedor *</label>
+            <div class="input-with-btn">
+              <input type="text" id="fornecedor_display" class="form-control" placeholder="Clique em Pesquisar para escolher..." readonly required>
+              <button type="button" class="btn btn-outline" id="btnAbrirModalFornecedor">
+                <i class="fa-solid fa-search"></i> Pesquisar
+              </button>
+            </div>
+            <input type="hidden" name="fornecedor_id" id="fornecedor_id" required />
+          </div>
+          
         <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Fornecedor</label>
-            <select class="form-select" required>
- 
-            
-            <option selected disabled value="">Selecione um fornecedor..</option>
-            {% for fornecedor in fornecedores %}
-            <option value="{{ fornecedor.id }}">{{ fornecedor.razao_social }}</option>
-            {% endfor %}
         
-            </select>
-          </div>
           <div class="form-group">
-            <label class="form-label">Categoria</label>
-            <select class="form-select" required>
-              <option value="">Selecione uma categoria</option>
-              <option value="aluguel">Aluguel</option>
-              <option value="energia">Energia</option>
-              <option value="agua">Água</option>
-              <option value="limpeza">Limpeza</option>
-              <option value="internet">Internet</option>
-              <option value="folha">Folha de Pagamento</option>
-              <option value="telefone">Telefone</option>
-              <option value="outros">Outros</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Data de Vencimento</label>
+            <label class="form-label">Data de Vencimento *</label>
             <input type="date" class="form-control" required>
           </div>
+
           <div class="form-group">
-            <label class="form-label">Valor</label>
+            <label class="form-label">Valor *</label>
             <div style="display:flex;gap:.5rem;">
               <span class="form-control" style="flex:0 0 64px;text-align:center;">R$</span>
               <input type="text" class="form-control" placeholder="0,00" required>
             </div>
           </div>
+
           <div class="form-group">
-            <label class="form-label">Status</label>
+            <label class="form-label">Status *</label>
             <select class="form-select" required>
               <option value="pendente">Pendente</option>
               <option value="agendado">Agendado</option>
               <option value="pago">Pago</option>
             </select>
           </div>
+
           <div class="form-group">
-            <label class="form-label">Forma de Pagamento</label>
+            <label class="form-label">Forma de Pagamento *</label>
             <select class="form-select" required>
               <option value="">Selecione</option>
               <option value="ted">TED/DOC</option>
@@ -1115,7 +1187,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Descrição</label>
+          <label class="form-label">Descrição *</label>
           <input type="text" class="form-control" placeholder="Descrição da despesa" required>
         </div>
 
@@ -1165,14 +1237,309 @@
   </div>
 </div>
 
+<!-- Modal de Fornecedor -->
+<!-- Modal de Fornecedor -->
+<div class="modal-overlay" id="modalFornecedor">
+  <div class="modal-container" style="max-width: 600px;">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="fa-solid fa-building"></i> Selecionar Fornecedor</h3>
+      <button class="modal-close" id="fecharModalFornecedor">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <input type="text" id="buscaFornecedor" class="form-control" placeholder="Digite para filtrar fornecedores..." autocomplete="off">
+      </div>
+      
+      <div class="modal-list" id="listaFornecedores">
+        {% for fornecedor in fornecedores %}
+        <button type="button" class="modal-item" 
+                data-id="{{ fornecedor.id }}" 
+                data-nome="{{ fornecedor.razao_social|default:fornecedor.razao_social }}"
+                {% if fornecedor.conta_contabil %}
+                data-centro-custo-id="{{ fornecedor.conta_contabil.id }}"
+                data-centro-custo-codigo="{{ fornecedor.conta_contabil.codigo_completo }}"
+                data-centro-custo-descricao="{{ fornecedor.conta_contabil.descricao }}"
+                {% endif %}>
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div style="flex: 1;">
+              <div style="font-weight: 600; margin-bottom: 2px;">{{ fornecedor.razao_social|default:fornecedor.razao_social }}</div>
+              {% if fornecedor.nome_fantasia %}
+              <div style="font-size: 0.85rem; color: var(--cinza-medio);">{{ fornecedor.nome_fantasia }}</div>
+              {% endif %}
+            </div>
+            {% if fornecedor.conta_contabil %}
+            <div style="margin-left: 10px; text-align: right;">
+              <div style="font-size: 0.75rem; font-weight: 600; color: var(--roxoPrincipal);">
+                {{ fornecedor.conta_contabil.codigo_completo }}
+              </div>
+              <div style="font-size: 0.7rem; color: var(--cinza-escuro); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                {{ fornecedor.conta_contabil.descricao|truncatechars:30 }}
+              </div>
+            </div>
+            {% else %}
+            <div style="margin-left: 10px;">
+              <span style="font-size: 0.7rem; color: var(--cinza-medio); font-style: italic;">Sem centro de custo</span>
+            </div>
+            {% endif %}
+          </div>
+        </button>
+        {% empty %}
+        <div style="text-align: center; padding: 20px; color: var(--cinza-medio);">
+          <i class="fa-solid fa-building" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+          <p>Nenhum fornecedor encontrado</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" id="limparFornecedor">
+        <i class="fa-solid fa-eraser"></i> Limpar
+      </button>
+      <button type="button" class="btn btn-primary" id="confirmarFornecedor" disabled>
+        <i class="fa-solid fa-check"></i> Confirmar
+      </button>
+    </div>
+  </div>
+</div>
+
+ 
+<!-- Include do modal de plano de contas (já existente) -->
+{% include "core/partials/_modal_plano_contas.html" %}
+
 {% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
 <script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
+<script src="{% static 'core/js/configuracoes/configBase.js' %}"></script>
 <script>
-  // Enhanced JavaScript functionality
   document.addEventListener('DOMContentLoaded', function () {
+    console.log('[ContasPagar] Inicializando...');
+
+    // ========================================
+    // 1. FUNCIONALIDADE DO MODAL DE FORNECEDOR
+    // ========================================
+(function () {
+  console.log('[ModalFornecedor] Configurando...');
+
+  // Elementos
+  const modal = document.getElementById('modalFornecedor');
+  const btnOpen = document.getElementById('btnAbrirModalFornecedor');
+  const btnClose = document.getElementById('fecharModalFornecedor');
+  const btnConfirmar = document.getElementById('confirmarFornecedor');
+  const btnLimpar = document.getElementById('limparFornecedor');
+  const busca = document.getElementById('buscaFornecedor');
+  const lista = document.getElementById('listaFornecedores');
+  const fornecedorId = document.getElementById('fornecedor_id');
+  const fornecedorDisplay = document.getElementById('fornecedor_display');
+
+  // Verificar se elementos existem
+  if (!modal || !btnOpen) {
+    console.error('[ModalFornecedor] Elementos não encontrados!');
+    return;
+  }
+
+  let fornecedorSelecionado = null;
+
+  // Função para abrir o modal
+  function abrirModal() {
+    console.log('[ModalFornecedor] Abrindo modal...');
+    modal.classList.add('active');
+    
+    // Focar no campo de busca
+    if (busca) {
+      busca.value = '';
+      busca.focus();
+      filtrarFornecedores('');
+    }
+    
+    // Habilitar/desabilitar botão confirmar
+    if (btnConfirmar) {
+      btnConfirmar.disabled = !fornecedorSelecionado;
+    }
+    
+    // Marcar item selecionado
+    marcarItemSelecionado();
+  }
+
+  // Função para fechar o modal
+  function fecharModal() {
+    console.log('[ModalFornecedor] Fechando modal...');
+    modal.classList.remove('active');
+  }
+
+  // Filtrar fornecedores
+  function filtrarFornecedores(termo) {
+    if (!lista) return;
+    
+    const itens = lista.querySelectorAll('.modal-item');
+    termo = termo.toLowerCase().trim();
+    
+    itens.forEach(item => {
+      const texto = item.textContent.toLowerCase();
+      if (texto.includes(termo)) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  // Marcar item selecionado
+  function marcarItemSelecionado() {
+    if (!lista || !fornecedorSelecionado) return;
+    
+    const itens = lista.querySelectorAll('.modal-item');
+    itens.forEach(item => {
+      item.classList.remove('selected');
+      if (item.dataset.id === fornecedorSelecionado.id) {
+        item.classList.add('selected');
+      }
+    });
+  }
+
+  // Event Listeners
+  btnOpen.addEventListener('click', (e) => {
+    e.preventDefault();
+    abrirModal();
+  });
+
+  if (btnClose) {
+    btnClose.addEventListener('click', fecharModal);
+  }
+
+  // Fechar ao clicar fora
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      fecharModal();
+    }
+  });
+
+  // Fechar com ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      fecharModal();
+    }
+  });
+
+  // Filtro de busca
+  if (busca) {
+    busca.addEventListener('input', function(e) {
+      filtrarFornecedores(e.target.value);
+    });
+  }
+
+  // Selecionar fornecedor
+  if (lista) {
+    lista.addEventListener('click', function(e) {
+      const item = e.target.closest('.modal-item');
+      if (!item) return;
+      
+      // Remover seleção anterior
+      lista.querySelectorAll('.modal-item').forEach(i => {
+        i.classList.remove('selected');
+      });
+      
+      // Selecionar novo
+      item.classList.add('selected');
+      fornecedorSelecionado = {
+        id: item.dataset.id,
+        nome: item.dataset.nome,
+        centroCustoId: item.dataset.centroCustoId,
+        centroCustoCodigo: item.dataset.centroCustoCodigo,
+        centroCustoDescricao: item.dataset.centroCustoDescricao
+      };
+      
+      // Habilitar botão confirmar
+      if (btnConfirmar) {
+        btnConfirmar.disabled = false;
+      }
+    });
+  }
+
+  // Botão confirmar
+  if (btnConfirmar) {
+    btnConfirmar.addEventListener('click', function() {
+      if (!fornecedorSelecionado) return;
+      
+      // Preencher campos do fornecedor
+      if (fornecedorId) fornecedorId.value = fornecedorSelecionado.id;
+      if (fornecedorDisplay) fornecedorDisplay.value = fornecedorSelecionado.nome;
+      
+      console.log('[ModalFornecedor] Fornecedor selecionado:', fornecedorSelecionado);
+      
+      // Se o fornecedor tiver centro de custo, preencher automaticamente
+      if (fornecedorSelecionado.centroCustoId) {
+        const centroCustoId = document.getElementById('centro_custo_id');
+        const centroCustoCodigo = document.getElementById('centro_custo_codigo');
+        const centroCustoDisplay = document.getElementById('centro_custo_display');
+        
+        if (centroCustoId) centroCustoId.value = fornecedorSelecionado.centroCustoId;
+        if (centroCustoCodigo) centroCustoCodigo.value = fornecedorSelecionado.centroCustoCodigo;
+        if (centroCustoDisplay) {
+          centroCustoDisplay.value = `${fornecedorSelecionado.centroCustoCodigo} - ${fornecedorSelecionado.centroCustoDescricao}`;
+        }
+        
+        console.log('[ModalFornecedor] Centro de custo preenchido automaticamente:', {
+          id: fornecedorSelecionado.centroCustoId,
+          codigo: fornecedorSelecionado.centroCustoCodigo,
+          descricao: fornecedorSelecionado.centroCustoDescricao
+        });
+      } else {
+        // Se não tiver centro de custo, limpar os campos
+        const centroCustoId = document.getElementById('centro_custo_id');
+        const centroCustoCodigo = document.getElementById('centro_custo_codigo');
+        const centroCustoDisplay = document.getElementById('centro_custo_display');
+        
+        if (centroCustoId) centroCustoId.value = '';
+        if (centroCustoCodigo) centroCustoCodigo.value = '';
+        if (centroCustoDisplay) centroCustoDisplay.value = '';
+        
+        console.log('[ModalFornecedor] Fornecedor sem centro de custo - campos limpos');
+      }
+      
+      fecharModal();
+    });
+  }
+
+  // Botão limpar
+  if (btnLimpar) {
+    btnLimpar.addEventListener('click', function() {
+      fornecedorSelecionado = null;
+      
+      // Limpar seleção visual
+      if (lista) {
+        lista.querySelectorAll('.modal-item').forEach(i => {
+          i.classList.remove('selected');
+        });
+      }
+      
+      // Limpar campos do fornecedor
+      if (fornecedorId) fornecedorId.value = '';
+      if (fornecedorDisplay) fornecedorDisplay.value = '';
+      
+      // Limpar campos do centro de custo também
+      const centroCustoId = document.getElementById('centro_custo_id');
+      const centroCustoCodigo = document.getElementById('centro_custo_codigo');
+      const centroCustoDisplay = document.getElementById('centro_custo_display');
+      
+      if (centroCustoId) centroCustoId.value = '';
+      if (centroCustoCodigo) centroCustoCodigo.value = '';
+      if (centroCustoDisplay) centroCustoDisplay.value = '';
+      
+      // Desabilitar botão confirmar
+      if (btnConfirmar) btnConfirmar.disabled = true;
+    });
+  }
+
+  console.log('[ModalFornecedor] Configuração concluída!');
+})();
+   
+
+    // ========================================
+    // 3. FUNCIONALIDADES GERAIS DA PÁGINA
+    // ========================================
+    
     // Bulk selection functionality
     const selectAll = document.getElementById('selectAll');
     const rowCheckboxes = document.querySelectorAll('.row-checkbox');
@@ -1181,24 +1548,26 @@
 
     function updateBulkActions() {
       const selected = document.querySelectorAll('.row-checkbox:checked').length;
-      selectedCount.textContent = selected;
+      if (selectedCount) selectedCount.textContent = selected;
 
-      if (selected > 0) {
+      if (selected > 0 && bulkActions) {
         bulkActions.classList.add('active');
-      } else {
+      } else if (bulkActions) {
         bulkActions.classList.remove('active');
       }
     }
 
-    selectAll?.addEventListener('change', function () {
-      const isChecked = this.checked;
-      rowCheckboxes.forEach(checkbox => {
-        if (!checkbox.disabled) {
-          checkbox.checked = isChecked;
-        }
+    if (selectAll) {
+      selectAll.addEventListener('change', function () {
+        const isChecked = this.checked;
+        rowCheckboxes.forEach(checkbox => {
+          if (!checkbox.disabled) {
+            checkbox.checked = isChecked;
+          }
+        });
+        updateBulkActions();
       });
-      updateBulkActions();
-    });
+    }
 
     rowCheckboxes.forEach(checkbox => {
       checkbox.addEventListener('change', updateBulkActions);
@@ -1213,13 +1582,12 @@
 
     document.getElementById('btnBulkDeselect')?.addEventListener('click', function () {
       rowCheckboxes.forEach(cb => cb.checked = false);
-      selectAll.checked = false;
+      if (selectAll) selectAll.checked = false;
       updateBulkActions();
     });
 
     // Filter functionality
     document.getElementById('btnFiltrar')?.addEventListener('click', function () {
-      // Implement filter logic here
       console.log('Aplicando filtros...');
     });
 
@@ -1236,7 +1604,9 @@
     // Enhanced modal functionality
     const modals = {
       pagamento: document.getElementById('modalPagamento'),
-      novaDespesa: document.getElementById('modalNovaDespesa')
+      novaDespesa: document.getElementById('modalNovaDespesa'),
+      fornecedor: document.getElementById('modalFornecedor'),
+      centroCusto: document.getElementById('modalCentroCusto')
     };
 
     // Open modals
@@ -1284,7 +1654,6 @@
 
     // Export functionality
     document.getElementById('btnExport')?.addEventListener('click', function () {
-      // Implement export logic
       alert('Exportando dados...');
     });
 
@@ -1311,6 +1680,8 @@
         openMenus.forEach(m => m.classList.remove('show'));
       }
     });
+
+    console.log('[ContasPagar] Configuração concluída!');
   });
 </script>
 {% endblock %}

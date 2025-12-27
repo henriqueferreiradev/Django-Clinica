@@ -309,7 +309,6 @@ def configuracao_view(request):
                         except Exception as e:
                             return JsonResponse({'success': False, 'error': str(e)})
                     elif tipo == 'editar_fornecedor':
-                        
                         fornecedor_id = request.POST.get('fornecedor_id')
                         tipo_pessoa = request.POST.get('tipo_pessoa')
                         razao_social = request.POST.get('razao_social')
@@ -317,19 +316,66 @@ def configuracao_view(request):
                         documento = request.POST.get('documento')
                         telefone = request.POST.get('telefone')
                         email = request.POST.get('email')
+                        conta_codigo = request.POST.get('conta_codigo')  # Adicione esta linha
                         
                         try:
                             fornecedor = Fornecedor.objects.get(id=fornecedor_id)
-                            fornecedor.tipo_pessoa   = tipo_pessoa
-                            fornecedor.razao_social  = razao_social
+                            
+                            # Processar a conta contábil (mesma lógica do cadastro)
+                            conta_contabil = None
+                            if conta_codigo and conta_codigo.strip():
+                                try:
+                                    # Formatar o código
+                                    if len(conta_codigo) >= 3:
+                                        tipo_codigo = conta_codigo[0]  # R ou D
+                                        grupo_codigo = conta_codigo[1]  # primeiro dígito do grupo
+                                        subgrupo_codigo = conta_codigo[2:]  # restante para subgrupo
+                                        codigo_formatado = f"{tipo_codigo}.{grupo_codigo}.{subgrupo_codigo}"
+                                    else:
+                                        codigo_formatado = conta_codigo
+                                    
+                                    # Buscar a conta
+                                    conta_contabil = SubgrupoConta.objects.get(
+                                        codigo_completo=codigo_formatado,
+                                        ativo=True
+                                    )
+                                except SubgrupoConta.DoesNotExist:
+                                    # Tentar buscar sem formatação
+                                    try:
+                                        conta_contabil = SubgrupoConta.objects.get(
+                                            codigo_completo=conta_codigo,
+                                            ativo=True
+                                        )
+                                    except SubgrupoConta.DoesNotExist:
+                                        return JsonResponse({
+                                            'success': False, 
+                                            'message': f'Conta contábil não encontrada: {conta_codigo}'
+                                        })
+                                except Exception as e:
+                                    print(f"Erro ao buscar conta: {e}")
+                                    # Continuar sem conta, não quebrar a edição
+                            
+                            # Atualizar o fornecedor
+                            fornecedor.tipo_pessoa = tipo_pessoa
+                            fornecedor.razao_social = razao_social
                             fornecedor.nome_fantasia = nome_fantasia
-                            fornecedor.documento     = documento
-                            fornecedor.telefone      = telefone
-                            fornecedor.email         = email
+                            fornecedor.documento = documento
+                            fornecedor.telefone = telefone
+                            fornecedor.email = email
+                            
+                            # Atualizar a conta contábil (pode ser None)
+                            if conta_codigo:
+                                fornecedor.conta_contabil = conta_contabil
+                            elif conta_codigo == '':
+                                # Se foi enviado uma string vazia, limpar a conta
+                                fornecedor.conta_contabil = None
+                            
                             fornecedor.save()
                             
-                            
                             return JsonResponse({'success': True})
+                            
+                        except Fornecedor.DoesNotExist:
+                            return JsonResponse({'success': False, 'error': 'Fornecedor não encontrado'})
                         except Exception as e:
                             return JsonResponse({'success': False, 'error': str(e)})
                 

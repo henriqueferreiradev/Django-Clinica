@@ -1,3 +1,4 @@
+// Função para mostrar mensagens
 function mostrarMensagem(mensagem, tipo = 'success') {
     const toastContainer = document.getElementById('toast-container') || criarToastContainer();
 
@@ -29,6 +30,35 @@ function mostrarMensagem(mensagem, tipo = 'success') {
             setTimeout(() => toast.remove(), 500);
         }
     }, 5000);
+}
+
+// Funções auxiliares
+function criarToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+function getIcon(tipo) {
+    const icons = {
+        'success': '<i class="fas fa-check-circle"></i>',
+        'warning': '<i class="fas fa-exclamation-triangle"></i>',
+        'error': '<i class="fas fa-exclamation-circle"></i>',
+        'info': '<i class="fas fa-info-circle"></i>'
+    };
+    return icons[tipo] || icons['info'];
+}
+
+function getTitle(tipo) {
+    const titles = {
+        'success': 'Sucesso',
+        'warning': 'Aviso',
+        'error': 'Erro',
+        'info': 'Informação'
+    };
+    return titles[tipo] || 'Mensagem';
 }
 // Sistema de tabs com URL e persistência
 document.querySelectorAll('.tab').forEach(tab => {
@@ -259,14 +289,37 @@ function iniciarEdicao(button) {
         cell.classList.add('editing');
         const displayText = cell.querySelector('.display-text');
         const editInput = cell.querySelector('.edit-input');
+        const editSelect = cell.querySelector('.edit-select');
+        const editContaContainer = cell.querySelector('.edit-conta-container');
 
         // Salvar valor original
-        originalValues[cell.dataset.field] = editInput.value;
+        if (editInput) {
+            originalValues[cell.dataset.field] = editInput.value;
+        } else if (editSelect) {
+            originalValues[cell.dataset.field] = editSelect.value;
+        } else if (editContaContainer) {
+            const contaCodigo = editContaContainer.querySelector('.edit-conta-codigo');
+            const contaDesc = editContaContainer.querySelector('.edit-conta-desc');
+            
+            // Salvar ambos: código e descrição
+            originalValues[cell.dataset.field] = contaCodigo ? contaCodigo.value : '';
+            originalValues[cell.dataset.field + '_desc'] = contaDesc ? contaDesc.value : '';
+        }
 
-        // Mostrar input, esconder texto
+        // Mostrar campo apropriado, esconder texto
         displayText.style.display = 'none';
-        editInput.style.display = 'block';
-        editInput.focus();
+        
+        if (editSelect) {
+            editSelect.style.display = 'block';
+            editSelect.focus();
+        } else if (editContaContainer) {
+            editContaContainer.style.display = 'flex';
+            editContaContainer.style.alignItems = 'center';
+            editContaContainer.style.gap = '5px';
+        } else if (editInput) {
+            editInput.style.display = 'block';
+            editInput.focus();
+        }
     });
 }
 
@@ -279,10 +332,32 @@ function cancelarEdicao(button) {
         cell.classList.remove('editing');
         const displayText = cell.querySelector('.display-text');
         const editInput = cell.querySelector('.edit-input');
+        const editSelect = cell.querySelector('.edit-select');
+        const editContaContainer = cell.querySelector('.edit-conta-container');
 
-        editInput.value = originalValues[cell.dataset.field];
-        displayText.style.display = 'block';
-        editInput.style.display = 'none';
+        if (editSelect) {
+            editSelect.value = originalValues[cell.dataset.field] || '';
+            displayText.style.display = 'block';
+            editSelect.style.display = 'none';
+        } else if (editContaContainer) {
+            // Restaurar valores originais para conta
+            const contaCodigo = editContaContainer.querySelector('.edit-conta-codigo');
+            const contaDesc = editContaContainer.querySelector('.edit-conta-desc');
+            
+            if (contaCodigo) {
+                contaCodigo.value = originalValues[cell.dataset.field] || '';
+            }
+            if (contaDesc) {
+                contaDesc.value = originalValues[cell.dataset.field + '_desc'] || '';
+            }
+            
+            displayText.style.display = 'block';
+            editContaContainer.style.display = 'none';
+        } else if (editInput) {
+            editInput.value = originalValues[cell.dataset.field] || '';
+            displayText.style.display = 'block';
+            editInput.style.display = 'none';
+        }
     });
 
     // Restaurar botões
@@ -293,11 +368,12 @@ function cancelarEdicao(button) {
     editingRow = null;
     originalValues = {};
 }
-
 function salvarEdicao(button) {
     const row = button.closest('tr');
     const model = row.querySelector('.editable').dataset.model;
     const id = row.querySelector('.editable').dataset.id;
+
+    console.log('Salvando edição para:', { model, id });
 
     const formData = new FormData();
     formData.append('tipo', `editar_${model}`);
@@ -311,30 +387,92 @@ function salvarEdicao(button) {
     editableCells.forEach(cell => {
         const field = cell.dataset.field;
         const editInput = cell.querySelector('.edit-input');
+        const editSelect = cell.querySelector('.edit-select');
+        const editContaContainer = cell.querySelector('.edit-conta-container');
         const displayText = cell.querySelector('.display-text');
 
-        if (editInput.value !== originalValues[field]) {
+        let currentValue = '';
+        let valueToSend = '';
+
+        console.log('Processando campo:', field);
+
+        if (editSelect) {
+            currentValue = editSelect.value;
+            valueToSend = currentValue;
+            
+            console.log('Campo select:', { currentValue, valueToSend });
+            
+            // Atualizar display
+            const selectedOption = editSelect.options[editSelect.selectedIndex];
+            displayText.textContent = selectedOption.textContent;
+            
+            // Esconder select, mostrar texto
+            displayText.style.display = 'block';
+            editSelect.style.display = 'none';
+            
+        } else if (editContaContainer) {
+            const contaCodigo = editContaContainer.querySelector('.edit-conta-codigo');
+            const contaDesc = editContaContainer.querySelector('.edit-conta-desc');
+            
+            currentValue = contaCodigo ? contaCodigo.value : '';
+            valueToSend = currentValue;
+            
+            console.log('Campo conta:', { 
+                contaCodigo: contaCodigo ? contaCodigo.value : 'não encontrado',
+                contaDesc: contaDesc ? contaDesc.value : 'não encontrado',
+                currentValue,
+                valueToSend 
+            });
+            
+            // Atualizar display
+            if (contaDesc && contaDesc.value) {
+                displayText.textContent = contaDesc.value;
+            } else {
+                displayText.textContent = 'Nenhuma conta selecionada';
+            }
+            
+            // Esconder container, mostrar texto
+            displayText.style.display = 'block';
+            editContaContainer.style.display = 'none';
+            
+            // IMPORTANTE: Enviar como conta_codigo para o backend
+            formData.append('conta_codigo', valueToSend);
+            
+        } else if (editInput) {
+            currentValue = editInput.value;
+            valueToSend = currentValue;
+            
+            console.log('Campo input:', { currentValue, valueToSend });
+            
+            // Atualizar display
+            displayText.textContent = currentValue;
+            
+            // Esconder input, mostrar texto
+            displayText.style.display = 'block';
+            editInput.style.display = 'none';
+        }
+
+        // Verificar se houve mudanças
+        if (currentValue !== originalValues[field]) {
             hasChanges = true;
+            console.log('Campso alterado:', field, 'de', originalValues[field], 'para', currentValue);
         }
 
-        formData.append(field, editInput.value);
-
-        // Atualizar display
-        if (field === 'cor') {
-            displayText.innerHTML = `<div style="background-color: ${editInput.value}; width: 60px; height: 24px; border-radius: var(--borda-radius); border: 2px solid var(--cinza-borda);"></div>`;
-        } else if (field === 'valor') {
-            displayText.textContent = `R$ ${parseFloat(editInput.value).toFixed(2)}`;
-        } else {
-            displayText.textContent = editInput.value;
+        // Adicionar ao FormData (exceto para conta_codigo que já foi adicionado acima)
+        if (field !== 'conta_codigo') {
+            formData.append(field, valueToSend);
         }
-
-        // Esconder input, mostrar texto
-        displayText.style.display = 'block';
-        editInput.style.display = 'none';
+        
         cell.classList.remove('editing');
     });
 
+    console.log('FormData para envio:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+
     if (!hasChanges) {
+        console.log('Nenhuma alteração detectada');
         cancelarEdicao(button);
         return;
     }
@@ -349,6 +487,7 @@ function salvarEdicao(button) {
     })
         .then(response => response.json())
         .then(data => {
+            console.log('Resposta do servidor:', data);
             if (data.success) {
                 mostrarMensagem('Alterações salvas com sucesso!', 'success');
 
@@ -370,7 +509,6 @@ function salvarEdicao(button) {
             cancelarEdicao(button);
         });
 }
-
 // Duplo clique para editar
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.editable').forEach(cell => {
@@ -395,7 +533,57 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-
+// Função para abrir modal na edição
+function abrirModalSelecaoConta(button) {
+    const container = button.closest('.edit-conta-container');
+    const contaCodigoInput = container.querySelector('.edit-conta-codigo');
+    const contaDescInput = container.querySelector('.edit-conta-desc');
+    
+    console.log('Container encontrado:', container);
+    console.log('Input de código:', contaCodigoInput);
+    console.log('Input de descrição:', contaDescInput);
+    
+    if (!contaCodigoInput || !contaDescInput) {
+        console.error('Inputs de conta não encontrados');
+        return;
+    }
+    
+    // Armazenar referências para uso no callback do modal
+    window.currentEditContaContainer = {
+        codigoInput: contaCodigoInput,
+        descInput: contaDescInput,
+        container: container
+    };
+    
+    // Abrir modal existente
+    if (window.PlanoContasModal && window.PlanoContasModal.open) {
+        window.PlanoContasModal.open(function(contaSelecionada) {
+            console.log('Conta selecionada no modal:', contaSelecionada);
+            
+            // Esta função será chamada quando uma conta for selecionada
+            if (window.currentEditContaContainer) {
+                const { codigoInput, descInput } = window.currentEditContaContainer;
+                if (codigoInput && descInput) {
+                    // Usar o código formatado corretamente
+                    codigoInput.value = contaSelecionada.codigo;
+                    
+                    // Criar a descrição formatada
+                    const descricaoFormatada = `${contaSelecionada.codigo_display || contaSelecionada.codigo} - ${contaSelecionada.descricao}`;
+                    descInput.value = descricaoFormatada;
+                    
+                    console.log('Valores definidos:', {
+                        codigo: contaSelecionada.codigo,
+                        descricao: descricaoFormatada
+                    });
+                }
+                window.currentEditContaContainer = null;
+            }
+        });
+    } else {
+        console.error('Modal não está disponível');
+        alert('Modal de seleção de conta não está disponível');
+    }
+}
 // =============================
 // SISTEMA DE SEÇÕES RETRÁTEIS
 // =============================
@@ -637,15 +825,49 @@ style.textContent = `
 document.head.appendChild(style);
 
 function abrirModalSelecao(botao) {
-    const form = botao.closest('form');
+    let campoCodigoAtual = null;
+    let campoDescAtual = null;
 
-    campoCodigoAtual = form.querySelector('.conta-codigo');
-    campoDescAtual = form.querySelector('.conta-desc');
+    console.log('Botão clicado:', botao);
+    
+    // Verificar se está em modo de edição (dentro da tabela)
+    const contaContainer = botao.closest('.edit-conta-container');
+    if (contaContainer) {
+        console.log('Encontrado container de edição');
+        campoCodigoAtual = contaContainer.querySelector('.edit-conta-codigo');
+        campoDescAtual = contaContainer.querySelector('.edit-conta-desc');
+    } else {
+        // Modo normal (formulário de cadastro)
+        const form = botao.closest('form');
+        if (form) {
+            console.log('Encontrado formulário de cadastro');
+            campoCodigoAtual = form.querySelector('.conta-codigo');
+            campoDescAtual = form.querySelector('.conta-desc');
+        }
+    }
 
-    window.PlanoContasModal.open(function (contaSelecionada) {
-        campoCodigoAtual.value = contaSelecionada.codigo;
-        campoDescAtual.value = `${contaSelecionada.codigo_display} - ${contaSelecionada.descricao}`;
-    });
+    console.log('Campos encontrados:', { campoCodigoAtual, campoDescAtual });
+
+    if (campoCodigoAtual && campoDescAtual) {
+        window.PlanoContasModal.open(function (contaSelecionada) {
+            console.log('Conta selecionada:', contaSelecionada);
+            
+            // Usar o código diretamente do modal
+            campoCodigoAtual.value = contaSelecionada.codigo;
+            
+            // Criar descrição formatada
+            const descricaoFormatada = `${contaSelecionada.codigo_display || contaSelecionada.codigo} - ${contaSelecionada.descricao}`;
+            campoDescAtual.value = descricaoFormatada;
+            
+            console.log('Valores atualizados:', {
+                codigo: contaSelecionada.codigo,
+                descricao: descricaoFormatada
+            });
+        });
+    } else {
+        console.error('Campos de conta não encontrados');
+        alert('Não foi possível encontrar os campos para a conta');
+    }
 }
 
 // Se já tiver uma conta pré-selecionada, pode configurar assim:

@@ -804,7 +804,7 @@
                         </div>
                         <div class="form-group">
                             <label><i class='bx bx-pie-chart-alt-2'></i> Documento</label>
-                            <input class="input-field" type="text" name="documento_fornecedor"
+                            <input class="cnpj-mask input-field" type="text" name="documento_fornecedor"
                                 placeholder="12.345.678/0000-00">
                         </div>
                         <div class="form-group">
@@ -870,11 +870,21 @@
                         <tbody>
                             {% for fornecedor in fornecedores %}
                             <tr class="{% if not fornecedor.ativo %} inactive{% endif %}">
-                                <td class="editable" data-field="tipo_pessoa" data-id='{{fornecedor.id}}'
-                                    data-model="fornecedor">
-                                    <span class="display-text">{{ fornecedor.tipo_pessoa }}</span>
-                                    <input type="text" class="edit-input" value="{{ fornecedor.tipo_pessoa }}"
-                                        style="display: none;">
+                                <td class="editable" data-field="tipo_pessoa" data-id='{{fornecedor.id}}' data-model="fornecedor">
+                                    <!-- Display normal -->
+                                    <span class="display-text">
+                                        {{ fornecedor.get_tipo_pessoa_display|default:fornecedor.tipo_pessoa }}
+                                    </span>
+                                    
+                                    <!-- Campo de edição (inicialmente oculto) -->
+                                    <select class="edit-input edit-select" style="display: none; width: 100%;">
+                                        <option value="juridica" {% if fornecedor.tipo_pessoa == 'juridica' %}selected{% endif %}>
+                                            Pessoa Jurídica
+                                        </option>
+                                        <option value="fisica" {% if fornecedor.tipo_pessoa == 'fisica' %}selected{% endif %}>
+                                            Pessoa Física
+                                        </option>
+                                    </select>
                                 </td>
                                 <td class="editable" data-field="documento" data-id='{{fornecedor.id}}'
                                     data-model="fornecedor">
@@ -905,10 +915,28 @@
                                     <input type="text" class="edit-input" value="{{ fornecedor.email }}"
                                         style="display: none;">
                                 </td>
-                                <td data-model="fornecedor">
-                                    <span class="display-text">{{ fornecedor.conta_contabil }}</span>
-                                    <input type="text" class="edit-input" value="{{ fornecedor.email }}"
-                                        style="display: none;">
+                                <td data-model="fornecedor" data-field="conta_codigo" data-id='{{fornecedor.id}}' class="editable">
+                                    <!-- Display normal -->
+                                    <span class="display-text conta-display">
+                                        {{ fornecedor.conta_contabil|default:"Nenhuma conta selecionada" }}
+                                    </span>
+                                    
+                                    <!-- Campo de edição (inicialmente oculto) -->
+                                    <div class="edit-conta-container" style="display: none; width: 100%;">
+                                        <input type="text" 
+                                            class="edit-input edit-conta-desc input-field" 
+                                            readonly 
+                                            placeholder="Nenhuma conta selecionada"
+                                            value="{% if fornecedor.conta_contabil %}{{ fornecedor.conta_contabil.codigo_completo|default:fornecedor.conta_contabil }} - {{ fornecedor.conta_contabil.descricao|default:'' }}{% endif %}">
+                                        <input type="hidden" 
+                                            class="edit-conta-codigo" 
+                                            value="{% if fornecedor.conta_contabil %}{{ fornecedor.conta_contabil.codigo_completo }}{% endif %}">
+                                        <button type="button" 
+                                                class="btn btn-primary btn-sm"
+                                                onclick="abrirModalSelecaoConta(this)">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
                                 </td>
                                 <td>
                                     <span class="status-badge {% if fornecedor.ativo %}active{% else %}inactive{% endif %}">
@@ -1221,7 +1249,7 @@
                         <!-- Dados básicos -->
                         <div class="form-group">
                             <label for="cnpj"><i class='bx bx-id-card'></i> CNPJ</label>
-                            <input class="input-field" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
+                            <input class="input-field cnpj-mask" id="cnpj" name="cnpj" placeholder="00.000.000/0001-00" type="text"
                                 required>
                         </div>
 
