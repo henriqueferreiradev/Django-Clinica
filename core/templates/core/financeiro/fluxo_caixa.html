@@ -13,14 +13,13 @@
 {% block topbar_title %}<span class="text">Fluxo de Caixa</span>{% endblock %}
 
 {% block content %}
-{% include "core/partials/_confirm_modal.html" %}
+{% include "core/partials/_confirm_modal.html" %}                    
 <div class="content">
   <div class="fluxo-caixa">
     <!-- Cabeçalho -->
     <div class="fluxo-header">
       <h1 class="fluxo-title"><i class="fas fa-money-bill-wave"></i> Fluxo de Caixa</h1>
       <div class="fluxo-botoes">
-        <button class="btn btn-primary" id="openLancamento"><i class="fas fa-plus-circle"></i> Novo Lançamento</button>
         <button class="btn btn-outline" id="printFx"><i class="fas fa-print"></i> Imprimir</button>
       </div>
     </div>
@@ -233,198 +232,10 @@
   </div>
 </div>
 
-<!-- Modal Novo Lançamento -->
-<div class="modal-overlay" id="modalLancamento">
-  <div class="modal-container">
-    <div class="modal-header">
-      <h3 class="modal-title"><i class="fas fa-plus-circle"></i> Novo Lançamento</h3>
-      <button class="modal-close" id="closeModal">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div id="alertSuccess" class="alert-success"><i class="fas fa-check-circle"></i> Lançamento cadastrado com sucesso!</div>
-
-      <div class="tabs">
-        <div class="tab active" data-tab="receita">Receita</div>
-        <div class="tab" data-tab="despesa">Despesa</div>
-      </div>
-
-      <!-- Receita -->
-      <div class="tab-content active" id="receita-form">
-        <form id="formReceita">
-          <div class="form-row">
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Data</label>
-                <input type="date" class="form-control" required>
-              </div>
-            </div>
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Hora</label>
-                <input type="time" class="form-control" required>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Descrição</label>
-            <input type="text" class="form-control" placeholder="Ex: Consulta médica" required>
-          </div>
-
-          <div class="form-row">
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Categoria</label>
-                <select class="form-select" required>
-                  <option value="">Selecione...</option>
-                  <option>Atendimento</option>
-                  <option>Pacote de sessões</option>
-                  <option>Exames</option>
-                  <option>Procedimentos</option>
-                  <option>Outros</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Paciente</label>
-                <input type="text" class="form-control" placeholder="Nome do paciente" required>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Valor (R$)</label>
-                <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
-              </div>
-            </div>
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Forma de Pagamento</label>
-                <select class="form-select" required>
-                  <option value="">Selecione...</option>
-                  <option>Dinheiro</option>
-                  <option>Pix</option>
-                  <option>Cartão de Débito</option>
-                  <option>Cartão de Crédito</option>
-                  <option>Transferência</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Status</label>
-            <div class="form-radio-group">
-              <label class="form-radio"><input type="radio" name="status-receita" value="pago" checked> Pago</label>
-              <label class="form-radio"><input type="radio" name="status-receita" value="pendente"> Pendente</label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Observações</label>
-            <textarea class="form-control" rows="3" placeholder="Opcional"></textarea>
-          </div>
-        </form>
-      </div>
-
-      <!-- Despesa -->
-      <div class="tab-content" id="despesa-form">
-        <form id="formDespesa">
-          <div class="form-row">
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Data</label>
-                <input type="date" class="form-control" required>
-              </div>
-            </div>
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Vencimento</label>
-                <input type="date" class="form-control" required>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Descrição</label>
-            <input type="text" class="form-control" placeholder="Ex: Material de escritório" required>
-          </div>
-
-          <div class="form-row">
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Categoria</label>
-                <select class="form-select" required>
-                  <option value="">Selecione...</option>
-                  <option>Aluguel</option>
-                  <option>Salários</option>
-                  <option>Material</option>
-                  <option>Manutenção</option>
-                  <option>Contas</option>
-                  <option>Outros</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Fornecedor</label>
-                <input type="text" class="form-control" placeholder="Nome do fornecedor">
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Valor (R$)</label>
-                <input type="number" step="0.01" class="form-control" placeholder="0,00" required>
-              </div>
-            </div>
-            <div class="form-col">
-              <div class="form-group">
-                <label class="form-label">Forma de Pagamento</label>
-                <select class="form-select" required>
-                  <option value="">Selecione...</option>
-                  <option>Dinheiro</option>
-                  <option>Pix</option>
-                  <option>Cartão de Débito</option>
-                  <option>Cartão de Crédito</option>
-                  <option>Transferência</option>
-                  <option>Boleto</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Status</label>
-            <div class="form-radio-group">
-              <label class="form-radio"><input type="radio" name="status-despesa" value="pago"> Pago</label>
-              <label class="form-radio"><input type="radio" name="status-despesa" value="pendente" checked> Pendente</label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Observações</label>
-            <textarea class="form-control" rows="3" placeholder="Opcional"></textarea>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-outline" id="cancelModal">Cancelar</button>
-      <button class="btn btn-save" id="saveLancamento"><i class="fas fa-save"></i> Salvar Lançamento</button>
-    </div>
-  </div>
-</div>
-
+ 
 {% include "core/partials/alertas.html" %}
 
-{% block extra_js %}
+{% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
   // ===== Utils

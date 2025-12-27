@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'bar',
             data: chartData,
             options: {
+                animation: {
+                    duration: 5000,
+                    easing: 'easeOutQuart'
+                },
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
@@ -45,6 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'line',
             data: chartDataEvo,
             options: {
+                animation: {
+                    duration: 5000,
+                    easing: 'easeOutQuart'
+                },
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
@@ -84,6 +92,10 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'pie',
             data: distribuicaoProfissionalChart,
             options: {
+                animation: {
+                    duration: 5000,
+                    easing: 'easeOutQuart'
+                },
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
@@ -128,6 +140,10 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'doughnut',
             data: servicosMaisContratadosChart,
             options: {
+                animation: {
+                    duration: 5000,
+                    easing: 'easeOutQuart'
+                },
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
@@ -175,8 +191,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         new Chart(ctx5, {
             type: 'bar',
+
             data: statusAgendametosChart,
             options: {
+                animation: {
+                    duration: 5000,
+                    easing: 'easeOutQuart'
+                },
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
@@ -241,6 +262,10 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'bar',
             data: pagamentoChart,
             options: {
+                animation: {
+                    duration: 5000,
+                    easing: 'easeOutQuart'
+                },
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {

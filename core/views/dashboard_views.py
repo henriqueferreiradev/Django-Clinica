@@ -94,7 +94,15 @@ def dashboard_view(request):
             return f'{abs(diferenca)} a mais que semana passada.'
         else: 
             return "Igual a semana passada"
-
+    PALETA_PREMIUM = [
+    'rgba(109, 57, 142, 0.8)',   # Roxo principal
+    'rgba(146, 203, 173, 0.8)',  # Verde
+    'rgba(255, 193, 7, 0.8)',    # Amarelo
+    'rgba(244, 67, 54, 0.8)',    # Vermelho
+    'rgba(33, 150, 243, 0.8)',   # Azul
+    'rgba(156, 39, 176, 0.8)',   # Roxo claro
+    'rgba(0, 188, 212, 0.8)',    # Ciano
+]
     variacao_pacientes_ativos = diferenca_semana(contagem_pacientes_semana_atual , contagem_pacientes_semana_passada)
     variacao_profissionais_ativos = diferenca_semana(contagem_profissionais_semana_atual , contagem_profissionais_semana_passada)
     variacao_agendamentos = variacao_percentual(contagem_agendamentos_semana_atual, contagem_agendamentos_semana_passada)
@@ -126,25 +134,14 @@ def dashboard_view(request):
         'datasets': [{
             'label': 'Agendamentos por dia',
             'data': dias_dados,
-            'backgroundColor': 'rgba(127, 67, 150, 0.6)',
-            'borderColor': 'rgb(127, 67, 150)',
+            'backgroundColor': PALETA_PREMIUM[:len(dias_dados)],
+            'borderColor': PALETA_PREMIUM[:len(dias_dados)],
             'borderWidth': 1,
             'borderRadius':10,
         }]
     }
 
-    grafico_dados_7_dias = {
-        'labels': dias_labels,
-        'datasets': [{
-            'label': 'Agendamentos por dia',
-            'data': dias_dados,
-            'backgroundColor': 'rgba(127, 67, 150, 0.6)',
-            'borderColor': 'rgb(127, 67, 150)',
-            'borderWidth': 1,
-            'borderRadius':10,
-        }]
-    }
-
+ 
 
     inicio_periodo = hoje.replace(day=1) - timedelta(days=365)
     agendamentos_por_mes = (
@@ -194,7 +191,9 @@ def dashboard_view(request):
     ]
 
     total_profissionais = len(profissionais_labels)
-    cores_profissionais = (cores_base * ((total_profissionais // len(cores_base)) + 1))[:total_profissionais]
+    cores_profissionais = (
+    PALETA_PREMIUM * ((total_profissionais // len(PALETA_PREMIUM)) + 1)
+)[:total_profissionais]
     
     grafico_distribuicao_por_profissional = {
         'labels': profissionais_labels,
@@ -202,8 +201,8 @@ def dashboard_view(request):
             'label':'Agendamentos no mês',
             'data':dados_profissionais,
             'backgroundColor': cores_profissionais,
-            'borderColor': ['white'] * total_profissionais,
-            'borderWidth': 1,
+'borderColor': '#ffffff',
+'borderWidth': 2,
           
         }] 
     }
@@ -234,8 +233,8 @@ def dashboard_view(request):
         'datasets': [{
             'label':'Agendamentos no mês',
             'data':servicos_dados,
-            'backgroundColor': cores_servicos,
-            'borderColor': ['white'] * total_servicos,
+        'backgroundColor': PALETA_PREMIUM[:len(dias_dados)],
+        'borderColor': PALETA_PREMIUM[:len(dias_dados)],
             'borderWidth': 1,
           
         }] 
@@ -254,14 +253,15 @@ def dashboard_view(request):
         'datasets': [{
             'label': '',
             'data': status_dados,  
-            'backgroundColor': 'rgba(127, 67, 150, 0.6)',
-            'borderColor': 'rgb(127, 67, 150)',
+        'backgroundColor': PALETA_PREMIUM[:len(dias_dados)],
+        'borderColor': PALETA_PREMIUM[:len(dias_dados)],
             'borderWidth': 1,
             'borderRadius':10,
         }]
     }
     
     
+   
    
     cores = {
     'Credito': '#4CAF50',
@@ -271,11 +271,11 @@ def dashboard_view(request):
 }
 
     border_cores = {
-    'Credito': '#388E3C',
-    'Debito': '#D32F2F',
-    'Dinheiro': '#F57C00',
-    'Pix': '#512DA8',
-}
+        'Credito': '#2E7D32',
+        'Debito': '#1565C0',
+        'Dinheiro': '#EF6C00',
+        'Pix': '#4527A0',
+    }
 
 
     formas_pagamento = (
