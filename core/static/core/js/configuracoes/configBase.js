@@ -300,7 +300,7 @@ function iniciarEdicao(button) {
         } else if (editContaContainer) {
             const contaCodigo = editContaContainer.querySelector('.edit-conta-codigo');
             const contaDesc = editContaContainer.querySelector('.edit-conta-desc');
-            
+
             // Salvar ambos: código e descrição
             originalValues[cell.dataset.field] = contaCodigo ? contaCodigo.value : '';
             originalValues[cell.dataset.field + '_desc'] = contaDesc ? contaDesc.value : '';
@@ -308,7 +308,7 @@ function iniciarEdicao(button) {
 
         // Mostrar campo apropriado, esconder texto
         displayText.style.display = 'none';
-        
+
         if (editSelect) {
             editSelect.style.display = 'block';
             editSelect.focus();
@@ -343,14 +343,14 @@ function cancelarEdicao(button) {
             // Restaurar valores originais para conta
             const contaCodigo = editContaContainer.querySelector('.edit-conta-codigo');
             const contaDesc = editContaContainer.querySelector('.edit-conta-desc');
-            
+
             if (contaCodigo) {
                 contaCodigo.value = originalValues[cell.dataset.field] || '';
             }
             if (contaDesc) {
                 contaDesc.value = originalValues[cell.dataset.field + '_desc'] || '';
             }
-            
+
             displayText.style.display = 'block';
             editContaContainer.style.display = 'none';
         } else if (editInput) {
@@ -399,54 +399,54 @@ function salvarEdicao(button) {
         if (editSelect) {
             currentValue = editSelect.value;
             valueToSend = currentValue;
-            
+
             console.log('Campo select:', { currentValue, valueToSend });
-            
+
             // Atualizar display
             const selectedOption = editSelect.options[editSelect.selectedIndex];
             displayText.textContent = selectedOption.textContent;
-            
+
             // Esconder select, mostrar texto
             displayText.style.display = 'block';
             editSelect.style.display = 'none';
-            
+
         } else if (editContaContainer) {
             const contaCodigo = editContaContainer.querySelector('.edit-conta-codigo');
             const contaDesc = editContaContainer.querySelector('.edit-conta-desc');
-            
+
             currentValue = contaCodigo ? contaCodigo.value : '';
             valueToSend = currentValue;
-            
-            console.log('Campo conta:', { 
+
+            console.log('Campo conta:', {
                 contaCodigo: contaCodigo ? contaCodigo.value : 'não encontrado',
                 contaDesc: contaDesc ? contaDesc.value : 'não encontrado',
                 currentValue,
-                valueToSend 
+                valueToSend
             });
-            
+
             // Atualizar display
             if (contaDesc && contaDesc.value) {
                 displayText.textContent = contaDesc.value;
             } else {
                 displayText.textContent = 'Nenhuma conta selecionada';
             }
-            
+
             // Esconder container, mostrar texto
             displayText.style.display = 'block';
             editContaContainer.style.display = 'none';
-            
+
             // IMPORTANTE: Enviar como conta_codigo para o backend
             formData.append('conta_codigo', valueToSend);
-            
+
         } else if (editInput) {
             currentValue = editInput.value;
             valueToSend = currentValue;
-            
+
             console.log('Campo input:', { currentValue, valueToSend });
-            
+
             // Atualizar display
             displayText.textContent = currentValue;
-            
+
             // Esconder input, mostrar texto
             displayText.style.display = 'block';
             editInput.style.display = 'none';
@@ -462,7 +462,7 @@ function salvarEdicao(button) {
         if (field !== 'conta_codigo') {
             formData.append(field, valueToSend);
         }
-        
+
         cell.classList.remove('editing');
     });
 
@@ -538,39 +538,39 @@ function abrirModalSelecaoConta(button) {
     const container = button.closest('.edit-conta-container');
     const contaCodigoInput = container.querySelector('.edit-conta-codigo');
     const contaDescInput = container.querySelector('.edit-conta-desc');
-    
+
     console.log('Container encontrado:', container);
     console.log('Input de código:', contaCodigoInput);
     console.log('Input de descrição:', contaDescInput);
-    
+
     if (!contaCodigoInput || !contaDescInput) {
         console.error('Inputs de conta não encontrados');
         return;
     }
-    
+
     // Armazenar referências para uso no callback do modal
     window.currentEditContaContainer = {
         codigoInput: contaCodigoInput,
         descInput: contaDescInput,
         container: container
     };
-    
+
     // Abrir modal existente
     if (window.PlanoContasModal && window.PlanoContasModal.open) {
-        window.PlanoContasModal.open(function(contaSelecionada) {
+        window.PlanoContasModal.open(function (contaSelecionada) {
             console.log('Conta selecionada no modal:', contaSelecionada);
-            
+
             // Esta função será chamada quando uma conta for selecionada
             if (window.currentEditContaContainer) {
                 const { codigoInput, descInput } = window.currentEditContaContainer;
                 if (codigoInput && descInput) {
                     // Usar o código formatado corretamente
                     codigoInput.value = contaSelecionada.codigo;
-                    
+
                     // Criar a descrição formatada
                     const descricaoFormatada = `${contaSelecionada.codigo_display || contaSelecionada.codigo} - ${contaSelecionada.descricao}`;
                     descInput.value = descricaoFormatada;
-                    
+
                     console.log('Valores definidos:', {
                         codigo: contaSelecionada.codigo,
                         descricao: descricaoFormatada
@@ -824,12 +824,13 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+
 function abrirModalSelecao(botao) {
     let campoCodigoAtual = null;
     let campoDescAtual = null;
 
     console.log('Botão clicado:', botao);
-    
+
     // Verificar se está em modo de edição (dentro da tabela)
     const contaContainer = botao.closest('.edit-conta-container');
     if (contaContainer) {
@@ -851,14 +852,14 @@ function abrirModalSelecao(botao) {
     if (campoCodigoAtual && campoDescAtual) {
         window.PlanoContasModal.open(function (contaSelecionada) {
             console.log('Conta selecionada:', contaSelecionada);
-            
+
             // Usar o código diretamente do modal
             campoCodigoAtual.value = contaSelecionada.codigo;
-            
+
             // Criar descrição formatada
             const descricaoFormatada = `${contaSelecionada.codigo_display || contaSelecionada.codigo} - ${contaSelecionada.descricao}`;
             campoDescAtual.value = descricaoFormatada;
-            
+
             console.log('Valores atualizados:', {
                 codigo: contaSelecionada.codigo,
                 descricao: descricaoFormatada
@@ -1437,3 +1438,4 @@ window.PlanoContasModal = {
     getSelected: () => selectedAccountData,
     refresh: carregarContas
 };
+

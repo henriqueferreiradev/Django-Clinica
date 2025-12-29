@@ -705,11 +705,6 @@ textarea {
   font-size: 16px;
 }
 
-.modal-body {
-  padding: 0;
-  max-height: 400px;
-  overflow-y: auto;
-}
 
 #notificationsList {
   min-height: 150px;

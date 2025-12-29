@@ -510,10 +510,7 @@
     outline: none;
   }
 
-  .form-control:read-only {
-    background: var(--cinza-claro);
-    color: var(--cinza-medio);
-  }
+ 
 
   .form-check {
     display: flex;
@@ -1088,6 +1085,16 @@
               <input type="text" class="form-control" value="5.000,00" required>
             </div>
           </div>
+          
+          <div class="form-group">
+            <label class="form-label">Multa / Juros</label>
+            <input type="text" class="form-control" placeholder="0,00">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Desconto</label>
+            <input type="text" class="form-control" placeholder="0,00">
+          </div>
           <div class="form-group">
             <label class="form-label">Conta Bancária</label>
             <select class="form-select">
@@ -1132,37 +1139,87 @@
 <div class="modal-overlay" id="modalNovaDespesa">
   <div class="modal-container">
     <div class="modal-header">
-      <h3 class="modal-title"><i class="fa-solid fa-plus-circle"></i> Nova Despesa</h3>
+      <h3 class="modal-title">
+        <i class="fa-solid fa-plus-circle"></i> Nova Despesa
+      </h3>
       <button class="modal-close" id="closeNovaDespesa">&times;</button>
     </div>
+
     <div class="modal-body">
       <form id="formNovaDespesa">
-          <div class="form-group">
-            <label class="form-label">Fornecedor *</label>
-            <div class="input-with-btn">
-              <input type="text" id="fornecedor_display" class="form-control" placeholder="Clique em Pesquisar para escolher..." readonly required>
-              <button type="button" class="btn btn-outline" id="btnAbrirModalFornecedor">
-                <i class="fa-solid fa-search"></i> Pesquisar
-              </button>
-            </div>
-            <input type="hidden" name="fornecedor_id" id="fornecedor_id" required />
+
+        <!-- FORNECEDOR -->
+        <div class="form-group">
+          <label class="form-label">Fornecedor *</label>
+          <div class="input-with-btn">
+            <input type="text" id="fornecedor_display" class="form-control"
+                   placeholder="Clique em Pesquisar para escolher..." readonly required>
+            <button type="button" class="btn btn-outline" id="btnAbrirModalFornecedor">
+              <i class="fa-solid fa-search"></i> Pesquisar
+            </button>
           </div>
-          
+          <input type="hidden" name="fornecedor_id" id="fornecedor_id" required>
+        </div>
+
+        <!-- CENTRO DE CUSTO -->
+        <div class="form-group">
+          <label class="form-label">Plano de Contas *</label>
+          <div style="display:flex;gap:10px;">
+            <input type="text"
+                  class="form-control conta-desc"
+                  readonly
+                  placeholder="Nenhuma conta selecionada">
+            <input type="hidden"
+                  class="conta-codigo"
+                  name="conta_codigo">
+            <button type="button"
+                    class="btn btn-outline"
+                    onclick="abrirModalSelecao(this)">
+              <i class="fa-solid fa-search"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descrição *</label>
+          <input type="text" class="form-control" required>
+        </div>
+
+        <!-- DATAS / COMPETÊNCIA -->
         <div class="form-grid">
-        
           <div class="form-group">
             <label class="form-label">Data de Vencimento *</label>
             <input type="date" class="form-control" required>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Valor *</label>
+            <label class="form-label">Competência *</label>
+            <input type="month" class="form-control" required>
+          </div>
+        </div>
+
+        <!-- VALORES -->
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Valor Original *</label>
             <div style="display:flex;gap:.5rem;">
               <span class="form-control" style="flex:0 0 64px;text-align:center;">R$</span>
-              <input type="text" class="form-control" placeholder="0,00" required>
+              <input type="text" id="valor_total" class="form-control" placeholder="0,00">
             </div>
           </div>
 
+
+          <div class="form-group">
+            <label class="form-label">Parcelas</label>
+            <input type="number" id="parcelas" class="form-control" min="1" value="1">
+          </div>
+        </div>
+      <div class="form-group">
+        <small class="text-muted" id="previewParcelas">
+           
+        </small>
+      </div>
+        <!-- STATUS / PAGAMENTO -->
+        <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Status *</label>
             <select class="form-select" required>
@@ -1176,26 +1233,35 @@
             <label class="form-label">Forma de Pagamento *</label>
             <select class="form-select" required>
               <option value="">Selecione</option>
-              <option value="ted">TED/DOC</option>
               <option value="boleto">Boleto</option>
-              <option value="cheque">Cheque</option>
+              <option value="pix">PIX</option>
               <option value="dinheiro">Dinheiro</option>
               <option value="debito">Cartão Débito</option>
               <option value="credito">Cartão Crédito</option>
             </select>
           </div>
+
+          <div class="form-group">
+            <label class="form-label">Conta de Débito (Prevista)</label>
+            <select class="form-select">
+              <option value="">Selecione a conta</option>
+              {% for conta in contas_bancarias %}
+                <option value="{{ conta.id }}">{{ conta.conta_bancaria_extenso }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Descrição *</label>
-          <input type="text" class="form-control" placeholder="Descrição da despesa" required>
-        </div>
+        <!-- DESCRIÇÃO -->
 
+
+        <!-- OBS -->
         <div class="form-group">
           <label class="form-label">Observações</label>
-          <textarea class="form-control" rows="3" placeholder="Observações sobre esta despesa"></textarea>
+          <textarea class="form-control" rows="3"></textarea>
         </div>
 
+        <!-- RECORRÊNCIA -->
         <div class="form-group">
           <div class="form-check">
             <input type="checkbox" class="form-check-input" id="despesaRecorrente">
@@ -1214,28 +1280,35 @@
               <option value="anual">Anual</option>
             </select>
           </div>
+
           <div class="form-group">
             <label class="form-label">Início</label>
             <input type="date" class="form-control">
           </div>
+
           <div class="form-group">
             <label class="form-label">Término</label>
             <input type="date" class="form-control">
           </div>
         </div>
 
+        <!-- ANEXO -->
         <div class="form-group">
           <label class="form-label">Anexar Documento</label>
           <input type="file" class="form-control">
         </div>
       </form>
     </div>
+
     <div class="modal-footer">
       <button class="btn btn-outline" id="cancelNovaDespesa">Cancelar</button>
-      <button class="btn btn-primary" id="saveNovaDespesa"><i class="fa-solid fa-save"></i> Salvar Despesa</button>
+      <button class="btn btn-primary" id="saveNovaDespesa">
+        <i class="fa-solid fa-save"></i> Salvar Despesa
+      </button>
     </div>
   </div>
 </div>
+
 
 <!-- Modal de Fornecedor -->
 <!-- Modal de Fornecedor -->
@@ -1458,49 +1531,41 @@
   }
 
   // Botão confirmar
+// Botão confirmar
   if (btnConfirmar) {
-    btnConfirmar.addEventListener('click', function() {
+    btnConfirmar.addEventListener('click', function () {
       if (!fornecedorSelecionado) return;
-      
-      // Preencher campos do fornecedor
-      if (fornecedorId) fornecedorId.value = fornecedorSelecionado.id;
-      if (fornecedorDisplay) fornecedorDisplay.value = fornecedorSelecionado.nome;
-      
-      console.log('[ModalFornecedor] Fornecedor selecionado:', fornecedorSelecionado);
-      
-      // Se o fornecedor tiver centro de custo, preencher automaticamente
-      if (fornecedorSelecionado.centroCustoId) {
-        const centroCustoId = document.getElementById('centro_custo_id');
-        const centroCustoCodigo = document.getElementById('centro_custo_codigo');
-        const centroCustoDisplay = document.getElementById('centro_custo_display');
-        
-        if (centroCustoId) centroCustoId.value = fornecedorSelecionado.centroCustoId;
-        if (centroCustoCodigo) centroCustoCodigo.value = fornecedorSelecionado.centroCustoCodigo;
-        if (centroCustoDisplay) {
-          centroCustoDisplay.value = `${fornecedorSelecionado.centroCustoCodigo} - ${fornecedorSelecionado.centroCustoDescricao}`;
-        }
-        
-        console.log('[ModalFornecedor] Centro de custo preenchido automaticamente:', {
-          id: fornecedorSelecionado.centroCustoId,
-          codigo: fornecedorSelecionado.centroCustoCodigo,
-          descricao: fornecedorSelecionado.centroCustoDescricao
-        });
+
+      // Preencher fornecedor
+      fornecedorId.value = fornecedorSelecionado.id;
+      fornecedorDisplay.value = fornecedorSelecionado.nome;
+
+      // 🔥 PREENCHER PLANO DE CONTAS AUTOMATICAMENTE
+      const contaCodigoInput = document.querySelector('.conta-codigo');
+      const contaDescInput   = document.querySelector('.conta-desc');
+
+      if (
+        fornecedorSelecionado.centroCustoCodigo &&
+        fornecedorSelecionado.centroCustoDescricao &&
+        contaCodigoInput &&
+        contaDescInput
+      ) {
+        contaCodigoInput.value = fornecedorSelecionado.centroCustoCodigo;
+        contaDescInput.value =
+          `${fornecedorSelecionado.centroCustoCodigo} - ${fornecedorSelecionado.centroCustoDescricao}`;
+
+        console.log('[ModalFornecedor] Plano de contas preenchido automaticamente');
       } else {
-        // Se não tiver centro de custo, limpar os campos
-        const centroCustoId = document.getElementById('centro_custo_id');
-        const centroCustoCodigo = document.getElementById('centro_custo_codigo');
-        const centroCustoDisplay = document.getElementById('centro_custo_display');
-        
-        if (centroCustoId) centroCustoId.value = '';
-        if (centroCustoCodigo) centroCustoCodigo.value = '';
-        if (centroCustoDisplay) centroCustoDisplay.value = '';
-        
-        console.log('[ModalFornecedor] Fornecedor sem centro de custo - campos limpos');
+        // Se fornecedor não tiver plano
+        if (contaCodigoInput) contaCodigoInput.value = '';
+        if (contaDescInput) contaDescInput.value = '';
+        console.log('[ModalFornecedor] Fornecedor sem plano de contas');
       }
-      
+
       fecharModal();
     });
   }
+
 
   // Botão limpar
   if (btnLimpar) {
@@ -1684,4 +1749,55 @@
     console.log('[ContasPagar] Configuração concluída!');
   });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const valorInput = document.getElementById('valor_total');
+  const parcelasInput = document.getElementById('parcelas');
+  const preview = document.getElementById('previewParcelas');
+
+  function parseValor(valor) {
+    if (!valor) return 0;
+    return parseFloat(
+      valor.replace(/\./g, '').replace(',', '.')
+    ) || 0;
+  }
+
+  function formatar(valor) {
+    return valor.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+  }
+
+  function atualizarPreview() {
+    const valorTotal = parseValor(valorInput.value);
+    let parcelas = parseInt(parcelasInput.value) || 1;
+
+    if (parcelas < 1) parcelas = 1;
+    parcelasInput.value = parcelas;
+
+    if (valorTotal <= 0) {
+      preview.innerText = `Será gerada ${parcelas} parcela(s)`;
+      return;
+    }
+
+    const valorBase = Math.floor((valorTotal / parcelas) * 100) / 100;
+    const resto = valorTotal - (valorBase * parcelas);
+    const ultimaParcela = valorBase + resto;
+
+    if (parcelas === 1) {
+      preview.innerText = `Será gerada 1 parcela de ${formatar(valorTotal)}`;
+    } else {
+      preview.innerText =
+        `${parcelas} parcelas de ${formatar(valorBase)} ` +
+        `(${parcelas - 1}x) e 1 parcela de ${formatar(ultimaParcela)}`;
+    }
+  }
+
+  valorInput.addEventListener('input', atualizarPreview);
+  parcelasInput.addEventListener('input', atualizarPreview);
+});
+</script>
+
 {% endblock %}

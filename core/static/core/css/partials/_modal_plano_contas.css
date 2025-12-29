@@ -1,0 +1,415 @@
+.open-modal-btn {
+    background: linear-gradient(to right, #FF416C, #FF4B2B);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+
+.open-modal-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+}
+
+.open-modal-btn:active {
+    transform: translateY(0);
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    background: white;
+    width: 100%;
+    max-width: 900px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    padding: 25px 30px;
+    background: var(--branco);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 25px 30px;
+    overflow-y: auto;
+    flex-grow: 1;
+    background-color: var(--branco);
+
+}
+
+.search-container {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 15px 20px 15px 50px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s;
+    background-color: var(--backgroundCard);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--roxoPrincipal);
+    box-shadow: 0 5px 15px rgba(142, 84, 233, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 18px;
+}
+
+.selected-account {
+    margin: 20px 0;
+    padding: 18px 20px;
+    background: var(--backgroundCard);
+    border-radius: 12px;
+    border-left: 5px solid #8E54E9;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.selected-account i {
+    color: #8E54E9;
+}
+
+.account-tree {
+    list-style: none;
+    padding-left: 0;
+    background: var(--branco);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.account-item {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.account-item:last-child {
+    border-bottom: none;
+}
+
+.account-content {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.account-content:hover {
+    background-color: var(--backgroundCard);
+    ;
+}
+
+.account-content.selected {
+    background-color: #f0f7ff;
+    border-left: 4px solid #4776E6;
+}
+
+.account-content.receita {
+    border-left: 3px solid #4CAF50;
+}
+
+.account-content.despesa {
+    border-left: 3px solid #F44336;
+}
+
+.toggle-icon {
+    margin-right: 12px;
+    cursor: pointer;
+    color: #94a3b8;
+    width: 24px;
+    text-align: center;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.account-icon {
+    margin-right: 12px;
+    width: 24px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.folder-icon {
+    color: #FFB74D;
+}
+
+.file-icon {
+    color: #64B5F6;
+}
+
+.account-code {
+    font-weight: 700;
+    margin-right: 12px;
+    color: #1e293b;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.account-name {
+    color: #475569;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.account-badge {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.badge-receita {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.badge-despesa {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+.children {
+    list-style: none;
+    padding-left: 40px;
+    background: #f8fafc;
+    display: none;
+}
+
+.children.expanded {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    background: var(--branco);
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--roxoPrincipal);
+    color: white;
+    border: none;
+    box-shadow: 0 5px 15px rgba(145, 71, 230, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(71, 118, 230, 0.5);
+}
+
+.btn-secondary {
+    background: white;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #cbd5e1;
+}
+
+.empty-state p {
+    font-size: 18px;
+}
+
+.category-header {
+    background: var(--roxoPrincipal-hover);
+    ;
+    padding: 12px 20px;
+    font-weight: 700;
+    color: var(--preto);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+
+
+.category-header i {
+    color: #4776E6;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4776E6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        max-height: 95vh;
+        max-width: 95%;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 20px;
+    }
+
+    .children {
+        padding-left: 30px;
+    }
+
+    .account-code {
+        min-width: 40px;
+        font-size: 12px;
+    }
+}
+
+.plano-contas-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+}
+
+.plano-contas-overlay.active {
+    display: flex;
+}
