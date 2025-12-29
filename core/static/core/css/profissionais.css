@@ -420,3 +420,58 @@ body {
         min-width: auto;
     }
 }
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px; /* Reduzi de 100px para 20px */
+    justify-items: center; /* Centraliza cada card dentro da célula */
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Remove a largura fixa do card para que ele se adapte ao grid */
+.card {
+    width: 100%; /* Mudei de 260px fixo para 100% */
+    max-width: 300px; /* Define um máximo para não ficar muito largo */
+    background: var(--branco);
+    border-radius: 20px;
+    box-shadow: var(--shadowRoxo);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+/* Para telas maiores, pode ter mais colunas */
+@media (min-width: 1200px) {
+    .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+/* Para telas menores, ajusta o layout */
+@media (max-width: 768px) {
+    .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-grid {
+        grid-template-columns: 1fr; /* Uma coluna em telas muito pequenas */
+        gap: 15px;
+    }
+    
+    .card {
+        max-width: 100%;
+    }
+}

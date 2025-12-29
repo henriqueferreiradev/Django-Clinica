@@ -88,42 +88,7 @@ function montarEndereco(data) {
     return partes.join(', ')
 
 }
-function abrirModal(profissionalId) {
-    console.log("Chamando modal para o profissional:", profissionalId);
-    fetch(`/api/profissional/${profissionalId}/`)
-        .then(response => response.json())
-        .then(data => {
-            const endereco = montarEndereco(data)
-            document.getElementById('profissionalNome').innerText = `Perfil do profissional - ${data.nome} ${data.sobrenome}`;
-            document.getElementById('profissionalNascimento').innerText = `Nascimento: ${data.nascimento}`;
-            document.getElementById('profissionalIdade').innerText = data.idade;
-            document.getElementById('profissionalRg').innerText = data.rg;
-            document.getElementById('profissionalCpf').innerText = data.cpf;
-            document.getElementById('profissionalTelefone').innerText = data.telefone;
-            document.getElementById('profissionalCelular').innerText = data.celular;
-            document.getElementById('profissionalCor').innerText = data.cor_raca;
-            document.getElementById('profissionalSexo').innerText = data.sexo;
-            document.getElementById('profissionalEstadoCivil').innerText = data.estado_civil;
-            document.getElementById('profissionalEmail').innerText = data.email;
-            document.getElementById('profissionalEndereco').innerText = endereco;
-            document.getElementById('profissionalObs').innerText = data.observacao;
-            const img = document.getElementById('profissionalFoto');
-         
-            
-            if (data.foto) {
-              img.src = window.location.origin + data.foto;
-            } else {
-              img.src = "/static/core/img/defaultPerfil.png";
-            }
-            // Mostrar modal
-            document.getElementById('modalOverlay').style.display = 'flex';
-        });
-}
-
-function fecharModal() {
-    document.getElementById('modalOverlay').style.display = 'none';
-}
-
+ 
 function abrirFicha(url) {
     const novaAba = window.open(url, '_blank');
     novaAba.onload = function () {
