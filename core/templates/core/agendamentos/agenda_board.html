@@ -7,8 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png" />
   <title>Agenda Matrix - Ponto de Equilibro </title>
+  <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
   <link rel="stylesheet" href="{% static 'core/css/agenda/agenda_matriz.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
+  
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -27,7 +28,7 @@
       {% endfor %}
     </select>
     <div class="working-today">
-      <label>
+      <label class='checkbox-option'>
         <input type="checkbox" id="working-today-check">
         Trabalha neste dia
       </label>
@@ -59,7 +60,7 @@
           <i class="fas fa-user-md"></i> 
           <span>{{ prof.nome }}</span>
           {% if prof.tem_agenda %}
-            <span style="font-size: 0.7rem; margin-left: auto; color: var(--primary);">●</span>
+            <span style="font-size: 0.7rem; margin-left: auto; color: var(--roxoPrincipal);">●</span>
           {% endif %}
         </div>
       {% empty %}
@@ -91,14 +92,12 @@
                                   {% for ag in agendamentos %}
                                       {% if ag.profissional_1.id == prof.id and ag.hora_str == hora %}
                                           <div class="paciente" 
-                                              style="background: {{ ag.especialidade.cor|default:'#8b5cf6' }};"
+                                              style="background: {{ ag.especialidade.cor|default:'#8b5cf6' }}; border:1px solid {{ ag.especialidade.cor|default:'#8b5cf6' }}"
                                               data-agendamento-id="{{ ag.id }}"
                                               onclick="abrirDetalhesAgendamento({{ ag.id }})"
                                               title="Clique para ver detalhes">
                                               <i class="fas fa-user"></i> {{ ag.paciente.nome|truncatechars:15 }}
-                                              {% if ag.especialidade %}
-                                                  <small>{{ ag.especialidade.nome|truncatechars:20 }}</small>
-                                              {% endif %}
+
                                           </div>
                                       {% endif %}
                                   {% endfor %}
@@ -117,183 +116,244 @@
   <script type="module" src="{% static 'core/js/alertas/main.js' %}"></script>
   <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
   <script>
-    // Date handling
-    let currentDate = new Date("{{ selected_date }}");
+// Date handling
+let currentDate = new Date("{{ selected_date }}");
+
+function formatarDataParaBR(date) {
+    const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
     
-    function formatarDataParaBR(date) {
-      const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-      const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-      
-      const diaSemana = diasSemana[date.getDay()];
-      const dia = date.getDate();
-      const mes = meses[date.getMonth()];
-      const ano = date.getFullYear();
-      
-      return `${diaSemana}, ${dia} de ${mes} de ${ano}`;
-    }
+    const diaSemana = diasSemana[date.getDay()];
+    const dia = date.getDate();
+    const mes = meses[date.getMonth()];
+    const ano = date.getFullYear();
     
-    function updateDateDisplay() {
-      const dateStr = formatarDataParaBR(currentDate);
-      const hoje = new Date();
-      const isToday = currentDate.toDateString() === hoje.toDateString();
-      
-      if (isToday) {
+    return `${diaSemana}, ${dia} de ${mes} de ${ano}`;
+}
+
+function updateDateDisplay() {
+    const dateStr = formatarDataParaBR(currentDate);
+    const hoje = new Date();
+    const isToday = currentDate.toDateString() === hoje.toDateString();
+    
+    if (isToday) {
         document.getElementById('current-date').innerHTML = dateStr + ' <span style="color: var(--roxoPrincipal);"> - Hoje</span>';
-      } else {
+    } else {
         document.getElementById('current-date').textContent = dateStr;
-      }
-      document.getElementById('date-selector').valueAsDate = currentDate;
     }
+    document.getElementById('date-selector').valueAsDate = currentDate;
+}
 
-    // Navegação por data
-    document.getElementById('prev-day').addEventListener('click', () => {
-      currentDate.setDate(currentDate.getDate() - 1);
-      navigateToDate(currentDate);
-    });
+// Navegação por data
+document.getElementById('prev-day').addEventListener('click', () => {
+    currentDate.setDate(currentDate.getDate() - 1);
+    navigateToDate(currentDate);
+});
 
-    document.getElementById('next-day').addEventListener('click', () => {
-      currentDate.setDate(currentDate.getDate() + 1);
-      navigateToDate(currentDate);
-    });
+document.getElementById('next-day').addEventListener('click', () => {
+    currentDate.setDate(currentDate.getDate() + 1);
+    navigateToDate(currentDate);
+});
 
-    document.getElementById('today-btn').addEventListener('click', () => {
-      currentDate = new Date();
-      navigateToDate(currentDate);
+document.getElementById('today-btn').addEventListener('click', () => {
+    currentDate = new Date();
+    navigateToDate(currentDate);
+});
+
+document.getElementById('date-selector').addEventListener('change', (e) => {
+    currentDate = new Date(e.target.value);
+    navigateToDate(currentDate);
+});
+
+function navigateToDate(date) {
+    const formattedDate = date.toISOString().split('T')[0];
+    window.location.href = `?date=${formattedDate}`;
+}
+
+// Filtro por profissional - SIMPLIFICADO
+document.getElementById('profissional-select').addEventListener('change', function() {
+    const selectedProfId = this.value;
+    
+    // Resetar todos os cards primeiro
+    document.querySelectorAll('.prof-card').forEach(card => {
+        card.classList.remove('active');
+        card.style.background = '';
+        card.style.color = '';
+        card.querySelector('i').style.color = '';
+        
+        if (card.classList.contains('sem-agenda')) {
+            card.style.opacity = '0.6';
+        }
     });
     
-    document.getElementById('date-selector').addEventListener('change', (e) => {
-      currentDate = new Date(e.target.value);
-      navigateToDate(currentDate);
-    });
-
-    function navigateToDate(date) {
-      const formattedDate = date.toISOString().split('T')[0];
-      window.location.href = `?date=${formattedDate}`;
-    }
-
-    // Filtro por profissional
-    document.getElementById('profissional-select').addEventListener('change', function() {
-      const selectedProfId = this.value;
-      
-      // Mostrar/ocultar colunas da tabela
-      document.querySelectorAll('th[data-prof-id]').forEach(th => {
+    // Mostrar/ocultar colunas da tabela
+    document.querySelectorAll('th[data-prof-id]').forEach(th => {
         if (selectedProfId === '' || th.dataset.profId === selectedProfId) {
-          th.style.display = '';
+            th.style.display = '';
         } else {
-          th.style.display = 'none';
+            th.style.display = 'none';
         }
-      });
-
-      // Mostrar/ocultar células da tabela
-      document.querySelectorAll('td[data-prof-id]').forEach(td => {
-        const colIndex = Array.from(td.parentNode.children).indexOf(td);
+    });
+    
+    // Mostrar/ocultar células da tabela
+    document.querySelectorAll('td[data-prof-id]').forEach(td => {
+        const row = td.parentNode;
+        const colIndex = Array.from(row.children).indexOf(td);
         const header = document.querySelector(`th:nth-child(${colIndex + 1})`);
         
         if (selectedProfId === '' || (header && header.dataset.profId === selectedProfId)) {
-          td.style.display = '';
+            td.style.display = '';
         } else {
-          td.style.display = 'none';
+            td.style.display = 'none';
         }
-      });
-      
-      // Destacar profissional selecionado na sidebar
-      document.querySelectorAll('.prof-card').forEach(card => {
-        if (selectedProfId === '' || card.dataset.profId === selectedProfId) {
-          card.style.background = 'var(--roxoPrincipal)';
-          card.style.color = 'white';
-          card.querySelector('i').style.color = 'white';
-        } else {
-          if (card.classList.contains('sem-agenda')) {
-            card.style.background = 'var(--sidebar-bg)';
-            card.querySelector('i').style.color = 'var(--text-light)';
-          } else {
-            card.style.background = 'var(--bg-color)';
-            card.querySelector('i').style.color = 'var(--roxoPrincipal)';
-          }
-          card.style.color = 'var(--text)';
-        }
-      });
     });
+    
+    // Destacar profissional selecionado na sidebar
+    if (selectedProfId !== '') {
+        const selectedCard = document.querySelector(`.prof-card[data-prof-id="${selectedProfId}"]`);
+        if (selectedCard) {
+            selectedCard.classList.add('active');
+        }
+    }
+});
 
-    // Click nos cards de profissional (sidebar)
-    document.querySelectorAll('.prof-card').forEach(card => {
-      card.addEventListener('click', function() {
+// Click nos cards de profissional (sidebar)
+document.querySelectorAll('.prof-card').forEach(card => {
+    card.addEventListener('click', function() {
         const profId = this.dataset.profId;
         const select = document.getElementById('profissional-select');
         select.value = profId;
         select.dispatchEvent(new Event('change'));
-      });
     });
+});
 
-    // Filtro "Trabalha hoje" (simulação)
-    document.getElementById('working-today-check').addEventListener('change', function() {
-      if (!this.checked) {
-        document.querySelectorAll('.prof-card').forEach(card => {
-          // Simulação: 30% dos profissionais não trabalham hoje
-          if (Math.random() > 0.7) {
-            card.style.opacity = '0.3';
-            card.style.pointerEvents = 'none';
-          }
-        });
-      } else {
-        document.querySelectorAll('.prof-card').forEach(card => {
-          card.style.opacity = '1';
-          card.style.pointerEvents = 'auto';
-        });
-      }
+// Filtro "Trabalha hoje" - SIMPLIFICADO
+document.getElementById('working-today-check').addEventListener('change', function() {
+    document.querySelectorAll('.prof-card').forEach(card => {
+        if (this.checked) {
+            // Mostrar apenas quem trabalha (simulação)
+            // Aqui você pode integrar com sua lógica real
+            const trabalhaHoje = Math.random() > 0.3; // 70% trabalham
+            if (!trabalhaHoje) {
+                card.style.opacity = '0.3';
+                card.style.pointerEvents = 'none';
+            } else {
+                card.style.opacity = '1';
+                card.style.pointerEvents = 'auto';
+            }
+        } else {
+            // Mostrar todos
+            card.style.opacity = '1';
+            card.style.pointerEvents = 'auto';
+        }
     });
+});
 
-    // Função para abrir detalhes do agendamento
-    function abrirDetalhesAgendamento(agendamentoId) {
-      // Aqui você pode redirecionar para a página de detalhes ou abrir um modal
-      // Exemplo: window.location.href = `/agendamento/detalhar/${agendamentoId}/`;
-      alert(`Abrindo detalhes do agendamento ID: ${agendamentoId}\nImplemente a lógica de redirecionamento aqui.`);
-    }
+// Função para abrir detalhes do agendamento
+function abrirDetalhesAgendamento(agendamentoId) {
+  const response = await fetch(`/api/agendamento/detalhar/${agendamentoId}/`);
+  const data = await response.json();
+  console.log(data)
+}
 
-    // Destacar hora atual
-    function highlightCurrentTime() {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-      const currentDateStr = now.toISOString().split('T')[0];
-      const selectedDateStr = "{{ selected_date }}";
-      
-      // Só destacar se for a data selecionada
-      if (currentDateStr !== selectedDateStr) {
+// Destacar hora atual - SIMPLIFICADO
+function highlightCurrentTime() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentDateStr = now.toISOString().split('T')[0];
+    const selectedDateStr = "{{ selected_date }}";
+    
+    // Só destacar se for a data selecionada
+    if (currentDateStr !== selectedDateStr) {
         document.querySelectorAll('.horario-col').forEach(td => {
-          td.classList.remove('hora-atual');
+            td.classList.remove('hora-atual');
         });
         return;
-      }
-      
-      // Arredondar para o bloco de 30 minutos mais próximo
-      const roundedMinute = Math.floor(currentMinute / 30) * 30;
-      const currentTimeString = 
+    }
+    
+    // Arredondar para o bloco de 30 minutos mais próximo
+    const roundedMinute = Math.floor(currentMinute / 30) * 30;
+    const currentTimeString = 
         String(currentHour).padStart(2, '0') + ':' + 
         String(roundedMinute).padStart(2, '0');
-      
-      // Remover destaque anterior
-      document.querySelectorAll('.horario-col').forEach(td => {
+    
+    // Remover destaque anterior
+    document.querySelectorAll('.horario-col').forEach(td => {
         td.classList.remove('hora-atual');
-      });
-      
-      // Destacar hora atual
-      const currentTd = document.querySelector(`.horario-col[data-hora="${currentTimeString}"]`);
-      if (currentTd) {
+    });
+    
+    // Destacar hora atual
+    const currentTd = document.querySelector(`.horario-col[data-hora="${currentTimeString}"]`);
+    if (currentTd) {
         currentTd.classList.add('hora-atual');
-      }
     }
+}
 
- 
+// Inicializar
+updateDateDisplay();
+highlightCurrentTime();
 
-    // Inicializar
-    updateDateDisplay();
-    highlightCurrentTime();
+// Atualizar hora atual periodicamente
+setInterval(highlightCurrentTime, 1000 * 30); // Atualizar a cada 30 segundos
+
+// Melhoria: Ajustar altura da tabela ao redimensionar
+window.addEventListener('resize', function() {
+    const agendaBoard = document.querySelector('.agenda-board');
+    const profissionais = document.querySelector('.profissionais');
+    const horarios = document.querySelector('.horarios');
     
-    // Atualizar hora atual periodicamente
-    setInterval(highlightCurrentTime, 1000 * 30); // Atualizar a cada 30 segundos
+    if (agendaBoard && profissionais && horarios) {
+        const availableHeight = window.innerHeight - 120; // Subtrai altura dos filtros
+        agendaBoard.style.height = `${availableHeight}px`;
+    }
+});
+
+// Executar ajuste inicial de altura
+setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+}, 100);
+
+// Melhoria: Scroll suave para a hora atual
+function scrollToCurrentTime() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentDateStr = now.toISOString().split('T')[0];
+    const selectedDateStr = "{{ selected_date }}";
     
- 
+    if (currentDateStr === selectedDateStr) {
+        const currentTimeString = String(currentHour).padStart(2, '0') + ':00';
+        const currentRow = document.querySelector(`td.horario-col[data-hora="${currentTimeString}"]`);
+        
+        if (currentRow && currentRow.parentElement) {
+            currentRow.parentElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+    }
+}
+
+// Adicionar botão para ir para hora atual
+    const scrollToNowBtn = document.createElement('button');
+    scrollToNowBtn.innerHTML = '<i class="fas fa-clock"></i>';
+    scrollToNowBtn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--roxoPrincipal);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    `;
+    scrollToNowBtn.addEventListener('click', scrollToCurrentTime);
+    document.body.appendChild(scrollToNowBtn);
+    
   </script>
   {% endblock %}
 </body>

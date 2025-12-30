@@ -36,7 +36,8 @@ urlpatterns = [
     path('api/detalhe-avaliacoes/<int:agendamento_id>/', api_views.detalhes_avaliacao, name='detalhe_avaliacoes'),
     path('api/verificar-prontuario/<int:agendamento_id>/', api_views.verificar_prontuario, name='verificar_prontuario' ),
     path('api/paciente/<int:paciente_id>/detalhe/', api_views.paciente_detalhes_basicos, name='paciente_detalhes_basicos' ),
-    
+    path('api/paciente/<int:paciente_id>/detalhe/', api_views.paciente_detalhes_basicos, name='paciente_detalhes_basicos' ),
+    path('api/agendamento/detalhar/<int:agendamento_id>/', agendamento_views.api_detalhar_agendamento,name='api_detalhar_agendamento'),
     
     path('api/plano-contas/', api_views.api_plano_contas, name='api_plano_contas'),
     path('api/contar-pendencias-dia/', api_views.contar_pendencias_dia, name='contar_pendencias_dia'),

@@ -92,7 +92,7 @@ def agenda_board(request):
         tem_agenda = agendamentos.filter(profissional_1=prof).exists()
         
         # Usa o nome do profissional (do modelo Profissional)
-        nome_completo = f"{prof.nome} {prof.sobrenome}" if prof.sobrenome else prof.nome
+        nome_completo = f"{prof.nome}" if prof.sobrenome else prof.nome
         
         profissionais_list.append({
             'id': prof.id,
@@ -137,9 +137,17 @@ def agenda_board(request):
     return render(request, "core/agendamentos/agenda_board.html", context)
 
 
+def api_detalhar_agendamento(request, agendamento_id):
+    agendamento = get_object_or_404(Agendamento, id=agendamento_id)
 
-
-
+    return JsonResponse({
+        "id": agendamento.id,
+        "paciente": agendamento.paciente.nome if agendamento.paciente else None,
+        "data": agendamento.data.strftime("%Y-%m-%d"),
+        "hora_inicio": agendamento.hora_inicio.strftime("%H:%M") if agendamento.hora_inicio else None,
+        "hora_fim": agendamento.hora_fim.strftime("%H:%M") if agendamento.hora_fim else None,
+        "status": agendamento.status,
+    })
 
 
 
