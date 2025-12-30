@@ -16,6 +16,10 @@
 </head>
 <body>
   <div class="professional-filter">
+    <div class="date-picker">
+      <input type="date" id="date-selector" value="{{ selected_date }}">
+      <button id="today-btn">Hoje</button>
+    </div>
     <select id="profissional-select" class="prof-select">
       <option value="">Todos os profissionais</option>
       {% for prof in profissionais %}
@@ -42,10 +46,7 @@
       </h2>
       <button id="next-day"><i class="fas fa-chevron-right"></i></button>
     </div>
-    <div class="date-picker">
-      <input type="date" id="date-selector" value="{{ selected_date }}">
-      <button id="today-btn">Hoje</button>
-    </div>
+
   </div>
 
   <div class="agenda-board">
@@ -67,47 +68,54 @@
         </div>
       {% endfor %}
     </div>
-
-    <!-- Agenda -->
-    <div class="horarios">
-      <table id="agenda-table">
-        <thead>
-          <tr>
-            <th class="horario-col">Horário</th>
-            {% for prof in profissionais %}
-              <th data-prof-id="{{ prof.id }}" data-prof-name="{{ prof.nome }}">{{ prof.nome|truncatechars:20 }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody id="agenda-body">
-          {% for hora in horarios %}
-            <tr>
-              <td class="horario-col" data-hora="{{ hora }}">{{ hora }}</td>
-              {% for prof in profissionais %}
-                <td data-prof-id="{{ prof.id }}" data-hora="{{ hora }}">
-                  {% for ag in agendamentos %}
-                    {% if ag.profissional_1.id == prof.id and ag.hora_str == hora %}
-                      <div class="paciente" 
-                           style="background: {{ ag.especialidade.cor|default:'#8b5cf6' }};"
-                           data-agendamento-id="{{ ag.id }}"
-                           onclick="abrirDetalhesAgendamento({{ ag.id }})"
-                           title="Clique para ver detalhes">
-                        <i class="fas fa-user"></i> {{ ag.paciente.nome|truncatechars:15 }}
-                        {% if ag.especialidade %}
-                          <small>{{ ag.especialidade.nome|truncatechars:20 }}</small>
-                        {% endif %}
-                      </div>
-                    {% endif %}
+  <!-- Área de horários -->
+  <div class="horarios">
+      <div class="table-container">
+          <table id="agenda-table">
+              <thead>
+                  <tr>
+                      <th class="horario-col">Horário</th>
+                      {% for prof in profissionais %}
+                          <th data-prof-id="{{ prof.id }}" data-prof-name="{{ prof.nome }}">
+                              {{ prof.nome|truncatechars:20 }}
+                          </th>
+                      {% endfor %}
+                  </tr>
+              </thead>
+              <tbody id="agenda-body">
+                  {% for hora in horarios %}
+                      <tr>
+                          <td class="horario-col" data-hora="{{ hora }}">{{ hora }}</td>
+                          {% for prof in profissionais %}
+                              <td data-prof-id="{{ prof.id }}" data-hora="{{ hora }}">
+                                  {% for ag in agendamentos %}
+                                      {% if ag.profissional_1.id == prof.id and ag.hora_str == hora %}
+                                          <div class="paciente" 
+                                              style="background: {{ ag.especialidade.cor|default:'#8b5cf6' }};"
+                                              data-agendamento-id="{{ ag.id }}"
+                                              onclick="abrirDetalhesAgendamento({{ ag.id }})"
+                                              title="Clique para ver detalhes">
+                                              <i class="fas fa-user"></i> {{ ag.paciente.nome|truncatechars:15 }}
+                                              {% if ag.especialidade %}
+                                                  <small>{{ ag.especialidade.nome|truncatechars:20 }}</small>
+                                              {% endif %}
+                                          </div>
+                                      {% endif %}
+                                  {% endfor %}
+                              </td>
+                          {% endfor %}
+                      </tr>
                   {% endfor %}
-                </td>
-              {% endfor %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+              </tbody>
+          </table>
+      </div>
   </div>
+ 
+  </div>
+  {% block scripts %}
 
+  <script type="module" src="{% static 'core/js/alertas/main.js' %}"></script>
+  <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
   <script>
     // Date handling
     let currentDate = new Date("{{ selected_date }}");
@@ -130,7 +138,7 @@
       const isToday = currentDate.toDateString() === hoje.toDateString();
       
       if (isToday) {
-        document.getElementById('current-date').innerHTML = dateStr + ' <span style="color: var(--primary);">(Hoje)</span>';
+        document.getElementById('current-date').innerHTML = dateStr + ' <span style="color: var(--roxoPrincipal);"> - Hoje</span>';
       } else {
         document.getElementById('current-date').textContent = dateStr;
       }
@@ -191,7 +199,7 @@
       // Destacar profissional selecionado na sidebar
       document.querySelectorAll('.prof-card').forEach(card => {
         if (selectedProfId === '' || card.dataset.profId === selectedProfId) {
-          card.style.background = 'var(--primary)';
+          card.style.background = 'var(--roxoPrincipal)';
           card.style.color = 'white';
           card.querySelector('i').style.color = 'white';
         } else {
@@ -199,8 +207,8 @@
             card.style.background = 'var(--sidebar-bg)';
             card.querySelector('i').style.color = 'var(--text-light)';
           } else {
-            card.style.background = 'var(--card-bg)';
-            card.querySelector('i').style.color = 'var(--primary)';
+            card.style.background = 'var(--bg-color)';
+            card.querySelector('i').style.color = 'var(--roxoPrincipal)';
           }
           card.style.color = 'var(--text)';
         }
@@ -276,26 +284,7 @@
       }
     }
 
-    // Hover effects para células da tabela
-    document.querySelectorAll('td[data-prof-id]').forEach(td => {
-      td.addEventListener('mouseenter', function() {
-        const profId = this.dataset.profId;
-        const card = document.querySelector(`.prof-card[data-prof-id="${profId}"]`);
-        if (card) {
-          card.style.transform = 'translateX(5px)';
-          card.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.3)';
-        }
-      });
-      
-      td.addEventListener('mouseleave', function() {
-        const profId = this.dataset.profId;
-        const card = document.querySelector(`.prof-card[data-prof-id="${profId}"]`);
-        if (card) {
-          card.style.transform = '';
-          card.style.boxShadow = '';
-        }
-      });
-    });
+ 
 
     // Inicializar
     updateDateDisplay();
@@ -304,10 +293,8 @@
     // Atualizar hora atual periodicamente
     setInterval(highlightCurrentTime, 1000 * 30); // Atualizar a cada 30 segundos
     
-    // Verificar se é hoje
-    {% if is_today %}
-      document.getElementById('current-date').innerHTML += ' <span style="color: var(--primary);">(Hoje)</span>';
-    {% endif %}
+ 
   </script>
+  {% endblock %}
 </body>
 </html>
