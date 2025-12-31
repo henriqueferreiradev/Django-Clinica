@@ -13,7 +13,7 @@ from django.contrib import messages
 import uuid
 from django.utils.timezone import now
 from decimal import Decimal, InvalidOperation
-
+import json
 
 @login_required(login_url='login')
 def agenda_view(request):
@@ -165,7 +165,7 @@ def api_detalhar_agendamento(request, agendamento_id):
         "hora_inicio": agendamento.hora_inicio.strftime("%H:%M") if agendamento.hora_inicio else None,
         "hora_fim": agendamento.hora_fim.strftime("%H:%M") if agendamento.hora_fim else None,
         "status": agendamento.status,
-        'observacoes':agendamento.observacoes,
+        'observacoes':agendamento.observacoes if agendamento.observacoes else "Nenhuma observação registrada.",
         'sessao_atual': agendamento.pacote.sessoes_realizadas,
         'sessoes_restantes': agendamento.pacote.sessoes_restantes,
         'qtd_sessoes':agendamento.pacote.qtd_sessoes,
@@ -838,7 +838,13 @@ def editar_agendamento(request, agendamento_id):
             agendamento = Agendamento.objects.get(pk=agendamento_id)
             data = request.POST
 
-          
+            # DEBUG: Verificar todos os dados recebidos
+            print('=== DADOS RECEBIDOS NO POST ===')
+            for key, value in request.POST.items():
+                print(f'{key} = {value}')
+            print('===============================')
+
+            # Profissionais
             profissional_1_id = data.get('profissional1_id')
             if profissional_1_id:
                 agendamento.profissional_1 = Profissional.objects.get(pk=profissional_1_id)
@@ -851,12 +857,12 @@ def editar_agendamento(request, agendamento_id):
             else:
                 agendamento.profissional_2 = None
 
-        
+            # Data e horários
             agendamento.data = data.get('data')
+            
             hora_inicio = data.get('hora_inicio')
             hora_fim = data.get('hora_fim')
-            for key, value in request.POST.items():
-                print(f'{key} = {value}')
+            
             try:
                 if hora_inicio:
                     agendamento.hora_inicio = datetime.strptime(hora_inicio, '%H:%M').time()
@@ -870,14 +876,23 @@ def editar_agendamento(request, agendamento_id):
 
             except ValueError as e:
                 return JsonResponse({'error': str(e)}, status=400)
+            
             hora_inicio_aux = data.get('hora_inicio_aux')
             agendamento.hora_inicio_aux = datetime.strptime(hora_inicio_aux, '%H:%M').time() if hora_inicio_aux else None
 
             hora_fim_aux = data.get('hora_fim_aux')
             agendamento.hora_fim_aux = datetime.strptime(hora_fim_aux, '%H:%M').time() if hora_fim_aux else None
+            
+            # CORREÇÃO AQUI: Atribuir as observações
             observacoes = data.get('observacoes')
-
+            agendamento.observacoes = observacoes  # Esta linha estava faltando!
+            
+            # Salvar o agendamento
             agendamento.save()
+            
+            # DEBUG: Verificar se salvou
+            print(f'Observações salvas: {agendamento.observacoes}')
+            
             registrar_log(
                 usuario=request.user,
                 acao='Edição',
@@ -885,6 +900,7 @@ def editar_agendamento(request, agendamento_id):
                 objeto_id=agendamento.id,
                 descricao=f'Agendamento de {agendamento.paciente.nome} editado para a data {agendamento.data}.'
             )
+            
             # Pagamento 
             if agendamento.pacote and data.get('valor_pago'):
                 valor_pago = float(data.get('valor_pago'))
@@ -904,7 +920,7 @@ def editar_agendamento(request, agendamento_id):
                         valor=valor_pago,
                         forma_pagamento=forma_pagamento,
                         status='pago',
-                        receita=receita,   
+                        receita=receita,  
                     )
                     
                     # ATUALIZA O STATUS DA RECEITA
@@ -920,7 +936,6 @@ def editar_agendamento(request, agendamento_id):
                 else:
                     messages.warning(request, 'Receita não encontrada para vincular o pagamento')
 
-            print('POST recebido:', request.POST)
             messages.success(request, 'Agendamento editado com sucesso!')
             return JsonResponse({'status': 'ok'})
 
@@ -929,11 +944,10 @@ def editar_agendamento(request, agendamento_id):
         except Profissional.DoesNotExist:
             return JsonResponse({'error': 'Profissional não encontrado'}, status=404)
         except Exception as e:
+            print(f'Erro ao editar agendamento: {str(e)}')
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Método não permitido'}, status=405)
-
-
 # core/views.py
 from datetime import date
 from django.contrib.auth.decorators import login_required
@@ -971,3 +985,37 @@ def api_usar_beneficio(request):
         return JsonResponse({'ok': True, 'id': uso.id})
     except Exception as e:
         return JsonResponse({'ok': False, 'error': str(e)}, status=400)
+
+
+def alterar_status_agendamento(request, agendamento_id):
+    try:
+        agendamento = Agendamento.objects.get(pk=agendamento_id)
+        data = json.loads(request.body)
+        novo_status = data.get('status')
+        
+        # Validar status
+        status_validos = ['pre', 'agendado', 'finalizado', 'desistencia', 
+                         'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
+        
+        if novo_status not in status_validos:
+            return JsonResponse({'success': False, 'error': 'Status inválido'}, status=400)
+        
+        # Atualizar status
+        agendamento.status = novo_status
+        agendamento.save()
+        
+        # Registrar log
+        registrar_log(
+            usuario=request.user,
+            acao='Alteração de Status',
+            modelo='Agendamento',
+            objeto_id=agendamento.id,
+            descricao=f'Status alterado para {novo_status}'
+        )
+        
+        return JsonResponse({'success': True, 'message': 'Status atualizado com sucesso'})
+        
+    except Agendamento.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Agendamento não encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
