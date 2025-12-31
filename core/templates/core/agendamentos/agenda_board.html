@@ -90,13 +90,14 @@
                           {% for prof in profissionais %}
                               <td data-prof-id="{{ prof.id }}" data-hora="{{ hora }}">
                                   {% for ag in agendamentos %}
-                                      {% if ag.profissional_1.id == prof.id and ag.hora_str == hora %}
+                                      {% if ag.profissional_1.id == prof.id and hora in ag.horarios_ocupados %}
+
                                           <div class="paciente" 
                                               style="background: {{ ag.especialidade.cor|default:'#8b5cf6' }}; border:1px solid {{ ag.especialidade.cor|default:'#8b5cf6' }}"
                                               data-agendamento-id="{{ ag.id }}"
                                               onclick="abrirDetalhesAgendamento({{ ag.id }})"
                                               title="Clique para ver detalhes">
-                                              <i class="fas fa-user"></i> {{ ag.paciente.nome|truncatechars:15 }}
+                                              <i class="fas fa-user"></i> {{ ag.paciente.nome|truncatechars:15 }} - ID {{ ag.id }}
 
                                           </div>
                                       {% endif %}
@@ -110,6 +111,9 @@
       </div>
   </div>
  
+  </div>
+  <div id="agendamento-modal" class="modal-overlay">
+
   </div>
   {% block scripts %}
 
@@ -249,12 +253,7 @@ document.getElementById('working-today-check').addEventListener('change', functi
     });
 });
 
-// Função para abrir detalhes do agendamento
-function abrirDetalhesAgendamento(agendamentoId) {
-  const response = await fetch(`/api/agendamento/detalhar/${agendamentoId}/`);
-  const data = await response.json();
-  console.log(data)
-}
+
 
 // Destacar hora atual - SIMPLIFICADO
 function highlightCurrentTime() {
@@ -353,7 +352,131 @@ function scrollToCurrentTime() {
     `;
     scrollToNowBtn.addEventListener('click', scrollToCurrentTime);
     document.body.appendChild(scrollToNowBtn);
+    async function abrirDetalhesAgendamento(agendamentoId) {
+        const response = await fetch(`/api/agendamento/detalhar/${agendamentoId}/`);
+        const data = await response.json()
+        const container =  document.getElementById('agendamento-modal')
+        container.classList.add('active');
+        container.innerHTML = `
+                    <div class="modal-card">
+                            <!-- Cabeçalho do modal -->
+                            <div class="modal-header">
+                                <h3><i class="fas fa-calendar-check"></i> Detalhes do Agendamento</h3>
+                                <button class="modal-close" id="close-modal">&times;</button>
+                            </div>
+                            
+                            <!-- Corpo do modal -->
+                            <div class="modal-body">
+                                <div class="paciente-info">
+                                    <!-- Foto e informações principais -->
+                                    <div class="paciente-foto-container">
+                                        <div class="paciente-foto" id="paciente-foto">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="paciente-dados">
+                                            <h4 id="paciente-nome">${data.paciente_nome_completo}</h4>
+                                            <div class="paciente-meta">
+                                                <span><i class="fas fa-id-card"></i> <span id="paciente-codigo">ID: ${data.id}</span></span>
+                                                <span><i class="fas fa-phone"></i> <span id="paciente-telefone">${data.paciente_celular}</span></span>
+                                                <span><i class="fas fa-envelope"></i> <span id="paciente-email">${data.paciente_email}</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Informações do agendamento -->
+                                    <div class="agendamento-detalhes">
+                                        <div class="info-row">
+                                            <div class="info-item">
+                                                <i class="fas fa-calendar-day"></i>
+                                                <div>
+                                                    <small>Data</small>
+                                                    <p id="agendamento-data">${data.data}</p>
+                                                </div>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-clock"></i>
+                                                <div>
+                                                    <small>Horário</small>
+                                                    <p id="agendamento-horario">${data.hora_inicio} - ${data.hora_fim}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="info-row">
+                                            <div class="info-item">
+                                                <i class="fas fa-user-md"></i>
+                                                <div>
+                                                    <small>Profissional</small>
+                                                    <p id="agendamento-profissional">${data.profissional_nome_completo}</p>
+                                                </div>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-stethoscope"></i>
+                                                <div>
+                                                    <small>Especialidade</small>
+                                                    <p id="agendamento-especialidade">${data.especialidade}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Sessões -->
+                                        <div class="sessoes-info">
+                                            <h5><i class="fas fa-list-ol"></i> Sessões</h5>
+                                            <div class="sessoes-container">
+                                                <div class="sessao-item">
+                                                    <i class="fas fa-play-circle"></i>
+                                                    <div>
+                                                        <small>Sessão Atual</small>
+                                                        <p id="sessao-atual">${data.sessao_atual}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="sessao-item">
+                                                    <i class="fas fa-hourglass-half"></i>
+                                                    <div>
+                                                        <small>Sessões Restantes</small>
+                                                        <p id="sessoes-restantes">${data.sessoes_restantes}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="sessao-item">
+                                                    <i class="fas fa-flag-checkered"></i>
+                                                    <div>
+                                                        <small>Total de Sessões</small>
+                                                        <p id="total-sessoes">${data.qtd_sessoes}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Status -->
+                                        <div class="status-container">
+                                            <h5><i class="fas fa-info-circle"></i> Status</h5>
+                                            <div class="status-badge em-andamento" id="status-badge">
+                                                <span id="status-text">Em Andamento</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Observações -->
+                                        <div class="observacoes-container">
+                                            <h5><i class="fas fa-clipboard"></i> Observações</h5>
+                                            <p id="agendamento-observacoes" class="observacoes-text">${data.observacoes}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Rodapé do modal -->
+                            <div class="modal-footer">
+                                <button class="btn-secundario" id="btn-editar">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="btn-principal" id="btn-confirmar">
+                                    <i class="fas fa-check-circle"></i> Confirmar Presença
+                                </button>
+                            </div>
+                        </div>
+        `;
     
+    }
   </script>
   {% endblock %}
 </body>

@@ -61,7 +61,7 @@ def agenda_view(request):
 
 from django.utils.timezone import now
 from datetime import datetime
-
+from math import ceil
 def agenda_board(request):
     # Pega a data da query string ou usa hoje
     date_str = request.GET.get('date')
@@ -118,13 +118,27 @@ def agenda_board(request):
         if minuto >= 60:
             hora += 1
             minuto = 0
-    
-    # Preparar agendamentos para o template
+ 
     for ag in agendamentos:
-        if ag.hora_inicio:
-            ag.hora_str = ag.hora_inicio.strftime("%H:%M")
+        ag.horarios_ocupados = []
+
+        if not ag.hora_inicio:
+            continue
+
+        inicio = datetime.combine(selected_date, ag.hora_inicio)
+
+
+        if ag.hora_fim:
+            fim = datetime.combine(selected_date, ag.hora_fim)
+            duracao_minutos = int((fim - inicio).total_seconds() / 60)
         else:
-            ag.hora_str = "00:00"
+            duracao_minutos = 60  
+
+        slots = ceil(duracao_minutos / 30)
+
+        for i in range(slots):
+            slot = inicio + timedelta(minutes=30 * i)
+            ag.horarios_ocupados.append(slot.strftime("%H:%M"))
     
     context = {
         "agendamentos": agendamentos,
@@ -139,16 +153,24 @@ def agenda_board(request):
 
 def api_detalhar_agendamento(request, agendamento_id):
     agendamento = get_object_or_404(Agendamento, id=agendamento_id)
-
     return JsonResponse({
         "id": agendamento.id,
-        "paciente": agendamento.paciente.nome if agendamento.paciente else None,
-        "data": agendamento.data.strftime("%Y-%m-%d"),
+        
+        "paciente_nome_completo": f"{agendamento.paciente.nome} {agendamento.paciente.sobrenome}",
+        'paciente_email':agendamento.paciente.email,
+        'paciente_celular':agendamento.paciente.celular,
+        "profissional_nome_completo": f'{agendamento.profissional_1.nome}{agendamento.profissional_1.sobrenome}',
+        "especialidade": agendamento.especialidade.nome,
+        "data": agendamento.data.strftime("%d-%m-%Y"),
         "hora_inicio": agendamento.hora_inicio.strftime("%H:%M") if agendamento.hora_inicio else None,
         "hora_fim": agendamento.hora_fim.strftime("%H:%M") if agendamento.hora_fim else None,
         "status": agendamento.status,
-    })
+        'observacoes':agendamento.observacoes,
+        'sessao_atual': agendamento.pacote.sessoes_realizadas,
+        'sessoes_restantes': agendamento.pacote.sessoes_restantes,
+        'qtd_sessoes':agendamento.pacote.qtd_sessoes,
 
+    })
 
 
 

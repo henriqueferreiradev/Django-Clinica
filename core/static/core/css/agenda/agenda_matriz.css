@@ -9,9 +9,10 @@
     --roxoPrincipal-hover: #7c3aed;
     --cinza-claro: #f8fafc;
 }
- 
+
 /* Reset básico */
-html, body {
+html,
+body {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -64,7 +65,7 @@ body {
     background: var(--branco);
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
-  
+
     box-sizing: border-box;
 }
 
@@ -107,7 +108,7 @@ body {
     border-radius: 6px;
     padding: 8px;
     min-width: 140px;
-    
+
 }
 
 #today-btn {
@@ -211,7 +212,7 @@ th {
     top: 0;
 }
 
- 
+
 /* Coluna de horário fixa */
 .horario-col {
     background: var(--roxoPrincipal);
@@ -233,7 +234,7 @@ td {
     text-align: center;
     border-radius: 8px;
     vertical-align: top;
-     
+
 }
 
 /* Pacientes */
@@ -286,8 +287,448 @@ td {
     .agenda-board {
         grid-template-columns: 200px 1fr;
     }
-    
+
     .prof-select {
         min-width: 200px;
+    }
+}
+
+
+
+
+
+/*MODAL */
+
+/* Modal Overlay - SIMPLES */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-card {
+    background: var(--branco);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cabeçalho - SIMPLES */
+.modal-header {
+    padding: 20px 24px;
+    background: var(--roxoPrincipal);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    padding: 0;
+}
+
+.modal-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Corpo - SIMPLES */
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Foto e informações principais - SIMPLES */
+.paciente-foto-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.paciente-foto {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--roxoPrincipal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.paciente-dados h4 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.paciente-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.paciente-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.paciente-meta i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Informações do agendamento - SIMPLES */
+.agendamento-detalhes {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.info-item {
+    background: var(--cinza-claro);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.info-item i {
+    color: var(--roxoPrincipal);
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.info-item div {
+    flex: 1;
+}
+
+.info-item small {
+    display: block;
+    font-size: 11px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.info-item p {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+}
+
+/* Sessões - SIMPLES */
+.sessoes-info h5 {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sessoes-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.sessao-item {
+    background: var(--cinza-claro);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sessao-item i {
+    color: var(--roxoPrincipal);
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.sessao-item div {
+    flex: 1;
+}
+
+.sessao-item small {
+    display: block;
+    font-size: 11px;
+    color: var(--text-light);
+    margin-bottom: 2px;
+}
+
+.sessao-item p {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text);
+    font-size: 18px;
+}
+
+/* Status - SIMPLES */
+.status-container h5 {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.agendado {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+
+.status-badge.confirmado {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.em-andamento {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.concluido {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.cancelado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-badge.faltou {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Observações - SIMPLES */
+.observacoes-container h5 {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.observacoes-text {
+    background: var(--cinza-claro);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+    min-height: 60px;
+}
+
+.observacoes-text:empty::before {
+    content: "Nenhuma observação registrada.";
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* Rodapé - SIMPLES */
+.modal-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    background: var(--cinza-claro);
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-principal,
+.btn-secundario {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-principal {
+    background: var(--roxoPrincipal);
+    color: white;
+}
+
+.btn-principal:hover {
+    background: var(--roxoPrincipal-hover);
+}
+
+.btn-secundario {
+    background: white;
+    color: var(--roxoPrincipal);
+    border: 1px solid var(--roxoPrincipal);
+}
+
+.btn-secundario:hover {
+    background: var(--roxoPrincipal);
+    color: white;
+}
+
+/* Responsividade - SIMPLES */
+@media (max-width: 640px) {
+    .modal-overlay {
+        padding: 10px;
+    }
+
+    .modal-card {
+        max-height: 95vh;
+    }
+
+    .modal-header {
+        padding: 16px 20px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .info-row,
+    .sessoes-container {
+        grid-template-columns: 1fr;
+    }
+
+    .paciente-foto-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .paciente-meta {
+        justify-content: center;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .btn-principal,
+    .btn-secundario {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .paciente-foto {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+
+    .paciente-dados h4 {
+        font-size: 16px;
+    }
+
+    .paciente-meta {
+        font-size: 12px;
+        gap: 12px;
+    }
+
+    .info-item,
+    .sessao-item {
+        padding: 12px;
     }
 }
