@@ -1,17 +1,92 @@
-// Date handling
-let currentDate = new Date("{{ selected_date }}");
+// Função para mostrar mensagens
+function mostrarMensagem(mensagem, tipo = 'success') {
+    const toastContainer = document.getElementById('toast-container') || criarToastContainer();
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo} toast-slide-in`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    ${getIcon(tipo)}
+                </div>
+                <div class="toast-title">
+                    ${getTitle(tipo)}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div>${mensagem}</div>
+        </div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Remove após 5 segundos
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('toast-slide-out');
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 5000);
+}
+
+// Funções auxiliares
+function criarToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+function getIcon(tipo) {
+    const icons = {
+        'success': '<i class="fas fa-check-circle"></i>',
+        'warning': '<i class="fas fa-exclamation-triangle"></i>',
+        'error': '<i class="fas fa-exclamation-circle"></i>',
+        'info': '<i class="fas fa-info-circle"></i>'
+    };
+    return icons[tipo] || icons['info'];
+}
+
+function getTitle(tipo) {
+    const titles = {
+        'success': 'Sucesso',
+        'warning': 'Aviso',
+        'error': 'Erro',
+        'info': 'Informação'
+    };
+    return titles[tipo] || 'Mensagem';
+}
+
+const selectedDateStr = document.body.dataset.selectedDate;
+function parseISOToLocalDate(isoStr) {
+    // isoStr = "2025-12-31"
+    const [y, m, d] = isoStr.split('-').map(Number);
+    return new Date(y, m - 1, d); // local (sem UTC)
+}
+let currentDate = selectedDateStr
+    ? parseISOToLocalDate(selectedDateStr)
+    : new Date();
+// proteção extra
+if (isNaN(currentDate.getTime())) {
+    console.warn('Data inválida:', selectedDateStr);
+    currentDate = new Date();
+}
 
 function formatarDataParaBR(date) {
+    if (!(date instanceof Date) || isNaN(date)) {
+        return 'Data inválida';
+    }
+
     const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
     const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 
-    const diaSemana = diasSemana[date.getDay()];
-    const dia = date.getDate();
-    const mes = meses[date.getMonth()];
-    const ano = date.getFullYear();
-
-    return `${diaSemana}, ${dia} de ${mes} de ${ano}`;
+    return `${diasSemana[date.getDay()]}, ${date.getDate()} de ${meses[date.getMonth()]} de ${date.getFullYear()}`;
 }
+
 
 function updateDateDisplay() {
     const dateStr = formatarDataParaBR(currentDate);
@@ -279,8 +354,13 @@ async function abrirDetalhesAgendamento(agendamentoId) {
                         <!-- Foto e informações principais -->
                         <div class="paciente-foto-container">
                             <div class="paciente-foto" id="paciente-foto">
-                                <i class="fas fa-user"></i>
+                            ${data.paciente_foto
+            ? `<img src="${data.paciente_foto}" alt="Foto do paciente" class="paciente-foto-img"
+                                                    onerror="this.remove(); this.parentElement.innerHTML='<i class=\\'fas fa-user\\'></i>';">`
+            : `<i class="fas fa-user"></i>`
+        }
                             </div>
+
                             <div class="paciente-dados">
                                 <h4 id="paciente-nome">${data.paciente_nome_completo}</h4>
                                 <div class="paciente-meta">
@@ -326,6 +406,13 @@ async function abrirDetalhesAgendamento(agendamentoId) {
                                     </div>
                                 </div>
                             </div>
+                                <div class="info-item">
+                                    <i class="fas fa-door-open"></i>
+                                    <div>
+                                        <small>Andar/Sala</small>
+                                        <p id="agendamento-ambiente">${data.ambiente}</p>
+                                    </div>
+                                </div>
                             
                             <!-- Sessões -->
                             <div class="sessoes-info">
@@ -365,7 +452,7 @@ async function abrirDetalhesAgendamento(agendamentoId) {
                                             <span id="status-text">${getStatusText(data.status)}</span>
                                         </div>
                                         <button class="btn-edit-status" id="btn-edit-status">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit"></i> Editar
                                         </button>
                                     </div>
                                     
@@ -406,10 +493,24 @@ async function abrirDetalhesAgendamento(agendamentoId) {
  
             </div>
         `;
-
+    const btnClose = container.querySelector('.modal-close');
+    if (btnClose) {
+        btnClose.addEventListener('click', fecharModalAgendamento);
+    }
     // Adicionar eventos após renderizar o modal
     adicionarEventosStatus(agendamentoId, data.status);
     adicionarEventosGerais();
+}
+function fecharModalAgendamento() {
+    const container = document.getElementById('agendamento-modal');
+    if (!container) return;
+
+    container.classList.remove('active');
+
+    // opcional: limpar conteúdo após a animação
+    setTimeout(() => {
+        container.innerHTML = '';
+    }, 300); // ajuste se tiver animação
 }
 
 // Função para adicionar eventos do status
@@ -433,7 +534,7 @@ function adicionarEventosStatus(agendamentoId, currentStatus) {
     // Botão para cancelar edição
     btnCancelar.addEventListener('click', function () {
         statusForm.style.display = 'none';
-        statusView.style.display = 'block';
+        statusView.style.display = 'flex';
         // Resetar para o valor original
         statusSelect.value = originalStatus;
     });
@@ -473,7 +574,7 @@ function adicionarEventosStatus(agendamentoId, currentStatus) {
                     originalStatus = newStatus;
 
                     // Mostrar mensagem de sucesso
-                    showToast('Status atualizado com sucesso!', 'success');
+                    mostrarMensagem('Status atualizado com sucesso!', 'success');
 
                     // Voltar para modo visualização
                     statusForm.style.display = 'none';
@@ -482,14 +583,14 @@ function adicionarEventosStatus(agendamentoId, currentStatus) {
                     // Atualizar na lista principal (se necessário)
                     atualizarStatusNaLista(agendamentoId, newStatus);
                 } else {
-                    showToast('Erro ao atualizar status: ' + result.error, 'error');
+                    mostrarMensagem('Erro ao atualizar status: ' + result.error, 'error');
                 }
             } else {
-                showToast('Erro na requisição', 'error');
+                mostrarMensagem('Erro na requisição', 'error');
             }
         } catch (error) {
             console.error('Erro ao atualizar status:', error);
-            showToast('Erro ao atualizar status', 'error');
+            mostrarMensagem('Erro ao atualizar status', 'error');
         }
     });
 }
@@ -502,12 +603,7 @@ function atualizarStatusNaLista(agendamentoId, newStatus) {
     }
 }
 
-// Função para mostrar toast/notificação
-function showToast(message, type = 'info') {
-    // Se você já tem um sistema de toast, use-o
-    // Caso contrário, pode implementar um simples
-    alert(message); // Ou implemente um toast melhor
-}
+
 
 // Função para pegar o cookie CSRF
 function getCookie(name) {
@@ -524,3 +620,21 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+function ajustarAlturaCardsAgenda() {
+    document.querySelectorAll('.paciente-span').forEach(card => {
+        const slots = parseInt(card.dataset.slots || "1", 10);
+
+        // pega a altura real do slot renderizado (1 linha)
+        const tr = card.closest('tr');
+        if (!tr) return;
+        const rowH = tr.getBoundingClientRect().height;
+
+        // pequena compensação por bordas do grid (ajuste fino)
+        const ajuste = 1;
+
+        card.style.height = ((rowH * slots) - ajuste) + "px";
+    });
+}
+
+window.addEventListener("load", ajustarAlturaCardsAgenda);
+window.addEventListener("resize", ajustarAlturaCardsAgenda);

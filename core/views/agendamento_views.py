@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
 from core.services.financeiro import criar_receita_pacote, criar_pagamento
 from core.utils import gerar_horarios,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
-from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
+from core.models import Agendamento,  CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse
 from django.db.models import Sum, Q, Count
@@ -60,10 +60,11 @@ def agenda_view(request):
 
 
 from django.utils.timezone import now
-from datetime import datetime
+from datetime import datetime, timedelta
 from math import ceil
+
 def agenda_board(request):
-    # Pega a data da query string ou usa hoje
+    # Data selecionada
     date_str = request.GET.get('date')
     if date_str:
         try:
@@ -72,105 +73,109 @@ def agenda_board(request):
             selected_date = now().date()
     else:
         selected_date = now().date()
-    
-    # Filtra agendamentos pela data selecionada
+
+    # Agendamentos do dia
     agendamentos = Agendamento.objects.filter(data=selected_date)
-    
-    # Busca todos os profissionais (modelo Profissional)
-    # Mas também filtramos apenas os que têm User com tipo='profissional'
-    profissionais = Profissional.objects.filter(
+    for ag in agendamentos:
+    # ... (seu código atual de slots)
+
+        if ag.pacote:
+            ag.sessao_atual = ag.pacote.get_sessao_atual(ag)
+        else:
+            ag.sessao_atual = None
+
+    # Profissionais
+    profissionais_qs = Profissional.objects.filter(
         user__tipo='profissional'
     ).order_by('nome')
-    
-    # Para incluir também profissionais que não têm user (se houver)
-    # profissionais = Profissional.objects.all().order_by('nome')
-    
-    # Criar lista de profissionais com informações
-    profissionais_list = []
-    for prof in profissionais:
-        # Verifica se tem agendamento na data selecionada
+
+    profissionais = []
+    for prof in profissionais_qs:
         tem_agenda = agendamentos.filter(profissional_1=prof).exists()
-        
-        # Usa o nome do profissional (do modelo Profissional)
-        nome_completo = f"{prof.nome}" if prof.sobrenome else prof.nome
-        
-        profissionais_list.append({
+
+        profissionais.append({
             'id': prof.id,
-            'nome': nome_completo,
-            'user_id': prof.user.id if prof.user else None,
+            'nome': prof.nome,
             'tem_agenda': tem_agenda
         })
-    
-    # Formatar data para exibição
-    formatted_date = selected_date.strftime('%Y-%m-%d')
-    
-    # Verificar se é hoje
-    is_today = selected_date == now().date()
-    
-    # Gerar horários de 30 em 30 minutos das 07:00 às 19:00
+
+    # Horários (07:00 às 19:00)
     horarios = []
     hora = 7
     minuto = 0
-    
+
     while hora < 19 or (hora == 19 and minuto == 0):
         horarios.append(f"{hora:02d}:{minuto:02d}")
         minuto += 30
         if minuto >= 60:
             hora += 1
             minuto = 0
- 
+
+    # ===== PARTE MAIS IMPORTANTE =====
     for ag in agendamentos:
         ag.horarios_ocupados = []
+        ag.slot_inicio = None
+        ag.qtd_slots = 1
 
         if not ag.hora_inicio:
             continue
 
         inicio = datetime.combine(selected_date, ag.hora_inicio)
 
-
         if ag.hora_fim:
             fim = datetime.combine(selected_date, ag.hora_fim)
             duracao_minutos = int((fim - inicio).total_seconds() / 60)
         else:
-            duracao_minutos = 60  
+            duracao_minutos = 60  # padrão 1h
 
-        slots = ceil(duracao_minutos / 30)
+        ag.qtd_slots = ceil(duracao_minutos / 30)
 
-        for i in range(slots):
+        for i in range(ag.qtd_slots):
             slot = inicio + timedelta(minutes=30 * i)
-            ag.horarios_ocupados.append(slot.strftime("%H:%M"))
-    
+            ag.horarios_ocupados.append(slot.strftime('%H:%M'))
+
+        # 🔥 ESSENCIAL PARA O FRONT
+        ag.slot_inicio = ag.horarios_ocupados[0]
+
     context = {
         "agendamentos": agendamentos,
         "horarios": horarios,
-        "profissionais": profissionais_list,
-        "selected_date": formatted_date,
-        "is_today": is_today,
+        "profissionais": profissionais,
+        "selected_date": selected_date.strftime('%Y-%m-%d'),
+        "is_today": selected_date == now().date(),
         "today_date": now().date().strftime('%Y-%m-%d'),
     }
-    return render(request, "core/agendamentos/agenda_board.html", context)
 
+    return render(request, "core/agendamentos/agenda_board.html", context)
 
 def api_detalhar_agendamento(request, agendamento_id):
     agendamento = get_object_or_404(Agendamento, id=agendamento_id)
+
+    if agendamento.pacote:
+        sessao_atual = agendamento.pacote.get_sessao_atual(agendamento)
+    else:
+        sessao_atual = None
+
     return JsonResponse({
         "id": agendamento.id,
-        
+        "paciente_foto": agendamento.paciente.foto.url if agendamento.paciente.foto else '/core/img/defaultPerfil.png',
         "paciente_nome_completo": f"{agendamento.paciente.nome} {agendamento.paciente.sobrenome}",
-        'paciente_email':agendamento.paciente.email,
-        'paciente_celular':agendamento.paciente.celular,
-        "profissional_nome_completo": f'{agendamento.profissional_1.nome}{agendamento.profissional_1.sobrenome}',
+        "paciente_email": agendamento.paciente.email,
+        "paciente_celular": agendamento.paciente.celular,
+        "profissional_nome_completo": f"{agendamento.profissional_1.nome} {agendamento.profissional_1.sobrenome}",
         "especialidade": agendamento.especialidade.nome,
         "data": agendamento.data.strftime("%d-%m-%Y"),
         "hora_inicio": agendamento.hora_inicio.strftime("%H:%M") if agendamento.hora_inicio else None,
         "hora_fim": agendamento.hora_fim.strftime("%H:%M") if agendamento.hora_fim else None,
         "status": agendamento.status,
-        'observacoes':agendamento.observacoes if agendamento.observacoes else "Nenhuma observação registrada.",
-        'sessao_atual': agendamento.pacote.sessoes_realizadas,
-        'sessoes_restantes': agendamento.pacote.sessoes_restantes,
-        'qtd_sessoes':agendamento.pacote.qtd_sessoes,
-
+        "observacoes": agendamento.observacoes or "Nenhuma observação registrada.",
+        "sessao_realizada": agendamento.pacote.sessoes_realizadas if agendamento.pacote else None,
+        "sessoes_restantes": agendamento.pacote.sessoes_restantes if agendamento.pacote else None,
+        "qtd_sessoes": agendamento.pacote.qtd_sessoes if agendamento.pacote else None,
+        "ambiente": agendamento.ambiente,
+        "sessao_atual": sessao_atual,
     })
+
 
 
 
@@ -355,6 +360,7 @@ def criar_agendamento(request):
         delta = (dia_idx - data_inicial.weekday() + 7) % 7
         return data_inicial + timedelta(days=delta)
 
+
     agendamentos_criados = []
 
     # todos os status consomem sessão do pacote
@@ -365,6 +371,22 @@ def criar_agendamento(request):
 
     qtd_total = pacote.qtd_sessoes or 1
     faltam = max(0, qtd_total - ja_existentes)
+
+    # ===================================================================
+    # VALIDAÇÃO CRÍTICA: VERIFICAR SE AINDA TEM SESSÕES DISPONÍVEIS
+    # ===================================================================
+    # Permite apenas se for reposição ou benefício (que não consomem sessão do pacote)
+    if faltam <= 0 and tipo_agendamento != 'reposicao' and not beneficio_tipo:
+        messages.error(request, f'Pacote esgotado! Este pacote possui {qtd_total} sessão(ões) e todas já foram utilizadas.')
+        
+        # Retorna para a página anterior com erro
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'error': f'Pacote esgotado! Este pacote possui {qtd_total} sessão(ões) e todas já foram utilizadas.',
+                'redirect': f'/pacientes/{paciente_id_int}/agendar/'
+            }, status=400)
+        else:
+            return redirect('agendar_paciente', paciente_id=paciente_id_int)
 
     # identifica os dias ativos de recorrência
     dias_ativos = []
@@ -377,9 +399,30 @@ def criar_agendamento(request):
 
     tem_recorrencia = len(dias_ativos) > 0
 
+    # Se for recorrência, calcula quantas sessões serão criadas
+    sessoes_para_criar = 0
+    if tem_recorrencia and faltam > 0:
+        q, r = divmod(faltam, len(dias_ativos))
+        for i, _ in enumerate(dias_ativos):
+            sessoes_para_dia = q + (1 if i < r else 0)
+            sessoes_para_criar += sessoes_para_dia
+    elif not tem_recorrencia and faltam > 0:
+        sessoes_para_criar = 1
+
+    # VALIDAÇÃO: Garantir que temos sessões para criar
+    if sessoes_para_criar <= 0 and tipo_agendamento != 'reposicao' and not beneficio_tipo:
+        messages.error(request, f'Não é possível criar agendamento. Pacote sem sessões disponíveis.')
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'error': 'Não é possível criar agendamento. Pacote sem sessões disponíveis.',
+                'redirect': f'/pacientes/{paciente_id_int}/agendar/'
+            }, status=400)
+        else:
+            return redirect('agendar_paciente', paciente_id=paciente_id_int)
+
     # VARIÁVEL PARA GUARDAR A PRIMEIRA DATA REAL (para o vencimento)
     primeira_data_real = data_sessao  # <-- Inicializa com a data que o usuário escolheu
-    
+
     if tem_recorrencia and faltam > 0:
         base = data_sessao  # NÃO use max(date.today(), data_sessao)
         
@@ -411,7 +454,7 @@ def criar_agendamento(request):
                     tags=tags_extra,
                 )
                 agendamentos_criados.append(ag)
-    
+
     elif not tem_recorrencia and faltam > 0:
         # sem recorrência: cria apenas 1 sessão com o horário normal
         ag = Agendamento.objects.create(
@@ -439,20 +482,25 @@ def criar_agendamento(request):
         primeira_data_real = agendamentos_criados[0].data
     else:
         primeira_data_real = data_sessao
-    
+
     # =====================================================
     # PAGAMENTO — cria pendente (conta a receber) ou pago
     # =====================================================
-    
-    # CORREÇÃO: Mostra mensagem apenas quando realmente usou todas as sessões
-    if faltam == 0:
-        messages.warning(request, f'Todas as sessões deste pacote foram usadas.')
-    elif ja_existentes > 0:
-        messages.info(request, f'Pacote: {ja_existentes} sessão(ões) usada(s), {faltam} restante(s).')
-    
+
+    # CORREÇÃO: MOSTRAR MENSAGEM CORRETA APÓS CRIAR OS AGENDAMENTOS
+    # Agora calcula as sessões totais considerando os NOVOS agendamentos criados
+    sessoes_totais_usadas = ja_existentes + len(agendamentos_criados)
+    sessoes_restantes = max(0, qtd_total - sessoes_totais_usadas)
+
+    if sessoes_restantes == 0:
+        messages.warning(request, f'✅ Todas as {qtd_total} sessões deste pacote foram usadas.')
+    elif sessoes_totais_usadas > 0:
+        # Mostra mensagem CORRETA: "Pacote: 1 sessão(ões) usada(s), 2 restante(s)"
+        messages.info(request, f'Pacote: {sessoes_totais_usadas} sessão(ões) usada(s), {sessoes_restantes} restante(s).')
+
     # CORREÇÃO: Use valor_pago_inicial APENAS se valor_pago for definido e > 0
     valor_pago_inicial_param = valor_pago if valor_pago and valor_pago > 0 else None
-    
+
     # Cria receita com a data correta
     receita = criar_receita_pacote(
         paciente=paciente,

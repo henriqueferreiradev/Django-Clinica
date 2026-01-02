@@ -385,7 +385,7 @@ td {
 
 /* Corpo - SIMPLES */
 .modal-body {
-    padding: 24px;
+    padding: 16px;
     overflow-y: auto;
     flex: 1;
 }
@@ -398,19 +398,6 @@ td {
     margin-bottom: 24px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border);
-}
-
-.paciente-foto {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: var(--roxoPrincipal);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 28px;
-    flex-shrink: 0;
 }
 
 .paciente-dados h4 {
@@ -443,7 +430,7 @@ td {
 .agendamento-detalhes {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
 }
 
 .info-row {
@@ -460,11 +447,11 @@ td {
     display: flex;
     align-items: center;
     gap: 12px;
-    
+
 }
-.info-item, .sessao-item {
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-}
+
+
+
 .info-item i {
     color: var(--roxoPrincipal);
     font-size: 18px;
@@ -736,7 +723,7 @@ td {
     }
 }
 
- 
+
 .status-display {
     margin-top: 10px;
 }
@@ -806,21 +793,22 @@ td {
 }
 
 .btn-edit-status {
-    background: #6c757d;
+    background: var(--roxoPrincipal);
     color: var(--branco);
     border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    border-radius: 8px;
+    padding: 12px;
+    gap: .3em;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background 0.3s;
+
 }
 
 .btn-edit-status:hover {
-    background: #5a6268;
+    background: var(--roxoPrincipal-hover);
 }
 
 /* Formulário de edição de status */
@@ -874,4 +862,87 @@ td {
 
 .btn-cancelar-status:hover {
     background: #5a6268;
+}
+
+.paciente-foto {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-color);
+    border: 1px solid var(--cinzaBorda);
+}
+
+.paciente-foto-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+td {
+    position: relative;
+    overflow: visible;
+    /* IMPORTANTE */
+}
+
+:root {
+    --slot-height: 48px;
+}
+
+.paciente-span {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+}
+
+.paciente-span .ag-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.1;
+    font-size: 0.78rem;
+}
+
+.paciente-span .ag-title {
+    font-weight: 600;
+}
+
+.paciente-span i {
+    width: 16px;
+    text-align: center;
+    opacity: 0.95;
+}
+
+.paciente-span .ag-pill {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.paciente-span {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+
+    z-index: 19;
+    padding: 6px;
+    border-radius: 8px;
+
+    color: #fff;
+    font-size: 0.75rem;
+
+    display: flex;
+    align-items: left;
+    gap: 6px;
 }
