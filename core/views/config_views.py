@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ContaBancaria, ESTADO_CIVIL, Especialidade, Fornecedor, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, User, VINCULO
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ContaBancaria, ESTADO_CIVIL, Especialidade, Fornecedor, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, User, VINCULO, ValidadeReposicao
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -263,6 +263,44 @@ def configuracao_view(request):
             except Exception as e:
                 print(e)
             
+        elif tipo == 'config_reposicao':
+            validade_d = request.POST.get('validade_d')
+            validade_dcr = request.POST.get('validade_dcr')
+            validade_fcr = request.POST.get('validade_fcr')
+
+            if not all([validade_d,validade_dcr,validade_fcr]):
+                messages.error(request, "Todos os campos de validade precisam ser preenchidos.")
+                return redirect('configuracoes') + '#agenda'
+            
+            
+            validade_d = int(validade_d)
+            validade_dcr = int(validade_dcr)
+            validade_fcr = int(validade_fcr)
+            
+            if not all([1 <= v <= 365 for v in [validade_d, validade_dcr, validade_fcr]]):
+                    messages.error(request, 'Os valores devem estar entre 1 e 365 dias.')
+                    return redirect('configuracoes') + '#agenda'
+                
+                
+            tipos_validades = [
+                ('d', validade_d),
+                ('dcr', validade_dcr),
+                ('fcr', validade_fcr)
+            ]
+
+            for tipo_reposicao, dias_validade in tipos_validades:
+                    # Usar update_or_create para garantir que exista apenas um registro por tipo
+                    ValidadeReposicao.objects.update_or_create(
+                        tipo_reposicao=tipo_reposicao,
+                        defaults={
+                            'dias_validade': dias_validade,
+                            'ativo': True
+                        }
+                    )
+                
+            messages.success(request, 'Configurações de validade para reposições salvas com sucesso!')
+                
+ 
         '''
         =====================================================================================
                                             EDIÇÃO
@@ -443,6 +481,11 @@ def configuracao_view(request):
         'fornecedores':fornecedores,
         'profissionais':profissionais,
         'categorias':categorias,
+        'validades_reposicao': {
+            'D': ValidadeReposicao.objects.filter(tipo_reposicao='d').first(),
+            'DCR': ValidadeReposicao.objects.filter(tipo_reposicao='dcr').first(),
+            'FCR': ValidadeReposicao.objects.filter(tipo_reposicao='fcr').first(),
+        }
       
     })
 

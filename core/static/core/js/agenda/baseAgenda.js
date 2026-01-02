@@ -1,6 +1,65 @@
-// =============================================
-// VARIÁVEIS GLOBAIS E CONFIGURAÇÕES
-// =============================================
+// Função para mostrar mensagens
+function mostrarMensagem(mensagem, tipo = 'success') {
+    const toastContainer = document.getElementById('toast-container') || criarToastContainer();
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo} toast-slide-in`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    ${getIcon(tipo)}
+                </div>
+                <div class="toast-title">
+                    ${getTitle(tipo)}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div>${mensagem}</div>
+        </div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Remove após 5 segundos
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('toast-slide-out');
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 5000);
+}
+
+// Funções auxiliares
+function criarToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+function getIcon(tipo) {
+    const icons = {
+        'success': '<i class="fas fa-check-circle"></i>',
+        'warning': '<i class="fas fa-exclamation-triangle"></i>',
+        'error': '<i class="fas fa-exclamation-circle"></i>',
+        'info': '<i class="fas fa-info-circle"></i>'
+    };
+    return icons[tipo] || icons['info'];
+}
+
+function getTitle(tipo) {
+    const titles = {
+        'success': 'Sucesso',
+        'warning': 'Aviso',
+        'error': 'Erro',
+        'info': 'Informação'
+    };
+    return titles[tipo] || 'Mensagem';
+}
 let modoPercentual = true;
 
 // =============================================
@@ -65,10 +124,6 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-
-// =============================================
-// FUNÇÕES DE GESTÃO DE PACOTES
-// =============================================
 async function verificarPacoteAtivo() {
     const pacienteIdInput = document.getElementById('paciente_id');
     if (!pacienteIdInput) return;
@@ -83,30 +138,11 @@ async function verificarPacoteAtivo() {
     const usarPacoteBtn = document.getElementById('usar-pacote-btn');
     const campoPacote = document.getElementById('pacote_codigo');
     const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
-    const mensagemDesmarcacoes = document.getElementById('mensagem-desmarcacoes');
     const radioButtons = document.querySelectorAll('input[name="tipo_agendamento"]');
-    const servicosBanco = document.querySelectorAll('.servico-banco');
-    const servicosReposicao = document.querySelectorAll('.servico-reposicao');
     const usarRemarcacaoBtn = document.getElementById('usar-reposicao-btn');
     const infoReposicao = document.getElementById('info_reposicao');
     const tipoSessaoLabel = document.getElementById('tipo_sessao');
     const valorFinalInput = document.getElementById('valor_final');
-
-    // Toggle de opções por tipo de agendamento
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', function () {
-            if (!servicoSelect) return;
-            if (this.value === 'reposicao') {
-                servicosBanco.forEach(opt => opt.hidden = true);
-                servicosReposicao.forEach(opt => opt.hidden = false);
-                servicoSelect.value = "";
-            } else {
-                servicosBanco.forEach(opt => opt.hidden = false);
-                servicosReposicao.forEach(opt => opt.hidden = true);
-                servicoSelect.value = "";
-            }
-        });
-    });
 
     // Reset inicial
     if (avisoDiv) avisoDiv.style.display = 'none';
@@ -116,32 +152,144 @@ async function verificarPacoteAtivo() {
     if (infoPacote) infoPacote.classList.add('hidden');
     limparOpcaoPacoteServico();
 
+    // Configurar toggles dos tipos de sessão
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (!servicoSelect) return;
+            
+            // Busca os elementos
+            const servicosBancoAtual = document.querySelectorAll('.servico-banco');
+            const servicosReposicaoAtual = document.querySelectorAll('.servico-reposicao');
+            const optgroupReposicao = document.querySelector('.optgroup-reposicao');
+            const optgroupsPacotes = document.querySelectorAll('optgroup[label="Pacotes"], optgroup[label="Sessões Avulsas"]');
+            
+            if (this.value === 'reposicao') {
+                // Esconde opções normais
+                servicosBancoAtual.forEach(opt => opt.hidden = true);
+                optgroupsPacotes.forEach(optgroup => optgroup.style.display = 'none');
+                
+                // Mostra optgroup de reposição
+                if (optgroupReposicao) {
+                    optgroupReposicao.style.display = 'block';
+                    
+                    // Mostra APENAS as opções de reposição que estão disponíveis
+                    servicosReposicaoAtual.forEach(opt => {
+                        const tipoReposicao = opt.getAttribute('data-tipo');
+                        if (tipoReposicao && window.saldosDesmarcacoes) {
+                            const temSaldo = verificarSeTemSaldoParaTipo(tipoReposicao);
+                            opt.hidden = !temSaldo;
+                        } else {
+                            opt.hidden = false;
+                        }
+                    });
+                }
+                
+                servicoSelect.value = "";
+                
+                // Atualiza label
+                if (tipoSessaoLabel) {
+                    tipoSessaoLabel.textContent = 'Tipo de reposição';
+                }
+                
+                // Mostra info de reposição
+                if (infoReposicao) {
+                    infoReposicao.innerHTML = `<strong>Reposição de sessão</strong>`;
+                    infoReposicao.style.display = 'block';
+                }
+            } else {
+                // Mostra opções normais
+                servicosBancoAtual.forEach(opt => opt.hidden = false);
+                optgroupsPacotes.forEach(optgroup => optgroup.style.display = 'block');
+                
+                // Esconde optgroup de reposição
+                if (optgroupReposicao) {
+                    optgroupReposicao.style.display = 'none';
+                }
+                
+                servicosReposicaoAtual.forEach(opt => opt.hidden = true);
+                servicoSelect.value = "";
+                
+                // Volta label
+                if (tipoSessaoLabel) {
+                    tipoSessaoLabel.textContent = 'Tipo de sessão';
+                }
+                
+                // Esconde info de reposição
+                if (infoReposicao) {
+                    infoReposicao.style.display = 'none';
+                }
+            }
+        });
+    });
+
     if (!pacienteId) return;
 
     try {
         const response = await fetch(`/api/verificar_pacotes_ativos/${pacienteId}`);
         const data = await response.json();
 
+        // Armazena os saldos globalmente para usar depois
+        window.saldosDesmarcacoes = data.saldos_desmarcacoes || {};
+
         // Pacote ativo
         if (data.tem_pacote_ativo && servicoSelect) {
             const pacote = data.pacotes[0];
             const sessaoAtual = (pacote.quantidade_usadas || 0) + 1;
-
+            const sessoesRestantes = pacote.quantidade_total - pacote.quantidade_usadas;
+            
+            // VERIFICA SE O PACOTE TEM SESSÕES DISPONÍVEIS
+            const pacoteEsgotado = sessoesRestantes <= 0;
+            
             if (mensagemPacote) {
-                mensagemPacote.textContent =
-                    `Este paciente possui um pacote ativo (Código: ${pacote.codigo}) — Sessão ${sessaoAtual} de ${pacote.quantidade_total}. Deseja usá-lo?`;
+                if (pacoteEsgotado) {
+                    mensagemPacote.innerHTML = 
+                        `<div style="color: #dc3545; font-weight: bold; padding: 10px; border: 2px solid #dc3545; border-radius: 5px; background-color: #f8d7da;">
+                        ⚠️ <strong>PACOTE ESGOTADO!</strong><br>
+                        Código: ${pacote.codigo}<br>
+                        Total de sessões: ${pacote.quantidade_total}<br>
+                        Sessões usadas: ${pacote.quantidade_usadas}<br>
+                        Sessões restantes: ${sessoesRestantes}<br><br>
+                        <em>Não é possível usar este pacote. Crie um novo.</em>
+                        </div>`;
+                    
+                    // Desabilita o botão de usar pacote
+                    if (usarPacoteBtn) {
+                        usarPacoteBtn.disabled = true;
+                        usarPacoteBtn.style.opacity = '0.5';
+                        usarPacoteBtn.style.cursor = 'not-allowed';
+                        usarPacoteBtn.textContent = 'Pacote esgotado';
+                        usarPacoteBtn.onclick = null;
+                    }
+                } else {
+                    mensagemPacote.innerHTML = 
+                        `<div style="color: #0c5460; padding: 10px; border: 2px solid #bee5eb; border-radius: 5px; background-color: #d1ecf1;">
+                        <strong>PACOTE ATIVO DISPONÍVEL</strong><br>
+                        Código: ${pacote.codigo}<br>
+                        Sessões totais: ${pacote.quantidade_total}<br>
+                        Sessões usadas: ${pacote.quantidade_usadas}<br>
+                        Sessões disponíveis: ${sessoesRestantes}<br>
+                        Próxima sessão: ${sessaoAtual}<br><br>
+                        Deseja usar este pacote?
+                        </div>`;
+                    
+                    // Habilita o botão
+                    if (usarPacoteBtn) {
+                        usarPacoteBtn.disabled = false;
+                        usarPacoteBtn.style.opacity = '1';
+                        usarPacoteBtn.style.cursor = 'pointer';
+                        usarPacoteBtn.textContent = `Usar pacote (${sessoesRestantes} disponíveis)`;
+                        usarPacoteBtn.onclick = () => usarPacoteAtivo(pacote, sessaoAtual, sessoesRestantes);
+                    }
+                }
             }
 
             if (avisoDiv) avisoDiv.style.display = 'block';
-            if (usarPacoteBtn) usarPacoteBtn.onclick = () => usarPacoteAtivo(pacote, sessaoAtual);
         }
 
         // Saldos de desmarcações
         verificarSaldosDesmarcacoes(data.saldos_desmarcacoes || {});
 
-        // Reposição por padrão escondida
-        servicosReposicao.forEach(opt => opt.hidden = true);
-
+        // Configurar botão de reposição
         if (usarRemarcacaoBtn) {
             usarRemarcacaoBtn.onclick = () => configurarReposicao();
         }
@@ -153,7 +301,25 @@ async function verificarPacoteAtivo() {
     }
 }
 
-function usarPacoteAtivo(pacote, sessaoAtual) {
+// Nova função para verificar se tem saldo para um tipo específico
+function verificarSeTemSaldoParaTipo(tipo) {
+    if (!window.saldosDesmarcacoes) return false;
+    
+    const mapeamentoTipos = {
+        'd': 'desistencia',
+        'dcr': 'desistencia_remarcacao', 
+        'fcr': 'falta_remarcacao',
+        'fc': 'falta_cobrada'
+    };
+    
+    const tipoApi = mapeamentoTipos[tipo];
+    return tipoApi && window.saldosDesmarcacoes[tipoApi] > 0;
+}
+// REMOVA ESTA FUNÇÃO DUPLICADA (linhas ~255-298):
+// function usarPacoteAtivo(pacote, sessaoAtual) { ... }
+
+// Mantenha apenas a função com 3 parâmetros (linha ~193):
+function usarPacoteAtivo(pacote, sessaoAtual, sessoesDisponiveis) {
     const servicoSelect = document.getElementById('pacotesInput');
     const formValor = document.getElementById('formValor');
     const infoPacote = document.getElementById('info_pacote');
@@ -164,9 +330,24 @@ function usarPacoteAtivo(pacote, sessaoAtual) {
     const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
     const servicoHidden = document.getElementById('servico_id_hidden');
 
+    // VALIDAÇÃO: verifica se há sessões disponíveis
+    if (sessoesDisponiveis <= 0) {
+        alert(`❌ PACOTE ESGOTADO!\n\nCódigo: ${pacote.codigo}\nSessões disponíveis: ${sessoesDisponiveis}`);
+        
+        // Esconde o aviso
+        if (avisoDiv) avisoDiv.style.display = 'none';
+        return;
+    }
+
+    // VALIDAÇÃO: verifica se a sessão atual é válida
+    if (sessaoAtual > pacote.quantidade_total) {
+        alert(`❌ ERRO: Sessão inválida!\n\nPróxima sessão: ${sessaoAtual}\nTotal de sessões: ${pacote.quantidade_total}`);
+        return;
+    }
+
     const option = document.createElement('option');
     option.value = String(pacote.servico_id);
-    option.textContent = `Sessão ${sessaoAtual} de ${pacote.quantidade_total} (pacote ativo)`;
+    option.textContent = `Sessão ${sessaoAtual} de ${pacote.quantidade_total} (${sessoesDisponiveis} disponíveis)`;
     option.hidden = true;
     option.disabled = false;
     option.setAttribute("data-pacote", "true");
@@ -178,7 +359,7 @@ function usarPacoteAtivo(pacote, sessaoAtual) {
     servicoSelect.disabled = true;
     servicoSelect.readOnly = true;
 
-    atualizarInfoPacote(pacote, sessaoAtual);
+    atualizarInfoPacote(pacote, sessaoAtual, sessoesDisponiveis);
 
     if (formValor) formValor.classList.add('hidden');
     if (infoPacote) infoPacote.classList.remove('hidden');
@@ -186,7 +367,7 @@ function usarPacoteAtivo(pacote, sessaoAtual) {
     if (campoPacote) campoPacote.value = pacote.codigo;
 
     if (pacoteAtual) {
-        pacoteAtual.innerHTML = `<strong>Pacote ativo:</strong> Código <strong>${pacote.codigo}</strong> — Sessão ${sessaoAtual} de ${pacote.quantidade_total}`;
+        pacoteAtual.innerHTML = `<strong>Pacote ativo:</strong> Código <strong>${pacote.codigo}</strong> — Sessão ${sessaoAtual} de ${pacote.quantidade_total} (${sessoesDisponiveis} disponíveis)`;
         pacoteAtual.style.display = 'block';
     }
 
@@ -195,15 +376,23 @@ function usarPacoteAtivo(pacote, sessaoAtual) {
 
     if (avisoDiv) avisoDiv.style.display = 'none';
     if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+    
+    // BLOQUEIA O BOTÃO APÓS SELECIONAR
+    const usarPacoteBtn = document.getElementById('usar-pacote-btn');
+    if (usarPacoteBtn) {
+        usarPacoteBtn.disabled = true;
+        usarPacoteBtn.textContent = 'Pacote em uso';
+    }
 }
 
-function atualizarInfoPacote(pacote, sessaoAtual) {
+function atualizarInfoPacote(pacote, sessaoAtual, sessoesDisponiveis) {
     const elementos = {
         codigo: document.getElementById('codigo_pacote_display'),
         valorPago: document.getElementById('valor_pago_display'),
         valorRestante: document.getElementById('valor_restante_display'),
         sessaoAtual: document.getElementById('sessao_atual_display'),
-        totalSessoes: document.getElementById('total_sessoes_display')
+        totalSessoes: document.getElementById('total_sessoes_display'),
+        sessoesDisponiveis: document.getElementById('sessoes_disponiveis_display') // Adicione este campo no HTML se necessário
     };
 
     if (elementos.codigo) elementos.codigo.textContent = pacote.codigo;
@@ -211,6 +400,7 @@ function atualizarInfoPacote(pacote, sessaoAtual) {
     if (elementos.valorRestante) elementos.valorRestante.textContent = (pacote.valor_total - pacote.valor_pago).toFixed(2);
     if (elementos.sessaoAtual) elementos.sessaoAtual.textContent = sessaoAtual;
     if (elementos.totalSessoes) elementos.totalSessoes.textContent = pacote.quantidade_total;
+    if (elementos.sessoesDisponiveis) elementos.sessoesDisponiveis.textContent = sessoesDisponiveis;
 }
 
 function verificarSaldosDesmarcacoes(saldos) {
@@ -806,3 +996,142 @@ function openRecorrente() {
 
 
 
+
+
+// Função para atualizar status via AJAX
+async function atualizarStatusAgendamento(agendamentoId, novoStatus) {
+    const csrfToken = getCookie('csrftoken');
+    
+    try {
+        const response = await fetch(`/agendamentos/${agendamentoId}/alterar-status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                status: novoStatus
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            mostrarMensagem(result.message || 'Status atualizado com sucesso!', 'success');
+            
+            // Atualizar a aparência visual do item na lista
+            atualizarAparenciaStatus(agendamentoId, novoStatus);
+            
+            return true;
+        } else {
+            mostrarMensagem('Erro: ' + (result.error || 'Erro desconhecido'), 'error');
+            return false;
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar status:', error);
+        mostrarMensagem('Erro ao conectar com o servidor', 'error');
+        return false;
+    }
+}
+
+// Função para atualizar a aparência do item na lista
+function atualizarAparenciaStatus(agendamentoId, novoStatus) {
+    // Encontrar o item do agendamento
+    const item = document.querySelector(`.agenda-item [data-agendamento-id="${agendamentoId}"]`);
+    if (!item) return;
+    
+    // Encontrar o elemento pai (agenda-item)
+    const agendaItem = item.closest('.agenda-item');
+    if (!agendaItem) return;
+    
+    // Remover todas as classes de status
+    agendaItem.classList.remove(
+        'status-pre',
+        'status-agendado', 
+        'status-finalizado',
+        'status-desistencia',
+        'status-dcr',
+        'status-fcr',
+        'status-falta'
+    );
+    
+    // Adicionar a nova classe de status
+    const statusClassMap = {
+        'pre': 'status-pre',
+        'agendado': 'status-agendado',
+        'finalizado': 'status-finalizado',
+        'desistencia': 'status-desistencia',
+        'desistencia_remarcacao': 'status-dcr',
+        'falta_remarcacao': 'status-fcr',
+        'falta_cobrada': 'status-falta'
+    };
+    
+    if (statusClassMap[novoStatus]) {
+        agendaItem.classList.add(statusClassMap[novoStatus]);
+    }
+}
+
+// Função para obter cookie CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Inicializar eventos quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar evento aos botões de salvar status
+    document.querySelectorAll('.btn-salvar-status').forEach(button => {
+        button.addEventListener('click', async function() {
+            const agendamentoId = this.dataset.agendamentoId;
+            const select = document.querySelector(`select[data-agendamento-id="${agendamentoId}"]`);
+            
+            if (!select) {
+                mostrarMensagem('Elemento de status não encontrado', 'error');
+                return;
+            }
+            
+            const novoStatus = select.value;
+            
+            // Desabilitar botão durante a requisição
+            this.disabled = true;
+            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            
+            const sucesso = await atualizarStatusAgendamento(agendamentoId, novoStatus);
+            
+            // Re-habilitar botão
+            this.disabled = false;
+            this.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span class="tooltiptext">Salvar Status</span>';
+        });
+    });
+    
+    // Opcional: Atualizar status ao mudar o select (sem precisar clicar em salvar)
+    document.querySelectorAll('.status-select').forEach(select => {
+        select.addEventListener('change', async function() {
+            const agendamentoId = this.dataset.agendamentoId;
+            const novoStatus = this.value;
+            
+            // Encontrar o botão correspondente
+            const button = document.querySelector(`.btn-salvar-status[data-agendamento-id="${agendamentoId}"]`);
+            
+            if (button) {
+                // Simular clique no botão
+                button.click();
+            } else {
+                // Ou atualizar diretamente
+                await atualizarStatusAgendamento(agendamentoId, novoStatus);
+            }
+        });
+    });
+});
+
+ 

@@ -51,9 +51,7 @@ urlpatterns = [
     path('api/salvar-imagem/', api_views.salvar_imagem, name='salvar_imagem'),
     path('api/listar-imagens/<int:paciente_id>/', api_views.listar_imagens, name='listar_imagens'),
     path('api/criar-pasta/', api_views.criar_pasta_imagem, name='criar_pasta_imagem'),
-        path('agendamentos/<int:agendamento_id>/alterar-status/', 
-         agendamento_views.alterar_status_agendamento, 
-         name='alterar_status_agendamento'),
+    path('agendamentos/<int:agendamento_id>/alterar-status/', agendamento_views.alterar_status_agendamento, name='alterar_status_agendamento'),
     
     #RECEITAS    
     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_pagamento, name='dados_pagamento'),
@@ -112,7 +110,7 @@ urlpatterns = [
 
     path('agendamento/confirmacao/<int:agendamento_id>/', agendamento_views.confirmacao_agendamento, name='confirmacao_agendamento'),
     path('enviar-email/<int:agendamento_id>/',agendamento_views.enviar_email_agendamento, name='enviar_email_agendamento'),
-    path('agendamento/alterar_status/<int:pk>',agendamento_views.alterar_status_agenda, name='alterar_status_agendamento'),
+    
     path('agendamento/json/<int:agendamento_id>/', agendamento_views.pegar_agendamento, name='get_agendamento'),
     path('agendamento/editar/<int:agendamento_id>/', agendamento_views.editar_agendamento, name='editar_agendamento'),
     path('agendamento/<int:pk>/remarcar/', agendamento_views.remarcar_agendamento, name='remarcar_agendamento'),

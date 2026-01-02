@@ -40,6 +40,11 @@
                     <span>{{ ag.hora_inicio }} – {{ ag.hora_fim }} </span>
 
                 </div>
+                <div class="agenda-id"> 
+                     
+                    <span> ID: <i class="fa-solid fa-hashtag"></i>{{ag.id}} </span>
+
+                </div>
             </div>
 
 
@@ -60,23 +65,24 @@
             </div>
 
             <div class="status-col">
-                <form method="post" action="{% url 'alterar_status_agendamento' ag.id %}">
-                    {% csrf_token %}
-                    <select name="status" class="status-select">
-                        <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
-                        <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
-                        <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
-                        <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
-                        <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
-                        <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
-                        <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
+                <select class="status-select" data-agendamento-id="{{ ag.id }}">
+                    <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
+                    <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
+                    <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
+                    <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
+                    <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
+                    <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
+                    <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
                 </select>
             </div>
             <div class="actions-col">
-                <button type="submit"  class="action-btn tooltip" ><i class="fa-solid fa-cloud-arrow-up"></i><span class="tooltiptext">Salvar Status</span> </button>
+                <button type="button" class="action-btn tooltip btn-salvar-status" data-agendamento-id="{{ ag.id }}">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span class="tooltiptext">Salvar Status</span>
+                </button>
                 <a href="{% url 'confirmacao_agendamento' ag.id %}">
                     <button type="button" class="action-btn tooltip"><i class="fa-solid fa-eye"></i>
-<span class="tooltiptext">Ver detalhes</span>  </button>
+                        <span class="tooltiptext">Ver detalhes</span>  </button>
                 </a>
                 <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
                     class="btn-editar-agendamento action-btn tooltip" ><i class="fa-solid fa-pen-to-square"></i><span class="tooltiptext">Editar agendamento</span>  </button>
@@ -162,44 +168,44 @@
                 <input type="hidden" id="beneficio_tipo" name="beneficio_tipo">
                 <input type="hidden" id="beneficio_percentual" name="beneficio_percentual">
                 <select name="servico_id" id="pacotesInput" class="input-s" required>
-                <option value="" disabled selected>Selecione um serviço</option>
-                        <optgroup label="Pacotes">
-                            {% for servico in servicos %}
-                            {% if servico.qtd_sessoes >= 2 %}
-                            <option value="{{ servico.id }}" data-valor="{{ servico.valor }}"
-                                class="servico-banco servico-pacote">
-                                {{ servico.nome }} - R$ {{ servico.valor }}
-                            </option>
-                            {% endif %}  
-                           {% endfor %}
-                        </optgroup>
-                        <optgroup label="Sessões Avulsas">
-                            {% for servico in servicos %}
-                            {% if servico.qtd_sessoes < 2 %} <option
-                                value="{{ servico.id }}" data-valor="{{ servico.valor }}"
-                                class="servico-banco servico-pacote">
-                                {{ servico.nome }} - R$ {{ servico.valor }}
-                                </option>
-                                {% endif %} 
-                                {% endfor %}
-                        </optgroup>
-                    <optgroup label="Reposição">
-                    <option value="d"   class="servico-reposicao" data-valor="0.00">Reposição - D</option>
-                    <option value="dcr" class="servico-reposicao" data-valor="0.00">Reposição - DCR</option>
-                    <option value="fcr" class="servico-reposicao" data-valor="0.00">Reposição - FCR</option>
-                        </optgroup>
-                         
- 
-
-                <!-- Benefícios (aparecem só quando o usuário clica no botão) -->
-                <option value="beneficio_sessao_livre"   class="servico-beneficio" data-valor="0.00" hidden>Sessão Livre (Benefício)</option>
-                <option value="beneficio_relaxante"      class="servico-beneficio" data-valor="0.00" hidden>Sessão Relaxante (Benefício)</option>
+                    <option value="" disabled selected>Selecione um serviço</option>
+                    
+                    <optgroup label="Pacotes">
+                        {% for servico in servicos %}
+                        {% if servico.qtd_sessoes >= 2 %}
+                        <option value="{{ servico.id }}" data-valor="{{ servico.valor }}"
+                            class="servico-banco servico-pacote">
+                            {{ servico.nome }} - R$ {{ servico.valor }}
+                        </option>
+                        {% endif %}  
+                        {% endfor %}
+                    </optgroup>
+                    
+                    <optgroup label="Sessões Avulsas">
+                        {% for servico in servicos %}
+                        {% if servico.qtd_sessoes < 2 %} 
+                        <option value="{{ servico.id }}" data-valor="{{ servico.valor }}"
+                            class="servico-banco servico-pacote">
+                            {{ servico.nome }} - R$ {{ servico.valor }}
+                        </option>
+                        {% endif %} 
+                        {% endfor %}
+                    </optgroup>
+                    
+                    <optgroup label="Reposição" class="optgroup-reposicao" style="display: none;">
+                        <!-- Adicionado data-tipo para cada opção -->
+                        <option value="d" class="servico-reposicao" data-valor="0.00" data-tipo="d">Reposição - D</option>
+                        <option value="dcr" class="servico-reposicao" data-valor="0.00" data-tipo="dcr">Reposição - DCR</option>
+                        <option value="fcr" class="servico-reposicao" data-valor="0.00" data-tipo="fcr">Reposição - FCR</option>
+                        <!-- Adicione esta linha se também tiver FC na sua API -->
+                        <option value="fc" class="servico-reposicao" data-valor="0.00" data-tipo="fc">Reposição - FC</option>
+                    </optgroup>
+                    
+                    <!-- Benefícios (aparecem só quando o usuário clica no botão) -->
+                    <option value="beneficio_sessao_livre" class="servico-beneficio" data-valor="0.00" hidden>Sessão Livre (Benefício)</option>
+                    <option value="beneficio_relaxante" class="servico-beneficio" data-valor="0.00" hidden>Sessão Relaxante (Benefício)</option>
                 </select>
-
-
-
             </div>
-
                 <div class="formRow cols-2">
                     <div class="formField">
                         <label for="especialidadeInput"><i class="fas fa-stethoscope"></i> Especialidade do Atendimento</label>

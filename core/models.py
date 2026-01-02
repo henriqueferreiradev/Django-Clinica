@@ -646,7 +646,22 @@ class LancamentoConta(models.Model):
                 self.status = 'atrasado'
         
         super().save(*args, **kwargs)
-
+        
+class ValidadeReposicao(models.Model):
+    tipo_reposicao = models.CharField(max_length=10, choices=TIPO_REPOSICAO_CHOICES, unique=True)
+    dias_validade = models.PositiveIntegerField()
+    ativo = models.BooleanField(default=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Validade de Reposição"
+        verbose_name_plural = "Validades de Reposição"
+        ordering = ['tipo_reposicao']
+    
+    def __str__(self):
+        return f"{self.get_tipo_reposicao_display()}: {self.dias_validade} dias"
+    
 class Servico(models.Model):
     nome = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=8, decimal_places=2)

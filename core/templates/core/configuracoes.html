@@ -628,6 +628,54 @@
                 </table>
             </div>
         </div>
+                <!-- Aba Agenda - Adicionar esta seção após as exceções -->
+        <div class="form">
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-calendar-repeat'></i> Políticas de Reposição</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <div class="config-info">
+                    <i class='bx bx-info-circle'></i> Configure as regras para reposição de sessões perdidas.
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="config_reposicao" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-calendar'></i> Validade da reposição - D (dias)</label>
+                            <input class="input-field" type="number" name="validade_d" 
+                                min="1" max="365" 
+                                value="{{ validades_reposicao.D.dias_validade|default:'7' }}" 
+                                required>
+                            <small>Reposição por Desistência do cliente</small>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-time'></i> Validade da reposição - DCR (dias)</label>
+                            <input class="input-field" type="number" name="validade_dcr" 
+                                min="1" max="365" 
+                                value="{{ validades_reposicao.DCR.dias_validade|default:'30' }}" 
+                                required>
+                            <small>Desmarcação com Culpa da Clínica</small>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-calendar-x'></i> Validade da reposição - FCR (dias)</label>
+                            <input class="input-field" type="number" name="validade_fcr" 
+                                min="1" max="365" 
+                                value="{{ validades_reposicao.FCR.dias_validade|default:'60' }}" 
+                                required>
+                            <small>Falta com Culpa da Clínica</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class='bx bx-save'></i> Salvar Políticas
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Aba Financeiro -->
@@ -1540,6 +1588,7 @@
 
 </div>
 {% include "core/partials/_modal_plano_contas.html" %} 
+{% include "core/partials/alertas.html" %} 
 {% endblock %}
 
 {% block scripts %}
