@@ -360,7 +360,6 @@ def criar_agendamento(request):
         delta = (dia_idx - data_inicial.weekday() + 7) % 7
         return data_inicial + timedelta(days=delta)
 
-
     agendamentos_criados = []
 
     # todos os status consomem sessão do pacote
@@ -375,9 +374,18 @@ def criar_agendamento(request):
     # ===================================================================
     # VALIDAÇÃO CRÍTICA: VERIFICAR SE AINDA TEM SESSÕES DISPONÍVEIS
     # ===================================================================
-    # Permite apenas se for reposição ou benefício (que não consomem sessão do pacote)
-    if faltam <= 0 and tipo_agendamento != 'reposicao' and not beneficio_tipo:
-        messages.error(request, f'Pacote esgotado! Este pacote possui {qtd_total} sessão(ões) e todas já foram utilizadas.')
+    # CORREÇÃO: Verifica se é um pacote normal que já está esgotado
+    # Só permite continuar se for: reposição, benefício especial, ou se faltam > 0
+
+    # Define se é um benefício especial (sessão livre ou relaxante que cria novo pacote)
+    eh_beneficio_especial = beneficio_tipo in ('sessao_livre', 'relaxante')
+
+    # Define se é reposição (não consome sessão do pacote)
+    eh_reposicao = tipo_agendamento == 'reposicao' or servico_id_raw in ['d', 'dcr', 'fcr']
+
+    # Se for um pacote normal (não benefício especial, não reposição) e não tem sessões disponíveis
+    if faltam <= 0 and not eh_beneficio_especial and not eh_reposicao:
+        messages.error(request, f'❌ PACOTE ESGOTADO! Este pacote possui {qtd_total} sessão(ões) e todas já foram utilizadas.')
         
         # Retorna para a página anterior com erro
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -409,8 +417,8 @@ def criar_agendamento(request):
     elif not tem_recorrencia and faltam > 0:
         sessoes_para_criar = 1
 
-    # VALIDAÇÃO: Garantir que temos sessões para criar
-    if sessoes_para_criar <= 0 and tipo_agendamento != 'reposicao' and not beneficio_tipo:
+    # VALIDAÇÃO: Garantir que temos sessões para criar (apenas para pacotes normais)
+    if sessoes_para_criar <= 0 and not eh_beneficio_especial and not eh_reposicao:
         messages.error(request, f'Não é possível criar agendamento. Pacote sem sessões disponíveis.')
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
@@ -423,57 +431,60 @@ def criar_agendamento(request):
     # VARIÁVEL PARA GUARDAR A PRIMEIRA DATA REAL (para o vencimento)
     primeira_data_real = data_sessao  # <-- Inicializa com a data que o usuário escolheu
 
-    if tem_recorrencia and faltam > 0:
-        base = data_sessao  # NÃO use max(date.today(), data_sessao)
-        
-        # distribui os faltantes entre os dias ativos
-        q, r = divmod(faltam, len(dias_ativos))
-        for i, (dia_nome, dia_idx, hora_inicio_dia, hora_fim_dia) in enumerate(dias_ativos):
-            qtd_para_dia = q + (1 if i < r else 0)
-            if qtd_para_dia <= 0:
-                continue
+    # CORREÇÃO: Só cria agendamentos se houver sessões disponíveis ou for benefício/reposição
+    if (faltam > 0 or eh_beneficio_especial or eh_reposicao):
+        if tem_recorrencia and faltam > 0:
+            base = data_sessao  # NÃO use max(date.today(), data_sessao)
             
-            # Encontra a próxima data para este dia da semana
-            primeira = proxima_data_semana(base, dia_idx)
-            
-            for j in range(qtd_para_dia):
-                d = primeira + timedelta(weeks=j)
-                ag = Agendamento.objects.create(
-                    paciente=paciente,
-                    servico=servico,
-                    especialidade=especialidade,
-                    profissional_1=profissional1,
-                    profissional_2=profissional2,
-                    data=d,
-                    hora_inicio=hora_inicio_dia,
-                    hora_fim=hora_fim_dia,
-                    pacote=pacote,
-                    status=status_ag,
-                    ambiente=ambiente,
-                    observacoes=observacoes or '',
-                    tags=tags_extra,
-                )
-                agendamentos_criados.append(ag)
+            # distribui os faltantes entre os dias ativos
+            q, r = divmod(faltam, len(dias_ativos))
+            for i, (dia_nome, dia_idx, hora_inicio_dia, hora_fim_dia) in enumerate(dias_ativos):
+                qtd_para_dia = q + (1 if i < r else 0)
+                if qtd_para_dia <= 0:
+                    continue
+                
+                # Encontra a próxima data para este dia da semana
+                primeira = proxima_data_semana(base, dia_idx)
+                
+                for j in range(qtd_para_dia):
+                    d = primeira + timedelta(weeks=j)
+                    ag = Agendamento.objects.create(
+                        paciente=paciente,
+                        servico=servico,
+                        especialidade=especialidade,
+                        profissional_1=profissional1,
+                        profissional_2=profissional2,
+                        data=d,
+                        hora_inicio=hora_inicio_dia,
+                        hora_fim=hora_fim_dia,
+                        pacote=pacote,
+                        status=status_ag,
+                        ambiente=ambiente,
+                        observacoes=observacoes or '',
+                        tags=tags_extra,
+                    )
+                    agendamentos_criados.append(ag)
 
-    elif not tem_recorrencia and faltam > 0:
-        # sem recorrência: cria apenas 1 sessão com o horário normal
-        ag = Agendamento.objects.create(
-            paciente=paciente,
-            servico=servico,
-            especialidade=especialidade,
-            profissional_1=profissional1,
-            profissional_2=profissional2,
-            data=data_sessao,
-            hora_inicio=hora_inicio,
-            hora_fim=hora_fim,
-            pacote=pacote,
-            status=status_ag,
-            ambiente=ambiente,
-            observacoes=observacoes or '',
-            tags=tags_extra,
-        )
-        agendamentos_criados.append(ag)
-        primeira_data_real = data_sessao  # <-- Já está definida, mas explicitamos
+        elif not tem_recorrencia and (faltam > 0 or eh_beneficio_especial or eh_reposicao):
+            # sem recorrência: cria apenas 1 sessão com o horário normal
+            # Permite criar se for benefício especial ou reposição, mesmo com faltam = 0
+            ag = Agendamento.objects.create(
+                paciente=paciente,
+                servico=servico,
+                especialidade=especialidade,
+                profissional_1=profissional1,
+                profissional_2=profissional2,
+                data=data_sessao,
+                hora_inicio=hora_inicio,
+                hora_fim=hora_fim,
+                pacote=pacote,
+                status=status_ag,
+                ambiente=ambiente,
+                observacoes=observacoes or '',
+                tags=tags_extra,
+            )
+            agendamentos_criados.append(ag)
+            primeira_data_real = data_sessao  # <-- Já está definida, mas explicitamos
 
     # Para o vencimento, use a PRIMEIRA DATA REAL (não do array)
     # Se tem recorrência, use a data da primeira sessão criada
@@ -492,24 +503,13 @@ def criar_agendamento(request):
     sessoes_totais_usadas = ja_existentes + len(agendamentos_criados)
     sessoes_restantes = max(0, qtd_total - sessoes_totais_usadas)
 
-    if sessoes_restantes == 0:
-        messages.warning(request, f'✅ Todas as {qtd_total} sessões deste pacote foram usadas.')
-    elif sessoes_totais_usadas > 0:
-        # Mostra mensagem CORRETA: "Pacote: 1 sessão(ões) usada(s), 2 restante(s)"
-        messages.info(request, f'Pacote: {sessoes_totais_usadas} sessão(ões) usada(s), {sessoes_restantes} restante(s).')
-
-    # CORREÇÃO: Use valor_pago_inicial APENAS se valor_pago for definido e > 0
-    valor_pago_inicial_param = valor_pago if valor_pago and valor_pago > 0 else None
-
-    # Cria receita com a data correta
-    receita = criar_receita_pacote(
-        paciente=paciente,
-        pacote=pacote,
-        valor_final=valor_final,
-        vencimento=primeira_data_real,  # CORRETO!
-        forma_pagamento=forma_pagamento,
-        valor_pago_inicial=valor_pago_inicial_param  # <-- CORRIGIDO
-    )
+    # CORREÇÃO: Só mostra mensagem se for pacote normal (não benefício especial nem reposição)
+    if not eh_beneficio_especial and not eh_reposicao:
+        if sessoes_restantes == 0:
+            messages.warning(request, f'✅ Todas as {qtd_total} sessões deste pacote foram usadas.')
+        elif sessoes_totais_usadas > 0:
+            # Mostra mensagem CORRETA: "Pacote: 1 sessão(ões) usada(s), 2 restante(s)"
+            messages.info(request, f'Pacote: {sessoes_totais_usadas} sessão(ões) usada(s), {sessoes_restantes} restante(s).')
 
     # CORREÇÃO: REMOVA esta seção de registrar pagamento
     # A função criar_receita_pacote já faz isso quando valor_pago_inicial é passado
