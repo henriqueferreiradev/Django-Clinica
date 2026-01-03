@@ -1055,3 +1055,8 @@ select.input-field {
 .form.expanded .form-content>*:nth-child(4) {
     transition-delay: 0.4s;
 }
+
+.checkbox-group {
+    display: flex;
+    flex-direction: row;
+}

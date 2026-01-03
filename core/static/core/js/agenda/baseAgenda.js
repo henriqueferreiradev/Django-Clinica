@@ -143,6 +143,14 @@ async function verificarPacoteAtivo() {
     const infoReposicao = document.getElementById('info_reposicao');
     const tipoSessaoLabel = document.getElementById('tipo_sessao');
     const valorFinalInput = document.getElementById('valor_final');
+    
+    // Elementos para mostrar informações de saldos
+    const saldoDesistencia = document.getElementById('saldo_d');
+    const saldoDCR = document.getElementById('saldo_dcr');
+    const saldoFCR = document.getElementById('saldo_fcr');
+    const diasRestantesD = document.getElementById('dias_restantes_d');
+    const diasRestantesDCR = document.getElementById('dias_restantes_dcr');
+    const diasRestantesFCR = document.getElementById('dias_restantes_fcr');
 
     // Reset inicial
     if (avisoDiv) avisoDiv.style.display = 'none';
@@ -150,6 +158,15 @@ async function verificarPacoteAtivo() {
     if (servicoSelect) servicoSelect.disabled = false;
     if (formValor) formValor.classList.remove('hidden');
     if (infoPacote) infoPacote.classList.add('hidden');
+    
+    // Resetar display de saldos
+    if (saldoDesistencia) saldoDesistencia.textContent = '0';
+    if (saldoDCR) saldoDCR.textContent = '0';
+    if (saldoFCR) saldoFCR.textContent = '0';
+    if (diasRestantesD) diasRestantesD.textContent = '0';
+    if (diasRestantesDCR) diasRestantesDCR.textContent = '0';
+    if (diasRestantesFCR) diasRestantesFCR.textContent = '0';
+    
     limparOpcaoPacoteServico();
 
     // Configurar toggles dos tipos de sessão
@@ -229,7 +246,7 @@ async function verificarPacoteAtivo() {
         const data = await response.json();
 
         // Armazena os saldos globalmente para usar depois
-        window.saldosDesmarcacoes = data.saldos_desmarcacoes || {};
+        window.saldosDesmarcacoes = data.saldos || {};
 
         // Pacote ativo
         if (data.tem_pacote_ativo && servicoSelect) {
@@ -286,8 +303,59 @@ async function verificarPacoteAtivo() {
             if (avisoDiv) avisoDiv.style.display = 'block';
         }
 
-        // Saldos de desmarcações
-        verificarSaldosDesmarcacoes(data.saldos_desmarcacoes || {});
+        // ==================== SALDOS DE DESMARCACOES ====================
+        const saldos = data.saldos || {};
+        
+        // Atualizar os displays de saldos
+        if (saldoDesistencia) {
+            const saldoD = saldos.desistencia?.quantidade || 0;
+            saldoDesistencia.textContent = saldoD;
+        }
+        
+        if (saldoDCR) {
+            const saldoDCRCount = saldos.desistencia_remarcacao?.quantidade || 0;
+            saldoDCR.textContent = saldoDCRCount;
+        }
+        
+        if (saldoFCR) {
+            const saldoFCRCount = saldos.falta_remarcacao?.quantidade || 0;
+            saldoFCR.textContent = saldoFCRCount;
+        }
+        
+        // Atualizar dias restantes
+        if (diasRestantesD && saldos.desistencia?.mais_proxima) {
+            const diasD = saldos.desistencia.mais_proxima.dias_restantes || 0;
+            diasRestantesD.textContent = diasD;
+            // Adicionar classe de alerta se estiver perto de vencer
+            if (diasD <= 7) {
+                diasRestantesD.classList.add('text-danger', 'font-weight-bold');
+            } else if (diasD <= 30) {
+                diasRestantesD.classList.add('text-warning');
+            }
+        }
+        
+        if (diasRestantesDCR && saldos.desistencia_remarcacao?.mais_proxima) {
+            const diasDCR = saldos.desistencia_remarcacao.mais_proxima.dias_restantes || 0;
+            diasRestantesDCR.textContent = diasDCR;
+            if (diasDCR <= 7) {
+                diasRestantesDCR.classList.add('text-danger', 'font-weight-bold');
+            } else if (diasDCR <= 30) {
+                diasRestantesDCR.classList.add('text-warning');
+            }
+        }
+        
+        if (diasRestantesFCR && saldos.falta_remarcacao?.mais_proxima) {
+            const diasFCR = saldos.falta_remarcacao.mais_proxima.dias_restantes || 0;
+            diasRestantesFCR.textContent = diasFCR;
+            if (diasFCR <= 7) {
+                diasRestantesFCR.classList.add('text-danger', 'font-weight-bold');
+            } else if (diasFCR <= 30) {
+                diasRestantesFCR.classList.add('text-warning');
+            }
+        }
+        
+        // Mostrar aviso consolidado
+        verificarSaldosDesmarcacoesComDetalhes(saldos);
 
         // Configurar botão de reposição
         if (usarRemarcacaoBtn) {
@@ -301,6 +369,73 @@ async function verificarPacoteAtivo() {
     }
 }
 
+// Nova função para mostrar saldos com detalhes
+function verificarSaldosDesmarcacoesComDetalhes(saldos) {
+    const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
+    const mensagemDesmarcacoes = document.getElementById('mensagem-desmarcacoes');
+
+    const mensagens = [];
+    const tipos = [
+        { key: 'desistencia', sigla: 'D', nome: 'Desistência' },
+        { key: 'desistencia_remarcacao', sigla: 'DCR', nome: 'Desistência com Remarcação' },
+        { key: 'falta_remarcacao', sigla: 'FCR', nome: 'Falta com Remarcação' }
+    ];
+
+    tipos.forEach(tipo => {
+        if (saldos[tipo.key]?.quantidade > 0) {
+            const saldo = saldos[tipo.key];
+            const diasRestantes = saldo.mais_proxima?.dias_restantes || saldo.dias_validade || 0;
+            
+            let status = '🟢'; // Verde por padrão
+            if (saldo.mais_proxima?.vencido) {
+                status = '🔴'; // Vermelho se vencido
+            } else if (diasRestantes <= 7) {
+                status = '🟠'; // Laranja se faltando 7 dias ou menos
+            } else if (diasRestantes <= 30) {
+                status = '🟡'; // Amarelo se faltando 30 dias ou menos
+            }
+            
+            let texto = `${status} ${tipo.sigla}: ${saldo.quantidade} (${diasRestantes}d)`;
+            
+            // Adicionar data de vencimento se disponível
+            if (saldo.mais_proxima?.vencimento) {
+                texto += ` - Vence: ${saldo.mais_proxima.vencimento}`;
+            }
+            
+            mensagens.push(texto);
+        }
+    });
+
+    if (mensagens.length > 0) {
+        if (mensagemDesmarcacoes) {
+            mensagemDesmarcacoes.innerHTML = `
+                <div style="margin-bottom: 10px;">
+                    <strong>Saldo de Desmarcações:</strong>
+                </div>
+                <div>
+                    ${mensagens.join('<br>')}
+                </div>
+            `;
+        }
+        if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'block';
+    } else {
+        if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+    }
+}
+
+// Nova função para verificar se tem saldo para um tipo específico
+function verificarSeTemSaldoParaTipo(tipo) {
+    if (!window.saldosDesmarcacoes) return false;
+    
+    const mapeamentoTipos = {
+        'd': 'desistencia',
+        'dcr': 'desistencia_remarcacao', 
+        'fcr': 'falta_remarcacao'
+    };
+    
+    const tipoApi = mapeamentoTipos[tipo];
+    return tipoApi && window.saldosDesmarcacoes[tipoApi]?.quantidade > 0;
+}
 // Nova função para verificar se tem saldo para um tipo específico
 function verificarSeTemSaldoParaTipo(tipo) {
     if (!window.saldosDesmarcacoes) return false;

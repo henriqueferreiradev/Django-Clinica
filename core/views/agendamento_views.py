@@ -1,5 +1,5 @@
 # CORREÇÃO: Importações corretas
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from django.utils.timezone import now  
  
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1088,21 +1088,18 @@ def alterar_status_agendamento(request, agendamento_id):
         data = json.loads(request.body)
         novo_status = data.get('status')
         
-        # Validar status
+ 
         status_validos = ['pre', 'agendado', 'finalizado', 'desistencia', 
-                         'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
+                            'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
         
         if novo_status not in status_validos:
             return JsonResponse({'success': False, 'error': 'Status inválido'}, status=400)
-        
-        # SE FOR UMA DESMARCÇÃO (D/DCR/FCR), REGISTRA A DATA
+ 
         if novo_status in ['desistencia', 'desistencia_remarcacao', 'falta_remarcacao']:
-            agendamento.data_desmarcacao = now()  # CORREÇÃO: usar now() em vez de timezone.now()
-        # SE VOLTAR PARA UM STATUS NORMAL, LIMPA A DATA DE DESMARCACAO
+            agendamento.data_desmarcacao = datetime.combine(agendamento.data, time.min)   
         elif agendamento.data_desmarcacao and novo_status in ['pre', 'agendado', 'finalizado']:
             agendamento.data_desmarcacao = None
-        
-        # Atualizar status
+ 
         agendamento.status = novo_status
         agendamento.save()
         
