@@ -1,3 +1,7 @@
+# CORREÇÃO: Importações corretas
+from datetime import date, datetime, timedelta
+from django.utils.timezone import now  
+ 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt 
 from django.contrib.auth.decorators import login_required
@@ -5,13 +9,11 @@ from django.utils.dateparse import parse_date
 from core.services.financeiro import criar_receita_pacote, criar_pagamento
 from core.utils import gerar_horarios,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
 from core.models import Agendamento,  CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
-from datetime import date, datetime, timedelta
 from django.http import JsonResponse
 from django.db.models import Sum, Q, Count
 from collections import defaultdict
 from django.contrib import messages
 import uuid
-from django.utils.timezone import now
 from decimal import Decimal, InvalidOperation
 import json
 
@@ -563,7 +565,6 @@ def verificar_pacotes_ativos(request, paciente_id):
     pacotes = PacotePaciente.objects.filter(paciente_id=paciente_id, ativo=True)
     
     pacotes_data = []
-    print(pacotes )
     for pacote in pacotes:
         sessoes_usadas = pacote.sessoes_realizadas
         pacotes_data.append({
@@ -571,29 +572,92 @@ def verificar_pacotes_ativos(request, paciente_id):
             "quantidade_total": pacote.qtd_sessoes,
             "quantidade_usadas": sessoes_usadas,
             "valor_total": float(pacote.valor_total),
-           "valor_desconto": float(pacote.valor_desconto),
+            "valor_desconto": float(pacote.valor_desconto),
             "valor_pago": float(pacote.total_pago),   
             "valor_restante": float(pacote.valor_restante),
             'servico_id': pacote.servico.id  
         })
-    desmarcacoes = Agendamento.objects.filter(
-        paciente_id=paciente_id,
-        pacote__isnull=False,
-        status__in=["desistencia", "desistencia_remarcacao", "falta_remarcacao"],
-        foi_reposto=False  
-    ).values("status").annotate(total=Count("id"))
-    saldos_desmarcacoes = {
-        'desistencia':0,
-        'desistencia_remarcacao':0,
-        'falta_remarcacao':0,
+    
+    # Buscar configurações de validade
+    try:
+        from core.models import ValidadeReposicao
+        validades = {
+            config.tipo_reposicao: config.dias_validade  # CORREÇÃO: usar tipo_reposicao em vez de tipo
+            for config in ValidadeReposicao.objects.filter(ativo=True)
+        }
+    except Exception as e:
+        print(f"Erro ao buscar validades: {e}")
+        # Fallback padrão
+        validades = {
+            'D': 90,
+            'DCR': 90,
+            'FCR': 30
+        }
+    
+    # Mapeamento status -> tipo
+    status_para_tipo = {
+        'desistencia': 'D',  # CORREÇÃO: usar maiúsculas para combinar com choices do model
+        'desistencia_remarcacao': 'DCR',
+        'falta_remarcacao': 'FCR'
     }
-    for d in desmarcacoes:
-        saldos_desmarcacoes[d['status']] = d['total']
+    
+    # CORREÇÃO: usar now() de django.utils.timezone
+    hoje = now().date()
+
+    saldos_com_validade = {}
+    
+    # Para cada tipo de desmarcação
+    for status, tipo in status_para_tipo.items():
+        dias_validade = validades.get(tipo, 90 if tipo in ['D', 'DCR'] else 30)
         
+        # Busca agendamentos não repostos deste status
+        agendamentos = Agendamento.objects.filter(
+            paciente_id=paciente_id,
+            pacote__isnull=False,
+            status=status,
+            foi_reposto=False  
+        ).order_by('data_desmarcacao' if tipo != 'FCR' else 'data')
+        
+        quantidade = agendamentos.count()
+        
+        # Informações de validade
+        info_validade = {
+            'quantidade': quantidade,
+            'dias_validade': dias_validade
+        }
+        
+        # Adiciona info da mais próxima de vencer
+        if quantidade > 0:
+            mais_proxima = agendamentos.first()
+            
+            # USAR A DATA DE DESMARCACAO SE EXISTIR, SENÃO USA A DATA DO AGENDAMENTO
+            if mais_proxima.data_desmarcacao:
+                data_base = mais_proxima.data_desmarcacao.date()
+            else:
+                data_base = mais_proxima.data
+            
+            data_vencimento = data_base + timedelta(days=dias_validade)
+            dias_restantes = (data_vencimento - hoje).days
+            
+            info_validade.update({
+                'mais_proxima': {
+                    'id': mais_proxima.id,
+                    'data_agendamento': mais_proxima.data.strftime('%d/%m/%Y'),
+                    'data_desmarcacao': mais_proxima.data_desmarcacao.strftime('%d/%m/%Y %H:%M') if mais_proxima.data_desmarcacao else mais_proxima.data.strftime('%d/%m/%Y'),
+                    'data_base': data_base.strftime('%d/%m/%Y'),
+                    'vencimento': data_vencimento.strftime('%d/%m/%Y'),
+                    'dias_restantes': max(dias_restantes, 0),
+                    'vencido': dias_restantes < 0,
+                    'usou_data_desmarcacao': mais_proxima.data_desmarcacao is not None
+                }
+            })
+        
+        saldos_com_validade[status] = info_validade
+    
     return JsonResponse({
         "tem_pacote_ativo": pacotes.exists(),
         "pacotes": pacotes_data, 
-        "saldos_desmarcacoes": saldos_desmarcacoes,
+        "saldos": saldos_com_validade,
     })
 
 def listar_agendamentos(filtros=None, query=None):
@@ -1018,7 +1082,6 @@ def api_usar_beneficio(request):
     except Exception as e:
         return JsonResponse({'ok': False, 'error': str(e)}, status=400)
 
-
 def alterar_status_agendamento(request, agendamento_id):
     try:
         agendamento = Agendamento.objects.get(pk=agendamento_id)
@@ -1031,6 +1094,13 @@ def alterar_status_agendamento(request, agendamento_id):
         
         if novo_status not in status_validos:
             return JsonResponse({'success': False, 'error': 'Status inválido'}, status=400)
+        
+        # SE FOR UMA DESMARCÇÃO (D/DCR/FCR), REGISTRA A DATA
+        if novo_status in ['desistencia', 'desistencia_remarcacao', 'falta_remarcacao']:
+            agendamento.data_desmarcacao = now()  # CORREÇÃO: usar now() em vez de timezone.now()
+        # SE VOLTAR PARA UM STATUS NORMAL, LIMPA A DATA DE DESMARCACAO
+        elif agendamento.data_desmarcacao and novo_status in ['pre', 'agendado', 'finalizado']:
+            agendamento.data_desmarcacao = None
         
         # Atualizar status
         agendamento.status = novo_status
