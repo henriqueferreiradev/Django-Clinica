@@ -6,8 +6,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt 
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
-from core.services.financeiro import criar_receita_pacote, criar_pagamento
-from core.utils import gerar_horarios,gerar_mensagem_confirmacao, enviar_lembrete_email,alterar_status_agendamento, registrar_log
+from core.services.financeiro import criar_receita_pacote
+from core.utils import gerar_mensagem_confirmacao, enviar_lembrete_email, registrar_log
 from core.models import Agendamento,  CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
 from django.http import JsonResponse
 from django.db.models import Sum, Q, Count
@@ -486,15 +486,49 @@ def criar_agendamento(request):
     else:
         primeira_data_real = data_sessao
     
+    def verificar_e_desativar_pacote(pacote):
+        """Verifica se todas as sessões foram usadas e desativa o pacote se necessário"""
+        from django.utils import timezone
+        
+        if not pacote.ativo:
+            return False
+        
+        # usa o mesmo STATUS_CONSUME já definido na view
+        agendamentos_consumidos = Agendamento.objects.filter(
+            pacote=pacote,
+            status__in=STATUS_CONSUME
+        ).count()
+        
+        if agendamentos_consumidos >= pacote.qtd_sessoes:
+            pacote.ativo = False
+            pacote.data_desativacao = timezone.now()
+            pacote.save()
+            
+            registrar_log(
+                usuario=request.user,
+                acao='Desativação',
+                modelo='Pacote Paciente',
+                objeto_id=pacote.id,
+                descricao=f'Pacote {pacote.codigo} desativado automaticamente após consumir todas as {pacote.qtd_sessoes} sessões.'
+            )
+            return True
+        return False
+
     # =====================================================
     # PAGAMENTO — cria pendente (conta a receber) ou pago
     # =====================================================
-    
+
+    # Chama a função para verificar se o pacote acabou
+    pacote_acabou = verificar_e_desativar_pacote(pacote)
+
     # CORREÇÃO: Mostra mensagem apenas quando realmente usou todas as sessões
-    if faltam == 0:
+    if pacote_acabou:
+        messages.warning(request, f'Pacote {pacote.codigo} foi DESATIVADO automaticamente pois todas as sessões foram consumidas.')
+    elif faltam == 0:
         messages.warning(request, f'Todas as sessões deste pacote foram usadas.')
     elif ja_existentes > 0:
         messages.info(request, f'Pacote: {ja_existentes} sessão(ões) usada(s), {faltam} restante(s).')
+       
     
     # CORREÇÃO: Use valor_pago_inicial APENAS se valor_pago for definido e > 0
     valor_pago_inicial_param = valor_pago if valor_pago and valor_pago > 0 else None
@@ -560,14 +594,26 @@ def criar_agendamento(request):
 
     # Caso contrário (usuário via navegador), abre a página normal
     return redirect('confirmacao_agendamento', agendamento_id=ultimo_agendamento.id)
-
 def verificar_pacotes_ativos(request, paciente_id):
-    pacotes = PacotePaciente.objects.filter(paciente_id=paciente_id, ativo=True)
+    # Filtra apenas pacotes ativos e não vencidos
+    pacotes = PacotePaciente.objects.filter(
+        paciente_id=paciente_id, 
+        ativo=True
+    )
     
-    pacotes_data = []
+    hoje = now().date()
+    pacotes_nao_vencidos = []
+    
     for pacote in pacotes:
+        # Verifica se o pacote tem data de vencimento
+        if hasattr(pacote, 'data_vencimento') and pacote.data_vencimento:
+            if pacote.data_vencimento < hoje:
+                # Pacote vencido - podemos marcar como inativo ou apenas não mostrar
+                continue
+        
+        # Se não tem data de vencimento ou ainda não venceu
         sessoes_usadas = pacote.sessoes_realizadas
-        pacotes_data.append({
+        pacotes_nao_vencidos.append({
             "codigo": pacote.codigo,
             "quantidade_total": pacote.qtd_sessoes,
             "quantidade_usadas": sessoes_usadas,
@@ -575,14 +621,17 @@ def verificar_pacotes_ativos(request, paciente_id):
             "valor_desconto": float(pacote.valor_desconto),
             "valor_pago": float(pacote.total_pago),   
             "valor_restante": float(pacote.valor_restante),
-            'servico_id': pacote.servico.id  
+            'servico_id': pacote.servico.id,
+            # Incluir informações de validade para o frontend
+            'data_vencimento': pacote.data_vencimento.strftime('%Y-%m-%d') if hasattr(pacote, 'data_vencimento') and pacote.data_vencimento else None,
+            'esta_vencido': hasattr(pacote, 'data_vencimento') and pacote.data_vencimento and pacote.data_vencimento < hoje
         })
     
     # Buscar configurações de validade
     try:
         from core.models import ValidadeReposicao
         validades = {
-            config.tipo_reposicao: config.dias_validade  # CORREÇÃO: usar tipo_reposicao em vez de tipo
+            config.tipo_reposicao: config.dias_validade
             for config in ValidadeReposicao.objects.filter(ativo=True)
         }
     except Exception as e:
@@ -596,14 +645,11 @@ def verificar_pacotes_ativos(request, paciente_id):
     
     # Mapeamento status -> tipo
     status_para_tipo = {
-        'desistencia': 'D',  # CORREÇÃO: usar maiúsculas para combinar com choices do model
+        'desistencia': 'D',
         'desistencia_remarcacao': 'DCR',
         'falta_remarcacao': 'FCR'
     }
     
-    # CORREÇÃO: usar now() de django.utils.timezone
-    hoje = now().date()
-
     saldos_com_validade = {}
     
     # Para cada tipo de desmarcação
@@ -618,7 +664,22 @@ def verificar_pacotes_ativos(request, paciente_id):
             foi_reposto=False  
         ).order_by('data_desmarcacao' if tipo != 'FCR' else 'data')
         
-        quantidade = agendamentos.count()
+        # FILTRAR SÓ OS NÃO VENCIDOS
+        agendamentos_nao_vencidos = []
+        for ag in agendamentos:
+            # Determinar a data base para cálculo
+            if ag.data_desmarcacao:
+                data_base = ag.data_desmarcacao.date()
+            else:
+                data_base = ag.data
+            
+            data_vencimento = data_base + timedelta(days=dias_validade)
+            
+            # Só incluir se não estiver vencido
+            if data_vencimento >= hoje:
+                agendamentos_nao_vencidos.append(ag)
+        
+        quantidade = len(agendamentos_nao_vencidos)
         
         # Informações de validade
         info_validade = {
@@ -628,41 +689,41 @@ def verificar_pacotes_ativos(request, paciente_id):
         
         # Adiciona info da mais próxima de vencer
         if quantidade > 0:
-            mais_proxima = agendamentos.first()
+            mais_proxima = agendamentos_nao_vencidos[0] if agendamentos_nao_vencidos else None
             
-            # USAR A DATA DE DESMARCACAO SE EXISTIR, SENÃO USA A DATA DO AGENDAMENTO
-            if mais_proxima.data_desmarcacao:
-                data_base = mais_proxima.data_desmarcacao.date()
-            else:
-                data_base = mais_proxima.data
-            
-            data_vencimento = data_base + timedelta(days=dias_validade)
-            dias_restantes = (data_vencimento - hoje).days
-            
-            info_validade.update({
-                'mais_proxima': {
-                    'id': mais_proxima.id,
-                    'data_agendamento': mais_proxima.data.strftime('%d/%m/%Y'),
-                    'data_desmarcacao': mais_proxima.data_desmarcacao.strftime('%d/%m/%Y %H:%M') if mais_proxima.data_desmarcacao else mais_proxima.data.strftime('%d/%m/%Y'),
-                    'data_base': data_base.strftime('%d/%m/%Y'),
-                    'vencimento': data_vencimento.strftime('%d/%m/%Y'),
-                    'dias_restantes': max(dias_restantes, 0),
-                    'vencido': dias_restantes < 0,
-                    'usou_data_desmarcacao': mais_proxima.data_desmarcacao is not None
-                }
-            })
+            if mais_proxima:
+                # USAR A DATA DE DESMARCACAO SE EXISTIR, SENÃO USA A DATA DO AGENDAMENTO
+                if mais_proxima.data_desmarcacao:
+                    data_base = mais_proxima.data_desmarcacao.date()
+                else:
+                    data_base = mais_proxima.data
+                
+                data_vencimento = data_base + timedelta(days=dias_validade)
+                dias_restantes = (data_vencimento - hoje).days
+                
+                info_validade.update({
+                    'mais_proxima': {
+                        'id': mais_proxima.id,
+                        'data_agendamento': mais_proxima.data.strftime('%d/%m/%Y'),
+                        'data_desmarcacao': mais_proxima.data_desmarcacao.strftime('%d/%m/%Y %H:%M') if mais_proxima.data_desmarcacao else mais_proxima.data.strftime('%d/%m/%Y'),
+                        'data_base': data_base.strftime('%d/%m/%Y'),
+                        'vencimento': data_vencimento.strftime('%d/%m/%Y'),
+                        'dias_restantes': max(dias_restantes, 0),
+                        'vencido': dias_restantes < 0,
+                        'usou_data_desmarcacao': mais_proxima.data_desmarcacao is not None
+                    }
+                })
         
         saldos_com_validade[status] = info_validade
     
     return JsonResponse({
-        "tem_pacote_ativo": pacotes.exists(),
-        "pacotes": pacotes_data, 
+        "tem_pacote_ativo": len(pacotes_nao_vencidos) > 0,
+        "pacotes": pacotes_nao_vencidos, 
         "saldos": saldos_com_validade,
     })
-
 def listar_agendamentos(filtros=None, query=None):
     filtros = filtros or {}
-
+    paciente = filtros.get('')
     data_inicio = filtros.get('data_inicio')
     data_fim = filtros.get('data_fim')
     especialidade = filtros.get('especialidade_id')
@@ -678,7 +739,7 @@ def listar_agendamentos(filtros=None, query=None):
     if not data_inicio and not data_fim:
         qs_filtros['data__gte'] = date.today()
     if especialidade:
-         qs_filtros['especialidade'] = especialidade  # ← Isso filtra pela especialidade do AGENDAMENTO
+         qs_filtros['especialidade'] = especialidade  
     if status: 
         qs_filtros['status'] = status
 
@@ -1082,28 +1143,43 @@ def api_usar_beneficio(request):
     except Exception as e:
         return JsonResponse({'ok': False, 'error': str(e)}, status=400)
 
+
+        
 def alterar_status_agendamento(request, agendamento_id):
     try:
         agendamento = Agendamento.objects.get(pk=agendamento_id)
         data = json.loads(request.body)
         novo_status = data.get('status')
         
- 
         status_validos = ['pre', 'agendado', 'finalizado', 'desistencia', 
-                            'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
+                          'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
         
         if novo_status not in status_validos:
             return JsonResponse({'success': False, 'error': 'Status inválido'}, status=400)
- 
+        
+        # REMOVA OU MODIFIQUE ESTA VERIFICAÇÃO - Ela está bloqueando a alteração
+        # if agendamento.pacote and not agendamento.pacote.ativo:
+        #     return JsonResponse({
+        #         'success': False, 
+        #         'error': f'Pacote {agendamento.pacote.codigo} está desativado.'
+        #     }, status=400)
+        
+        # Em vez disso, apenas registre um aviso (mas permita a alteração)
+        if agendamento.pacote and not agendamento.pacote.ativo:
+            print(f"AVISO: Alterando status em pacote desativado: {agendamento.pacote.codigo}")
+        
         if novo_status in ['desistencia', 'desistencia_remarcacao', 'falta_remarcacao']:
             agendamento.data_desmarcacao = datetime.combine(agendamento.data, time.min)   
         elif agendamento.data_desmarcacao and novo_status in ['pre', 'agendado', 'finalizado']:
             agendamento.data_desmarcacao = None
- 
+
         agendamento.status = novo_status
         agendamento.save()
         
-        # Registrar log
+        # ATUALIZAR CONTAGEM DE SESSÕES DO PACOTE (se houver pacote)
+        if agendamento.pacote:
+            atualizar_contagem_pacote(agendamento.pacote)
+        
         registrar_log(
             usuario=request.user,
             acao='Alteração de Status',
@@ -1118,3 +1194,25 @@ def alterar_status_agendamento(request, agendamento_id):
         return JsonResponse({'success': False, 'error': 'Agendamento não encontrado'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+def atualizar_contagem_pacote(pacote):
+    """Atualiza contagem de sessões consumidas do pacote"""
+    from django.utils import timezone
+    
+    if not pacote.ativo:
+        return
+    
+    # Lista de status que consomem sessão
+    STATUS_CONSUME = ['agendado', 'realizado', 'falta', 'desistencia', 
+                     'desistencia_remarcacao', 'falta_remarcacao', 'pre_agendamento']
+    
+    agendamentos_consumidos = Agendamento.objects.filter(
+        pacote=pacote,
+        status__in=STATUS_CONSUME
+    ).count()
+    
+    # Se todas as sessões foram consumidas, desativa o pacote
+    if agendamentos_consumidos >= pacote.qtd_sessoes:
+        pacote.ativo = False
+        pacote.data_desativacao = timezone.now()
+        pacote.save()

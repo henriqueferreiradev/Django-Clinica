@@ -143,7 +143,7 @@ async function verificarPacoteAtivo() {
     const infoReposicao = document.getElementById('info_reposicao');
     const tipoSessaoLabel = document.getElementById('tipo_sessao');
     const valorFinalInput = document.getElementById('valor_final');
-    
+
     // Elementos para mostrar informações de saldos
     const saldoDesistencia = document.getElementById('saldo_d');
     const saldoDCR = document.getElementById('saldo_dcr');
@@ -158,7 +158,7 @@ async function verificarPacoteAtivo() {
     if (servicoSelect) servicoSelect.disabled = false;
     if (formValor) formValor.classList.remove('hidden');
     if (infoPacote) infoPacote.classList.add('hidden');
-    
+
     // Resetar display de saldos
     if (saldoDesistencia) saldoDesistencia.textContent = '0';
     if (saldoDCR) saldoDCR.textContent = '0';
@@ -166,29 +166,28 @@ async function verificarPacoteAtivo() {
     if (diasRestantesD) diasRestantesD.textContent = '0';
     if (diasRestantesDCR) diasRestantesDCR.textContent = '0';
     if (diasRestantesFCR) diasRestantesFCR.textContent = '0';
-    
+
     limparOpcaoPacoteServico();
 
     // Configurar toggles dos tipos de sessão
     radioButtons.forEach(radio => {
         radio.addEventListener('change', function () {
             if (!servicoSelect) return;
-            
-            // Busca os elementos
+
             const servicosBancoAtual = document.querySelectorAll('.servico-banco');
             const servicosReposicaoAtual = document.querySelectorAll('.servico-reposicao');
             const optgroupReposicao = document.querySelector('.optgroup-reposicao');
             const optgroupsPacotes = document.querySelectorAll('optgroup[label="Pacotes"], optgroup[label="Sessões Avulsas"]');
-            
+
             if (this.value === 'reposicao') {
                 // Esconde opções normais
                 servicosBancoAtual.forEach(opt => opt.hidden = true);
                 optgroupsPacotes.forEach(optgroup => optgroup.style.display = 'none');
-                
+
                 // Mostra optgroup de reposição
                 if (optgroupReposicao) {
                     optgroupReposicao.style.display = 'block';
-                    
+
                     // Mostra APENAS as opções de reposição que estão disponíveis
                     servicosReposicaoAtual.forEach(opt => {
                         const tipoReposicao = opt.getAttribute('data-tipo');
@@ -200,15 +199,9 @@ async function verificarPacoteAtivo() {
                         }
                     });
                 }
-                
+
                 servicoSelect.value = "";
-                
-                // Atualiza label
-                if (tipoSessaoLabel) {
-                    tipoSessaoLabel.textContent = 'Tipo de reposição';
-                }
-                
-                // Mostra info de reposição
+                if (tipoSessaoLabel) tipoSessaoLabel.textContent = 'Tipo de reposição';
                 if (infoReposicao) {
                     infoReposicao.innerHTML = `<strong>Reposição de sessão</strong>`;
                     infoReposicao.style.display = 'block';
@@ -217,24 +210,11 @@ async function verificarPacoteAtivo() {
                 // Mostra opções normais
                 servicosBancoAtual.forEach(opt => opt.hidden = false);
                 optgroupsPacotes.forEach(optgroup => optgroup.style.display = 'block');
-                
-                // Esconde optgroup de reposição
-                if (optgroupReposicao) {
-                    optgroupReposicao.style.display = 'none';
-                }
-                
+                if (optgroupReposicao) optgroupReposicao.style.display = 'none';
                 servicosReposicaoAtual.forEach(opt => opt.hidden = true);
                 servicoSelect.value = "";
-                
-                // Volta label
-                if (tipoSessaoLabel) {
-                    tipoSessaoLabel.textContent = 'Tipo de sessão';
-                }
-                
-                // Esconde info de reposição
-                if (infoReposicao) {
-                    infoReposicao.style.display = 'none';
-                }
+                if (tipoSessaoLabel) tipoSessaoLabel.textContent = 'Tipo de sessão';
+                if (infoReposicao) infoReposicao.style.display = 'none';
             }
         });
     });
@@ -248,47 +228,48 @@ async function verificarPacoteAtivo() {
         // Armazena os saldos globalmente para usar depois
         window.saldosDesmarcacoes = data.saldos || {};
 
-        // Pacote ativo
-        if (data.tem_pacote_ativo && servicoSelect) {
+        // ============================
+        // LÓGICA DE PACOTES ATUALIZADA
+        // ============================
+
+        // Caso 1: Tem pacote ativo
+        if (data.tem_pacote_ativo && servicoSelect && data.pacotes.length > 0) {
             const pacote = data.pacotes[0];
             const sessaoAtual = (pacote.quantidade_usadas || 0) + 1;
             const sessoesRestantes = pacote.quantidade_total - pacote.quantidade_usadas;
-            
-            // VERIFICA SE O PACOTE TEM SESSÕES DISPONÍVEIS
-            const pacoteEsgotado = sessoesRestantes <= 0;
-            
-            if (mensagemPacote) {
-                if (pacoteEsgotado) {
-                    mensagemPacote.innerHTML = 
-                        `<div style="color: #dc3545; font-weight: bold; padding: 10px; border: 2px solid #dc3545; border-radius: 5px; background-color: #f8d7da;">
-                        ⚠️ <strong>PACOTE ESGOTADO!</strong><br>
-                        Código: ${pacote.codigo}<br>
-                        Total de sessões: ${pacote.quantidade_total}<br>
-                        Sessões usadas: ${pacote.quantidade_usadas}<br>
-                        Sessões restantes: ${sessoesRestantes}<br><br>
-                        <em>Não é possível usar este pacote. Crie um novo.</em>
-                        </div>`;
-                    
-                    // Desabilita o botão de usar pacote
-                    if (usarPacoteBtn) {
-                        usarPacoteBtn.disabled = true;
-                        usarPacoteBtn.style.opacity = '0.5';
-                        usarPacoteBtn.style.cursor = 'not-allowed';
-                        usarPacoteBtn.textContent = 'Pacote esgotado';
-                        usarPacoteBtn.onclick = null;
+
+            // Verifica se o pacote está ATIVO no banco de dados
+            const pacoteEstaAtivo = pacote.ativo === true || pacote.ativo === undefined;
+
+            // Atualiza o ícone e título do aviso
+            if (avisoDiv) {
+                // Remove classes antigas
+                avisoDiv.classList.remove('aviso-premium', 'aviso-danger', 'aviso-warning');
+
+                if (sessoesRestantes > 0 && pacoteEstaAtivo) {
+                    // PACOTE ATIVO COM SESSÕES DISPONÍVEIS
+                    avisoDiv.classList.add('aviso-premium');
+
+                    if (mensagemPacote) {
+                        mensagemPacote.innerHTML =
+                            `<div class="pacote-info ativo">
+                                <div class="pacote-header">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>PACOTE ATIVO DISPONÍVEL</strong>
+                                </div>
+                                <div class="pacote-detalhes">
+                                    <div><span class="label">Código:</span> <span class="valor">${pacote.codigo}</span></div>
+                                    <div><span class="label">Sessões totais:</span> <span class="valor">${pacote.quantidade_total}</span></div>
+                                    <div><span class="label">Sessões usadas:</span> <span class="valor">${pacote.quantidade_usadas}</span></div>
+                                    <div><span class="label">Sessões disponíveis:</span> <span class="valor disponivel">${sessoesRestantes}</span></div>
+                                    <div><span class="label">Próxima sessão:</span> <span class="valor">${sessaoAtual}</span></div>
+                                </div>
+                                <div class="pacote-aviso">
+                                    <em>Deseja usar este pacote?</em>
+                                </div>
+                            </div>`;
                     }
-                } else {
-                    mensagemPacote.innerHTML = 
-                        `<div style="color: #0c5460; padding: 10px; border: 2px solid #bee5eb; border-radius: 5px; background-color: #d1ecf1;">
-                        <strong>PACOTE ATIVO DISPONÍVEL</strong><br>
-                        Código: ${pacote.codigo}<br>
-                        Sessões totais: ${pacote.quantidade_total}<br>
-                        Sessões usadas: ${pacote.quantidade_usadas}<br>
-                        Sessões disponíveis: ${sessoesRestantes}<br>
-                        Próxima sessão: ${sessaoAtual}<br><br>
-                        Deseja usar este pacote?
-                        </div>`;
-                    
+
                     // Habilita o botão
                     if (usarPacoteBtn) {
                         usarPacoteBtn.disabled = false;
@@ -297,63 +278,111 @@ async function verificarPacoteAtivo() {
                         usarPacoteBtn.textContent = `Usar pacote (${sessoesRestantes} disponíveis)`;
                         usarPacoteBtn.onclick = () => usarPacoteAtivo(pacote, sessaoAtual, sessoesRestantes);
                     }
+
+                } else if (!pacoteEstaAtivo || sessoesRestantes <= 0) {
+                    // PACOTE ESGOTADO OU DESATIVADO
+                    avisoDiv.classList.add('aviso-danger');
+
+                    if (mensagemPacote) {
+                        const motivo = !pacoteEstaAtivo ? "DESATIVADO" : "ESGOTADO";
+                        mensagemPacote.innerHTML =
+                            `<div class="pacote-info esgotado">
+                                <div class="pacote-header">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>PACOTE ${motivo}</strong>
+                                </div>
+                                <div class="pacote-detalhes">
+                                    <div><span class="label">Código:</span> <span class="valor">${pacote.codigo}</span></div>
+                                    <div><span class="label">Sessões totais:</span> <span class="valor">${pacote.quantidade_total}</span></div>
+                                    <div><span class="label">Sessões usadas:</span> <span class="valor">${pacote.quantidade_usadas}</span></div>
+                                    <div><span class="label">Sessões restantes:</span> <span class="valor esgotado">${sessoesRestantes}</span></div>
+                                    ${!pacoteEstaAtivo ? '<div><span class="label">Status:</span> <span class="valor esgotado">DESATIVADO</span></div>' : ''}
+                                </div>
+                                <div class="pacote-aviso">
+                                    <em>${!pacoteEstaAtivo ? 'Este pacote foi desativado automaticamente.' : 'Não é possível usar este pacote.'}</em>
+                                    <br>
+                                    <strong>Crie um novo pacote.</strong>
+                                </div>
+                            </div>`;
+                    }
+
+                    // Desabilita o botão
+                    if (usarPacoteBtn) {
+                        usarPacoteBtn.disabled = true;
+                        usarPacoteBtn.style.opacity = '0.5';
+                        usarPacoteBtn.style.cursor = 'not-allowed';
+                        usarPacoteBtn.textContent = !pacoteEstaAtivo ? 'Pacote desativado' : 'Pacote esgotado';
+                        usarPacoteBtn.onclick = null;
+                    }
                 }
             }
 
             if (avisoDiv) avisoDiv.style.display = 'block';
+
+        } else {
+            // Caso 2: Nenhum pacote ativo
+            if (avisoDiv) {
+                avisoDiv.classList.remove('aviso-premium', 'aviso-danger');
+                avisoDiv.classList.add('aviso-warning');
+                avisoDiv.style.display = 'block';
+
+                if (mensagemPacote) {
+                    mensagemPacote.innerHTML =
+                        `<div class="pacote-info sem-pacote">
+                            <div class="pacote-header">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>NENHUM PACOTE ATIVO</strong>
+                            </div>
+                            <div class="pacote-detalhes">
+                                <div>Este paciente não possui pacotes ativos no momento.</div>
+                            </div>
+                            <div class="pacote-aviso">
+                                <em>Para criar um novo agendamento, selecione um serviço abaixo.</em>
+                            </div>
+                        </div>`;
+                }
+
+                // Desabilita o botão
+                if (usarPacoteBtn) {
+                    usarPacoteBtn.disabled = true;
+                    usarPacoteBtn.style.opacity = '0.5';
+                    usarPacoteBtn.style.cursor = 'not-allowed';
+                    usarPacoteBtn.textContent = 'Sem pacote ativo';
+                    usarPacoteBtn.onclick = null;
+                }
+            }
         }
 
         // ==================== SALDOS DE DESMARCACOES ====================
         const saldos = data.saldos || {};
-        
+
         // Atualizar os displays de saldos
-        if (saldoDesistencia) {
-            const saldoD = saldos.desistencia?.quantidade || 0;
-            saldoDesistencia.textContent = saldoD;
-        }
-        
-        if (saldoDCR) {
-            const saldoDCRCount = saldos.desistencia_remarcacao?.quantidade || 0;
-            saldoDCR.textContent = saldoDCRCount;
-        }
-        
-        if (saldoFCR) {
-            const saldoFCRCount = saldos.falta_remarcacao?.quantidade || 0;
-            saldoFCR.textContent = saldoFCRCount;
-        }
-        
+        if (saldoDesistencia) saldoDesistencia.textContent = saldos.desistencia?.quantidade || 0;
+        if (saldoDCR) saldoDCR.textContent = saldos.desistencia_remarcacao?.quantidade || 0;
+        if (saldoFCR) saldoFCR.textContent = saldos.falta_remarcacao?.quantidade || 0;
+
         // Atualizar dias restantes
         if (diasRestantesD && saldos.desistencia?.mais_proxima) {
             const diasD = saldos.desistencia.mais_proxima.dias_restantes || 0;
             diasRestantesD.textContent = diasD;
-            // Adicionar classe de alerta se estiver perto de vencer
-            if (diasD <= 7) {
-                diasRestantesD.classList.add('text-danger', 'font-weight-bold');
-            } else if (diasD <= 30) {
-                diasRestantesD.classList.add('text-warning');
-            }
+            if (diasD <= 7) diasRestantesD.classList.add('text-danger', 'font-weight-bold');
+            else if (diasD <= 30) diasRestantesD.classList.add('text-warning');
         }
-        
+
         if (diasRestantesDCR && saldos.desistencia_remarcacao?.mais_proxima) {
             const diasDCR = saldos.desistencia_remarcacao.mais_proxima.dias_restantes || 0;
             diasRestantesDCR.textContent = diasDCR;
-            if (diasDCR <= 7) {
-                diasRestantesDCR.classList.add('text-danger', 'font-weight-bold');
-            } else if (diasDCR <= 30) {
-                diasRestantesDCR.classList.add('text-warning');
-            }
+            if (diasDCR <= 7) diasRestantesDCR.classList.add('text-danger', 'font-weight-bold');
+            else if (diasDCR <= 30) diasRestantesDCR.classList.add('text-warning');
         }
-        
+
         if (diasRestantesFCR && saldos.falta_remarcacao?.mais_proxima) {
             const diasFCR = saldos.falta_remarcacao.mais_proxima.dias_restantes || 0;
             diasRestantesFCR.textContent = diasFCR;
-            if (diasFCR <= 7) {
-                diasRestantesFCR.classList.add('text-danger', 'font-weight-bold');
-            } else if (diasFCR <= 30) {
-                diasRestantesFCR.classList.add('text-warning');
-            }
+            if (diasFCR <= 7) diasRestantesFCR.classList.add('text-danger', 'font-weight-bold');
+            else if (diasFCR <= 30) diasRestantesFCR.classList.add('text-warning');
         }
-        
+
         // Mostrar aviso consolidado
         verificarSaldosDesmarcacoesComDetalhes(saldos);
 
@@ -368,7 +397,6 @@ async function verificarPacoteAtivo() {
         if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
     }
 }
-
 // Nova função para mostrar saldos com detalhes
 function verificarSaldosDesmarcacoesComDetalhes(saldos) {
     const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
@@ -385,7 +413,7 @@ function verificarSaldosDesmarcacoesComDetalhes(saldos) {
         if (saldos[tipo.key]?.quantidade > 0) {
             const saldo = saldos[tipo.key];
             const diasRestantes = saldo.mais_proxima?.dias_restantes || saldo.dias_validade || 0;
-            
+
             let status = '🟢'; // Verde por padrão
             if (saldo.mais_proxima?.vencido) {
                 status = '🔴'; // Vermelho se vencido
@@ -394,14 +422,14 @@ function verificarSaldosDesmarcacoesComDetalhes(saldos) {
             } else if (diasRestantes <= 30) {
                 status = '🟡'; // Amarelo se faltando 30 dias ou menos
             }
-            
+
             let texto = `${status} ${tipo.sigla}: ${saldo.quantidade} (${diasRestantes}d)`;
-            
+
             // Adicionar data de vencimento se disponível
             if (saldo.mais_proxima?.vencimento) {
                 texto += ` - Vence: ${saldo.mais_proxima.vencimento}`;
             }
-            
+
             mensagens.push(texto);
         }
     });
@@ -426,34 +454,24 @@ function verificarSaldosDesmarcacoesComDetalhes(saldos) {
 // Nova função para verificar se tem saldo para um tipo específico
 function verificarSeTemSaldoParaTipo(tipo) {
     if (!window.saldosDesmarcacoes) return false;
-    
-    const mapeamentoTipos = {
-        'd': 'desistencia',
-        'dcr': 'desistencia_remarcacao', 
-        'fcr': 'falta_remarcacao'
-    };
-    
-    const tipoApi = mapeamentoTipos[tipo];
-    return tipoApi && window.saldosDesmarcacoes[tipoApi]?.quantidade > 0;
-}
-// Nova função para verificar se tem saldo para um tipo específico
-function verificarSeTemSaldoParaTipo(tipo) {
-    if (!window.saldosDesmarcacoes) return false;
-    
-    const mapeamentoTipos = {
-        'd': 'desistencia',
-        'dcr': 'desistencia_remarcacao', 
-        'fcr': 'falta_remarcacao',
-        'fc': 'falta_cobrada'
-    };
-    
-    const tipoApi = mapeamentoTipos[tipo];
-    return tipoApi && window.saldosDesmarcacoes[tipoApi] > 0;
-}
-// REMOVA ESTA FUNÇÃO DUPLICADA (linhas ~255-298):
-// function usarPacoteAtivo(pacote, sessaoAtual) { ... }
 
-// Mantenha apenas a função com 3 parâmetros (linha ~193):
+    const mapeamentoTipos = {
+        'd': 'desistencia',
+        'dcr': 'desistencia_remarcacao',
+        'fcr': 'falta_remarcacao',
+
+    };
+
+    const tipoApi = mapeamentoTipos[tipo];
+
+    // CORREÇÃO: Acesse a propriedade quantidade dentro do objeto
+    if (tipoApi && window.saldosDesmarcacoes[tipoApi]) {
+        return window.saldosDesmarcacoes[tipoApi].quantidade > 0;
+    }
+
+    return false;
+}
+
 function usarPacoteAtivo(pacote, sessaoAtual, sessoesDisponiveis) {
     const servicoSelect = document.getElementById('pacotesInput');
     const formValor = document.getElementById('formValor');
@@ -468,7 +486,7 @@ function usarPacoteAtivo(pacote, sessaoAtual, sessoesDisponiveis) {
     // VALIDAÇÃO: verifica se há sessões disponíveis
     if (sessoesDisponiveis <= 0) {
         alert(`❌ PACOTE ESGOTADO!\n\nCódigo: ${pacote.codigo}\nSessões disponíveis: ${sessoesDisponiveis}`);
-        
+
         // Esconde o aviso
         if (avisoDiv) avisoDiv.style.display = 'none';
         return;
@@ -511,7 +529,7 @@ function usarPacoteAtivo(pacote, sessaoAtual, sessoesDisponiveis) {
 
     if (avisoDiv) avisoDiv.style.display = 'none';
     if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
-    
+
     // BLOQUEIA O BOTÃO APÓS SELECIONAR
     const usarPacoteBtn = document.getElementById('usar-pacote-btn');
     if (usarPacoteBtn) {
@@ -1136,7 +1154,7 @@ function openRecorrente() {
 // Função para atualizar status via AJAX
 async function atualizarStatusAgendamento(agendamentoId, novoStatus) {
     const csrfToken = getCookie('csrftoken');
-    
+
     try {
         const response = await fetch(`/agendamentos/${agendamentoId}/alterar-status/`, {
             method: 'POST',
@@ -1150,13 +1168,13 @@ async function atualizarStatusAgendamento(agendamentoId, novoStatus) {
         });
 
         const result = await response.json();
-        
+
         if (result.success) {
             mostrarMensagem(result.message || 'Status atualizado com sucesso!', 'success');
-            
+
             // Atualizar a aparência visual do item na lista
             atualizarAparenciaStatus(agendamentoId, novoStatus);
-            
+
             return true;
         } else {
             mostrarMensagem('Erro: ' + (result.error || 'Erro desconhecido'), 'error');
@@ -1174,22 +1192,22 @@ function atualizarAparenciaStatus(agendamentoId, novoStatus) {
     // Encontrar o item do agendamento
     const item = document.querySelector(`.agenda-item [data-agendamento-id="${agendamentoId}"]`);
     if (!item) return;
-    
+
     // Encontrar o elemento pai (agenda-item)
     const agendaItem = item.closest('.agenda-item');
     if (!agendaItem) return;
-    
+
     // Remover todas as classes de status
     agendaItem.classList.remove(
         'status-pre',
-        'status-agendado', 
+        'status-agendado',
         'status-finalizado',
         'status-desistencia',
         'status-dcr',
         'status-fcr',
         'status-falta'
     );
-    
+
     // Adicionar a nova classe de status
     const statusClassMap = {
         'pre': 'status-pre',
@@ -1200,7 +1218,7 @@ function atualizarAparenciaStatus(agendamentoId, novoStatus) {
         'falta_remarcacao': 'status-fcr',
         'falta_cobrada': 'status-falta'
     };
-    
+
     if (statusClassMap[novoStatus]) {
         agendaItem.classList.add(statusClassMap[novoStatus]);
     }
@@ -1223,41 +1241,41 @@ function getCookie(name) {
 }
 
 // Inicializar eventos quando o DOM estiver carregado
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Adicionar evento aos botões de salvar status
     document.querySelectorAll('.btn-salvar-status').forEach(button => {
-        button.addEventListener('click', async function() {
+        button.addEventListener('click', async function () {
             const agendamentoId = this.dataset.agendamentoId;
             const select = document.querySelector(`select[data-agendamento-id="${agendamentoId}"]`);
-            
+
             if (!select) {
                 mostrarMensagem('Elemento de status não encontrado', 'error');
                 return;
             }
-            
+
             const novoStatus = select.value;
-            
+
             // Desabilitar botão durante a requisição
             this.disabled = true;
             this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-            
+
             const sucesso = await atualizarStatusAgendamento(agendamentoId, novoStatus);
-            
+
             // Re-habilitar botão
             this.disabled = false;
             this.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span class="tooltiptext">Salvar Status</span>';
         });
     });
-    
+
     // Opcional: Atualizar status ao mudar o select (sem precisar clicar em salvar)
     document.querySelectorAll('.status-select').forEach(select => {
-        select.addEventListener('change', async function() {
+        select.addEventListener('change', async function () {
             const agendamentoId = this.dataset.agendamentoId;
             const novoStatus = this.value;
-            
+
             // Encontrar o botão correspondente
             const button = document.querySelector(`.btn-salvar-status[data-agendamento-id="${agendamentoId}"]`);
-            
+
             if (button) {
                 // Simular clique no botão
                 button.click();
@@ -1269,4 +1287,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
- 

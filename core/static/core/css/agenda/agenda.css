@@ -261,17 +261,19 @@ body {
     font-size: 16px;
     font-weight: 500;
 }
+
 .agenda-id {
-     
+
     color: var(--preto);
     font-size: 14px;
     border-radius: 16px;
     padding: 0.2em 0.5em;
     font-weight: 700;
-     
+
 
 
 }
+
 .bolinha {
     width: 16px;
     height: 16px;
@@ -382,7 +384,7 @@ body {
 
 .action-btn:hover {
     background: var(--roxoPrincipal);
-     
+
     transform: translateY(-2px);
 }
 
@@ -1372,7 +1374,15 @@ textarea.error {
 }
 
 @keyframes pulseHighlight {
-    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
 }
