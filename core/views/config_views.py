@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ContaBancaria, ESTADO_CIVIL, Especialidade, Fornecedor, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, User, VINCULO, ValidadeReposicao
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ConfigAgenda, ContaBancaria, ESTADO_CIVIL, Especialidade, Fornecedor, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, User, VINCULO, ValidadeReposicao
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -300,7 +300,21 @@ def configuracao_view(request):
                 
             messages.success(request, 'Configurações de validade para reposições salvas com sucesso!')
                 
- 
+        elif tipo == 'config_agenda':
+            hora_abertura = request.POST.get('hora_abertura')
+            hora_fechamento = request.POST.get('hora_fechamento')
+            dias_semana = request.POST.getlist('dias_semana[]')
+            
+            config, created = ConfigAgenda.objects.update_or_create(
+                            defaults={
+                'horario_abertura': hora_abertura,
+                'horario_fechamento': hora_fechamento,
+                'dias_funcionamento': dias_semana
+            }
+            )
+            
+        messages.success(request, 'Configurações salvas com sucesso!')
+
         '''
         =====================================================================================
                                             EDIÇÃO
@@ -322,8 +336,7 @@ def configuracao_view(request):
                             return JsonResponse({'success': True})
                         except Exception as e:
                             return JsonResponse({'success': False, 'error': str(e)})
-                    
-                    
+                                       
                     elif tipo == 'editar_banco':
                         banco_id = request.POST.get('banco_id')
                         tipo_conta_banco = request.POST.get('tipo_conta_banco')
@@ -346,6 +359,7 @@ def configuracao_view(request):
                             return JsonResponse({'success': True})
                         except Exception as e:
                             return JsonResponse({'success': False, 'error': str(e)})
+                        
                     elif tipo == 'editar_fornecedor':
                         fornecedor_id = request.POST.get('fornecedor_id')
                         tipo_pessoa = request.POST.get('tipo_pessoa')
@@ -454,9 +468,10 @@ def configuracao_view(request):
     especialidades, total_especialidades_ativas, mostrar_todos_especialidade, filtra_inativo_especialidade = filtrar_ativos_inativos(request, Especialidade, prefixo='especialidade')
     fornecedores, total_fornecedores_ativas, mostrar_todos_fornecedores, filtra_inativo_fornecedores = filtrar_ativos_inativos(request, Fornecedor, prefixo='fornecedor')
     
-    
-    
-    
+    try:
+        config = ConfigAgenda.objects.first()
+    except:
+        config = None
     usuarios = User.objects.filter(ativo=True).all().select_related('profissional')
     bancos = ContaBancaria.objects.all()
     profissionais = Profissional.objects.all()
@@ -485,8 +500,8 @@ def configuracao_view(request):
             'D': ValidadeReposicao.objects.filter(tipo_reposicao='d').first(),
             'DCR': ValidadeReposicao.objects.filter(tipo_reposicao='dcr').first(),
             'FCR': ValidadeReposicao.objects.filter(tipo_reposicao='fcr').first(),
-        }
-      
+        },
+        'config':config,
     })
 
 def testes(request):

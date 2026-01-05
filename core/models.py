@@ -885,6 +885,87 @@ class LogAcao(models.Model):
     def __str__(self):
         return f"{self.acao} em {self.modelo} (ID {self.objeto_id}) por {self.usuario}"
 
+        
+class ConfigAgenda(models.Model):
+    
+    horario_abertura = models.TimeField()
+    horario_fechamento = models.TimeField()
+    dias_funcionamento = models.JSONField(default=list)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+    
+    def dias_formatados(self):
+            """Retorna os dias formatados em texto"""
+            if not self.dias_funcionamento:
+                return ""
+            
+            dias_map = {
+                'segunda': 'Segunda',
+                'terca': 'Terça', 
+                'quarta': 'Quarta',
+                'quinta': 'Quinta',
+                'sexta': 'Sexta',
+                'sabado': 'Sábado',
+                'domingo': 'Domingo'
+            }
+            
+            ordem = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo']
+            
+            # Filtra e ordena
+            dias_validos = [d for d in self.dias_funcionamento if d in dias_map]
+            dias_ordenados = sorted(dias_validos, key=lambda x: ordem.index(x))
+            
+            # Converte para nomes
+            dias_nomes = [dias_map[d] for d in dias_ordenados]
+            
+            # Verifica se são exatamente segunda a sexta
+            if dias_ordenados == ['segunda', 'terca', 'quarta', 'quinta', 'sexta']:
+                return "Segunda a Sexta"
+            
+            # Verifica se são dias consecutivos
+            if len(dias_ordenados) >= 3:
+                indices = [ordem.index(d) for d in dias_ordenados]
+                # Verifica se os índices são consecutivos
+                is_consecutive = all(indices[i+1] - indices[i] == 1 for i in range(len(indices)-1))
+                
+                if is_consecutive:
+                    return f"{dias_map[dias_ordenados[0]]} a {dias_map[dias_ordenados[-1]]}"
+            
+            return ", ".join(dias_nomes)
+    def validar_horario(self, hora_str):
+        """Valida se uma hora está dentro do horário de funcionamento"""
+        try:
+            hora_agendamento = datetime.strptime(hora_str, '%H:%M').time()
+            return self.horario_abertura <= hora_agendamento <= self.horario_fechamento
+        except:
+            return False
+    
+    def validar_dia(self, data_obj):
+        """Valida se uma data é um dia de funcionamento"""
+        # Mapeia weekday do Python (0=segunda, 6=domingo) para seus valores
+        dias_map = {
+            0: 'segunda',  # Monday
+            1: 'terca',    # Tuesday
+            2: 'quarta',   # Wednesday
+            3: 'quinta',   # Thursday
+            4: 'sexta',    # Friday
+            5: 'sabado',   # Saturday
+            6: 'domingo'   # Sunday
+        }
+        
+        dia_semana = data_obj.weekday()
+        dia_str = dias_map.get(dia_semana, '')
+        return dia_str in self.dias_funcionamento
+    
+    def get_config_dict(self):
+        """Retorna configuração como dicionário"""
+        return {
+            'horario_abertura': self.horario_abertura.strftime('%H:%M'),
+            'horario_fechamento': self.horario_fechamento.strftime('%H:%M'),
+            'dias_funcionamento': self.dias_funcionamento,
+            'dias_formatados': self.dias_formatados() if hasattr(self, 'dias_formatados') else ', '.join(self.dias_funcionamento)
+        }
+    
 class Pendencia(models.Model):
     tipo = models.CharField(max_length=100)
     descricao = models.TextField()

@@ -586,7 +586,8 @@ select.input-field {
     border-radius: var(--borda-radius);
     margin-bottom: var(--espaco-md);
     display: flex;
-    align-items: center;
+    align-items: left;
+    flex-direction: row;
     gap: 1em;
 }
 

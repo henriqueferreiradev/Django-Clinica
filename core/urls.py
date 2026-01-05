@@ -47,7 +47,7 @@ urlpatterns = [
     
     path('api/salvar-avaliacao/', api_views.salvar_avaliacao, name='salvar_avaliacao'),
     path('api/listar-avaliacoes/<int:paciente_id>/', api_views.listar_avaliacoes, name='listar_avaliacoes'),
-    
+    path('api/config-agenda/', agendamento_views.api_config_agenda, name='api_config_agenda'),
     path('api/salvar-imagem/', api_views.salvar_imagem, name='salvar_imagem'),
     path('api/listar-imagens/<int:paciente_id>/', api_views.listar_imagens, name='listar_imagens'),
     path('api/criar-pasta/', api_views.criar_pasta_imagem, name='criar_pasta_imagem'),

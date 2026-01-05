@@ -567,7 +567,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--espaco-md);
+    padding: 1em;
     border-bottom: 1px solid var(--cinza-borda);
     background-color: var(--cinza-claro);
 }
@@ -598,26 +598,7 @@ body {
     background-color: var(--roxoPrincipal-hover);
 }
 
-.agendamento_div {
-    flex: 1;
-    overflow-y: auto;
-    padding: var(--espaco-md);
-}
-
-.header-sidebar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--espaco-md);
-    border-bottom: 1px solid var(--cinza-borda);
-    background-color: var(--cinza-claro);
-}
-
-.header-sidebar h2 {
-    font-size: 1.5rem;
-    color: var(--roxoPrincipal);
-    font-weight: 600;
-}
+ 
 
 #closeBtn {
     background: none;
@@ -697,10 +678,7 @@ body {
 #aviso-desmarcacoes .aviso-icon {
     color: var(--vermelho-alerta);
 }
-
-.aviso-content {
-    flex-grow: 1;
-}
+ 
 
 .aviso-premium strong {
     display: block;
@@ -788,7 +766,7 @@ body {
     background: var(--branco);
     color: var(--cinza-escuro);
     font-family: var(--fontePrincipal), sans-serif;
-    height: 50px;
+    height: 44px;
 }
 
 select.input-s {
@@ -972,15 +950,7 @@ select.input-s {
     width: 100%;
 }
 
-
-/* Footer buttons */
-.footer {
-    display: flex;
-    gap: var(--espaco-sm);
-    margin-top: var(--espaco-lg);
-    padding-top: var(--espaco-md);
-    border-top: 1px solid var(--cinza-borda);
-}
+ 
 
 .btn-footer {
     flex: 1;
@@ -1063,7 +1033,7 @@ select.input-s {
     width: 20px;
     height: 20px;
     border: 2px solid var(--roxoPrincipal);
-    border-radius: 4px;
+    border-radius: px;
     background: transparent;
     display: grid;
     place-content: center;
@@ -1346,7 +1316,7 @@ textarea.error {
 .input-s {
     padding: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 /* Estilos para feedback durante a atualização */
@@ -1385,4 +1355,116 @@ textarea.error {
     100% {
         box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
     }
+}
+
+/* Estilo para as mensagens de informação */
+.config-info-alert {
+    background: #e8f4ff;
+    border-left: 4px solid #1890ff;
+    padding: 12px 16px;
+    margin: 15px 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    animation: slideIn 0.3s ease;
+}
+
+.config-info-alert i {
+    color: #1890ff;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* Estilo para erros de validação */
+.erro-validacao {
+    animation: fadeIn 0.3s ease;
+}
+
+.input-field.error {
+    border-color: #ff4d4f !important;
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* No seu CSS */
+button[type="submit"]:disabled {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    cursor: not-allowed !important;
+    opacity: 0.65 !important;
+}
+
+button[type="submit"]:disabled:hover {
+    background-color: #6c757d !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.erro-validacao {
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+
+#sidebar {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: calc(100vh - 80px);
+    background: var(--branco);
+    border-radius: var(--borda-arredondada);
+    box-shadow: var(--shadowRoxo);
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.agendamento_div {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.form-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--espaco-md);
+}
+
+.footer {
+    display: flex;
+    gap: var(--espaco-sm);
+    padding: 1em;
+    border-top: 1px solid var(--cinza-borda);
+    background: var(--branco);
+    flex-shrink: 0; /* Não encolhe */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
 from core.services.financeiro import criar_receita_pacote
 from core.utils import gerar_mensagem_confirmacao, enviar_lembrete_email, registrar_log
-from core.models import Agendamento,  CONSELHO_ESCOLHA, COR_RACA, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, ConfigAgenda, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
 from django.http import JsonResponse
 from django.db.models import Sum, Q, Count
 from collections import defaultdict
@@ -191,6 +191,26 @@ def proxima_data_semana(data_inicial, dia_semana_index):
     delta_dias = (dia_semana_index - data_inicial.weekday() + 7) % 7
     return data_inicial + timedelta(days=delta_dias)
 
+def api_config_agenda(request):
+    """API que retorna as configurações de agenda"""
+    try:
+        config = ConfigAgenda.objects.first()
+        if not config:
+            return JsonResponse({
+                'horario_abertura': '08:00',
+                'horario_fechamento': '18:00',
+                'dias_funcionamento': ['segunda', 'terca', 'quarta', 'quinta', 'sexta'],
+                'dias_formatados': 'Segunda a Sexta'
+            })
+        
+        return JsonResponse({
+            'horario_abertura': config.horario_abertura.strftime('%H:%M'),
+            'horario_fechamento': config.horario_fechamento.strftime('%H:%M'),
+            'dias_funcionamento': config.dias_funcionamento,
+            'dias_formatados': config.dias_formatados() if hasattr(config, 'dias_formatados') else ', '.join(config.dias_funcionamento)
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
  
 @login_required(login_url='login')
 def criar_agendamento(request):
@@ -213,8 +233,8 @@ def criar_agendamento(request):
     ambiente           = data.get('ambiente')
     observacoes        = data.get('observacoes', '')
     pacote_codigo_form = data.get('pacote_codigo')
-
-    # benefício vindo do front (hidden)
+ 
+        
     beneficio_tipo       = data.get('beneficio_tipo')  # 'sessao_livre' | 'relaxante' | 'desconto' | 'brinde' | ''
     beneficio_percentual = Decimal(data.get('beneficio_percentual') or 0)
 
@@ -594,6 +614,10 @@ def criar_agendamento(request):
 
     # Caso contrário (usuário via navegador), abre a página normal
     return redirect('confirmacao_agendamento', agendamento_id=ultimo_agendamento.id)
+
+
+
+
 def verificar_pacotes_ativos(request, paciente_id):
     # Filtra apenas pacotes ativos e não vencidos
     pacotes = PacotePaciente.objects.filter(

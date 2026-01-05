@@ -380,7 +380,18 @@
             
             <div class="form-content">
                 <div class="config-info">
-                    <i class='bx bx-info-circle'></i> Configure os horários padrão e dias de funcionamento da clínica.
+                
+                    <i class='bx bx-info-circle'></i>
+                    <div><p>Configure os horários padrão e dias de funcionamento da clínica.</p>
+                        <small>
+                            {% if config %}
+                                Atualmente está configurado 
+                                {{ config.dias_formatados }}
+                                de {{ config.horario_abertura|time:"H:i" }} às {{ config.horario_fechamento|time:"H:i" }}.
+                            {% else %}
+                                (sem configuração salva)
+                            {% endif %}
+                        </small></div>
                 </div>
                 <form method="POST">
                     {% csrf_token %}
@@ -388,48 +399,53 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label><i class='bx bx-time-five'></i> Horário de Abertura</label>
-                            <input class="input-field" type="time" name="hora_abertura" value="08:00" required>
+                            <input class="input-field" type="time" name="hora_abertura" value="{{config.horario_abertura}}" required>
                         </div>
                         <div class="form-group">
                             <label><i class='bx bx-time'></i> Horário de Fechamento</label>
-                            <input class="input-field" type="time" name="hora_fechamento" value="18:00" required>
-                        </div>
-                        <div class="form-group">
-                            <label><i class='bx bx-refresh'></i> Intervalo Padrão (min)</label>
-                            <input class="input-field" type="number" name="intervalo" min="5" value="30" required>
+                            <input class="input-field" type="time" name="hora_fechamento" value="{{config.horario_fechamento}}" required>
                         </div>
                         <div class="form-group full-width">
                             <label><i class='bx bx-calendar-week'></i> Dias de Funcionamento</label>
                             <div class="checkbox-group">
                                 <label class="checkbox-option">
-                                    <input type="checkbox" name="dias_semana[]" value="1" checked>
+                                    <input type="checkbox" name="dias_semana[]" value="segunda"
+                                        {% if config and "segunda" in config.dias_funcionamento %}checked{% endif %}>
                                     Segunda-feira
                                 </label>
                                 <label class="checkbox-option">
-                                    <input type="checkbox" name="dias_semana[]" value="2" checked>
+                                    <input type="checkbox" name="dias_semana[]" value="terca"
+                                    {% if config and "terca" in config.dias_funcionamento %}checked{% endif %}>
                                     Terça-feira
                                 </label>
                                 <label class="checkbox-option">
-                                    <input type="checkbox" name="dias_semana[]" value="3" checked>
+                                    <input type="checkbox" name="dias_semana[]" value="quarta"
+                                    {% if config and "quarta" in config.dias_funcionamento %}checked{% endif %}>
                                     Quarta-feira
                                 </label>
                                 <label class="checkbox-option">
-                                    <input type="checkbox" name="dias_semana[]" value="4" checked>
+                                    <input type="checkbox" name="dias_semana[]" value="quinta"
+                                    {% if config and "quinta" in config.dias_funcionamento %}checked{% endif %}>
                                     Quinta-feira
                                 </label>
                                 <label class="checkbox-option">
-                                    <input type="checkbox" name="dias_semana[]" value="5" checked>
+                                    <input type="checkbox" name="dias_semana[]" value="sexta"
+                                    {% if config and "sexta" in config.dias_funcionamento %}checked{% endif %}>
                                     Sexta-feira
                                 </label>
                                 <label class="checkbox-option">
-                                    <input type="checkbox" name="dias_semana[]" value="6">
+                                    <input type="checkbox" name="dias_semana[]" value="sabado"
+                                    {% if config and "sabado" in config.dias_funcionamento %}checked{% endif %}>
                                     Sábado
                                 </label>
                                 <label class="checkbox-option">
-                                    <input type="checkbox" name="dias_semana[]" value="0">
+                                    <input type="checkbox" name="dias_semana[]" value="domingo"
+                                    {% if config and "domingo" in config.dias_funcionamento %}checked{% endif %}>
                                     Domingo
                                 </label>
+                                
                             </div>
+                            
                         </div>
                     </div>
                     <button type="submit" class="btn-submit"><i class='bx bx-save'></i> Salvar Configurações</button>
