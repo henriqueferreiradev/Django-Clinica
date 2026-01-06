@@ -124,6 +124,198 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+function limparTudo() {
+    console.log('Limpando tudo...');
+    
+    // 1. Limpar campo de busca e sugestões
+    const buscaInput = document.getElementById('busca');
+    const sugestoes = document.getElementById('sugestoes');
+    if (buscaInput) buscaInput.value = '';
+    if (sugestoes) {
+        sugestoes.innerHTML = '';
+        sugestoes.style.display = 'none';
+    }
+    
+    // 2. Limpar paciente_id
+    const pacienteIdInput = document.getElementById('paciente_id');
+    if (pacienteIdInput) pacienteIdInput.value = '';
+    
+    // 3. Limpar avisos de pacote
+    const avisoPacote = document.getElementById('aviso-pacote');
+    const mensagemPacote = document.getElementById('mensagem-pacote');
+    if (avisoPacote) avisoPacote.style.display = 'none';
+    if (mensagemPacote) mensagemPacote.innerHTML = '';
+    
+    // 4. Limpar avisos de desmarcações
+    const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
+    const mensagemDesmarcacoes = document.getElementById('mensagem-desmarcacoes');
+    if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+    if (mensagemDesmarcacoes) mensagemDesmarcacoes.innerHTML = '';
+    
+    // 5. Limpar avisos de benefício
+    const avisoBeneficio = document.getElementById('aviso-beneficio');
+    if (avisoBeneficio) avisoBeneficio.style.display = 'none';
+    
+    // 6. Limpar seleção de serviço
+    const servicoSelect = document.getElementById('pacotesInput');
+    const servicoHidden = document.getElementById('servico_id_hidden');
+    if (servicoSelect) {
+        servicoSelect.querySelectorAll('option[data-pacote="true"]').forEach(op => op.remove());
+        servicoSelect.disabled = false;
+        servicoSelect.readOnly = false;
+        servicoSelect.value = '';
+    }
+    if (servicoHidden) servicoHidden.value = '';
+    
+    // 7. Limpar inputs de valor
+    const valorPacote = document.getElementById('valor_pacote');
+    const desconto = document.getElementById('desconto');
+    const valorFinal = document.getElementById('valor_final');
+    if (valorPacote) valorPacote.value = '';
+    if (desconto) desconto.value = '';
+    if (valorFinal) valorFinal.value = '';
+    
+    // 8. Limpar campos de pacote
+    const campoPacote = document.getElementById('pacote_codigo');
+    const formValor = document.getElementById('formValor');
+    const infoPacote = document.getElementById('info_pacote');
+    const pacoteAtual = document.getElementById('pacote_atual');
+    if (campoPacote) campoPacote.value = '';
+    if (formValor) formValor.classList.remove('hidden');
+    if (infoPacote) infoPacote.classList.add('hidden');
+    if (pacoteAtual) {
+        pacoteAtual.textContent = '';
+        pacoteAtual.style.display = 'none';
+    }
+    
+    // 9. Limpar campos de benefício
+    const beneficioTipo = document.getElementById('beneficio_tipo');
+    const beneficioPercentual = document.getElementById('beneficio_percentual');
+    if (beneficioTipo) beneficioTipo.value = '';
+    if (beneficioPercentual) beneficioPercentual.value = '';
+    
+    // 10. Resetar tipo de agendamento para "novo"
+    const radioNovo = document.querySelector('input[name="tipo_agendamento"][value="novo"]');
+    if (radioNovo) {
+        radioNovo.checked = true;
+        // Disparar evento change para resetar interface
+        if (radioNovo.dispatchEvent) {
+            radioNovo.dispatchEvent(new Event('change'));
+        }
+    }
+    
+    // 11. Resetar botão de usar pacote
+    const usarPacoteBtn = document.getElementById('usar-pacote-btn');
+    if (usarPacoteBtn) {
+        usarPacoteBtn.disabled = true;
+        usarPacoteBtn.style.opacity = '0.5';
+        usarPacoteBtn.style.cursor = 'not-allowed';
+        usarPacoteBtn.textContent = 'Usar pacote';
+        usarPacoteBtn.onclick = null;
+    }
+    
+    // 12. Resetar info de reposição
+    const infoReposicao = document.getElementById('info_reposicao');
+    if (infoReposicao) infoReposicao.style.display = 'none';
+    
+    // 13. Resetar label de tipo de sessão
+    const tipoSessaoLabel = document.getElementById('tipo_sessao');
+    if (tipoSessaoLabel) tipoSessaoLabel.textContent = 'Tipo de sessão';
+    
+    // 14. Limpar benefício selecionado
+    limparBeneficioSelecionado();
+    
+    // 15. Resetar campos de agendamento recorrente
+    const checkRecorrente = document.getElementById('recorrente');
+    const divRecorrente = document.getElementById('week-recorrente');
+    if (checkRecorrente) checkRecorrente.checked = false;
+    if (divRecorrente) divRecorrente.classList.remove('active');
+    
+    // 16. Resetar botões de benefício
+    const beneficioBotoes = document.getElementById('beneficio-botoes');
+    if (beneficioBotoes) beneficioBotoes.innerHTML = '';
+    
+    // 17. Remover erros de validação
+    document.querySelectorAll('.erro-validacao').forEach(erro => erro.remove());
+    
+    // 18. Resetar bordas dos inputs
+    document.querySelectorAll('input').forEach(input => {
+        input.style.borderColor = '';
+    });
+    
+    // 19. Limpar dados globais
+    window.saldosDesmarcacoes = null;
+    
+    console.log('Limpeza completa!');
+}
+// Função para limpar apenas os avisos
+function limparAvisos() {
+    console.log('Limpando avisos...');
+    
+    // 1. Limpar avisos de pacote
+    const avisoPacote = document.getElementById('aviso-pacote');
+    const mensagemPacote = document.getElementById('mensagem-pacote');
+    if (avisoPacote) avisoPacote.style.display = 'none';
+    if (mensagemPacote) mensagemPacote.innerHTML = '';
+    
+    // 2. Limpar avisos de desmarcações
+    const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
+    const mensagemDesmarcacoes = document.getElementById('mensagem-desmarcacoes');
+    if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+    if (mensagemDesmarcacoes) mensagemDesmarcacoes.innerHTML = '';
+    
+    // 3. Limpar avisos de benefício
+    const avisoBeneficio = document.getElementById('aviso-beneficio');
+    if (avisoBeneficio) avisoBeneficio.style.display = 'none';
+    
+    // 4. Limpar info de reposição
+    const infoReposicao = document.getElementById('info_reposicao');
+    if (infoReposicao) infoReposicao.style.display = 'none';
+    
+    // 5. Limpar sem_pacote div
+    const semPacoteDiv = document.getElementById('sem_pacote');
+    if (semPacoteDiv) {
+        semPacoteDiv.innerHTML = '';
+        semPacoteDiv.style.display = 'none';
+    }
+    
+    // 6. Resetar botão de usar pacote
+    const usarPacoteBtn = document.getElementById('usar-pacote-btn');
+    if (usarPacoteBtn) {
+        usarPacoteBtn.disabled = true;
+        usarPacoteBtn.style.opacity = '0.5';
+        usarPacoteBtn.style.cursor = 'not-allowed';
+        usarPacoteBtn.textContent = 'Usar pacote';
+        usarPacoteBtn.onclick = null;
+    }
+    
+    // 7. Resetar botão de usar remarcação
+    const usarRemarcacaoBtn = document.getElementById('usar-reposicao-btn');
+    if (usarRemarcacaoBtn) {
+        usarRemarcacaoBtn.onclick = null;
+    }
+    
+    console.log('Avisos limpos!');
+}
+
+// Função para mostrar mensagem no div sem_pacote
+function mostrarMensagemSemPacote(mensagem) {
+    const semPacoteDiv = document.getElementById('sem_pacote');
+    if (semPacoteDiv) {
+        semPacoteDiv.innerHTML = `
+            <div class="pacote-info sem-pacote">
+                <div class="pacote-header">
+                    <i class="fas fa-plus-circle aviso-icon"></i>
+                    <strong>${mensagem}</strong>
+                </div>
+                <div class="pacote-detalhes">
+                    <div>Selecione um serviço abaixo para criar um novo agendamento.</div>
+                </div>
+            </div>
+        `;
+        semPacoteDiv.style.display = 'block';
+    }
+}
 async function verificarPacoteAtivo() {
     const pacienteIdInput = document.getElementById('paciente_id');
     if (!pacienteIdInput) return;
@@ -254,8 +446,8 @@ async function verificarPacoteAtivo() {
                         mensagemPacote.innerHTML =
                             `<div class="pacote-info ativo">
                                 <div class="pacote-header">
-                                    <i class="fas fa-check-circle"></i>
-                                    <strong>PACOTE ATIVO DISPONÍVEL</strong>
+                                    <i class="fas fa-check-circle aviso-icon"></i>
+                                    <strong>Pacote Ativo Disponível!</strong>
                                 </div>
                                 <div class="pacote-detalhes">
                                     <div><span class="label">Código:</span> <span class="valor">${pacote.codigo}</span></div>
@@ -281,14 +473,15 @@ async function verificarPacoteAtivo() {
 
                 } else if (!pacoteEstaAtivo || sessoesRestantes <= 0) {
                     // PACOTE ESGOTADO OU DESATIVADO
-                    avisoDiv.classList.add('aviso-danger');
+                    avisoDiv.classList.remove('aviso-w-pac')
+                    avisoDiv.classList.add('aviso-c-pac');
 
                     if (mensagemPacote) {
                         const motivo = !pacoteEstaAtivo ? "DESATIVADO" : "ESGOTADO";
                         mensagemPacote.innerHTML =
                             `<div class="pacote-info esgotado">
                                 <div class="pacote-header">
-                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <i class="fas fa-exclamation-triangle aviso-icon"></i>
                                     <strong>PACOTE ${motivo}</strong>
                                 </div>
                                 <div class="pacote-detalhes">
@@ -322,16 +515,17 @@ async function verificarPacoteAtivo() {
         } else {
             // Caso 2: Nenhum pacote ativo
             if (avisoDiv) {
-                avisoDiv.classList.remove('aviso-premium', 'aviso-danger');
-                avisoDiv.classList.add('aviso-warning');
+                 
+                avisoDiv.classList.remove('aviso-c-pac');
+                avisoDiv.classList.add('aviso-w-pac');
                 avisoDiv.style.display = 'block';
 
                 if (mensagemPacote) {
                     mensagemPacote.innerHTML =
                         `<div class="pacote-info sem-pacote">
                             <div class="pacote-header">
-                                <i class="fas fa-info-circle"></i>
-                                <strong>NENHUM PACOTE ATIVO</strong>
+                                <i class="fas fa-info-circle aviso-icon"></i>
+                                <strong>Nenhum pacote ativo detectado!</strong>
                             </div>
                             <div class="pacote-detalhes">
                                 <div>Este paciente não possui pacotes ativos no momento.</div>
@@ -342,13 +536,31 @@ async function verificarPacoteAtivo() {
                         </div>`;
                 }
 
-                // Desabilita o botão
                 if (usarPacoteBtn) {
-                    usarPacoteBtn.disabled = true;
-                    usarPacoteBtn.style.opacity = '0.5';
-                    usarPacoteBtn.style.cursor = 'not-allowed';
-                    usarPacoteBtn.textContent = 'Sem pacote ativo';
-                    usarPacoteBtn.onclick = null;
+ 
+                    usarPacoteBtn.textContent = 'Criar Novo Pacote';
+                    usarPacoteBtn.onclick = function() {
+                        // Limpa todos os avisos
+                        limparAvisos();
+                        
+                        // Mostra mensagem no div sem_pacote
+                        mostrarMensagemSemPacote('Criando novo pacote');
+                        
+                        // Opcional: focar no campo de seleção de serviço
+                        const servicoSelect = document.getElementById('pacotesInput');
+                        if (servicoSelect) {
+                            servicoSelect.focus();
+                        }
+                        
+                        // Opcional: marcar tipo de agendamento como "novo"
+                        const radioNovo = document.querySelector('input[name="tipo_agendamento"][value="novo"]');
+                        if (radioNovo) {
+                            radioNovo.checked = true;
+                            if (radioNovo.dispatchEvent) {
+                                radioNovo.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    };
                 }
             }
         }
@@ -437,12 +649,19 @@ function verificarSaldosDesmarcacoesComDetalhes(saldos) {
     if (mensagens.length > 0) {
         if (mensagemDesmarcacoes) {
             mensagemDesmarcacoes.innerHTML = `
-                <div style="margin-bottom: 10px;">
-                    <strong>Saldo de Desmarcações:</strong>
+                <div class="pacote-header">
+                    <i class="fas fa-check-circle aviso-icon"></i>
+                    <strong>Saldos de sessões desmarcadas detectados!</strong>
                 </div>
-                <div>
-                    ${mensagens.join('<br>')}
+               
+                <div class="pacote-detalhes">
+                    ${mensagens.map(mensagem => {
+ 
+                        return `<div>${mensagem}</div>`;
+ 
+                    }).join('')}
                 </div>
+
             `;
         }
         if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'block';
@@ -564,7 +783,7 @@ function verificarSaldosDesmarcacoes(saldos) {
     if ((saldos.desistencia || 0) > 0) mensagens.push(`❌ D: ${saldos.desistencia}`);
     if ((saldos.desistencia_remarcacao || 0) > 0) mensagens.push(`⚠ DCR: ${saldos.desistencia_remarcacao}`);
     if ((saldos.falta_remarcacao || 0) > 0) mensagens.push(`⚠ FCR: ${saldos.falta_remarcacao}`);
-    if ((saldos.falta_cobrada || 0) > 0) mensagens.push(`❌ FC: ${saldos.falta_cobrada}`);
+    
 
     if (mensagens.length > 0) {
         if (mensagemDesmarcacoes) {
@@ -634,9 +853,10 @@ function configurarSidebar() {
 
     if (closeBtn && sidebar) {
         closeBtn.addEventListener('click', () => {
-
+            limparTudo()
             sidebar.classList.remove('active');
             sidebar.setAttribute('hidden', '');
+            
 
             document.body.classList.remove('modal-open');
         });
@@ -1543,3 +1763,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
+ 

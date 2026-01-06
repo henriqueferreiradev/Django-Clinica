@@ -616,8 +616,6 @@ def criar_agendamento(request):
     return redirect('confirmacao_agendamento', agendamento_id=ultimo_agendamento.id)
 
 
-
-
 def verificar_pacotes_ativos(request, paciente_id):
     # Filtra apenas pacotes ativos e não vencidos
     pacotes = PacotePaciente.objects.filter(
@@ -651,34 +649,71 @@ def verificar_pacotes_ativos(request, paciente_id):
             'esta_vencido': hasattr(pacote, 'data_vencimento') and pacote.data_vencimento and pacote.data_vencimento < hoje
         })
     
-    # Buscar configurações de validade
+    # Buscar configurações de validade do banco - USANDO MINÚSCULO
+    validades = {}
+    
     try:
         from core.models import ValidadeReposicao
-        validades = {
-            config.tipo_reposicao: config.dias_validade
-            for config in ValidadeReposicao.objects.filter(ativo=True)
-        }
+        
+        # Busca todas as configurações ativas
+        configuracoes = ValidadeReposicao.objects.filter(ativo=True)
+        
+        print(f"DEBUG: Encontradas {configuracoes.count()} configurações no banco")
+        
+        # USANDO O VALOR EXATO COMO ESTÁ NO BANCO (minúsculo)
+        for config in configuracoes:
+            print(f"DEBUG: Config '{config.tipo_reposicao}' = {config.dias_validade} dias")
+            # Usa o valor exatamente como está no banco
+            validades[config.tipo_reposicao] = config.dias_validade
+        
+        if not validades:
+            print("ERRO: Nenhuma configuração encontrada no banco!")
+            return JsonResponse({
+                "error": "Configurações de validade não encontradas no banco",
+                "tem_pacote_ativo": False,
+                "pacotes": [],
+                "saldos": {}
+            }, status=500)
+            
+        print(f"DEBUG: Validades carregadas: {validades}")
+            
+    except ImportError as e:
+        print(f"ERRO: Não conseguiu importar o modelo ValidadeReposicao: {e}")
+        return JsonResponse({
+            "error": f"Erro ao importar modelo: {str(e)}",
+            "tem_pacote_ativo": False,
+            "pacotes": [],
+            "saldos": {}
+        }, status=500)
     except Exception as e:
-        print(f"Erro ao buscar validades: {e}")
-        # Fallback padrão
-        validades = {
-            'D': 90,
-            'DCR': 90,
-            'FCR': 30
-        }
+        print(f"ERRO ao buscar validades: {e}")
+        return JsonResponse({
+            "error": f"Erro ao buscar configurações: {str(e)}",
+            "tem_pacote_ativo": False,
+            "pacotes": [],
+            "saldos": {}
+        }, status=500)
     
-    # Mapeamento status -> tipo
+    # Mapeamento status -> tipo (TUDO EM MINÚSCULO)
     status_para_tipo = {
-        'desistencia': 'D',
-        'desistencia_remarcacao': 'DCR',
-        'falta_remarcacao': 'FCR'
+        'desistencia': 'd',           # minúsculo
+        'desistencia_remarcacao': 'dcr',  # minúsculo  
+        'falta_remarcacao': 'fcr'     # minúsculo
     }
     
     saldos_com_validade = {}
     
     # Para cada tipo de desmarcação
     for status, tipo in status_para_tipo.items():
-        dias_validade = validades.get(tipo, 90 if tipo in ['D', 'DCR'] else 30)
+        # PEGA OS DIAS DO BANCO - usando minúsculo
+        if tipo not in validades:
+            print(f"ERRO: Tipo '{tipo}' não encontrado nas configurações do banco!")
+            print(f"DEBUG: Configurações disponíveis: {list(validades.keys())}")
+            continue  # Pula este tipo
+            
+        dias_validade = validades[tipo]  # Valor do banco
+        
+        print(f"DEBUG: {status} -> tipo '{tipo}' -> {dias_validade} dias")
         
         # Busca agendamentos não repostos deste status
         agendamentos = Agendamento.objects.filter(
@@ -686,7 +721,7 @@ def verificar_pacotes_ativos(request, paciente_id):
             pacote__isnull=False,
             status=status,
             foi_reposto=False  
-        ).order_by('data_desmarcacao' if tipo != 'FCR' else 'data')
+        ).order_by('data_desmarcacao' if tipo != 'fcr' else 'data')
         
         # FILTRAR SÓ OS NÃO VENCIDOS
         agendamentos_nao_vencidos = []
@@ -708,7 +743,9 @@ def verificar_pacotes_ativos(request, paciente_id):
         # Informações de validade
         info_validade = {
             'quantidade': quantidade,
-            'dias_validade': dias_validade
+            'dias_validade': dias_validade,
+            'tipo': tipo,  # minúsculo
+            'configurado_no_banco': True
         }
         
         # Adiciona info da mais próxima de vencer
@@ -744,7 +781,14 @@ def verificar_pacotes_ativos(request, paciente_id):
         "tem_pacote_ativo": len(pacotes_nao_vencidos) > 0,
         "pacotes": pacotes_nao_vencidos, 
         "saldos": saldos_com_validade,
+        "config_validades": validades,
+        "debug": {
+            "total_configs": len(validades),
+            "configs": validades
+        }
     })
+    
+    
 def listar_agendamentos(filtros=None, query=None):
     filtros = filtros or {}
     paciente = filtros.get('')

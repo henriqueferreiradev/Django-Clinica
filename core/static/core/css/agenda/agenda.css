@@ -623,7 +623,8 @@ body {
 
 .aviso-premium,
 #pacote_atual,
-#info_reposicao {
+#info_reposicao,
+#sem_pacote {
     padding: var(--espaco-md);
     border-radius: var(--borda-radius);
     margin-bottom: var(--espaco-md);
@@ -635,7 +636,8 @@ body {
 }
 
 #pacote_atual,
-#info_reposicao {
+#info_reposicao,
+#sem_pacote {
     display: none;
 }
 
@@ -644,7 +646,7 @@ body {
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
 }
 
-#aviso-pacote,
+.aviso-c-pac,
 #pacote_atual {
     background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
     border-left: 4px solid var(--verde-sucesso);
@@ -656,12 +658,19 @@ body {
     border-left: 4px solid var(--vermelho-alerta);
 }
 
-aviso-warning {
+#sem_pacote, .aviso-w-pac {
     background: linear-gradient(to right,
-            rgba(249, 115, 22, 0.12),
-            rgba(249, 115, 22, 0.05));
-    border-left: 4px solid #f97316;
+            rgba(59, 130, 246, 0.12),
+            rgba(59, 130, 246, 0.05));
+    border-left: 4px solid #3b82f6;
 }
+.pacote-header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+}
+
 
 #mensagem-beneficio strong {
     display: inline;
@@ -678,14 +687,16 @@ aviso-warning {
     flex-shrink: 0;
 }
 
-#aviso-pacote .aviso-icon {
+.aviso-premium .aviso-c-pac .aviso-icon {
     color: var(--verde-sucesso);
 }
 
 #aviso-desmarcacoes .aviso-icon {
     color: var(--vermelho-alerta);
 }
-
+.aviso-w-pac .aviso-icon {
+    color: #3b82f6;
+}
 
 .aviso-premium strong {
     display: block;
@@ -696,9 +707,11 @@ aviso-warning {
 .aviso-premium span {
     font-size: 0.9rem;
     display: block;
-    margin-bottom: 10px;
+   
 }
-
+.pacote-aviso {
+    margin-bottom: 12px;
+}
 .btn-premium {
     padding: 10px 20px;
     border: none;
@@ -711,7 +724,39 @@ aviso-warning {
     gap: 8px;
     font-size: 0.9rem;
 }
+.pacote-detalhes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 12px 0 16px 0;
+}
 
+.pacote-detalhes > div {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.pacote-detalhes .label {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pacote-detalhes .valor {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.pacote-detalhes .valor.disponivel {
+    color: var(--verde-sucesso);
+}
 #usar-pacote-btn {
     background: var(--verde-sucesso);
     color: var(--branco);
@@ -1027,46 +1072,11 @@ select.input-s {
 }
 
 .checkbox-option {
-    display: flex;
-    align-items: center;
-    gap: var(--espaco-xs);
-    cursor: pointer;
-    padding: var(--espaco-sm) 0;
+    padding:  0;
+ 
 }
 
-.checkbox-option input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--roxoPrincipal);
-    border-radius: px;
-    background: transparent;
-    display: grid;
-    place-content: center;
-    cursor: pointer;
-    padding: .5em;
-}
-
-
-.checkbox-option input[type="checkbox"]::before {
-    content: "";
-    width: 12px;
-    height: 12px;
-    background: #fff;
-    transform: scale(0);
-    transition: transform .12s ease-in-out;
-    clip-path: polygon(14% 44%, 0 60%, 45% 100%, 100% 18%, 80% 0, 43% 62%);
-}
-
-.checkbox-option input[type="checkbox"]:checked::before {
-    transform: scale(1);
-}
-
-.checkbox-option input[type="checkbox"]:focus-visible {
-    outline: 2px solid var(--roxoPrincipal);
-    outline-offset: 2px;
-}
+ 
 
 @media (max-width: 768px) {
     .agendamento_div {

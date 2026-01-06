@@ -793,7 +793,7 @@ class PacotePaciente(models.Model):
  
     @property
     def sessoes_realizadas(self):
-        return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
+        return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada', 'desistencia_remarcacao','falta_remarcacao' ,'desistencia']).count()
 
     def sessoes_agendadas(self):
         return self.agendamento_set.filter(status__in=['agendado', 'finalizado', 'falta_cobrada']).count()
@@ -822,6 +822,8 @@ class PacotePaciente(models.Model):
     
     def __str__(self):
         return f"Pacote {self.codigo} Valor restante {self.valor_restante} - {self.paciente} "
+
+
 class Agendamento(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     servico = models.ForeignKey(Servico, null=True, blank=True, on_delete=models.SET_NULL)
