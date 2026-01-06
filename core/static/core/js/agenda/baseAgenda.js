@@ -1239,38 +1239,38 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-    // Elementos do formulário
-    const dataInput = document.querySelector('input[name="data"]');
-    const horaInicioInput = document.querySelector('input[name="hora_inicio"]');
-    const horaFimInput = document.querySelector('input[name="hora_fim"]');
-    const form = document.querySelector('form[action*="criar_agendamento"]');
-    
-    let configClinica = null;
-    
-    // Função para buscar configurações da clínica
-    async function carregarConfigClinica() {
-        try {
-            const response = await fetch('/api/config-agenda/');
-            if (response.ok) {
-                configClinica = await response.json();
-                console.log('Configurações carregadas:', configClinica);
-                
-                // Mostra informações na tela
-                mostrarInfoConfig();
-                
-                // Adiciona validação em tempo real
-                adicionarValidacaoTempoReal();
-            }
-        } catch (error) {
-            console.error('Erro ao carregar configurações:', error);
+// Elementos do formulário
+const dataInput = document.querySelector('input[name="data"]');
+const horaInicioInput = document.querySelector('input[name="hora_inicio"]');
+const horaFimInput = document.querySelector('input[name="hora_fim"]');
+const form = document.querySelector('form[action*="criar_agendamento"]');
+
+let configClinica = null;
+
+// Função para buscar configurações da clínica
+async function carregarConfigClinica() {
+    try {
+        const response = await fetch('/api/config-agenda/');
+        if (response.ok) {
+            configClinica = await response.json();
+            console.log('Configurações carregadas:', configClinica);
+
+            // Mostra informações na tela
+            mostrarInfoConfig();
+
+            // Adiciona validação em tempo real
+            adicionarValidacaoTempoReal();
         }
+    } catch (error) {
+        console.error('Erro ao carregar configurações:', error);
     }
-    
-    // Função para mostrar informações das configurações
-    function mostrarInfoConfig() {
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'config-info-alert';
-        infoDiv.style.cssText = `
+}
+
+// Função para mostrar informações das configurações
+function mostrarInfoConfig() {
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'config-info-alert';
+    infoDiv.style.cssText = `
             background: #f8f9fa;
             border-left: 4px solid #007bff;
             padding: 10px 15px;
@@ -1279,92 +1279,92 @@ function getCookie(name) {
             font-size: 14px;
             color: #333;
         `;
-        
-        infoDiv.innerHTML = `
+
+    infoDiv.innerHTML = `
             <i class='bx bx-info-circle' style="color: #007bff; margin-right: 8px;"></i>
             <strong>Horário da Clínica:</strong> ${configClinica.dias_formatados} 
             das ${configClinica.horario_abertura} às ${configClinica.horario_fechamento}
         `;
-        
-        // Insere após o título ou em algum lugar visível
-        const titulo = document.querySelector('.form-header h2');
-        if (titulo) {
-            titulo.parentNode.insertBefore(infoDiv, titulo.nextSibling);
-        }
-    }
-        
-    function parseDataLocal(dataStr) {
-        // Formato esperado: "YYYY-MM-DD"
-        const [ano, mes, dia] = dataStr.split('-').map(Number);
-        // Cria data LOCAL (sem problemas de fuso)
-        return new Date(ano, mes - 1, dia); // Mês é 0-indexed
-    }
 
-    // FUNÇÃO VALIDAR DIA CORRIGIDA
-    function validarDia(dataStr) {
-        if (!configClinica || !dataStr) return true;
-        
-        const data = parseDataLocal(dataStr);
-        
-        // Mapeamento CORRETO para JavaScript
-        const diasMap = {
-            0: 'domingo',   // 0 = Domingo
-            1: 'segunda',   // 1 = Segunda-feira
-            2: 'terca',     // 2 = Terça-feira
-            3: 'quarta',    // 3 = Quarta-feira
-            4: 'quinta',    // 4 = Quinta-feira
-            5: 'sexta',     // 5 = Sexta-feira
-            6: 'sabado'     // 6 = Sábado
-        };
-        
-        const diaNumero = data.getDay();
-        const diaSemana = diasMap[diaNumero];
-        
-        console.log(`DEBUG validarDia: ${dataStr} -> dia ${diaNumero} (${diaSemana})`);
-        return configClinica.dias_funcionamento.includes(diaSemana);
+    // Insere após o título ou em algum lugar visível
+    const titulo = document.querySelector('.form-header h2');
+    if (titulo) {
+        titulo.parentNode.insertBefore(infoDiv, titulo.nextSibling);
     }
+}
 
-    // FUNÇÃO GET NOME DIA CORRIGIDA
-    function getNomeDia(dataStr) {
-        const data = parseDataLocal(dataStr);
-        
-        const diasNomes = {
-            0: 'Domingo',
-            1: 'Segunda-feira',
-            2: 'Terça-feira',
-            3: 'Quarta-feira',
-            4: 'Quinta-feira',
-            5: 'Sexta-feira',
-            6: 'Sábado'
-        };
-        
-        const diaNumero = data.getDay();
-        return diasNomes[diaNumero] || '';
-    }
-        // Função para validar horário
-    function validarHorario(horarioStr) {
-        if (!configClinica || !horarioStr) return true;
-        
-        const [hora, minuto] = horarioStr.split(':').map(Number);
-        const [aberturaHora, aberturaMin] = configClinica.horario_abertura.split(':').map(Number);
-        const [fechamentoHora, fechamentoMin] = configClinica.horario_fechamento.split(':').map(Number);
-        
-        const horarioMinutos = hora * 60 + minuto;
-        const aberturaMinutos = aberturaHora * 60 + aberturaMin;
-        const fechamentoMinutos = fechamentoHora * 60 + fechamentoMin;
-        
-        return horarioMinutos >= aberturaMinutos && horarioMinutos <= fechamentoMinutos;
-    }
-    
-    // Função para mostrar erro
-    function mostrarErro(elemento, mensagem) {
-        // Remove erro anterior
-        removerErro(elemento);
-        
-        const erroDiv = document.createElement('div');
-        erroDiv.className = 'erro-validacao';
-        erroDiv.textContent = mensagem;
-        erroDiv.style.cssText = `
+function parseDataLocal(dataStr) {
+    // Formato esperado: "YYYY-MM-DD"
+    const [ano, mes, dia] = dataStr.split('-').map(Number);
+    // Cria data LOCAL (sem problemas de fuso)
+    return new Date(ano, mes - 1, dia); // Mês é 0-indexed
+}
+
+// FUNÇÃO VALIDAR DIA CORRIGIDA
+function validarDia(dataStr) {
+    if (!configClinica || !dataStr) return true;
+
+    const data = parseDataLocal(dataStr);
+
+    // Mapeamento CORRETO para JavaScript
+    const diasMap = {
+        0: 'domingo',   // 0 = Domingo
+        1: 'segunda',   // 1 = Segunda-feira
+        2: 'terca',     // 2 = Terça-feira
+        3: 'quarta',    // 3 = Quarta-feira
+        4: 'quinta',    // 4 = Quinta-feira
+        5: 'sexta',     // 5 = Sexta-feira
+        6: 'sabado'     // 6 = Sábado
+    };
+
+    const diaNumero = data.getDay();
+    const diaSemana = diasMap[diaNumero];
+
+    console.log(`DEBUG validarDia: ${dataStr} -> dia ${diaNumero} (${diaSemana})`);
+    return configClinica.dias_funcionamento.includes(diaSemana);
+}
+
+// FUNÇÃO GET NOME DIA CORRIGIDA
+function getNomeDia(dataStr) {
+    const data = parseDataLocal(dataStr);
+
+    const diasNomes = {
+        0: 'Domingo',
+        1: 'Segunda-feira',
+        2: 'Terça-feira',
+        3: 'Quarta-feira',
+        4: 'Quinta-feira',
+        5: 'Sexta-feira',
+        6: 'Sábado'
+    };
+
+    const diaNumero = data.getDay();
+    return diasNomes[diaNumero] || '';
+}
+// Função para validar horário
+function validarHorario(horarioStr) {
+    if (!configClinica || !horarioStr) return true;
+
+    const [hora, minuto] = horarioStr.split(':').map(Number);
+    const [aberturaHora, aberturaMin] = configClinica.horario_abertura.split(':').map(Number);
+    const [fechamentoHora, fechamentoMin] = configClinica.horario_fechamento.split(':').map(Number);
+
+    const horarioMinutos = hora * 60 + minuto;
+    const aberturaMinutos = aberturaHora * 60 + aberturaMin;
+    const fechamentoMinutos = fechamentoHora * 60 + fechamentoMin;
+
+    return horarioMinutos >= aberturaMinutos && horarioMinutos <= fechamentoMinutos;
+}
+
+// Função para mostrar erro
+function mostrarErro(elemento, mensagem) {
+    // Remove erro anterior
+    removerErro(elemento);
+
+    const erroDiv = document.createElement('div');
+    erroDiv.className = 'erro-validacao';
+    erroDiv.textContent = mensagem;
+    erroDiv.style.cssText = `
             color: #dc3545;
             font-size: 12px;
             margin-top: 5px;
@@ -1373,129 +1373,129 @@ function getCookie(name) {
             border-radius: 4px;
             border: 1px solid #f5c6cb;
         `;
-        
-        elemento.parentNode.appendChild(erroDiv);
-        elemento.style.borderColor = '#dc3545';
+
+    elemento.parentNode.appendChild(erroDiv);
+    elemento.style.borderColor = '#dc3545';
+}
+
+// Função para remover erro
+function removerErro(elemento) {
+    const erroDiv = elemento.parentNode.querySelector('.erro-validacao');
+    if (erroDiv) {
+        erroDiv.remove();
     }
-    
-    // Função para remover erro
-    function removerErro(elemento) {
-        const erroDiv = elemento.parentNode.querySelector('.erro-validacao');
-        if (erroDiv) {
-            erroDiv.remove();
-        }
-        elemento.style.borderColor = '';
-    }
-    
-    // Função para validar em tempo real
-    function adicionarValidacaoTempoReal() {
-        if (dataInput) {
-            dataInput.addEventListener('change', function() {
-                console.log(`Data alterada: ${this.value}`);
-                
-                if (!validarDia(this.value)) {
-                    const nomeDia = getNomeDia(this.value);
-                    mostrarErro(this, `⚠️ A clínica não funciona às ${nomeDia}s`);
-                } else {
-                    removerErro(this);
-                }
-                
-                // DEBUG adicional
-                const dataTeste = parseDataLocal(this.value);
-                console.log(`DEBUG: Input=${this.value}, getDay()=${dataTeste.getDay()}, Nome=${getNomeDia(this.value)}`);
-            });
-        }
-        
-        if (horaInicioInput) {
-            horaInicioInput.addEventListener('change', function() {
-                if (!validarHorario(this.value)) {
-                    mostrarErro(this, `⚠️ Fora do horário de funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
-                } else {
-                    removerErro(this);
-                }
-            });
-        }
-        
-        if (horaFimInput) {
-            horaFimInput.addEventListener('change', function() {
-                if (!validarHorario(this.value)) {
-                    mostrarErro(this, `⚠️ Fora do horário de funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
-                } else {
-                    removerErro(this);
-                }
-                
-                // Valida se horário fim é depois do início
-                if (horaInicioInput && horaInicioInput.value && this.value) {
-                    const inicio = horaInicioInput.value.split(':').map(Number);
-                    const fim = this.value.split(':').map(Number);
-                    
-                    const inicioMin = inicio[0] * 60 + inicio[1];
-                    const fimMin = fim[0] * 60 + fim[1];
-                    
-                    if (fimMin <= inicioMin) {
-                        mostrarErro(this, '⚠️ Horário de término deve ser após o início');
-                    }
-                }
-            });
-        }
-    }
-    
-    // Validação antes do envio do formulário
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            let hasError = false;
-            
-            if (configClinica) {
-                // Valida data
-                if (dataInput && dataInput.value) {
-                    if (!validarDia(dataInput.value)) {
-                        const data = new Date(dataInput.value);
-                        const diaNome = data.toLocaleDateString('pt-BR', { weekday: 'long' });
-                        mostrarErro(dataInput, `A clínica não funciona às ${diaNome}s`);
-                        hasError = true;
-                    }
-                }
-                
-                // Valida horário início
-                if (horaInicioInput && horaInicioInput.value) {
-                    if (!validarHorario(horaInicioInput.value)) {
-                        mostrarErro(horaInicioInput, `Horário fora do funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
-                        hasError = true;
-                    }
-                }
-                
-                // Valida horário fim
-                if (horaFimInput && horaFimInput.value) {
-                    if (!validarHorario(horaFimInput.value)) {
-                        mostrarErro(horaFimInput, `Horário fora do funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
-                        hasError = true;
-                    }
-                    
-                    // Valida se fim > início
-                    if (horaInicioInput && horaInicioInput.value) {
-                        const inicio = horaInicioInput.value.split(':').map(Number);
-                        const fim = horaFimInput.value.split(':').map(Number);
-                        
-                        const inicioMin = inicio[0] * 60 + inicio[1];
-                        const fimMin = fim[0] * 60 + fim[1];
-                        
-                        if (fimMin <= inicioMin) {
-                            mostrarErro(horaFimInput, 'Horário de término deve ser após o horário de início');
-                            hasError = true;
-                        }
-                    }
-                }
+    elemento.style.borderColor = '';
+}
+
+// Função para validar em tempo real
+function adicionarValidacaoTempoReal() {
+    if (dataInput) {
+        dataInput.addEventListener('change', function () {
+            console.log(`Data alterada: ${this.value}`);
+
+            if (!validarDia(this.value)) {
+                const nomeDia = getNomeDia(this.value);
+                mostrarErro(this, `⚠️ A clínica não funciona às ${nomeDia}s`);
+            } else {
+                removerErro(this);
             }
-            
-            if (hasError) {
-                e.preventDefault();
-                alert('Por favor, corrija os erros antes de enviar o formulário.');
+
+            // DEBUG adicional
+            const dataTeste = parseDataLocal(this.value);
+            console.log(`DEBUG: Input=${this.value}, getDay()=${dataTeste.getDay()}, Nome=${getNomeDia(this.value)}`);
+        });
+    }
+
+    if (horaInicioInput) {
+        horaInicioInput.addEventListener('change', function () {
+            if (!validarHorario(this.value)) {
+                mostrarErro(this, `⚠️ Fora do horário de funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
+            } else {
+                removerErro(this);
             }
         });
     }
-    
-    // Carrega as configurações quando a página carrega
-    carregarConfigClinica();
+
+    if (horaFimInput) {
+        horaFimInput.addEventListener('change', function () {
+            if (!validarHorario(this.value)) {
+                mostrarErro(this, `⚠️ Fora do horário de funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
+            } else {
+                removerErro(this);
+            }
+
+            // Valida se horário fim é depois do início
+            if (horaInicioInput && horaInicioInput.value && this.value) {
+                const inicio = horaInicioInput.value.split(':').map(Number);
+                const fim = this.value.split(':').map(Number);
+
+                const inicioMin = inicio[0] * 60 + inicio[1];
+                const fimMin = fim[0] * 60 + fim[1];
+
+                if (fimMin <= inicioMin) {
+                    mostrarErro(this, '⚠️ Horário de término deve ser após o início');
+                }
+            }
+        });
+    }
+}
+
+// Validação antes do envio do formulário
+if (form) {
+    form.addEventListener('submit', function (e) {
+        let hasError = false;
+
+        if (configClinica) {
+            // Valida data
+            if (dataInput && dataInput.value) {
+                if (!validarDia(dataInput.value)) {
+                    const data = new Date(dataInput.value);
+                    const diaNome = data.toLocaleDateString('pt-BR', { weekday: 'long' });
+                    mostrarErro(dataInput, `A clínica não funciona às ${diaNome}s`);
+                    hasError = true;
+                }
+            }
+
+            // Valida horário início
+            if (horaInicioInput && horaInicioInput.value) {
+                if (!validarHorario(horaInicioInput.value)) {
+                    mostrarErro(horaInicioInput, `Horário fora do funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
+                    hasError = true;
+                }
+            }
+
+            // Valida horário fim
+            if (horaFimInput && horaFimInput.value) {
+                if (!validarHorario(horaFimInput.value)) {
+                    mostrarErro(horaFimInput, `Horário fora do funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
+                    hasError = true;
+                }
+
+                // Valida se fim > início
+                if (horaInicioInput && horaInicioInput.value) {
+                    const inicio = horaInicioInput.value.split(':').map(Number);
+                    const fim = horaFimInput.value.split(':').map(Number);
+
+                    const inicioMin = inicio[0] * 60 + inicio[1];
+                    const fimMin = fim[0] * 60 + fim[1];
+
+                    if (fimMin <= inicioMin) {
+                        mostrarErro(horaFimInput, 'Horário de término deve ser após o horário de início');
+                        hasError = true;
+                    }
+                }
+            }
+        }
+
+        if (hasError) {
+            e.preventDefault();
+            alert('Por favor, corrija os erros antes de enviar o formulário.');
+        }
+    });
+}
+
+// Carrega as configurações quando a página carrega
+carregarConfigClinica();
 // Inicializar eventos quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function () {
     // Adicionar evento aos botões de salvar status
