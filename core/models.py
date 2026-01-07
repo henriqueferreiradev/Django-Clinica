@@ -141,6 +141,7 @@ TIPO_REPOSICAO_CHOICES = [
     ('dcr', 'Reposição DCR'),
     ('fcr', 'Reposição FCR'),
 ]
+
 MIDIA_ESCOLHA = [
     ('indicacao', 'Indicação'),
     ('redes_sociais', 'Redes Sociais (Instagram, Facebook etc.)'),
@@ -661,6 +662,28 @@ class ValidadeReposicao(models.Model):
     
     def __str__(self):
         return f"{self.get_tipo_reposicao_display()}: {self.dias_validade} dias"
+    
+    
+class ValidadeBeneficios(models.Model):
+    TIPO_CHOICES = [
+        ('beneficio', 'Benefício Mensal (VIP/Premium)'),
+        ('aniversario', 'Benefício de Aniversário'),
+    ]
+    
+    tipo_beneficio = models.CharField(max_length=20, choices=TIPO_CHOICES, unique=True)
+    dias_validade = models.PositiveIntegerField(help_text="Número de dias de validade após concessão")
+    ativo = models.BooleanField(default=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Validade de Benefício"
+        verbose_name_plural = "Validades de Benefícios"
+        ordering = ['tipo_beneficio']
+    
+    def __str__(self):
+        return f"{self.get_tipo_beneficio_display()} - {self.dias_validade} dias"
+    
     
 class Servico(models.Model):
     nome = models.CharField(max_length=100)

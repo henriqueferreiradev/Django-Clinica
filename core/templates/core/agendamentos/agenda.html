@@ -52,7 +52,12 @@
                 {% if ag.codigo|slice:":3" == "REP" %}
                     <span class="sessao reposicao"><i class="fa-solid fa-rotate-left"></i>Sessão de Reposição | {{ ag.codigo }}</span>
                 {% elif ag.codigo|slice:":3" == "BEN" %}
-                    <span class="sessao beneficio"><i class="fa-solid fa-gift"></i>Sessão de Benefício | {{ ag.codigo }}</span>
+                    <span class="sessao beneficio"><i class="fa-solid fa-gift"></i>
+                    {% if "beneficio:sessao_livre" in ag.tags %}
+                    Sessão de Benefício (Sessão Livre) | {{ ag.codigo }}
+                    {% else %}
+                    Sessão de Aniversário (Sessão Relaxante) | {{ ag.codigo }}</span>
+                    {% endif %}
                     {% else %}
                 <span class="sessao normal">
                     <i class="fa-solid fa-calendar-check"></i>Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
@@ -196,6 +201,7 @@
     
                         <option value="beneficio_sessao_livre" class="servico-beneficio" data-valor="0.00" hidden>Sessão Livre (Benefício)</option>
                         <option value="beneficio_relaxante" class="servico-beneficio" data-valor="0.00" hidden>Sessão Relaxante (Benefício)</option>
+                        <option value="beneficio_sessao_aniversario" class="servico-beneficio" data-valor="0.00" hidden>Sessão Relaxante de aniversário (Aniversário)</option>
                     </select>
                 </div>
                 <div class="formRow cols-2">

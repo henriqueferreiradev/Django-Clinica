@@ -668,7 +668,7 @@
                 <!-- Aba Agenda - Adicionar esta seção após as exceções -->
         <div class="form">
             <div class="form-header" onclick="toggleFormSection(this)">
-                <h2><i class='bx bx-calendar-repeat'></i> Políticas de Reposição</h2>
+                <h2><i class='bx bx-calendar-repeat'></i> Configurações de Validade</h2>
                 <button class="form-toggle">
                     <i class='bx bx-chevron-down'></i>
                 </button>
@@ -676,11 +676,11 @@
             
             <div class="form-content">
                 <div class="config-info">
-                    <i class='bx bx-info-circle'></i> Configure as regras para reposição de sessões perdidas.
+                    <i class='bx bx-info-circle'></i> Configure as regras para reposição de sessões perdidas e para beneficios VIP/PREMIUM.
                 </div>
                 <form method="POST">
                     {% csrf_token %}
-                    <input type="hidden" name="tipo" value="config_reposicao" />
+                    <input type="hidden" name="tipo" value="config_validade" />
                     <div class="form-grid">
                         <div class="form-group">
                             <label><i class='bx bx-calendar'></i> Validade da reposição - D (dias)</label>
@@ -707,8 +707,28 @@
                             <small>Falta com Culpa da Clínica</small>
                         </div>
                     </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class='bx bx-calendar'></i> Validade dos Benefícios (dias)</label>
+                            <input class="input-field" type="number" name="beneficios" 
+                                min="1" max="365" 
+                                value="{{ validades_beneficios.beneficios.dias_validade|default:'90' }}" 
+                                required>
+                            <small>O tempo abrange os 3 beneficios (sessão livre, desconto, brinde)</small>
+                        </div>
+                        <div class="form-group">
+                            <label><i class='bx bx-time'></i> Validade do bônus de aniversário (dias)</label>
+                            <input class="input-field" type="number" name="aniversario" 
+                                min="1" max="365" 
+                                value="{{ validades_beneficios.aniversario.dias_validade|default:'30' }}" 
+                                required>
+                            <small>Duração do bônus de aniversário</small>
+                        </div>
+    
+                    </div>
+                    
                     <button type="submit" class="btn-submit">
-                        <i class='bx bx-save'></i> Salvar Políticas
+                        <i class='bx bx-save'></i> Salvar Configurações
                     </button>
                 </form>
             </div>

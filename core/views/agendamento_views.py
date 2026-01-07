@@ -288,9 +288,9 @@ def criar_agendamento(request):
     servico = None
     pacote  = None
     tags_extra = ''
-
+    print(beneficio_tipo)
     # 1) Benefício "sessão livre" ou "relaxante" => forçar serviço + pacote BENEF
-    if beneficio_tipo in ('sessao_livre', 'relaxante'):
+    if beneficio_tipo in ('sessao_livre', 'sessao_aniversario'):
         nome_benef = 'Sessão Livre' if beneficio_tipo == 'sessao_livre' else 'Sessão Relaxante'
         servico, _ = Servico.objects.get_or_create(
             nome=nome_benef,
@@ -889,6 +889,7 @@ def listar_agendamentos(filtros=None, query=None):
             'codigo': codigo,
             'is_reposicao': is_reposicao,
             'is_pacote': is_pacote,
+            'tags':ag.tags,
         })
 
     return dados_agrupados

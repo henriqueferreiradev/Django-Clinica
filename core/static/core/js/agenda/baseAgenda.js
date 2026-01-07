@@ -1240,58 +1240,149 @@ async function verificarBeneficiosAtivos(pacienteId) {
         if (!data.tem_beneficio) return;
 
         const box = document.getElementById('aviso-beneficio');
-        const msg = document.getElementById('mensagem-beneficio');
-        const btns = document.getElementById('beneficio-botoes');
-        if (!box || !msg || !btns) return;
+        if (!box) return;
 
-        msg.innerHTML = `Benefícios de <strong>${data.status.toUpperCase()}</strong> disponíveis este mês:`;
-        btns.innerHTML = '';
+        // Criar linhas dos benefícios
+        let linhasHTML = '';
+        let temAniversario = false;
 
         data.beneficios.forEach(b => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-sm';
-            btn.disabled = !!b.usado;
-
-            let iconClass = '';
-            let label = '';
-            let onClickAction = null;
-
+            let icon = '';
+            let texto = '';
+            
             if (b.tipo === 'relaxante') {
-                iconClass = 'fa-solid fa-spa'; // ícone relaxante (FA)
-                label = b.usado ? 'Relaxante (usado)' : 'Usar sessão relaxante';
-                onClickAction = () => selecionarServicoRelaxanteETravarsValor();
+                icon = 'fa-spa';
+                texto = `Sessão Relaxante`;
             }
-            if (b.tipo === 'sessao_livre') {
-                iconClass = 'fa-solid fa-wind'; // ícone livre (FA)
-                label = b.usado ? 'Sessão livre (usada)' : 'Usar sessão livre';
-                onClickAction = () => marcarSessaoLivre();
+            else if (b.tipo === 'sessao_livre') {
+                icon = 'fa-wind';
+                texto = `Sessão Livre`;
             }
-            if (b.tipo === 'desconto') {
-                iconClass = 'fa-solid fa-tag'; // ícone desconto (FA)
-                label = b.usado ? `Desconto ${b.percentual}% (usado)` : `Aplicar ${b.percentual}% de desconto`;
-                onClickAction = () => aplicarDescontoBloqueado(b.percentual);
+            else if (b.tipo === 'desconto') {
+                icon = 'fa-tag';
+                texto = `${b.percentual}% de Desconto`;
             }
-            if (b.tipo === 'brinde') {
-                iconClass = 'fa-solid fa-gift'; // ícone brinde (FA)
-                label = b.usado ? 'Brinde (registrado)' : 'Registrar brinde';
-                onClickAction = () => registrarBrinde();
+            else if (b.tipo === 'brinde') {
+                icon = 'fa-gift';
+                texto = `Brinde`;
+            }
+            else if (b.tipo === 'sessao_aniversario') {
+                icon = 'fa-cake-candles';
+                texto = `Sessão Aniversário 🎂`;
+                temAniversario = true;
             }
 
+            // Formatar data
+            const dataValidade = new Date(b.valido_ate);
+            const dataFormatada = dataValidade.toLocaleDateString('pt-BR');
+            
+            // Determinar status e botão
+            let statusClass = '';
+            let statusText = '';
+            let botaoHTML = '';
+            
+            if (b.usado) {
+                statusClass = 'usado';
+                statusText = 'USADO';
+                botaoHTML = `<button class="btn-premium btn-outline" disabled>
+                               <i class="fas fa-check"></i> Usado
+                             </button>`;
+            } else if (!b.esta_valido) {
+                statusClass = 'expirado';
+                statusText = 'EXPIRADO';
+                botaoHTML = `<button class="btn-premium btn-outline" disabled>
+                               <i class="fas fa-clock"></i> Expirado
+                             </button>`;
+            } else {
+                statusClass = 'disponivel';
+                statusText = 'DISPONÍVEL';
+                botaoHTML = `<button class="btn-premium btn-primary btn-usar-beneficio" 
+                                   data-tipo="${b.tipo}" 
+                                   data-percentual="${b.percentual || ''}">
+                               <i class="fas fa-check-circle"></i> Usar
+                             </button>`;
+            }
 
-            btn.innerHTML = `<i class='${iconClass}'></i> ${label}`;
-            if (onClickAction) btn.onclick = onClickAction;
-
-            btns.appendChild(btn);
+            linhasHTML += `
+                <div class="beneficio-linha ${statusClass} ${b.tipo === 'sessao_aniversario' ? 'beneficio-aniversario' : ''}">
+                    <div class="beneficio-info">
+                        <div class="beneficio-tipo">
+                            <i class="fas ${icon}"></i>
+                            <span class="beneficio-titulo">${texto}</span>
+                        </div>
+                        <div class="beneficio-validade">
+                            <span class="label">Validade:</span>
+                            <span class="valor">${dataFormatada}</span>
+                        </div>
+                    </div>
+                    <div class="beneficio-status ${statusClass}">
+                        ${statusText}
+                    </div>
+                    <div class="beneficio-acao">
+                        ${botaoHTML}
+                    </div>
+                </div>`;
         });
 
+        // Header com status
+        let headerText = `Benefícios ${data.status ? data.status.toUpperCase() : ''}`;
+        let headerIcon = 'fa-gift';
+        
+        if (temAniversario) {
+            headerText += ' 🎂 ANIVERSARIANTE';
+            headerIcon = 'fa-cake-candles';
+        }
+
+        box.innerHTML = `
+            <div class="pacote-info ativo com-beneficios">
+                <div class="pacote-header">
+                    <i class="fas ${headerIcon} aviso-icon"></i>
+                    <strong>${headerText}</strong>
+                </div>
+                <div class="pacote-detalhes beneficios-lista">
+                    ${linhasHTML}
+                </div>
+                <div class="pacote-aviso">
+                    <em>Clique em "Usar" para aproveitar um benefício disponível.</em>
+                </div>
+            </div>`;
+
+        // Adicionar eventos aos botões "Usar"
+        setTimeout(() => {
+            document.querySelectorAll('.btn-usar-beneficio').forEach(btn => {
+                btn.onclick = function() {
+                    const tipo = this.getAttribute('data-tipo');
+                    const percentual = this.getAttribute('data-percentual');
+                    
+                    switch(tipo) {
+                        case 'relaxante':
+                            selecionarServicoRelaxanteETravarsValor();
+                            break;
+                        case 'sessao_livre':
+                        case 'sessao_aniversario':
+                            marcarSessaoLivre(tipo === 'sessao_aniversario' ? 'aniversario' : null);
+                            break;
+                        case 'desconto':
+                            aplicarDescontoBloqueado(parseInt(percentual));
+                            break;
+                        case 'brinde':
+                            registrarBrinde();
+                            break;
+                    }
+                    
+                    // Atualizar visual do botão
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Usando...';
+                    this.disabled = true;
+                    this.className = 'btn-premium btn-outline';
+                };
+            });
+        }, 100);
 
         box.style.display = 'block';
     } catch (e) {
         console.error('Erro ao verificar benefícios:', e);
     }
 }
-
 function selecionarServicoRelaxanteETravarsValor() {
     const servicoSelect = document.getElementById('pacotesInput');
     const servicoHidden = document.getElementById('servico_id_hidden');
@@ -1307,6 +1398,11 @@ function selecionarServicoRelaxanteETravarsValor() {
 function marcarSessaoLivre() {
     document.getElementById('valor_final').value = '0.00';
     document.getElementById('beneficio_tipo').value = 'sessao_livre';
+    
+    if (tipoEspecial === 'aniversario') {
+        // Ex: adicionar observação "SESSÃO DE ANIVERSÁRIO"
+        adicionarObservacao('🎂 Sessão de aniversário - gratuita');
+    }
 }
 
 function aplicarDescontoBloqueado(percent) {
@@ -1320,13 +1416,16 @@ function aplicarDescontoBloqueado(percent) {
 
 async function registrarBrinde() {
     document.getElementById('beneficio_tipo').value = 'brinde';
-    alert('Brinde marcado para este agendamento. Será registrado ao salvar.');
+    mostrarMensagem('Brinde marcado para este agendamento. Será registrado ao salvar.', 'info');
 }
 
 function revelarBeneficioOption(value) {
     const sel = document.getElementById('pacotesInput');
     const opt = sel.querySelector(`option[value="${value}"]`);
-    if (!opt) return;
+    if (!opt) {
+        console.error(`Opção ${value} não encontrada no select!`);
+        return;
+    }
     opt.hidden = false;
     sel.value = value;
     sel.disabled = true;
@@ -1335,16 +1434,39 @@ function revelarBeneficioOption(value) {
 
 function limparBeneficioSelecionado() {
     const sel = document.getElementById('pacotesInput');
-    document.querySelectorAll('.servico-beneficio').forEach(o => { o.hidden = true; });
+    // Esconde TODAS as opções de benefício
+    document.querySelectorAll('.servico-beneficio').forEach(o => { 
+        o.hidden = true; 
+    });
     sel.disabled = false;
     sel.readOnly = false;
     document.getElementById('beneficio_tipo').value = '';
     document.getElementById('beneficio_percentual').value = '';
 }
-
-function marcarSessaoLivre() {
-    revelarBeneficioOption('beneficio_sessao_livre');
-    document.getElementById('beneficio_tipo').value = 'sessao_livre';
+function marcarSessaoLivre(tipoEspecial = null) {
+    // AQUI ESTÁ A MUDANÇA IMPORTANTE:
+    if (tipoEspecial === 'aniversario') {
+        revelarBeneficioOption('beneficio_sessao_aniversario');
+        document.getElementById('beneficio_tipo').value = 'sessao_aniversario';
+        
+        // Mensagem
+        if (typeof mostrarMensagem === 'function') {
+            mostrarMensagem('🎂 Sessão de aniversário ativa!', 'info');
+        }
+        
+        // Observação
+        if (typeof adicionarObservacao === 'function') {
+            adicionarObservacao('🎂 Sessão de aniversário - gratuita');
+        }
+    } else {
+        revelarBeneficioOption('beneficio_sessao_livre');
+        document.getElementById('beneficio_tipo').value = 'sessao_livre';
+        
+        if (typeof mostrarMensagem === 'function') {
+            mostrarMensagem('💨 Sessão livre ativa!', 'info');
+        }
+    }
+    
     document.getElementById('valor_pacote').value = '0.00';
     document.getElementById('valor_final').value = '0.00';
 }
