@@ -371,7 +371,14 @@ def criar_agendamento(request):
                     objeto_id=agendamento_original.id,
                     descricao=f'Agendamento de {agendamento_original.data} reposto via pacote {pacote.codigo}'
                 )
-                
+                if tipo_reposicao == 'dcr':
+                    tipo_reposicao = 'DCR'
+                elif tipo_reposicao == 'fcr':
+                    tipo_reposicao = 'FCR'
+                elif tipo_reposicao == 'd':
+                    tipo_reposicao = 'D'
+                else:
+                    tipo_reposicao = 'Erro!'
                 messages.success(request, f'Reposição criada! Consumido 1 saldo de {tipo_reposicao}.')
             else:
                 messages.warning(request, f'Paciente não possui saldo de {tipo_reposicao} disponível.')
