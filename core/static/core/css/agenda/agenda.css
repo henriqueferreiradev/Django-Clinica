@@ -658,13 +658,15 @@ body {
     border-left: 4px solid var(--vermelho-alerta);
 }
 
-#sem_pacote, .aviso-w-pac {
+#sem_pacote,
+.aviso-w-pac {
     background: linear-gradient(to right,
             rgba(59, 130, 246, 0.12),
             rgba(59, 130, 246, 0.05));
     border-left: 4px solid #3b82f6;
 }
-.pacote-header{
+
+.pacote-header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -694,6 +696,7 @@ body {
 #aviso-desmarcacoes .aviso-icon {
     color: var(--vermelho-alerta);
 }
+
 .aviso-w-pac .aviso-icon {
     color: #3b82f6;
 }
@@ -707,11 +710,13 @@ body {
 .aviso-premium span {
     font-size: 0.9rem;
     display: block;
-   
+
 }
+
 .pacote-aviso {
     margin-bottom: 12px;
 }
+
 .btn-premium {
     padding: 10px 20px;
     border: none;
@@ -724,6 +729,7 @@ body {
     gap: 8px;
     font-size: 0.9rem;
 }
+
 .pacote-detalhes {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -731,7 +737,7 @@ body {
     margin: 12px 0 16px 0;
 }
 
-.pacote-detalhes > div {
+.pacote-detalhes>div {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
@@ -757,6 +763,7 @@ body {
 .pacote-detalhes .valor.disponivel {
     color: var(--verde-sucesso);
 }
+
 #usar-pacote-btn {
     background: var(--verde-sucesso);
     color: var(--branco);
@@ -1072,11 +1079,11 @@ select.input-s {
 }
 
 .checkbox-option {
-    padding:  0;
- 
+    padding: 0;
+
 }
 
- 
+
 
 @media (max-width: 768px) {
     .agendamento_div {
@@ -1744,17 +1751,17 @@ button[type="submit"]:disabled:hover {
         align-items: flex-start;
         gap: 12px;
     }
-    
+
     .beneficio-status {
         margin: 0;
         align-self: flex-start;
     }
-    
+
     .beneficio-acao {
         align-self: stretch;
         text-align: center;
     }
-    
+
     .btn-premium {
         width: 100%;
     }

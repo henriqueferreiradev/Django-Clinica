@@ -126,7 +126,7 @@ function getCookie(name) {
 }
 function limparTudo() {
     console.log('Limpando tudo...');
-    
+
     // 1. Limpar campo de busca e sugestões
     const buscaInput = document.getElementById('busca');
     const sugestoes = document.getElementById('sugestoes');
@@ -135,27 +135,27 @@ function limparTudo() {
         sugestoes.innerHTML = '';
         sugestoes.style.display = 'none';
     }
-    
+
     // 2. Limpar paciente_id
     const pacienteIdInput = document.getElementById('paciente_id');
     if (pacienteIdInput) pacienteIdInput.value = '';
-    
+
     // 3. Limpar avisos de pacote
     const avisoPacote = document.getElementById('aviso-pacote');
     const mensagemPacote = document.getElementById('mensagem-pacote');
     if (avisoPacote) avisoPacote.style.display = 'none';
     if (mensagemPacote) mensagemPacote.innerHTML = '';
-    
+
     // 4. Limpar avisos de desmarcações
     const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
     const mensagemDesmarcacoes = document.getElementById('mensagem-desmarcacoes');
     if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
     if (mensagemDesmarcacoes) mensagemDesmarcacoes.innerHTML = '';
-    
+
     // 5. Limpar avisos de benefício
     const avisoBeneficio = document.getElementById('aviso-beneficio');
     if (avisoBeneficio) avisoBeneficio.style.display = 'none';
-    
+
     // 6. Limpar seleção de serviço
     const servicoSelect = document.getElementById('pacotesInput');
     const servicoHidden = document.getElementById('servico_id_hidden');
@@ -166,7 +166,7 @@ function limparTudo() {
         servicoSelect.value = '';
     }
     if (servicoHidden) servicoHidden.value = '';
-    
+
     // 7. Limpar inputs de valor
     const valorPacote = document.getElementById('valor_pacote');
     const desconto = document.getElementById('desconto');
@@ -174,7 +174,7 @@ function limparTudo() {
     if (valorPacote) valorPacote.value = '';
     if (desconto) desconto.value = '';
     if (valorFinal) valorFinal.value = '';
-    
+
     // 8. Limpar campos de pacote
     const campoPacote = document.getElementById('pacote_codigo');
     const formValor = document.getElementById('formValor');
@@ -187,13 +187,13 @@ function limparTudo() {
         pacoteAtual.textContent = '';
         pacoteAtual.style.display = 'none';
     }
-    
+
     // 9. Limpar campos de benefício
     const beneficioTipo = document.getElementById('beneficio_tipo');
     const beneficioPercentual = document.getElementById('beneficio_percentual');
     if (beneficioTipo) beneficioTipo.value = '';
     if (beneficioPercentual) beneficioPercentual.value = '';
-    
+
     // 10. Resetar tipo de agendamento para "novo"
     const radioNovo = document.querySelector('input[name="tipo_agendamento"][value="novo"]');
     if (radioNovo) {
@@ -203,7 +203,7 @@ function limparTudo() {
             radioNovo.dispatchEvent(new Event('change'));
         }
     }
-    
+
     // 11. Resetar botão de usar pacote
     const usarPacoteBtn = document.getElementById('usar-pacote-btn');
     if (usarPacoteBtn) {
@@ -213,72 +213,72 @@ function limparTudo() {
         usarPacoteBtn.textContent = 'Usar pacote';
         usarPacoteBtn.onclick = null;
     }
-    
+
     // 12. Resetar info de reposição
     const infoReposicao = document.getElementById('info_reposicao');
     if (infoReposicao) infoReposicao.style.display = 'none';
-    
+
     // 13. Resetar label de tipo de sessão
     const tipoSessaoLabel = document.getElementById('tipo_sessao');
     if (tipoSessaoLabel) tipoSessaoLabel.textContent = 'Tipo de sessão';
-    
+
     // 14. Limpar benefício selecionado
     limparBeneficioSelecionado();
-    
+
     // 15. Resetar campos de agendamento recorrente
     const checkRecorrente = document.getElementById('recorrente');
     const divRecorrente = document.getElementById('week-recorrente');
     if (checkRecorrente) checkRecorrente.checked = false;
     if (divRecorrente) divRecorrente.classList.remove('active');
-    
+
     // 16. Resetar botões de benefício
     const beneficioBotoes = document.getElementById('beneficio-botoes');
     if (beneficioBotoes) beneficioBotoes.innerHTML = '';
-    
+
     // 17. Remover erros de validação
     document.querySelectorAll('.erro-validacao').forEach(erro => erro.remove());
-    
+
     // 18. Resetar bordas dos inputs
     document.querySelectorAll('input').forEach(input => {
         input.style.borderColor = '';
     });
-    
+
     // 19. Limpar dados globais
     window.saldosDesmarcacoes = null;
-    
+
     console.log('Limpeza completa!');
 }
 // Função para limpar apenas os avisos
 function limparAvisos() {
     console.log('Limpando avisos...');
-    
+
     // 1. Limpar avisos de pacote
     const avisoPacote = document.getElementById('aviso-pacote');
     const mensagemPacote = document.getElementById('mensagem-pacote');
     if (avisoPacote) avisoPacote.style.display = 'none';
     if (mensagemPacote) mensagemPacote.innerHTML = '';
-    
+
     // 2. Limpar avisos de desmarcações
     const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes');
     const mensagemDesmarcacoes = document.getElementById('mensagem-desmarcacoes');
     if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
     if (mensagemDesmarcacoes) mensagemDesmarcacoes.innerHTML = '';
-    
+
     // 3. Limpar avisos de benefício
     const avisoBeneficio = document.getElementById('aviso-beneficio');
     if (avisoBeneficio) avisoBeneficio.style.display = 'none';
-    
+
     // 4. Limpar info de reposição
     const infoReposicao = document.getElementById('info_reposicao');
     if (infoReposicao) infoReposicao.style.display = 'none';
-    
+
     // 5. Limpar sem_pacote div
     const semPacoteDiv = document.getElementById('sem_pacote');
     if (semPacoteDiv) {
         semPacoteDiv.innerHTML = '';
         semPacoteDiv.style.display = 'none';
     }
-    
+
     // 6. Resetar botão de usar pacote
     const usarPacoteBtn = document.getElementById('usar-pacote-btn');
     if (usarPacoteBtn) {
@@ -288,13 +288,13 @@ function limparAvisos() {
         usarPacoteBtn.textContent = 'Usar pacote';
         usarPacoteBtn.onclick = null;
     }
-    
+
     // 7. Resetar botão de usar remarcação
     const usarRemarcacaoBtn = document.getElementById('usar-reposicao-btn');
     if (usarRemarcacaoBtn) {
         usarRemarcacaoBtn.onclick = null;
     }
-    
+
     console.log('Avisos limpos!');
 }
 
@@ -308,9 +308,7 @@ function mostrarMensagemSemPacote(mensagem) {
                     <i class="fas fa-plus-circle aviso-icon"></i>
                     <strong>${mensagem}</strong>
                 </div>
-                <div class="pacote-detalhes">
-                    <div>Selecione um serviço abaixo para criar um novo agendamento.</div>
-                </div>
+ 
             </div>
         `;
         semPacoteDiv.style.display = 'block';
@@ -515,7 +513,7 @@ async function verificarPacoteAtivo() {
         } else {
             // Caso 2: Nenhum pacote ativo
             if (avisoDiv) {
-                 
+
                 avisoDiv.classList.remove('aviso-c-pac');
                 avisoDiv.classList.add('aviso-w-pac');
                 avisoDiv.style.display = 'block';
@@ -537,21 +535,21 @@ async function verificarPacoteAtivo() {
                 }
 
                 if (usarPacoteBtn) {
- 
+
                     usarPacoteBtn.textContent = 'Criar Novo Pacote';
-                    usarPacoteBtn.onclick = function() {
+                    usarPacoteBtn.onclick = function () {
                         // Limpa todos os avisos
                         limparAvisos();
-                        
+
                         // Mostra mensagem no div sem_pacote
                         mostrarMensagemSemPacote('Criando novo pacote');
-                        
+
                         // Opcional: focar no campo de seleção de serviço
                         const servicoSelect = document.getElementById('pacotesInput');
                         if (servicoSelect) {
                             servicoSelect.focus();
                         }
-                        
+
                         // Opcional: marcar tipo de agendamento como "novo"
                         const radioNovo = document.querySelector('input[name="tipo_agendamento"][value="novo"]');
                         if (radioNovo) {
@@ -656,10 +654,10 @@ function verificarSaldosDesmarcacoesComDetalhes(saldos) {
                
                 <div class="pacote-detalhes">
                     ${mensagens.map(mensagem => {
- 
-                        return `<div>${mensagem}</div>`;
- 
-                    }).join('')}
+
+                return `<div>${mensagem}</div>`;
+
+            }).join('')}
                 </div>
 
             `;
@@ -783,7 +781,7 @@ function verificarSaldosDesmarcacoes(saldos) {
     if ((saldos.desistencia || 0) > 0) mensagens.push(`❌ D: ${saldos.desistencia}`);
     if ((saldos.desistencia_remarcacao || 0) > 0) mensagens.push(`⚠ DCR: ${saldos.desistencia_remarcacao}`);
     if ((saldos.falta_remarcacao || 0) > 0) mensagens.push(`⚠ FCR: ${saldos.falta_remarcacao}`);
-    
+
 
     if (mensagens.length > 0) {
         if (mensagemDesmarcacoes) {
@@ -856,7 +854,7 @@ function configurarSidebar() {
             limparTudo()
             sidebar.classList.remove('active');
             sidebar.setAttribute('hidden', '');
-            
+
 
             document.body.classList.remove('modal-open');
         });
@@ -1249,7 +1247,7 @@ async function verificarBeneficiosAtivos(pacienteId) {
         data.beneficios.forEach(b => {
             let icon = '';
             let texto = '';
-            
+
             if (b.tipo === 'relaxante') {
                 icon = 'fa-spa';
                 texto = `Sessão Relaxante`;
@@ -1275,12 +1273,12 @@ async function verificarBeneficiosAtivos(pacienteId) {
             // Formatar data
             const dataValidade = new Date(b.valido_ate);
             const dataFormatada = dataValidade.toLocaleDateString('pt-BR');
-            
+
             // Determinar status e botão
             let statusClass = '';
             let statusText = '';
             let botaoHTML = '';
-            
+
             if (b.usado) {
                 statusClass = 'usado';
                 statusText = 'USADO';
@@ -1296,11 +1294,11 @@ async function verificarBeneficiosAtivos(pacienteId) {
             } else {
                 statusClass = 'disponivel';
                 statusText = 'DISPONÍVEL';
-                botaoHTML = `<button class="btn-premium btn-primary btn-usar-beneficio" 
-                                   data-tipo="${b.tipo}" 
-                                   data-percentual="${b.percentual || ''}">
-                               <i class="fas fa-check-circle"></i> Usar
-                             </button>`;
+                botaoHTML = `<button type="button" class="btn-premium btn-primary btn-usar-beneficio" 
+                   data-tipo="${b.tipo}" 
+                   data-percentual="${b.percentual || ''}">
+               <i class="fas fa-check-circle"></i> Usar
+             </button>`;
             }
 
             linhasHTML += `
@@ -1327,7 +1325,7 @@ async function verificarBeneficiosAtivos(pacienteId) {
         // Header com status
         let headerText = `Benefícios ${data.status ? data.status.toUpperCase() : ''}`;
         let headerIcon = 'fa-gift';
-        
+
         if (temAniversario) {
             headerText += ' 🎂 ANIVERSARIANTE';
             headerIcon = 'fa-cake-candles';
@@ -1350,11 +1348,15 @@ async function verificarBeneficiosAtivos(pacienteId) {
         // Adicionar eventos aos botões "Usar"
         setTimeout(() => {
             document.querySelectorAll('.btn-usar-beneficio').forEach(btn => {
-                btn.onclick = function() {
+                // Substitua o evento de clique atual por:
+                btn.onclick = function () {
                     const tipo = this.getAttribute('data-tipo');
                     const percentual = this.getAttribute('data-percentual');
-                    
-                    switch(tipo) {
+
+                    // Verifica se já está usando (botão já clicado)
+                    if (this.disabled) return;
+
+                    switch (tipo) {
                         case 'relaxante':
                             selecionarServicoRelaxanteETravarsValor();
                             break;
@@ -1367,13 +1369,18 @@ async function verificarBeneficiosAtivos(pacienteId) {
                             break;
                         case 'brinde':
                             registrarBrinde();
+                            // Brinde não desabilita outros, pode combinar com sessão
                             break;
                     }
-                    
-                    // Atualizar visual do botão
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Usando...';
+
+                    // Atualiza este botão
+                    this.innerHTML = '<i class="fas fa-check"></i> Usado';
                     this.disabled = true;
                     this.className = 'btn-premium btn-outline';
+
+                    if (tipo !== 'brinde') {
+                        desabilitarBeneficiosIncompativeis(tipo);
+                    }
                 };
             });
         }, 100);
@@ -1395,15 +1402,6 @@ function selecionarServicoRelaxanteETravarsValor() {
     if (servicoHidden) servicoHidden.value = opt.value;
 }
 
-function marcarSessaoLivre() {
-    document.getElementById('valor_final').value = '0.00';
-    document.getElementById('beneficio_tipo').value = 'sessao_livre';
-    
-    if (tipoEspecial === 'aniversario') {
-        // Ex: adicionar observação "SESSÃO DE ANIVERSÁRIO"
-        adicionarObservacao('🎂 Sessão de aniversário - gratuita');
-    }
-}
 
 function aplicarDescontoBloqueado(percent) {
     const descontoInput = document.getElementById('desconto');
@@ -1413,10 +1411,46 @@ function aplicarDescontoBloqueado(percent) {
     document.getElementById('beneficio_tipo').value = 'desconto';
     document.getElementById('beneficio_percentual').value = percent;
 }
+function desabilitarBeneficiosIncompativeis(tipoSelecionado) {
+    // Se selecionou uma SESSÃO, desabilita desconto
+    if (tipoSelecionado.includes('sessao') || tipoSelecionado === 'relaxante') {
+        document.querySelectorAll('.btn-usar-beneficio').forEach(btn => {
+            const tipoBtn = btn.getAttribute('data-tipo');
+            // Desabilita desconto e outras sessões
+            if (tipoBtn === 'desconto' ||
+                (tipoBtn.includes('sessao') && tipoBtn !== tipoSelecionado) ||
+                (tipoBtn === 'relaxante' && tipoSelecionado !== 'relaxante')) {
+                btn.innerHTML = '<i class="fas fa-ban"></i> Indisponível';
+                btn.disabled = true;
+                btn.className = 'btn-premium btn-outline';
+            }
+        });
+    }
 
-async function registrarBrinde() {
-    document.getElementById('beneficio_tipo').value = 'brinde';
-    mostrarMensagem('Brinde marcado para este agendamento. Será registrado ao salvar.', 'info');
+    // Se selecionou DESCONTO, desabilita sessões
+    if (tipoSelecionado === 'desconto') {
+        document.querySelectorAll('.btn-usar-beneficio').forEach(btn => {
+            const tipoBtn = btn.getAttribute('data-tipo');
+            if (tipoBtn.includes('sessao') || tipoBtn === 'relaxante') {
+                btn.innerHTML = '<i class="fas fa-ban"></i> Indisponível';
+                btn.disabled = true;
+                btn.className = 'btn-premium btn-outline';
+            }
+        });
+    }
+}
+function registrarBrinde() {
+    // aceita id antigo e novo
+    const el = document.getElementById('incluir_brinde') || document.getElementById('brinde_incluido');
+
+    if (!el) {
+        console.error('Input hidden do brinde não existe (incluir_brinde / brinde_incluido).');
+        mostrarMensagem('⚠️ Não encontrei o campo hidden do brinde. Verifique o HTML.', 'warning');
+        return;
+    }
+
+    el.value = 'true';
+    mostrarMensagem('🎁 Brinde adicionado ao agendamento!', 'info');
 }
 
 function revelarBeneficioOption(value) {
@@ -1431,12 +1465,27 @@ function revelarBeneficioOption(value) {
     sel.disabled = true;
     sel.readOnly = true;
 }
+function limparBeneficiosSelecionados() {
+    // Resetar todos os botões
+    document.querySelectorAll('.btn-usar-beneficio').forEach(btn => {
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Usar';
+        btn.disabled = false;
+        btn.className = 'btn-premium btn-primary btn-usar-beneficio';
+    });
 
+    // Resetar campos hidden
+    document.getElementById('beneficio_tipo').value = '';
+    document.getElementById('beneficio_percentual').value = '';
+    document.getElementById('incluir_brinde').value = 'false';
+
+    // Limpar seleção no select
+    limparBeneficioSelecionado();
+}
 function limparBeneficioSelecionado() {
     const sel = document.getElementById('pacotesInput');
     // Esconde TODAS as opções de benefício
-    document.querySelectorAll('.servico-beneficio').forEach(o => { 
-        o.hidden = true; 
+    document.querySelectorAll('.servico-beneficio').forEach(o => {
+        o.hidden = true;
     });
     sel.disabled = false;
     sel.readOnly = false;
@@ -1448,12 +1497,12 @@ function marcarSessaoLivre(tipoEspecial = null) {
     if (tipoEspecial === 'aniversario') {
         revelarBeneficioOption('beneficio_sessao_aniversario');
         document.getElementById('beneficio_tipo').value = 'sessao_aniversario';
-        
+
         // Mensagem
         if (typeof mostrarMensagem === 'function') {
             mostrarMensagem('🎂 Sessão de aniversário ativa!', 'info');
         }
-        
+
         // Observação
         if (typeof adicionarObservacao === 'function') {
             adicionarObservacao('🎂 Sessão de aniversário - gratuita');
@@ -1461,12 +1510,12 @@ function marcarSessaoLivre(tipoEspecial = null) {
     } else {
         revelarBeneficioOption('beneficio_sessao_livre');
         document.getElementById('beneficio_tipo').value = 'sessao_livre';
-        
+
         if (typeof mostrarMensagem === 'function') {
             mostrarMensagem('💨 Sessão livre ativa!', 'info');
         }
     }
-    
+
     document.getElementById('valor_pacote').value = '0.00';
     document.getElementById('valor_final').value = '0.00';
 }
@@ -1886,4 +1935,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
- 

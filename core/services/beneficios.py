@@ -1,9 +1,9 @@
 from datetime import date, datetime, timedelta
 from django.conf import settings
 from django.forms import ValidationError
-from pytz import timezone
+ 
 from core.models import HistoricoStatus, UsoBeneficio, ValidadeBeneficios
-
+from django.utils import timezone
 
 def calcular_validade_beneficio(mes: int, ano: int, tipo_beneficio: str) -> date:
     """

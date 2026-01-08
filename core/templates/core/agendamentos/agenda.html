@@ -54,9 +54,13 @@
                 {% elif ag.codigo|slice:":3" == "BEN" %}
                     <span class="sessao beneficio"><i class="fa-solid fa-gift"></i>
                     {% if "beneficio:sessao_livre" in ag.tags %}
-                    Sessão de Benefício (Sessão Livre) | {{ ag.codigo }}
+                    Sessão de Status PREMIUM | {{ ag.codigo }}
+                    {% elif "beneficio:sessao_aniversario" in ag.tags %}
+                    Sessão de Aniversário | {{ ag.codigo }}</span>
+                    {% elif "beneficio:relaxante" in ag.tags %}
+                     Sessão de Status VIP| {{ ag.codigo }}</span>
                     {% else %}
-                    Sessão de Aniversário (Sessão Relaxante) | {{ ag.codigo }}</span>
+                    Sessão de Aniversário | {{ ag.codigo }}</span>
                     {% endif %}
                     {% else %}
                 <span class="sessao normal">
@@ -166,6 +170,8 @@
                     <input type="hidden" id="servico_id_hidden" name="servico_id">
                     <input type="hidden" id="beneficio_tipo" name="beneficio_tipo">
                     <input type="hidden" id="beneficio_percentual" name="beneficio_percentual">
+                    <input type="hidden" id="incluir_brinde" name="incluir_brinde" value="false">
+
                     <select name="servico_id" id="pacotesInput" class="input-s" required>
                         <option value="" disabled selected>Selecione um serviço</option>
                         

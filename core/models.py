@@ -1215,6 +1215,7 @@ class UsoBeneficio(models.Model):
 
     usado_em = models.DateTimeField(auto_now_add=True)
     usado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    valido_ate = models.DateField(null=True, blank=True)
 
     class Meta:
         unique_together = ('paciente', 'mes', 'ano', 'tipo')

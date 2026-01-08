@@ -290,8 +290,16 @@ def criar_agendamento(request):
     tags_extra = ''
     print(beneficio_tipo)
     # 1) Benefício "sessão livre" ou "relaxante" => forçar serviço + pacote BENEF
-    if beneficio_tipo in ('sessao_livre', 'sessao_aniversario'):
-        nome_benef = 'Sessão Livre' if beneficio_tipo == 'sessao_livre' else 'Sessão Relaxante'
+    if beneficio_tipo in ('sessao_livre', 'sessao_aniversario', 'relaxante', ):
+        if beneficio_tipo == 'sessao_livre':
+            nome_benef = 'Sessão Livre'
+        elif beneficio_tipo == 'relaxante':
+            nome_benef = 'Sessão Relaxante Beneficio'  # VIP
+        elif beneficio_tipo == 'sessao_aniversario':  # ← CORRIGIDO AQUI!
+            nome_benef = 'Sessão Relaxante Aniversario'
+        else:
+            nome_benef = 'Benefício'
+
         servico, _ = Servico.objects.get_or_create(
             nome=nome_benef,
             defaults={'valor': 0.00, 'qtd_sessoes': 1, 'ativo': True}
@@ -317,6 +325,9 @@ def criar_agendamento(request):
         # benefício de status geralmente é 1 sessão -> desliga recorrência
         agendamento_recorrente = False
 
+    # REGISTRA BRINDE SEPARADAMENTE (se marcado)
+
+        # Opcional: messages.warning(request, f'Brinde não registrado: {e}')
     # 2) Reposição (D/DCR/FCR) — seu fluxo atual
     elif servico_id_raw in ['d', 'dcr', 'fcr']:
         tipo_reposicao = servico_id_raw
@@ -585,20 +596,42 @@ def criar_agendamento(request):
     # =====================================================
     # BENEFÍCIO (opcional)
     # =====================================================
-    if beneficio_tipo:
-        try:
-            hoje = date.today()
+# =====================================================
+# BENEFÍCIOS (sessão/desconto) + BRINDE (independente)
+# =====================================================
+    try:
+        hoje = date.today()
+
+        incluir_brinde = (
+            (data.get('incluir_brinde') == 'true') or
+            (data.get('brinde_incluido') == 'true')  # compatibilidade
+        )
+
+        # 1) Benefício principal (se veio)
+        if beneficio_tipo:
             valor_desc = None
             if beneficio_tipo == 'desconto':
-                valor_desc = round((valor_pacote or 0) - (valor_final or 0), 2)
+                # Decimal -> Decimal
+                valor_desc = (valor_pacote or Decimal('0')) - (valor_final or Decimal('0'))
+
             usar_beneficio(
                 paciente=paciente, mes=hoje.month, ano=hoje.year, tipo=beneficio_tipo,
                 usuario=request.user,
-                agendamento=agendamentos_criados[0] if agendamentos_criados and beneficio_tipo in ('sessao_livre', 'relaxante') else None,
+                agendamento=agendamentos_criados[0] if agendamentos_criados and beneficio_tipo in ('sessao_livre', 'relaxante', 'sessao_aniversario') else None,
                 valor_desconto=valor_desc
             )
-        except Exception as e:
-            messages.warning(request, f'Não foi possível registrar o benefício: {e}')
+
+        # 2) Brinde SEMPRE independente do beneficio_tipo
+        if incluir_brinde:
+            usar_beneficio(
+                paciente=paciente, mes=hoje.month, ano=hoje.year, tipo='brinde',
+                usuario=request.user,
+                agendamento=agendamentos_criados[0] if agendamentos_criados else None,
+                valor_desconto=None
+            )
+
+    except Exception as e:
+        messages.warning(request, f'Não foi possível registrar o benefício/brinde: {e}')
 
     # =====================================================
     # RETORNO FINAL — sempre garante resposta HTTP
