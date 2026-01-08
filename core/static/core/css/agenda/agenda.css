@@ -1025,25 +1025,15 @@ select.input-s {
     gap: 8px;
 }
 
-.btn-footer:first-child {
+.btn-footer {
     background: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
     color: var(--branco);
     box-shadow: var(--sombra-destaque);
 }
 
-.btn-footer:first-child:hover {
+.btn-footer:hover {
     transform: translateY(-3px);
     box-shadow: 0 20px 40px rgba(109, 57, 142, 0.25);
-}
-
-.btn-footer:last-child {
-    background: var(--bg-btn-1);
-    color: var(--cinza-escuro);
-    border: 1px solid var(--cinza-borda);
-}
-
-.btn-footer:last-child:hover {
-    background: var(--cinza-claro);
 }
 
 /* Sugestões de pacientes */
