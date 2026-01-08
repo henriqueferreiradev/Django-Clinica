@@ -110,20 +110,7 @@ window.alterarDesconto = function () {
 
 // =============================================
 // FUNÇÕES UTILITÁRIAS
-// =============================================
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            if (cookie.trim().startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.trim().substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+ 
 function limparTudo() {
     console.log('Limpando tudo...');
 
@@ -459,7 +446,7 @@ async function verificarPacoteAtivo() {
                                 </div>
                             </div>`;
                     }
-
+                    
                     // Habilita o botão
                     if (usarPacoteBtn) {
                         usarPacoteBtn.disabled = false;
@@ -467,6 +454,8 @@ async function verificarPacoteAtivo() {
                         usarPacoteBtn.style.cursor = 'pointer';
                         usarPacoteBtn.textContent = `Usar pacote (${sessoesRestantes} disponíveis)`;
                         usarPacoteBtn.onclick = () => usarPacoteAtivo(pacote, sessaoAtual, sessoesRestantes);
+                        
+
                     }
 
                 } else if (!pacoteEstaAtivo || sessoesRestantes <= 0) {
@@ -752,7 +741,9 @@ function usarPacoteAtivo(pacote, sessaoAtual, sessoesDisponiveis) {
     if (usarPacoteBtn) {
         usarPacoteBtn.disabled = true;
         usarPacoteBtn.textContent = 'Pacote em uso';
+        
     }
+
 }
 
 function atualizarInfoPacote(pacote, sessaoAtual, sessoesDisponiveis) {
@@ -1235,10 +1226,19 @@ async function verificarBeneficiosAtivos(pacienteId) {
         if (!resp.ok) return;
         const data = await resp.json();
 
-        if (!data.tem_beneficio) return;
-
         const box = document.getElementById('aviso-beneficio');
         if (!box) return;
+        
+        const beneficiosDisponiveis = data.beneficios.filter(b =>
+            !b.usado && b.esta_valido
+        );
+        
+        if (!beneficiosDisponiveis.length) {
+            box.innerHTML = '';
+            box.style.display = 'none';
+            return;
+        }
+        
 
         // Criar linhas dos benefícios
         let linhasHTML = '';
@@ -1346,7 +1346,7 @@ async function verificarBeneficiosAtivos(pacienteId) {
             </div>`;
 
         // Adicionar eventos aos botões "Usar"
-        setTimeout(() => {
+
             document.querySelectorAll('.btn-usar-beneficio').forEach(btn => {
                 // Substitua o evento de clique atual por:
                 btn.onclick = function () {
@@ -1359,10 +1359,12 @@ async function verificarBeneficiosAtivos(pacienteId) {
                     switch (tipo) {
                         case 'relaxante':
                             selecionarServicoRelaxanteETravarsValor();
+                            ocultarPagamentoERecorrencia();
                             break;
                         case 'sessao_livre':
                         case 'sessao_aniversario':
                             marcarSessaoLivre(tipo === 'sessao_aniversario' ? 'aniversario' : null);
+                            ocultarPagamentoERecorrencia();
                             break;
                         case 'desconto':
                             aplicarDescontoBloqueado(parseInt(percentual));
@@ -1374,7 +1376,7 @@ async function verificarBeneficiosAtivos(pacienteId) {
                     }
 
                     // Atualiza este botão
-                    this.innerHTML = '<i class="fas fa-check"></i> Usado';
+                    this.innerHTML = '<i class="fas fa-check"></i> Usando';
                     this.disabled = true;
                     this.className = 'btn-premium btn-outline';
 
@@ -1383,25 +1385,41 @@ async function verificarBeneficiosAtivos(pacienteId) {
                     }
                 };
             });
-        }, 100);
+         
 
         box.style.display = 'block';
     } catch (e) {
         console.error('Erro ao verificar benefícios:', e);
     }
 }
-function selecionarServicoRelaxanteETravarsValor() {
-    const servicoSelect = document.getElementById('pacotesInput');
-    const servicoHidden = document.getElementById('servico_id_hidden');
-    if (!servicoSelect) return;
+ 
 
-    const RELAXANTE_ID = 'X'; // TODO: ajuste para o ID real
-    const opt = [...servicoSelect.options].find(o => Number(o.value) === Number(RELAXANTE_ID));
-    if (!opt) { alert('Serviço relaxante não encontrado'); return; }
-    servicoSelect.value = opt.value;
-    if (servicoHidden) servicoHidden.value = opt.value;
+function ocultarPagamentoERecorrencia() {
+    // Pagamento
+    const formValor = document.getElementById('formValor');
+    const valorPago = document.getElementById('valor_pago_input');
+    const formaPagamento = document.getElementById('forma_pagamento_select');
+    const recebimentoForm = document.getElementById('receb_sect')
+    const recorrenteCheck = document.getElementById('recorrente_sect')
+    const avisoPacote = document.getElementById('aviso-pacote')
+    const avisoDesmarcacoes= document.getElementById('aviso-desmarcacoes')
+     
+
+    if (formValor) formValor.style.display = 'none';
+    if (recebimentoForm) recebimentoForm.style.display = 'none';
+    if (recorrenteCheck) recorrenteCheck.style.display = 'none';
+    if (avisoPacote) avisoPacote.style.display = 'none';
+    if (avisoDesmarcacoes) avisoDesmarcacoes.style.display = 'none';
+    if (valorPago) valorPago.value = '';
+    if (formaPagamento) formaPagamento.value = '';
+
+    // Recorrência
+    const checkRecorrente = document.getElementById('recorrente');
+    const weekRecorrente = document.getElementById('week-recorrente');
+
+    if (checkRecorrente) checkRecorrente.checked = false;
+    if (weekRecorrente) weekRecorrente.classList.remove('active');
 }
-
 
 function aplicarDescontoBloqueado(percent) {
     const descontoInput = document.getElementById('desconto');

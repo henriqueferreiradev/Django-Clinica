@@ -72,15 +72,39 @@
 
             <div class="status-col">
                 <select class="status-select" data-agendamento-id="{{ ag.id }}">
-                    <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
-                    <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
-                    <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
-                    <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
-                    <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
-                    <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
-                    <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
+                    <option value="pre" {% if ag.status == 'pre' %}selected{% endif %}>
+                        ✅ Pré-Agendado
+                    </option>
+
+                    <option value="agendado" {% if ag.status == 'agendado' %}selected{% endif %}>
+                        ✅ Agendado
+                    </option>
+
+                    <option value="finalizado" {% if ag.status == 'finalizado' %}selected{% endif %}>
+                        ✅ Consulta finalizada!
+                    </option>
+
+ 
+                    {% if ag.codigo|slice:":3" != "BEN" %}
+                        <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>
+                            ❌ D - Desmarcação
+                        </option>
+
+                        <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>
+                            ⚠️ DCR - Desmarcação com reposição
+                        </option>
+
+                        <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>
+                            ⚠️ FCR - Falta com reposição
+                        </option>
+                    {% endif %}
+ 
+                    <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>
+                        ❌ FC - Falta cobrada
+                    </option>
                 </select>
             </div>
+
             <div class="actions-col">
                 <button type="button" class="action-btn tooltip btn-salvar-status" data-agendamento-id="{{ ag.id }}">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -252,7 +276,7 @@
                     </div>
                 </div>
                 
-                <div class="formRow cols-2">
+                <div class="formRow cols-2" id='recorrente_sect'>
                         <label class="checkbox-option">
                             <input type="checkbox" name="recorrente" onchange="openRecorrente()" id="recorrente">
                             <span><i class="fas fa-sync-alt"></i> Agendamento Recorrente</span>
@@ -407,7 +431,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="formRow cols-2">
+                <div class="formRow cols-2" id='receb_sect'>
                     <div class="formField">
                         <label for="valor_pago_input"><i class="fas fa-money-bill-wave"></i> Valor pago</label>
                         <input type="number" name="valor_pago" id="valor_pago_input" placeholder="Valor pago" step="0.01" class="input-s">

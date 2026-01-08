@@ -292,11 +292,11 @@ def criar_agendamento(request):
     # 1) Benefício "sessão livre" ou "relaxante" => forçar serviço + pacote BENEF
     if beneficio_tipo in ('sessao_livre', 'sessao_aniversario', 'relaxante', ):
         if beneficio_tipo == 'sessao_livre':
-            nome_benef = 'Sessão Livre'
+            nome_benef = 'Sessão Livre - Status Premium'
         elif beneficio_tipo == 'relaxante':
-            nome_benef = 'Sessão Relaxante Beneficio'  # VIP
+            nome_benef = 'Sessão Relaxante - Status VIP'  # VIP
         elif beneficio_tipo == 'sessao_aniversario':  # ← CORRIGIDO AQUI!
-            nome_benef = 'Sessão Relaxante Aniversario'
+            nome_benef = 'Sessão Relaxante - Aniversario'
         else:
             nome_benef = 'Benefício'
 
