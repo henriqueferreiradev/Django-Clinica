@@ -110,7 +110,7 @@ window.alterarDesconto = function () {
 
 // =============================================
 // FUNÇÕES UTILITÁRIAS
- 
+
 function limparTudo() {
     console.log('Limpando tudo...');
 
@@ -446,7 +446,7 @@ async function verificarPacoteAtivo() {
                                 </div>
                             </div>`;
                     }
-                    
+
                     // Habilita o botão
                     if (usarPacoteBtn) {
                         usarPacoteBtn.disabled = false;
@@ -454,7 +454,7 @@ async function verificarPacoteAtivo() {
                         usarPacoteBtn.style.cursor = 'pointer';
                         usarPacoteBtn.textContent = `Usar pacote (${sessoesRestantes} disponíveis)`;
                         usarPacoteBtn.onclick = () => usarPacoteAtivo(pacote, sessaoAtual, sessoesRestantes);
-                        
+
 
                     }
 
@@ -741,7 +741,7 @@ function usarPacoteAtivo(pacote, sessaoAtual, sessoesDisponiveis) {
     if (usarPacoteBtn) {
         usarPacoteBtn.disabled = true;
         usarPacoteBtn.textContent = 'Pacote em uso';
-        
+
     }
 
 }
@@ -1228,17 +1228,17 @@ async function verificarBeneficiosAtivos(pacienteId) {
 
         const box = document.getElementById('aviso-beneficio');
         if (!box) return;
-        
+
         const beneficiosDisponiveis = data.beneficios.filter(b =>
             !b.usado && b.esta_valido
         );
-        
+
         if (!beneficiosDisponiveis.length) {
             box.innerHTML = '';
             box.style.display = 'none';
             return;
         }
-        
+
 
         // Criar linhas dos benefícios
         let linhasHTML = '';
@@ -1347,52 +1347,52 @@ async function verificarBeneficiosAtivos(pacienteId) {
 
         // Adicionar eventos aos botões "Usar"
 
-            document.querySelectorAll('.btn-usar-beneficio').forEach(btn => {
-                // Substitua o evento de clique atual por:
-                btn.onclick = function () {
-                    const tipo = this.getAttribute('data-tipo');
-                    const percentual = this.getAttribute('data-percentual');
+        document.querySelectorAll('.btn-usar-beneficio').forEach(btn => {
+            // Substitua o evento de clique atual por:
+            btn.onclick = function () {
+                const tipo = this.getAttribute('data-tipo');
+                const percentual = this.getAttribute('data-percentual');
 
-                    // Verifica se já está usando (botão já clicado)
-                    if (this.disabled) return;
+                // Verifica se já está usando (botão já clicado)
+                if (this.disabled) return;
 
-                    switch (tipo) {
-                        case 'relaxante':
-                            selecionarServicoRelaxanteETravarsValor();
-                            ocultarPagamentoERecorrencia();
-                            break;
-                        case 'sessao_livre':
-                        case 'sessao_aniversario':
-                            marcarSessaoLivre(tipo === 'sessao_aniversario' ? 'aniversario' : null);
-                            ocultarPagamentoERecorrencia();
-                            break;
-                        case 'desconto':
-                            aplicarDescontoBloqueado(parseInt(percentual));
-                            break;
-                        case 'brinde':
-                            registrarBrinde();
-                            // Brinde não desabilita outros, pode combinar com sessão
-                            break;
-                    }
+                switch (tipo) {
+                    case 'relaxante':
+                        selecionarServicoRelaxanteETravarsValor();
+                        ocultarPagamentoERecorrencia();
+                        break;
+                    case 'sessao_livre':
+                    case 'sessao_aniversario':
+                        marcarSessaoLivre(tipo === 'sessao_aniversario' ? 'aniversario' : null);
+                        ocultarPagamentoERecorrencia();
+                        break;
+                    case 'desconto':
+                        aplicarDescontoBloqueado(parseInt(percentual));
+                        break;
+                    case 'brinde':
+                        registrarBrinde();
+                        // Brinde não desabilita outros, pode combinar com sessão
+                        break;
+                }
 
-                    // Atualiza este botão
-                    this.innerHTML = '<i class="fas fa-check"></i> Usando';
-                    this.disabled = true;
-                    this.className = 'btn-premium btn-outline';
+                // Atualiza este botão
+                this.innerHTML = '<i class="fas fa-check"></i> Usando';
+                this.disabled = true;
+                this.className = 'btn-premium btn-outline';
 
-                    if (tipo !== 'brinde') {
-                        desabilitarBeneficiosIncompativeis(tipo);
-                    }
-                };
-            });
-         
+                if (tipo !== 'brinde') {
+                    desabilitarBeneficiosIncompativeis(tipo);
+                }
+            };
+        });
+
 
         box.style.display = 'block';
     } catch (e) {
         console.error('Erro ao verificar benefícios:', e);
     }
 }
- 
+
 
 function ocultarPagamentoERecorrencia() {
     // Pagamento
@@ -1402,8 +1402,8 @@ function ocultarPagamentoERecorrencia() {
     const recebimentoForm = document.getElementById('receb_sect')
     const recorrenteCheck = document.getElementById('recorrente_sect')
     const avisoPacote = document.getElementById('aviso-pacote')
-    const avisoDesmarcacoes= document.getElementById('aviso-desmarcacoes')
-     
+    const avisoDesmarcacoes = document.getElementById('aviso-desmarcacoes')
+
 
     if (formValor) formValor.style.display = 'none';
     if (recebimentoForm) recebimentoForm.style.display = 'none';
