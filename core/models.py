@@ -690,6 +690,7 @@ class Servico(models.Model):
     valor = models.DecimalField(max_digits=8, decimal_places=2)
     qtd_sessoes = models.PositiveIntegerField(default=1)
     conta_contabil = models.ForeignKey(SubgrupoConta, on_delete=models.SET_NULL, null=True, blank=True, related_name='servicos', verbose_name="Conta Contábil")
+    uso_sistema = models.BooleanField(default=False)
     ativo = models.BooleanField(default=True)
 
     def __str__(self):

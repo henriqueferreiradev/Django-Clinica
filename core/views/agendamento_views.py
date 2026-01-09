@@ -211,7 +211,37 @@ def api_config_agenda(request):
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+    
+    
  
+
+STATUS_BLOQUEIAM_HORARIO = ['agendado']
+
+ 
+
+def existe_conflito_profissional(profissional, data, hora_inicio, hora_fim, ignorar_agendamento_id=None):
+    # Converte string → time (se precisar)
+    if isinstance(hora_inicio, str):
+        hora_inicio = datetime.strptime(hora_inicio, '%H:%M').time()
+    if isinstance(hora_fim, str):
+        hora_fim = datetime.strptime(hora_fim, '%H:%M').time()
+
+    qs = Agendamento.objects.filter(
+        profissional_1=profissional,
+        data=data,
+        status__in=STATUS_BLOQUEIAM_HORARIO
+    )
+
+    if ignorar_agendamento_id:
+        qs = qs.exclude(id=ignorar_agendamento_id)
+
+    return qs.filter(
+        hora_inicio__lt=hora_fim,
+        hora_fim__gt=hora_inicio
+    ).exists()
+    
+    
 @login_required(login_url='login')
 def criar_agendamento(request):
     if request.method != 'POST':
@@ -233,10 +263,29 @@ def criar_agendamento(request):
     ambiente           = data.get('ambiente')
     observacoes        = data.get('observacoes', '')
     pacote_codigo_form = data.get('pacote_codigo')
- 
-        
-    beneficio_tipo       = data.get('beneficio_tipo')  # 'sessao_livre' | 'relaxante' | 'desconto' | 'brinde' | ''
-    beneficio_percentual = Decimal(data.get('beneficio_percentual') or 0)
+    
+    
+    profissional1_id_int = int(profissional1_id)
+    profissional1 = get_object_or_404(Profissional, id=profissional1_id_int)
+
+    if status_ag in STATUS_BLOQUEIAM_HORARIO:
+        if existe_conflito_profissional(
+            profissional=profissional1,   # ✅ objeto
+            data=data_sessao,
+            hora_inicio=hora_inicio,
+            hora_fim=hora_fim,
+            ignorar_agendamento_id=None
+        ):
+            return JsonResponse({
+                'success': False,
+                'error': (
+                    f'❌ Conflito de agenda: '
+                    f'{profissional1.nome} já possui outro atendimento '
+                    f'({"/".join(STATUS_BLOQUEIAM_HORARIO)}) nesse horário.'
+                )
+            }, status=400)
+        beneficio_tipo       = data.get('beneficio_tipo')  # 'sessao_livre' | 'relaxante' | 'desconto' | 'brinde' | ''
+        beneficio_percentual = Decimal(data.get('beneficio_percentual') or 0)
 
     # valores
     def _d(v, default=Decimal('0.00')):
@@ -302,7 +351,7 @@ def criar_agendamento(request):
 
         servico, _ = Servico.objects.get_or_create(
             nome=nome_benef,
-            defaults={'valor': 0.00, 'qtd_sessoes': 1, 'ativo': True}
+            defaults={'valor': 0.00, 'qtd_sessoes': 1, 'ativo': True, 'uso_sistema':True}
         )
 
         pacote = PacotePaciente.objects.create(
@@ -1265,6 +1314,21 @@ def alterar_status_agendamento(request, agendamento_id):
         
         if novo_status not in status_validos:
             return JsonResponse({'success': False, 'error': 'Status inválido'}, status=400)
+
+        # ✅ trava se for tentar colocar em "pre" OU "agendado"
+        if novo_status in STATUS_BLOQUEIAM_HORARIO:
+            if existe_conflito_profissional(
+                profissional=agendamento.profissional_1,
+                data=agendamento.data,
+                hora_inicio=agendamento.hora_inicio,  # pode mandar time direto
+                hora_fim=agendamento.hora_fim,
+                ignorar_agendamento_id=agendamento.id
+            ):
+                return JsonResponse({
+                    'success': False,
+                    'error': f'❌ Conflito de agenda: {agendamento.profissional_1} já tem outro {"/".join(STATUS_BLOQUEIAM_HORARIO)} nesse horário.'
+                }, status=400)
+
         
         # REMOVA OU MODIFIQUE ESTA VERIFICAÇÃO - Ela está bloqueando a alteração
         # if agendamento.pacote and not agendamento.pacote.ativo:

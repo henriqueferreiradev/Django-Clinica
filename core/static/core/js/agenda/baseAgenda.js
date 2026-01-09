@@ -60,11 +60,10 @@ function getTitle(tipo) {
     };
     return titles[tipo] || 'Mensagem';
 }
-let modoPercentual = true;
 
-// =============================================
-// FUNÇÕES GLOBAIS (usadas no HTML)
-// =============================================
+
+let modoPercentual = true;
+ 
 window.calcularDesconto = function () {
     const valorInput = document.getElementById('valor_pacote');
     const descontoInput = document.getElementById('desconto');
@@ -107,6 +106,45 @@ window.alterarDesconto = function () {
 
     descontoInput.value = (descontoCalculado || 0).toFixed(2);
 };
+
+
+const form = document.querySelector('form[action*="criar_agendamento"]');
+
+if (form) {
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault(); // 🔴 ESSENCIAL
+
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.ok) {
+                mostrarMensagem('✅ Agendamento criado com sucesso!', 'success');
+                // opcional:
+                // location.reload();
+            } else {
+                mostrarMensagem(data.error || '❌ Erro ao criar agendamento', 'error');
+            }
+
+        } catch (err) {
+            console.error(err);
+            mostrarMensagem('❌ Erro de conexão com o servidor', 'error');
+        }
+    });
+}
+
+
+
 
 // =============================================
 // FUNÇÕES UTILITÁRIAS
@@ -1849,60 +1887,7 @@ function adicionarValidacaoTempoReal() {
     }
 }
 
-// Validação antes do envio do formulário
-if (form) {
-    form.addEventListener('submit', function (e) {
-        let hasError = false;
-
-        if (configClinica) {
-            // Valida data
-            if (dataInput && dataInput.value) {
-                if (!validarDia(dataInput.value)) {
-                    const data = new Date(dataInput.value);
-                    const diaNome = data.toLocaleDateString('pt-BR', { weekday: 'long' });
-                    mostrarErro(dataInput, `A clínica não funciona às ${diaNome}s`);
-                    hasError = true;
-                }
-            }
-
-            // Valida horário início
-            if (horaInicioInput && horaInicioInput.value) {
-                if (!validarHorario(horaInicioInput.value)) {
-                    mostrarErro(horaInicioInput, `Horário fora do funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
-                    hasError = true;
-                }
-            }
-
-            // Valida horário fim
-            if (horaFimInput && horaFimInput.value) {
-                if (!validarHorario(horaFimInput.value)) {
-                    mostrarErro(horaFimInput, `Horário fora do funcionamento (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
-                    hasError = true;
-                }
-
-                // Valida se fim > início
-                if (horaInicioInput && horaInicioInput.value) {
-                    const inicio = horaInicioInput.value.split(':').map(Number);
-                    const fim = horaFimInput.value.split(':').map(Number);
-
-                    const inicioMin = inicio[0] * 60 + inicio[1];
-                    const fimMin = fim[0] * 60 + fim[1];
-
-                    if (fimMin <= inicioMin) {
-                        mostrarErro(horaFimInput, 'Horário de término deve ser após o horário de início');
-                        hasError = true;
-                    }
-                }
-            }
-        }
-
-        if (hasError) {
-            e.preventDefault();
-            alert('Por favor, corrija os erros antes de enviar o formulário.');
-        }
-    });
-}
-
+ 
 // Carrega as configurações quando a página carrega
 carregarConfigClinica();
 // Inicializar eventos quando o DOM estiver carregado
