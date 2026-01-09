@@ -106,46 +106,80 @@ window.alterarDesconto = function () {
 
     descontoInput.value = (descontoCalculado || 0).toFixed(2);
 };
+const formCriarAgendamento = document.querySelector('form[action*="criar_agendamento"]');
 
+if (formCriarAgendamento) {
+formCriarAgendamento.addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-const form = document.querySelector('form[action*="criar_agendamento"]');
+    // ✅ PASSO 2: valida aqui primeiro
+    let hasError = false;
 
-if (form) {
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault(); // 🔴 ESSENCIAL
-
-        const formData = new FormData(this);
-
-        try {
-            const response = await fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken'),
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.ok) {
-                mostrarMensagem('✅ Agendamento criado com sucesso!', 'success');
-                // opcional:
-                // location.reload();
-            } else {
-                mostrarMensagem(data.error || '❌ Erro ao criar agendamento', 'error');
-            }
-
-        } catch (err) {
-            console.error(err);
-            mostrarMensagem('❌ Erro de conexão com o servidor', 'error');
+    if (configClinica) {
+        if (dataInput && dataInput.value && !validarDia(dataInput.value)) {
+            mostrarErro(dataInput, `⚠️ A clínica não funciona em ${getNomeDia(dataInput.value)}`);
+            hasError = true;
         }
-    });
+
+        if (horaInicioInput && horaInicioInput.value && !validarHorario(horaInicioInput.value)) {
+            mostrarErro(horaInicioInput, `⚠️ Fora do horário (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
+            hasError = true;
+        }
+
+        if (horaFimInput && horaFimInput.value && !validarHorario(horaFimInput.value)) {
+            mostrarErro(horaFimInput, `⚠️ Fora do horário (${configClinica.horario_abertura} às ${configClinica.horario_fechamento})`);
+            hasError = true;
+        }
+
+        // fim > inicio
+        if (horaInicioInput?.value && horaFimInput?.value) {
+            const ini = horaInicioInput.value.split(':').map(Number);
+            const fim = horaFimInput.value.split(':').map(Number);
+            const iniMin = ini[0] * 60 + ini[1];
+            const fimMin = fim[0] * 60 + fim[1];
+
+            if (fimMin <= iniMin) {
+                mostrarErro(horaFimInput, '⚠️ Horário de término deve ser após o início');
+                hasError = true;
+            }
+        }
+    }
+
+    // ⛔ se tem erro, NÃO faz fetch
+    if (hasError) {
+        mostrarMensagem('❌ Corrija os erros antes de enviar', 'error');
+        return;
+    }
+
+    // ✅ se passou, aí sim envia via fetch
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.ok) {
+            mostrarMensagem('✅ Agendamento criado com sucesso!', 'success');
+        } else {
+            mostrarMensagem(data.error || '❌ Erro ao criar agendamento', 'error');
+        }
+        
+
+    } catch (err) {
+        console.error(err);
+        mostrarMensagem('❌ Erro de comunicação com o servidor', 'error');
+    }
+});
+
 }
-
-
-
-
 // =============================================
 // FUNÇÕES UTILITÁRIAS
 
