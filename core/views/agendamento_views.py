@@ -284,8 +284,11 @@ def criar_agendamento(request):
                     f'({"/".join(STATUS_BLOQUEIAM_HORARIO)}) nesse horário.'
                 )
             }, status=400)
-        beneficio_tipo       = data.get('beneficio_tipo')  # 'sessao_livre' | 'relaxante' | 'desconto' | 'brinde' | ''
-        beneficio_percentual = Decimal(data.get('beneficio_percentual') or 0)
+
+
+
+    beneficio_tipo       = data.get('beneficio_tipo')  # 'sessao_livre' | 'relaxante' | 'desconto' | 'brinde' | ''
+    beneficio_percentual = Decimal(data.get('beneficio_percentual') or 0)
 
     # valores
     def _d(v, default=Decimal('0.00')):
