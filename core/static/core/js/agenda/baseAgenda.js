@@ -114,7 +114,13 @@ if (formCriarAgendamento) {
     formCriarAgendamento.addEventListener('submit', async function (e) {
         e.preventDefault();
         e.stopPropagation(); // segurança extra
-
+        if (formularioTemErro()) {
+            mostrarMensagem(
+                '❌ Corrija a data ou o horário antes de salvar o agendamento.',
+                'error'
+            );
+            return; // ⛔ impede avançar
+        }
         const formData = new FormData(this);
 
         try {
@@ -128,9 +134,20 @@ if (formCriarAgendamento) {
             });
 
             const data = await response.json();
-
             if (data.success) {
-                mostrarMensagem('✅ Agendamento criado com sucesso!', 'success');
+                mostrarMensagem(
+                    data.message || '✅ Agendamento criado com sucesso!',
+                    'success'
+                );
+            
+                // aguarda a mensagem e redireciona
+                setTimeout(() => {
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        window.location.reload();
+                    }
+                }, 800); // tempo curto, UX boa
             } else {
                 mostrarMensagem(
                     data.error || '❌ Erro ao criar agendamento',
@@ -1886,7 +1903,10 @@ function adicionarValidacaoTempoReal() {
     }
 }
 
-
+function formularioTemErro() {
+    // se existir qualquer erro de validação visível
+    return document.querySelectorAll('.erro-validacao').length > 0;
+}
 // Carrega as configurações quando a página carrega
 carregarConfigClinica();
 // Inicializar eventos quando o DOM estiver carregado

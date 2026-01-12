@@ -1,3 +1,4 @@
+from django.urls import reverse
 # CORREÇÃO: Importações corretas
 from datetime import date, datetime, time, timedelta
 from django.utils.timezone import now  
@@ -616,8 +617,7 @@ def criar_agendamento(request):
         messages.warning(request, f'Pacote {pacote.codigo} foi DESATIVADO automaticamente pois todas as sessões foram consumidas.')
     elif faltam == 0:
         messages.warning(request, f'Todas as sessões deste pacote foram usadas.')
-    elif ja_existentes > 0:
-        messages.info(request, f'Pacote: {ja_existentes} sessão(ões) usada(s), {faltam} restante(s).')
+ 
        
     
     # CORREÇÃO: Use valor_pago_inicial APENAS se valor_pago for definido e > 0
@@ -696,14 +696,18 @@ def criar_agendamento(request):
     # Caso seja uma chamada da API (como /api/agendamentos/), retorna JSON
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({
-            'ok': True,
+            'success': True,
+            'message': 'Agendamento criado com sucesso!',
             'paciente': paciente.nome,
             'servico': servico.nome,
             'agendamentos_criados': len(agendamentos_criados),
             'vencimento': str(receita.vencimento),
             'status_receita': receita.status,
+            'redirect_url': reverse(
+                'confirmacao_agendamento',
+                kwargs={'agendamento_id': ultimo_agendamento.id}
+            )
         })
-
     # Caso contrário (usuário via navegador), abre a página normal
     return redirect('confirmacao_agendamento', agendamento_id=ultimo_agendamento.id)
 
@@ -965,7 +969,7 @@ def listar_agendamentos(filtros=None, query=None):
             'hora_fim': ag.hora_fim.strftime('%H:%M') if ag.hora_fim else '',
             'paciente': f"{ag.paciente.nome} {ag.paciente.sobrenome}",
             'profissional': f"{ag.profissional_1.nome} {ag.profissional_1.sobrenome}",
-            'especialidade': especialidade_nome,  # ← Agora vai mostrar a especialidade correta
+            'especialidade': especialidade_nome,   
             'cor_especialidade': cor_especialidade,
             'status': ag.status,
             'sessao_atual': sessao_atual,

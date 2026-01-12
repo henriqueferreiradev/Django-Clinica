@@ -568,8 +568,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1em;
-    border-bottom: 1px solid var(--cinza-borda);
-    background-color: var(--cinza-claro);
+ 
 }
 
 .header-sidebar h2 {
@@ -1496,11 +1495,11 @@ button[type="submit"]:disabled:hover {
     display: flex;
     gap: var(--espaco-sm);
     padding: 1em;
-    border-top: 1px solid var(--cinza-borda);
+   
     background: var(--branco);
     flex-shrink: 0;
     /* Não encolhe */
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+   
 }
 
 
