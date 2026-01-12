@@ -63,7 +63,7 @@ function getTitle(tipo) {
 
 
 let modoPercentual = true;
- 
+
 window.calcularDesconto = function () {
     const valorInput = document.getElementById('valor_pacote');
     const descontoInput = document.getElementById('desconto');
@@ -106,43 +106,43 @@ window.alterarDesconto = function () {
 
     descontoInput.value = (descontoCalculado || 0).toFixed(2);
 };
- 
+
 
 const formCriarAgendamento = document.getElementById('agendamentoForm');
 
 if (formCriarAgendamento) {
-  formCriarAgendamento.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    e.stopPropagation(); // segurança extra
+    formCriarAgendamento.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        e.stopPropagation(); // segurança extra
 
-    const formData = new FormData(this);
+        const formData = new FormData(this);
 
-    try {
-      const response = await fetch(this.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken'),
-          'X-Requested-With': 'XMLHttpRequest'
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                mostrarMensagem('✅ Agendamento criado com sucesso!', 'success');
+            } else {
+                mostrarMensagem(
+                    data.error || '❌ Erro ao criar agendamento',
+                    'error'
+                );
+            }
+
+        } catch (err) {
+            console.error(err);
+            mostrarMensagem('❌ Erro de comunicação com o servidor', 'error');
         }
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        mostrarMensagem('✅ Agendamento criado com sucesso!', 'success');
-      } else {
-        mostrarMensagem(
-          data.error || '❌ Erro ao criar agendamento',
-          'error'
-        );
-      }
-
-    } catch (err) {
-      console.error(err);
-      mostrarMensagem('❌ Erro de comunicação com o servidor', 'error');
-    }
-  });
+    });
 }
 
 // =============================================
@@ -1689,7 +1689,7 @@ function getCookie(name) {
 const dataInput = document.querySelector('input[name="data"]');
 const horaInicioInput = document.querySelector('input[name="hora_inicio"]');
 const horaFimInput = document.querySelector('input[name="hora_fim"]');
- 
+
 
 let configClinica = null;
 
@@ -1886,7 +1886,7 @@ function adicionarValidacaoTempoReal() {
     }
 }
 
- 
+
 // Carrega as configurações quando a página carrega
 carregarConfigClinica();
 // Inicializar eventos quando o DOM estiver carregado
