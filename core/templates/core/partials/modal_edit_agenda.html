@@ -18,7 +18,7 @@
                         <option value="" disabled selected>Selecione um profissional</option>
                         {% for profissional in profissionais %}
                         <option value="{{ profissional.id }}">
-                            {{ profissional.nome }} {{ profissional.sobrenome }}
+                            {{ profissional.nome }} {{ profissional.sobrenome }} 
                         </option>
                         {% endfor %}
                     </select>
@@ -95,9 +95,6 @@
             <div id="lista-pagamentos" class="formRow">
 
             </div>
-
-
-        </form>
                     <div class="formRow">
                 <div class="formField buttons_div">
                     <button type="button" id="btn_gerar_cupom">
@@ -106,6 +103,9 @@
                     <button> Salvar edição </button>
                 </div>
             </div>
+
+        </form>
+
     </div>
 </div>
 </div>

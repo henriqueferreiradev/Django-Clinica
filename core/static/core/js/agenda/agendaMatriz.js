@@ -341,158 +341,162 @@ async function abrirDetalhesAgendamento(agendamentoId) {
 
 
     container.innerHTML = `
-            <div class="modal-card">
-                <!-- Cabeçalho do modal -->
-                <div class="modal-header">
-                    <h3><i class="fas fa-calendar-check"></i> Detalhes do Agendamento</h3>
-                    <button class="modal-close" id="close-modal">&times;</button>
-                </div>
-                
-                <!-- Corpo do modal -->
-                <div class="modal-body">
-                    <div class="paciente-info">
-                        <!-- Foto e informações principais -->
-                        <div class="paciente-foto-container">
-                            <div class="paciente-foto" id="paciente-foto">
-                            ${data.paciente_foto
+    <div class="modal-container">
+        <!-- HEADER - Fixo no topo -->
+        <div class="modal-header">
+            <h3><i class="fas fa-calendar-check"></i> Detalhes do Agendamento</h3>
+            <button class="modal-close" id="close-modal">&times;</button>
+        </div>
+        
+        <!-- BODY - Conteúdo rolável -->
+        <div class="modal-body-content">
+            <div class="paciente-info">
+                <!-- Foto e informações principais -->
+                <div class="paciente-foto-container">
+                    <div class="paciente-foto" id="paciente-foto">
+                    ${data.paciente_foto
             ? `<img src="${data.paciente_foto}" alt="Foto do paciente" class="paciente-foto-img"
                                                     onerror="this.remove(); this.parentElement.innerHTML='<i class=\\'fas fa-user\\'></i>';">`
             : `<i class="fas fa-user"></i>`
         }
-                            </div>
+                    </div>
 
-                            <div class="paciente-dados">
-                                <h4 id="paciente-nome">${data.paciente_nome_completo}</h4>
-                                <div class="paciente-meta">
-                                    <span><i class="fas fa-id-card"></i> <span id="paciente-codigo">ID: ${data.id}</span></span>
-                                    <span><i class="fas fa-phone"></i> <span id="paciente-telefone">${data.paciente_celular}</span></span>
-                                    <span><i class="fas fa-envelope"></i> <span id="paciente-email">${data.paciente_email}</span></span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Informações do agendamento -->
-                        <div class="agendamento-detalhes">
-                            <div class="info-row">
-                                <div class="info-item">
-                                    <i class="fas fa-calendar-day"></i>
-                                    <div>
-                                        <small>Data</small>
-                                        <p id="agendamento-data">${data.data}</p>
-                                    </div>
-                                </div>
-                                <div class="info-item">
-                                    <i class="fas fa-clock"></i>
-                                    <div>
-                                        <small>Horário</small>
-                                        <p id="agendamento-horario">${data.hora_inicio} - ${data.hora_fim}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="info-row">
-                                <div class="info-item">
-                                    <i class="fas fa-user-md"></i>
-                                    <div>
-                                        <small>Profissional</small>
-                                        <p id="agendamento-profissional">${data.profissional_nome_completo}</p>
-                                    </div>
-                                </div>
-                                <div class="info-item">
-                                    <i class="fas fa-stethoscope"></i>
-                                    <div>
-                                        <small>Especialidade</small>
-                                        <p id="agendamento-especialidade">${data.especialidade}</p>
-                                    </div>
-                                </div>
-                            </div>
-                                <div class="info-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <div>
-                                        <small>Andar/Sala</small>
-                                        <p id="agendamento-ambiente">${data.ambiente}</p>
-                                    </div>
-                                </div>
-                            
-                            <!-- Sessões -->
-                            <div class="sessoes-info">
-                                <h5><i class="fas fa-list-ol"></i> Sessões</h5>
-                                <div class="sessoes-container">
-                                    <div class="sessao-item">
-                                        <i class="fas fa-play-circle"></i>
-                                        <div>
-                                            <small>Sessão Atual</small>
-                                            <p id="sessao-atual">${data.sessao_atual}</p>
-                                        </div>
-                                    </div>
-                                    <div class="sessao-item">
-                                        <i class="fas fa-hourglass-half"></i>
-                                        <div>
-                                            <small>Sessões Restantes</small>
-                                            <p id="sessoes-restantes">${data.sessoes_restantes}</p>
-                                        </div>
-                                    </div>
-                                    <div class="sessao-item">
-                                        <i class="fas fa-flag-checkered"></i>
-                                        <div>
-                                            <small>Total de Sessões</small>
-                                            <p id="total-sessoes">${data.qtd_sessoes}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Status (AGORA COM SELECT EDITÁVEL) -->
-                            <div class="status-container" id="status-container">
-                                <h5><i class="fas fa-info-circle"></i> Status</h5>
-                                <div class="status-display" id="status-display">
-                                    <!-- Modo visualização (inicial) -->
-                                    <div class="status-view">
-                                        <div class="status-badge ${getStatusClass(data.status)}" id="status-badge">
-                                            <span id="status-text">${getStatusText(data.status)}</span>
-                                        </div>
-                                        <button class="btn-edit-status" id="btn-edit-status">
-                                            <i class="fas fa-edit"></i> Editar
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Modo edição (hidden inicialmente) -->
-                                    <form id="status-form" class="status-edit-form" style="display: none;">
-                                        <div class="form-group">
-                                            <select name="status" class="status-select" id="status-select">
-                                                <option value="pre" ${data.status === 'pre' ? 'selected' : ''}>✅ Pré-Agendado</option>
-                                                <option value="agendado" ${data.status === 'agendado' ? 'selected' : ''}>✅ Agendado</option>
-                                                <option value="finalizado" ${data.status === 'finalizado' ? 'selected' : ''}>✅ Consulta finalizada!</option>
-                                                <option value="desistencia" ${data.status === 'desistencia' ? 'selected' : ''}>❌ D - Desmarcação</option>
-                                                <option value="desistencia_remarcacao" ${data.status === 'desistencia_remarcacao' ? 'selected' : ''}>⚠️ DCR - Desmarcação com reposição</option>
-                                                <option value="falta_remarcacao" ${data.status === 'falta_remarcacao' ? 'selected' : ''}>⚠️ FCR - Falta com reposição</option>
-                                                <option value="falta_cobrada" ${data.status === 'falta_cobrada' ? 'selected' : ''}>❌ FC - Falta cobrada</option>
-                                            </select>
-                                            <div class="status-form-actions">
-                                                <button type="submit" class="btn-salvar-status">
-                                                    <i class="fas fa-save"></i> Salvar
-                                                </button>
-                                                <button type="button" class="btn-cancelar-status">
-                                                    <i class="fas fa-times"></i> Cancelar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            
-                            <!-- Observações -->
-                            <div class="observacoes-container">
-                                <h5><i class="fas fa-clipboard"></i> Observações</h5>
-                                <p id="agendamento-observacoes" class="observacoes-text">${data.observacoes}</p>
-                            </div>
+                    <div class="paciente-dados">
+                        <h4 id="paciente-nome">${data.paciente_nome_completo}</h4>
+                        <div class="paciente-meta">
+                            <span><i class="fas fa-id-card"></i> <span id="paciente-codigo">ID: ${data.id}</span></span>
+                            <span><i class="fas fa-phone"></i> <span id="paciente-telefone">${data.paciente_celular}</span></span>
+                            <span><i class="fas fa-envelope"></i> <span id="paciente-email">${data.paciente_email}</span></span>
                         </div>
                     </div>
                 </div>
                 
- 
+                <!-- Informações do agendamento -->
+                <div class="agendamento-detalhes">
+                    <div class="info-row">
+                        <div class="info-item">
+                            <i class="fas fa-calendar-day"></i>
+                            <div>
+                                <small>Data</small>
+                                <p id="agendamento-data">${data.data}</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <small>Horário</small>
+                                <p id="agendamento-horario">${data.hora_inicio} - ${data.hora_fim}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-item">
+                            <i class="fas fa-user-md"></i>
+                            <div>
+                                <small>Profissional</small>
+                                <p id="agendamento-profissional">${data.profissional_nome_completo}</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-stethoscope"></i>
+                            <div>
+                                <small>Especialidade</small>
+                                <p id="agendamento-especialidade">${data.especialidade}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <i class="fas fa-door-open"></i>
+                        <div>
+                            <small>Andar/Sala</small>
+                            <p id="agendamento-ambiente">${data.ambiente}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Sessões -->
+                    <div class="sessoes-info">
+                        <h5><i class="fas fa-list-ol"></i> Sessões</h5>
+                        <div class="sessoes-container">
+                            <div class="sessao-item">
+                                <i class="fas fa-play-circle"></i>
+                                <div>
+                                    <small>Sessão Atual</small>
+                                    <p id="sessao-atual">${data.sessao_atual}</p>
+                                </div>
+                            </div>
+                            <div class="sessao-item">
+                                <i class="fas fa-hourglass-half"></i>
+                                <div>
+                                    <small>Sessões Restantes</small>
+                                    <p id="sessoes-restantes">${data.sessoes_restantes}</p>
+                                </div>
+                            </div>
+                            <div class="sessao-item">
+                                <i class="fas fa-flag-checkered"></i>
+                                <div>
+                                    <small>Total de Sessões</small>
+                                    <p id="total-sessoes">${data.qtd_sessoes}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Observações -->
+                    <div class="observacoes-container">
+                        <h5><i class="fas fa-clipboard"></i> Observações</h5>
+                        <p id="agendamento-observacoes" class="observacoes-text">${data.observacoes}</p>
+                    </div>
+                </div>
             </div>
-        `;
+        </div>
+        
+        <!-- FOOTER - Fixo na base (onde vai o status) -->
+        <div class="modal-footer-sticky">
+            <!-- Status atual (modo visualização) -->
+            <div class="status-section" id="status-current">
+                <div class="status-header">
+                    <h5><i class="fas fa-info-circle"></i> Status Atual</h5>
+                    <button class="btn-edit-status" id="btn-edit-status">
+                        <i class="fas fa-edit"></i> Editar Status
+                    </button>
+                </div>
+                <div class="status-view">
+                    <div class="status-badge ${getStatusClass(data.status)}" id="status-badge">
+                        <span id="status-text">${getStatusText(data.status)}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulário de edição (inicialmente escondido) -->
+            <form id="status-form" class="status-edit-form" style="display: none;">
+                <div class="status-edit-header">
+                    <h5><i class="fas fa-pencil-alt"></i> Alterar Status</h5>
+                </div>
+                <div class="form-group">
+                    <select name="status" class="status-select" id="status-select">
+                        <option value="pre" ${data.status === 'pre' ? 'selected' : ''}>✅ Pré-Agendado</option>
+                        <option value="agendado" ${data.status === 'agendado' ? 'selected' : ''}>✅ Agendado</option>
+                        <option value="finalizado" ${data.status === 'finalizado' ? 'selected' : ''}>✅ Consulta finalizada!</option>
+                        <option value="desistencia" ${data.status === 'desistencia' ? 'selected' : ''}>❌ D - Desmarcação</option>
+                        <option value="desistencia_remarcacao" ${data.status === 'desistencia_remarcacao' ? 'selected' : ''}>⚠️ DCR - Desmarcação com reposição</option>
+                        <option value="falta_remarcacao" ${data.status === 'falta_remarcacao' ? 'selected' : ''}>⚠️ FCR - Falta com reposição</option>
+                        <option value="falta_cobrada" ${data.status === 'falta_cobrada' ? 'selected' : ''}>❌ FC - Falta cobrada</option>
+                    </select>
+                    <div class="status-form-actions">
+                        <button type="submit" class="btn-salvar-status">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                        <button type="button" class="btn-cancelar-status">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+`;
     const btnClose = container.querySelector('.modal-close');
     if (btnClose) {
         btnClose.addEventListener('click', fecharModalAgendamento);
@@ -638,3 +642,89 @@ function ajustarAlturaCardsAgenda() {
 
 window.addEventListener("load", ajustarAlturaCardsAgenda);
 window.addEventListener("resize", ajustarAlturaCardsAgenda);
+
+
+// Adicionar ao seu agendaMatriz.js
+function mostrarSessoesSimultaneas(profissionalId, horario, data) {
+    // Fazer requisição para buscar sessões simultâneas
+    fetch(`/api/sessoes-simultaneas/?profissional_id=${profissionalId}&horario=${horario}&data=${data}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Erro ao carregar sessões: ' + data.error);
+                return;
+            }
+            
+            // Criar modal para mostrar as sessões
+            criarModalSessoes(data.sessoes, horario);
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao carregar sessões simultâneas');
+        });
+}
+
+function criarModalSessoes(sessoes, horario) {
+    // Remover modal anterior se existir
+    const modalAnterior = document.querySelector('.sessoes-modal');
+    if (modalAnterior) {
+        modalAnterior.remove();
+    }
+    
+    // Criar modal
+    const modal = document.createElement('div');
+    modal.className = 'sessoes-modal';
+    
+    // Conteúdo do modal
+    let html = `<div class="sessoes-content">
+        <h3>${sessoes.length} Sessões Agendadas às ${horario}</h3>
+        <div class="sessoes-lista">`;
+    
+    sessoes.forEach((sessao, index) => {
+        html += `<div class="sessao-item" style="border-left-color: ${sessao.cor}">
+            <h4>${sessao.paciente_nome}</h4>
+            <h4>${sessao.id}</h4>
+            <div class="sessao-info">
+                <p><i class="fas fa-clock"></i> ${sessao.hora_inicio} - ${sessao.hora_fim}</p>`;
+        
+        if (sessao.sessao_atual) {
+            html += `<p><i class="fas fa-layer-group"></i> Sessão ${sessao.sessao_atual} de ${sessao.total_sessoes}</p>`;
+        }
+        
+        if (sessao.especialidade) {
+            html += `<p><i class="fas fa-stethoscope"></i> ${sessao.especialidade}</p>`;
+        }
+        
+        if (sessao.status) {
+            html += `<p><i class="fas fa-door-open"></i> ${sessao.status}</p>`;
+        }
+        
+        html += `</div>
+            <button onclick="abrirDetalhesAgendamento(${sessao.id})" class="btn">
+                Ver Detalhes
+            </button>
+        </div>`;
+    });
+    
+    html += `</div>
+        <button onclick="this.closest('.sessoes-modal').remove()" class="btn">
+            Fechar
+        </button>
+    </div>`;
+    
+    modal.innerHTML = html;
+    document.body.appendChild(modal);
+    
+    // Fechar modal ao clicar fora
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// URL da API (ajuste conforme sua configuração)
+// Adicione esta função para configurar a URL base
+function getApiBaseUrl() {
+    return window.location.origin;
+}

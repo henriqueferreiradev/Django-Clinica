@@ -102,7 +102,13 @@
                                             <div class="ag-line ag-title">
                                               <i class="fas fa-user"></i>
                                               <span class="ag-text">{{ ag.paciente.nome|truncatechars:15 }}</span>
- 
+                                              {% if ag.contagem_simultaneas > 1 %}
+                                                <div class="notification-bubble" 
+                                                    onclick="event.stopPropagation(); mostrarSessoesSimultaneas({{ ag.profissional_1.id }}, '{{ ag.slot_inicio }}', '{{ selected_date }}')"
+                                                    title="Clique para ver todas as sessões neste horário">
+                                                    <span class="notification-count">{{ ag.contagem_simultaneas }}</span>
+                                                </div>
+                                                {% endif %}
                                             </div>
 
                                             <!-- Linha 2: Sessão (só se tiver pacote) -->

@@ -6,7 +6,7 @@
     --text: var(--preto);
     --text-light: var(--preto);
     --border: var(--cinza-borda);
-    --roxoPrincipal-hover: #7c3aed;
+ 
     --cinza-claro: #f8fafc;
 }
 
@@ -791,7 +791,19 @@ td {
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
-
+.btn {
+    background: var(--roxoPrincipal);
+    color: var(--branco);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    gap: .3em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
 .btn-edit-status {
     background: var(--roxoPrincipal);
     color: var(--branco);
@@ -945,4 +957,459 @@ td {
     display: flex;
     align-items: left;
     gap: 6px;
+}
+
+.notification-count {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: linear-gradient(to right, #f44336, #d32f2f);
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(244, 67, 54, 0.4);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+
+/* Modal para mostrar sessões simultâneas */
+.sessoes-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.sessoes-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.sessao-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-left: 4px solid;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.sessao-item h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.sessao-info {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+
+/* ===== MODAL OVERLAY PRINCIPAL ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+/* ===== CONTAINER DO MODAL COM ALTURA FIXA ===== */
+.modal-container {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh; /* ALTURA FIXA MÁXIMA */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== HEADER - SEMPRE NO TOPO ===== */
+.modal-header {
+    flex-shrink: 0;
+    background: var(--roxoPrincipal);
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.modal-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== BODY - CONTEÚDO ROLÁVEL ===== */
+.modal-body-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    min-height: 0; /* IMPORTANTE para flexbox funcionar */
+}
+
+/* Mantenha seus estilos existentes aqui... */
+.paciente-foto-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.paciente-dados h4 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.paciente-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.agendamento-detalhes {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.info-item {
+    background: var(--branco);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sessoes-info h5,
+.observacoes-container h5 {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sessoes-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.sessao-item {
+    background: var(--branco);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.observacoes-text {
+    background: var(--branco);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+/* ===== FOOTER - FIXO NA BASE DO MODAL ===== */
+.modal-footer-sticky {
+    flex-shrink: 0; /* Não encolhe */
+    background: white;
+    border-top: 2px solid var(--roxoPrincipal);
+    padding: 16px 24px;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10;
+}
+
+/* Status atual (modo visualização) */
+.status-section {
+    display: block;
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.status-header h5 {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-view {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.status-badge {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    min-width: 150px;
+}
+
+.btn-edit-status {
+    background: var(--roxoPrincipal);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.btn-edit-status:hover {
+    background: var(--roxoPrincipal-hover);
+}
+
+/* Formulário de edição de status */
+.status-edit-form {
+    display: none;
+    animation: slideIn 0.3s ease;
+}
+
+.status-edit-header h5 {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.status-select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--roxoPrincipal);
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    color: var(--text);
+}
+
+.status-form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-salvar-status,
+.btn-cancelar-status {
+    flex: 1;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-salvar-status {
+    background: var(--roxoPrincipal);
+    color: white;
+}
+
+.btn-salvar-status:hover {
+    background: var(--roxoPrincipal-hover);
+}
+
+.btn-cancelar-status {
+    background: var(--cinza-claro);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-cancelar-status:hover {
+    background: var(--border);
+}
+
+/* Classes de status */
+.status-pre { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+.status-agendado { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.status-finalizado { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+.status-desistencia { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.status-desistencia_remarcacao { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+.status-falta_remarcacao { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+.status-falta_cobrada { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+/* Animações */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .modal-container {
+        max-height: 95vh;
+    }
+    
+    .modal-body-content {
+        padding: 20px;
+    }
+    
+    .info-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .sessoes-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-header,
+    .modal-footer-sticky {
+        padding: 16px 20px;
+    }
+    
+    .status-view {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .status-badge {
+        min-width: auto;
+    }
+    
+    .btn-edit-status {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .status-form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-salvar-status,
+    .btn-cancelar-status {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-overlay {
+        padding: 10px;
+    }
+    
+    .paciente-foto-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .paciente-meta {
+        justify-content: center;
+        gap: 12px;
+    }
 }

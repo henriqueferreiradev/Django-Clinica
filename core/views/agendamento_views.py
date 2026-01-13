@@ -65,56 +65,49 @@ def agenda_view(request):
 from django.utils.timezone import now
 from datetime import datetime, timedelta
 from math import ceil
+from django.db.models import Case, When, Value, IntegerField
+
+from django.utils.timezone import now
+from datetime import datetime, timedelta
+from math import ceil
+from collections import defaultdict
+from django.db.models import Case, When, Value, IntegerField
+from django.shortcuts import render
+
 
 def agenda_board(request):
-    # Data selecionada
+    # ===============================
+    # DATA
+    # ===============================
     date_str = request.GET.get('date')
-    if date_str:
-        try:
-            selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        except:
-            selected_date = now().date()
-    else:
+    try:
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else now().date()
+    except:
         selected_date = now().date()
 
-    # Agendamentos do dia
-    agendamentos = Agendamento.objects.filter(data=selected_date)
-    for ag in agendamentos:
-    # ... (seu código atual de slots)
+    # ===============================
+    # AGENDAMENTOS
+    # ===============================
+    agendamentos = (
+        Agendamento.objects
+        .filter(data=selected_date)
+        .annotate(
+            prioridade_status=Case(
+                When(status='agendado', then=Value(0)),
+                When(status='pre', then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField()
+            )
+        )
+        .order_by('profissional_1_id', 'hora_inicio', 'prioridade_status')
+        .select_related('paciente', 'especialidade', 'pacote', 'profissional_1')
+    )
 
-        if ag.pacote:
-            ag.sessao_atual = ag.pacote.get_sessao_atual(ag)
-        else:
-            ag.sessao_atual = None
+    # ===============================
+    # MAPEAR SLOTS
+    # ===============================
+    slots = defaultdict(list)
 
-    # Profissionais
-    profissionais_qs = Profissional.objects.filter(
-        user__tipo='profissional'
-    ).order_by('nome')
-
-    profissionais = []
-    for prof in profissionais_qs:
-        tem_agenda = agendamentos.filter(profissional_1=prof).exists()
-
-        profissionais.append({
-            'id': prof.id,
-            'nome': prof.nome,
-            'tem_agenda': tem_agenda
-        })
-
-    # Horários (07:00 às 19:00)
-    horarios = []
-    hora = 7
-    minuto = 0
-
-    while hora < 19 or (hora == 19 and minuto == 0):
-        horarios.append(f"{hora:02d}:{minuto:02d}")
-        minuto += 30
-        if minuto >= 60:
-            hora += 1
-            minuto = 0
-
-    # ===== PARTE MAIS IMPORTANTE =====
     for ag in agendamentos:
         ag.horarios_ocupados = []
         ag.slot_inicio = None
@@ -124,33 +117,175 @@ def agenda_board(request):
             continue
 
         inicio = datetime.combine(selected_date, ag.hora_inicio)
+        fim = datetime.combine(selected_date, ag.hora_fim) if ag.hora_fim else inicio + timedelta(hours=1)
 
-        if ag.hora_fim:
-            fim = datetime.combine(selected_date, ag.hora_fim)
-            duracao_minutos = int((fim - inicio).total_seconds() / 60)
-        else:
-            duracao_minutos = 60  # padrão 1h
-
-        ag.qtd_slots = ceil(duracao_minutos / 30)
+        duracao = int((fim - inicio).total_seconds() / 60)
+        ag.qtd_slots = ceil(duracao / 30)
 
         for i in range(ag.qtd_slots):
-            slot = inicio + timedelta(minutes=30 * i)
-            ag.horarios_ocupados.append(slot.strftime('%H:%M'))
+            horario = (inicio + timedelta(minutes=30 * i)).strftime('%H:%M')
+            ag.horarios_ocupados.append(horario)
 
-        # 🔥 ESSENCIAL PARA O FRONT
-        ag.slot_inicio = ag.horarios_ocupados[0]
+            chave = f"{ag.profissional_1.id}_{horario}"
+            slots[chave].append(ag)
 
-    context = {
+    # ===============================
+    # DEFINIR DONO DO SLOT
+    # ===============================
+    for chave, lista in slots.items():
+        # ordenar por prioridade
+        lista.sort(
+            key=lambda ag: (
+                0 if ag.status == 'agendado'
+                else 1 if ag.status == 'pre'
+                else 2
+            )
+        )
+
+        principal = lista[0]
+
+        # SOMENTE o principal recebe slot_inicio
+        if principal.horarios_ocupados:
+            principal.slot_inicio = principal.horarios_ocupados[0]
+
+    # ===============================
+    # CONTAGEM DE SESSÕES
+    # ===============================
+    for ag in agendamentos:
+        if ag.slot_inicio:
+            chave = f"{ag.profissional_1.id}_{ag.slot_inicio}"
+            ag.contagem_simultaneas = len(slots[chave])
+        else:
+            ag.contagem_simultaneas = 0
+
+        if ag.pacote:
+            ag.sessao_atual = ag.pacote.get_sessao_atual(ag)
+        else:
+            ag.sessao_atual = None
+
+    # ===============================
+    # PROFISSIONAIS
+    # ===============================
+    profissionais = []
+    for prof in Profissional.objects.filter(user__tipo='profissional').order_by('nome'):
+        profissionais.append({
+            'id': prof.id,
+            'nome': prof.nome,
+            'tem_agenda': agendamentos.filter(profissional_1=prof).exists()
+        })
+
+    # ===============================
+    # HORÁRIOS
+    # ===============================
+    horarios = []
+    hora, minuto = 7, 0
+    while hora < 19 or (hora == 19 and minuto == 0):
+        horarios.append(f"{hora:02d}:{minuto:02d}")
+        minuto += 30
+        if minuto >= 60:
+            minuto = 0
+            hora += 1
+
+    return render(request, "core/agendamentos/agenda_board.html", {
         "agendamentos": agendamentos,
         "horarios": horarios,
         "profissionais": profissionais,
         "selected_date": selected_date.strftime('%Y-%m-%d'),
         "is_today": selected_date == now().date(),
         "today_date": now().date().strftime('%Y-%m-%d'),
-    }
+    })
 
-    return render(request, "core/agendamentos/agenda_board.html", context)
 
+from django.http import JsonResponse
+
+from django.http import JsonResponse
+from django.utils.timezone import now
+from datetime import datetime, time
+
+def get_sessoes_simultaneas(request):
+    profissional_id = request.GET.get('profissional_id')
+    horario = request.GET.get('horario')
+    data_str = request.GET.get('data')
+    
+    try:
+        data = datetime.strptime(data_str, '%Y-%m-%d').date()
+        
+        # Converter horário para objeto time
+        hora_str = horario
+        hora_obj = datetime.strptime(hora_str, '%H:%M').time()
+        
+        # Buscar agendamentos que se sobrepõem a este horário para este profissional
+        # Lógica: agendamentos que começam antes ou no horário e terminam depois do horário
+        agendamentos = Agendamento.objects.filter(
+            data=data,
+            profissional_1_id=profissional_id
+        ).select_related(
+            'paciente', 
+            'especialidade', 
+            'pacote'
+        )  # Removemos 'ambiente' se não for ForeignKey
+        
+        # Filtrar os que se sobrepõem ao horário
+        sessoes = []
+        for ag in agendamentos:
+            # Verificar se o horário está dentro do intervalo do agendamento
+            horario_dentro = False
+            
+            if ag.hora_inicio and ag.hora_fim:
+                # Horário está entre hora_inicio (inclusive) e hora_fim (exclusive)
+                if ag.hora_inicio <= hora_obj < ag.hora_fim:
+                    horario_dentro = True
+            elif ag.hora_inicio and not ag.hora_fim:
+                # Se não tem hora_fim, considerar duração padrão de 1 hora
+                hora_fim_estimada = (datetime.combine(data, ag.hora_inicio) + timedelta(hours=1)).time()
+                if ag.hora_inicio <= hora_obj < hora_fim_estimada:
+                    horario_dentro = True
+            
+            if horario_dentro:
+                # Tentar obter ambiente de forma segura
+                ambiente_nome = ''
+                try:
+                    # Se ambiente for CharField ou TextField
+                    if hasattr(ag, 'ambiente') and ag.ambiente:
+                        ambiente_nome = str(ag.ambiente)
+                    # Se for ForeignKey (remova se não existir)
+                    # elif ag.ambiente:
+                    #     ambiente_nome = ag.ambiente.nome
+                except:
+                    ambiente_nome = ''
+                
+                sessao_info = {
+                    'id': ag.id,
+                    'paciente_nome': ag.paciente.nome,
+                    'hora_inicio': ag.hora_inicio.strftime('%H:%M') if ag.hora_inicio else '',
+                    'hora_fim': ag.hora_fim.strftime('%H:%M') if ag.hora_fim else '',
+                    'especialidade': ag.especialidade.nome if ag.especialidade else '',
+                    'ambiente': ambiente_nome,
+                    'status':ag.get_status_display(),
+                    'cor': ag.especialidade.cor if ag.especialidade else '#8b5cf6'
+                }
+                
+                # Adicionar informações do pacote se existir
+                if ag.pacote and hasattr(ag.pacote, 'get_sessao_atual'):
+                    try:
+                        sessao_atual = ag.pacote.get_sessao_atual(ag)
+                        sessao_info['sessao_atual'] = sessao_atual
+                        sessao_info['total_sessoes'] = ag.pacote.qtd_sessoes if hasattr(ag.pacote, 'qtd_sessoes') else None
+                    except:
+                        sessao_info['sessao_atual'] = None
+                        sessao_info['total_sessoes'] = None
+                
+                sessoes.append(sessao_info)
+        
+        return JsonResponse({'sessoes': sessoes})
+        
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+    
+    
+    
+    
 def api_detalhar_agendamento(request, agendamento_id):
     agendamento = get_object_or_404(Agendamento, id=agendamento_id)
 
