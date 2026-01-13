@@ -113,13 +113,13 @@ const formCriarAgendamento = document.getElementById('agendamentoForm');
 if (formCriarAgendamento) {
     formCriarAgendamento.addEventListener('submit', async function (e) {
         e.preventDefault();
-        e.stopPropagation(); // segurança extra
+        e.stopPropagation();
         if (formularioTemErro()) {
             mostrarMensagem(
                 '❌ Corrija a data ou o horário antes de salvar o agendamento.',
                 'error'
             );
-            return; // ⛔ impede avançar
+            return;
         }
         const formData = new FormData(this);
 
@@ -139,7 +139,7 @@ if (formCriarAgendamento) {
                     data.message || '✅ Agendamento criado com sucesso!',
                     'success'
                 );
-            
+
                 // aguarda a mensagem e redireciona
                 setTimeout(() => {
                     if (data.redirect_url) {
