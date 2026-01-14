@@ -29,19 +29,19 @@
           />
         </div>
   
-        <div class="filtro-campo">
-          <label for="filtro-categoria">Categoria</label>
-          <select name="especialidade_id" id="especialidadeInput" class="filtro-select">
-            <option value="" disabled selected>Selecione uma especialidade</option>
-
-            
-            {% for esp in especialidades %}
-            <option value="{{ esp.id }}">
-                {{ esp.nome }}
-            </option>
-            {% endfor %}
+      <div class="filtro-campo">
+        <label for="filtro-categoria">Categoria</label>
+        <select name="especialidade_id" id="especialidadeInput" class="filtro-select">
+          <option value="">Selecione uma especialidade</option>
+          
+          {% for esp in especialidades %}
+          <option value="{{ esp.id }}" 
+                  {% if request.GET.especialidade_id == esp.id|stringformat:"s" %}selected{% endif %}>
+              {{ esp.nome }}
+          </option>
+          {% endfor %}
         </select>
-        </div>
+      </div>
   
         <div class="filtro-campo">
           <label for="filtro-status">Status</label>

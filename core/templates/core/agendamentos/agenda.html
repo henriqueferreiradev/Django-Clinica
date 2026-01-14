@@ -48,26 +48,39 @@
             <div class="info-col">
                 <span class="paciente">{{ ag.paciente }}</span>
                 <span class="profissional">{{ ag.especialidade }} com {{ ag.profissional }} </span>
+                
                 {% if ag.sessao_atual %}
-                {% if ag.codigo|slice:":3" == "REP" %}
-                    <span class="sessao reposicao"><i class="fa-solid fa-rotate-left"></i>Sessão de Reposição | {{ ag.codigo }}</span>
-                {% elif ag.codigo|slice:":3" == "BEN" %}
-                    <span class="sessao beneficio"><i class="fa-solid fa-gift"></i>
-                    {% if "beneficio:sessao_livre" in ag.tags %}
-                    Sessão de Status PREMIUM | {{ ag.codigo }}
-                    {% elif "beneficio:sessao_aniversario" in ag.tags %}
-                    Sessão de Aniversário | {{ ag.codigo }}</span>
-                    {% elif "beneficio:relaxante" in ag.tags %}
-                     Sessão de Status VIP| {{ ag.codigo }}</span>
+                    {% if ag.codigo|slice:":3" == "REP" %}
+                        <span class="sessao reposicao">
+                            <i class="fa-solid fa-rotate-left"></i>Sessão de Reposição | {{ ag.codigo }}
+                        </span>
+                        
+                    {% elif ag.codigo|slice:":3" == "BEN" %}
+                        <span class="sessao beneficio">
+                            <i class="fa-solid fa-gift"></i>
+                            {% if "beneficio:sessao_livre" in ag.tags %}
+                                Sessão de Status PREMIUM | {{ ag.codigo }}
+                            {% elif "beneficio:sessao_aniversario" in ag.tags %}
+                                Sessão de Aniversário | {{ ag.codigo }}
+                            {% elif "beneficio:relaxante" in ag.tags %}
+                                Sessão de Status VIP | {{ ag.codigo }}
+                            {% else %}
+                                Sessão de Aniversário | {{ ag.codigo }}
+                            {% endif %}
+                        </span>
+                        
                     {% else %}
-                    Sessão de Aniversário | {{ ag.codigo }}</span>
+                        <span class="sessao normal">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} |
+                            {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
+                            
+                            {% if ag.pacote_ativo == False %}
+                                |<span class='pac-finalizado'> Pacote Finalizado</span>
+                            {% endif %}
+                        </span>
                     {% endif %}
-                    {% else %}
-                <span class="sessao normal">
-                    <i class="fa-solid fa-calendar-check"></i>Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }} {% if ag.sessoes_restantes <= 0 %}<span class='pac-finalizado'> - Pacote Finalizado </span> {% endif %}
-                </span>
                 {% endif %}
-            {% endif %}
             </div>
 
             <div class="status-col">

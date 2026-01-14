@@ -1,8 +1,6 @@
 from django.urls import reverse
-# CORREÇÃO: Importações corretas
 from datetime import date, datetime, time, timedelta
-from django.utils.timezone import now  
- 
+from django.utils.timezone import now
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt 
 from django.contrib.auth.decorators import login_required
@@ -21,6 +19,9 @@ from django.utils.timezone import now
 from datetime import datetime, timedelta
 from math import ceil
 from django.db.models import Case, When, Value, IntegerField
+import unicodedata
+
+
 
 @login_required(login_url='login')
 def agenda_view(request):
@@ -29,15 +30,16 @@ def agenda_view(request):
     # Recupera filtros se houverem
     data_inicio = request.GET.get('data_inicio')
     data_fim = request.GET.get('data_fim')
-    especialidade = request.GET.get('especialidade_id')
+    especialidade_id = request.GET.get('especialidade_id')
     status=request.GET.get('status')
 
 
 
     filtros = {
+        'query':query,
         'data_inicio': data_inicio,
         'data_fim': data_fim,
-        'especialidade':especialidade,
+        'especialidade':especialidade_id,
         'status': status,
          
 
@@ -1008,47 +1010,64 @@ def verificar_pacotes_ativos(request, paciente_id):
         }
     })
     
-    
+def remover_acentos(texto):
+    if not texto:
+        return texto
+    # Normaliza o texto para decompor caracteres acentuados
+    texto_normalizado = unicodedata.normalize('NFKD', str(texto))
+    # Remove os caracteres de combinação (acentos)
+    texto_sem_acentos = ''.join([c for c in texto_normalizado if not unicodedata.combining(c)])
+    return texto_sem_acentos
+
 def listar_agendamentos(filtros=None, query=None):
+    
     filtros = filtros or {}
-    paciente = filtros.get('')
+     
     data_inicio = filtros.get('data_inicio')
     data_fim = filtros.get('data_fim')
-    especialidade = filtros.get('especialidade_id')
+    especialidade_id = filtros.get('especialidade')
     status = filtros.get('status')
 
-    
     qs_filtros = {}
-
+ 
     if data_inicio:
         qs_filtros["data__gte"] = data_inicio
     if data_fim:
         qs_filtros["data__lte"] = data_fim
     if not data_inicio and not data_fim:
         qs_filtros['data__gte'] = date.today()
-    if especialidade:
-         qs_filtros['especialidade'] = especialidade  
+    if especialidade_id:
+        qs_filtros['especialidade_id'] = especialidade_id
+
     if status: 
         qs_filtros['status'] = status
 
-    # CORRIGIR: Incluir 'especialidade' no select_related
     agendamentos = Agendamento.objects.select_related(
-        'paciente', 'profissional_1', 'profissional_1__especialidade', 'especialidade'  # ← ADICIONAR AQUI
-    ).filter(
-        **qs_filtros
-    ).order_by('data', 'hora_inicio')
+        'paciente', 'profissional_1', 'profissional_1__especialidade', 'especialidade','pacote'
+    ).filter(**qs_filtros).order_by('data', 'hora_inicio')
 
     if query:
-        agendamentos = agendamentos.filter(
-            Q(paciente__nome__icontains=query) |
-            Q(paciente__sobrenome__icontains=query) |
-            Q(profissional_1__nome__icontains=query) |
-            Q(profissional_1__sobrenome__icontains=query)
-        )
+        query_normalizada = remover_acentos(query).lower()
+        
+        agendamentos_filtrados = []
+        for ag in agendamentos:
+            nome_paciente = remover_acentos(f"{ag.paciente.nome} {ag.paciente.sobrenome}").lower()
+            nome_profissional = remover_acentos(f"{ag.profissional_1.nome} {ag.profissional_1.sobrenome}").lower()
+            codigo_pacote = ''
+            if ag.pacote and ag.pacote.codigo:
+                codigo_pacote = remover_acentos(ag.pacote.codigo).lower()
+                
+                
+            if (query_normalizada in nome_paciente or 
+                query_normalizada in nome_profissional or
+                query_normalizada in codigo_pacote):
+                agendamentos_filtrados.append(ag.id)
+        
+        agendamentos = agendamentos.filter(id__in=agendamentos_filtrados)
 
     dados_agrupados = {}
     dias_semana_pt = ['Segunda-feira', 'Terça-feira', 'Quarta-feira',
-                      'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
+                    'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
 
     for ag in agendamentos:
         data_formatada = ag.data.strftime("%d/%m/%Y")
@@ -1086,6 +1105,8 @@ def listar_agendamentos(filtros=None, query=None):
                 sessao_atual = None
                 sessoes_total = sessoes_total_val if isinstance(sessoes_total_val, int) else None
                 sessoes_restantes = None
+        pacote = getattr(ag, 'pacote', None)
+        pacote_ativo = pacote.ativo if pacote else None
 
         dados_agrupados[chave_data].append({
             'id': ag.id,
@@ -1102,6 +1123,7 @@ def listar_agendamentos(filtros=None, query=None):
             'codigo': codigo,
             'is_reposicao': is_reposicao,
             'is_pacote': is_pacote,
+            'pacote_ativo':pacote_ativo,
             'tags':ag.tags,
         })
 
