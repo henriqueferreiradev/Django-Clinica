@@ -17,6 +17,10 @@ from django.contrib import messages
 import uuid
 from decimal import Decimal, InvalidOperation
 import json
+from django.utils.timezone import now
+from datetime import datetime, timedelta
+from math import ceil
+from django.db.models import Case, When, Value, IntegerField
 
 @login_required(login_url='login')
 def agenda_view(request):
@@ -59,21 +63,6 @@ def agenda_view(request):
     }
 
     return render(request, 'core/agendamentos/agenda.html', context)
-
-
-
-from django.utils.timezone import now
-from datetime import datetime, timedelta
-from math import ceil
-from django.db.models import Case, When, Value, IntegerField
-
-from django.utils.timezone import now
-from datetime import datetime, timedelta
-from math import ceil
-from collections import defaultdict
-from django.db.models import Case, When, Value, IntegerField
-from django.shortcuts import render
-
 
 def agenda_board(request):
     # ===============================

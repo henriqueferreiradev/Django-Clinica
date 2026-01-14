@@ -476,13 +476,13 @@ async function abrirDetalhesAgendamento(agendamentoId) {
                 </div>
                 <div class="form-group">
                     <select name="status" class="status-select" id="status-select">
-                        <option value="pre" ${data.status === 'pre' ? 'selected' : ''}>✅ Pré-Agendado</option>
-                        <option value="agendado" ${data.status === 'agendado' ? 'selected' : ''}>✅ Agendado</option>
-                        <option value="finalizado" ${data.status === 'finalizado' ? 'selected' : ''}>✅ Consulta finalizada!</option>
-                        <option value="desistencia" ${data.status === 'desistencia' ? 'selected' : ''}>❌ D - Desmarcação</option>
-                        <option value="desistencia_remarcacao" ${data.status === 'desistencia_remarcacao' ? 'selected' : ''}>⚠️ DCR - Desmarcação com reposição</option>
-                        <option value="falta_remarcacao" ${data.status === 'falta_remarcacao' ? 'selected' : ''}>⚠️ FCR - Falta com reposição</option>
-                        <option value="falta_cobrada" ${data.status === 'falta_cobrada' ? 'selected' : ''}>❌ FC - Falta cobrada</option>
+                        <option value="pre" ${data.status === 'pre' ? 'selected' : ''}>Pré-Agendado</option>
+                        <option value="agendado" ${data.status === 'agendado' ? 'selected' : ''}>Agendado</option>
+                        <option value="finalizado" ${data.status === 'finalizado' ? 'selected' : ''}>Consulta finalizada!</option>
+                        <option value="desistencia" ${data.status === 'desistencia' ? 'selected' : ''}>D - Desmarcação</option>
+                        <option value="desistencia_remarcacao" ${data.status === 'desistencia_remarcacao' ? 'selected' : ''}>DCR - Desmarcação com reposição</option>
+                        <option value="falta_remarcacao" ${data.status === 'falta_remarcacao' ? 'selected' : ''}>FCR - Falta com reposição</option>
+                        <option value="falta_cobrada" ${data.status === 'falta_cobrada' ? 'selected' : ''}>FC - Falta cobrada</option>
                     </select>
                     <div class="status-form-actions">
                         <button type="submit" class="btn-salvar-status">
@@ -654,7 +654,7 @@ function mostrarSessoesSimultaneas(profissionalId, horario, data) {
                 alert('Erro ao carregar sessões: ' + data.error);
                 return;
             }
-            
+
             // Criar modal para mostrar as sessões
             criarModalSessoes(data.sessoes, horario);
         })
@@ -670,53 +670,53 @@ function criarModalSessoes(sessoes, horario) {
     if (modalAnterior) {
         modalAnterior.remove();
     }
-    
+
     // Criar modal
     const modal = document.createElement('div');
     modal.className = 'sessoes-modal';
-    
+
     // Conteúdo do modal
     let html = `<div class="sessoes-content">
         <h3>${sessoes.length} Sessões Agendadas às ${horario}</h3>
         <div class="sessoes-lista">`;
-    
+
     sessoes.forEach((sessao, index) => {
         html += `<div class="sessao-item" style="border-left-color: ${sessao.cor}">
             <h4>${sessao.paciente_nome}</h4>
             <h4>${sessao.id}</h4>
             <div class="sessao-info">
                 <p><i class="fas fa-clock"></i> ${sessao.hora_inicio} - ${sessao.hora_fim}</p>`;
-        
+
         if (sessao.sessao_atual) {
             html += `<p><i class="fas fa-layer-group"></i> Sessão ${sessao.sessao_atual} de ${sessao.total_sessoes}</p>`;
         }
-        
+
         if (sessao.especialidade) {
             html += `<p><i class="fas fa-stethoscope"></i> ${sessao.especialidade}</p>`;
         }
-        
+
         if (sessao.status) {
             html += `<p><i class="fas fa-door-open"></i> ${sessao.status}</p>`;
         }
-        
+
         html += `</div>
             <button onclick="abrirDetalhesAgendamento(${sessao.id})" class="btn">
                 Ver Detalhes
             </button>
         </div>`;
     });
-    
+
     html += `</div>
         <button onclick="this.closest('.sessoes-modal').remove()" class="btn">
             Fechar
         </button>
     </div>`;
-    
+
     modal.innerHTML = html;
     document.body.appendChild(modal);
-    
+
     // Fechar modal ao clicar fora
-    modal.addEventListener('click', function(e) {
+    modal.addEventListener('click', function (e) {
         if (e.target === modal) {
             modal.remove();
         }

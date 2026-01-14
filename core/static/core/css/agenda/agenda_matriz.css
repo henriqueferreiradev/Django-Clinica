@@ -6,7 +6,7 @@
     --text: var(--preto);
     --text-light: var(--preto);
     --border: var(--cinza-borda);
- 
+
     --cinza-claro: #f8fafc;
 }
 
@@ -751,46 +751,40 @@ td {
 
 /* Classes de status */
 .status-pre {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
+    border: 1px solid #5a5753;
+    background-color: rgba(90, 87, 83, 0.15);
 }
 
 .status-agendado {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    border: 1px solid #01D4D6;
+    background-color: hsla(181, 99%, 42%, 0.15);
 }
 
 .status-finalizado {
-    background-color: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
+    border: 1px solid #23D31D;
+    background-color: rgba(35, 211, 29, 0.15);
 }
 
 .status-desistencia {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    border: 1px solid #F70000;
+    background-color: rgba(247, 0, 0, 0.15);
 }
 
 .status-desistencia-remarcacao {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
+    border: 1px solid #F7F700;
+    background-color: rgba(247, 247, 0, 0.15);
 }
 
 .status-falta-remarcacao {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
+    border: 1px solid #F7F700;
+    background-color: rgba(247, 247, 0, 0.15);
 }
 
 .status-falta-cobrada {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    border: 1px solid #F70000;
+    background-color: rgba(247, 0, 0, 0.15);
 }
+
 .btn {
     background: var(--roxoPrincipal);
     color: var(--branco);
@@ -804,6 +798,7 @@ td {
     justify-content: center;
     transition: background 0.3s;
 }
+
 .btn-edit-status {
     background: var(--roxoPrincipal);
     color: var(--branco);
@@ -975,8 +970,12 @@ td {
     font-weight: bold;
     box-shadow: 0 2px 6px rgba(244, 67, 54, 0.4);
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    transition: transform 0.5s ease;
 }
 
+.notification-count:hover {
+    transform: scale(1.4);
+}
 
 /* Modal para mostrar sessões simultâneas */
 .sessoes-modal {
@@ -985,7 +984,7 @@ td {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1047,7 +1046,8 @@ td {
     border-radius: 12px;
     width: 100%;
     max-width: 600px;
-    max-height: 90vh; /* ALTURA FIXA MÁXIMA */
+    max-height: 90vh;
+    /* ALTURA FIXA MÁXIMA */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1099,7 +1099,8 @@ td {
     flex: 1;
     overflow-y: auto;
     padding: 24px;
-    min-height: 0; /* IMPORTANTE para flexbox funcionar */
+    min-height: 0;
+    /* IMPORTANTE para flexbox funcionar */
 }
 
 /* Mantenha seus estilos existentes aqui... */
@@ -1189,7 +1190,8 @@ td {
 
 /* ===== FOOTER - FIXO NA BASE DO MODAL ===== */
 .modal-footer-sticky {
-    flex-shrink: 0; /* Não encolhe */
+    flex-shrink: 0;
+    /* Não encolhe */
     background: white;
     border-top: 2px solid var(--roxoPrincipal);
     padding: 16px 24px;
@@ -1329,14 +1331,6 @@ td {
     background: var(--border);
 }
 
-/* Classes de status */
-.status-pre { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-.status-agendado { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-.status-finalizado { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-.status-desistencia { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-.status-desistencia_remarcacao { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-.status-falta_remarcacao { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-.status-falta_cobrada { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
 /* Animações */
 @keyframes slideIn {
@@ -1344,6 +1338,7 @@ td {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1355,43 +1350,43 @@ td {
     .modal-container {
         max-height: 95vh;
     }
-    
+
     .modal-body-content {
         padding: 20px;
     }
-    
+
     .info-row {
         grid-template-columns: 1fr;
     }
-    
+
     .sessoes-container {
         grid-template-columns: 1fr;
     }
-    
+
     .modal-header,
     .modal-footer-sticky {
         padding: 16px 20px;
     }
-    
+
     .status-view {
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
     }
-    
+
     .status-badge {
         min-width: auto;
     }
-    
+
     .btn-edit-status {
         width: 100%;
         justify-content: center;
     }
-    
+
     .status-form-actions {
         flex-direction: column;
     }
-    
+
     .btn-salvar-status,
     .btn-cancelar-status {
         width: 100%;
@@ -1402,12 +1397,12 @@ td {
     .modal-overlay {
         padding: 10px;
     }
-    
+
     .paciente-foto-container {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .paciente-meta {
         justify-content: center;
         gap: 12px;
