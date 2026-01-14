@@ -568,7 +568,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1em;
- 
+
 }
 
 .header-sidebar h2 {
@@ -1101,6 +1101,9 @@ select.input-s {
     }
 }
 
+.pac-finalizado {
+    color: #F70000;
+}
 
 .agenda-item.status-pre {
     border: 1px solid #5a5753;
@@ -1495,11 +1498,11 @@ button[type="submit"]:disabled:hover {
     display: flex;
     gap: var(--espaco-sm);
     padding: 1em;
-   
+
     background: var(--branco);
     flex-shrink: 0;
     /* Não encolhe */
-   
+
 }
 
 

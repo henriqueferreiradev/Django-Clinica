@@ -64,7 +64,7 @@
                     {% endif %}
                     {% else %}
                 <span class="sessao normal">
-                    <i class="fa-solid fa-calendar-check"></i>Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }}
+                    <i class="fa-solid fa-calendar-check"></i>Sessão {{ ag.sessao_atual }} de {{ ag.sessoes_total }} | {{ ag.sessoes_restantes }} restante(s) | {{ ag.codigo }} {% if ag.sessoes_restantes <= 0 %}<span class='pac-finalizado'> - Pacote Finalizado </span> {% endif %}
                 </span>
                 {% endif %}
             {% endif %}
