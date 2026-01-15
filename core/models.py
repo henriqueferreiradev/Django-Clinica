@@ -801,6 +801,7 @@ class PacotePaciente(models.Model):
                 status__in=[
                     'agendado',
                     'finalizado',
+                    'desistencia'
                     'desistencia_remarcacao',
                     'falta_remarcacao',
                     'falta_cobrada',

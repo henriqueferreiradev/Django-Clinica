@@ -1463,7 +1463,7 @@ def alterar_status_agendamento(request, agendamento_id):
         novo_status = data.get('status')
         
         status_validos = ['pre', 'agendado', 'finalizado', 'desistencia', 
-                          'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada']
+                          'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada', 'dcr','fcr','d']
         
         if novo_status not in status_validos:
             return JsonResponse({'success': False, 'error': 'Status inválido'}, status=400)
@@ -1529,8 +1529,7 @@ def atualizar_contagem_pacote(pacote):
         return
     
     # Lista de status que consomem sessão
-    STATUS_CONSUME = ['agendado', 'realizado', 'falta', 'desistencia', 
-                     'desistencia_remarcacao', 'falta_remarcacao', 'pre_agendamento']
+    STATUS_CONSUME = ['agendado', ]
     
     agendamentos_consumidos = Agendamento.objects.filter(
         pacote=pacote,

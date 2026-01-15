@@ -18,14 +18,14 @@
     <form method="get">
         <div class="filtro-body">
         <div class="filtro-campo">
-            <label for="filtro-nome">Nome</label>
+            <label for="filtro-nome">Busca Avançada</label>
             <input
             type="text"
             name="q"
             value="{{ query }}"
             id="filtro-nome"
             class="filtro-input"
-            placeholder="Digite um nome..."
+            placeholder="Digite por paciente, profissional ou pacotes..."
           />
         </div>
   
@@ -46,16 +46,20 @@
         <div class="filtro-campo">
           <label for="filtro-status">Status</label>
           <div class="status-col">
-                <select name="status" class="filtro-select">
-                    <option value="" disabled selected>Selecione um serviço</option>
-                    <option value="pre">✅ Pré-Agendado</option>
-                    <option value="agendado">✅ Agendado</option>
-                    <option value="finalizado">✅ Consulta finalizada!</option>
-                    <option value="desistencia">❌ D - Desmarcação</option>
-                    <option value="desistencia_remarcacao">⚠️ DCR - Desmarcação com reposição</option>
-                    <option value="falta_remarcacao">⚠️ FCR - Falta com reposição</option>
-                    <option value="falta_cobrada">❌ FC - Falta cobrada</option>
-                </select>
+              <select name="status" class="filtro-select">
+                <option value="" {% if not request.GET.status %}selected{% endif %}>
+                  Selecione um status
+                </option>
+
+                <option value="pre" {% if request.GET.status == "pre" %}selected{% endif %}>✅ Pré-Agendado</option>
+                <option value="agendado" {% if request.GET.status == "agendado" %}selected{% endif %}>✅ Agendado</option>
+                <option value="finalizado" {% if request.GET.status == "finalizado" %}selected{% endif %}>✅ Consulta finalizada!</option>
+                <option value="desistencia" {% if request.GET.status == "desistencia" %}selected{% endif %}>❌ D - Desmarcação</option>
+                <option value="desistencia_remarcacao" {% if request.GET.status == "desistencia_remarcacao" %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
+                <option value="falta_remarcacao" {% if request.GET.status == "falta_remarcacao" %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
+                <option value="falta_cobrada" {% if request.GET.status == "falta_cobrada" %}selected{% endif %}>❌ FC - Falta cobrada</option>
+              </select>
+
             </div>       
         </div>
   
@@ -66,7 +70,7 @@
               type="date"
               name="data_inicio"
               id="filtro-data-inicio"
-              value="{{ data_inicio }}"
+              value="{{ request.GET.data_inicio }}"
               class="filtro-input"
             />
           </div>
@@ -79,7 +83,7 @@
               type="date"
               name="data_fim"
               id="filtro-data-fim"
-              value="{{ data_fim }}"
+              value="{{ request.GET.data_fim }}"
               class="filtro-input"
             />
           </div>
