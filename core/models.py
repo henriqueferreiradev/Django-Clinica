@@ -993,7 +993,12 @@ class ConfigAgenda(models.Model):
             'dias_funcionamento': self.dias_funcionamento,
             'dias_formatados': self.dias_formatados() if hasattr(self, 'dias_formatados') else ', '.join(self.dias_funcionamento)
         }
-    
+        
+class EscalaBase(models.Model):
+    profissional = models.ForeignKey(Profissional,on_delete=models.SET_NULL, null=True)
+    dias_trabalho = models.JSONField(default=list)
+            
+
 class Pendencia(models.Model):
     tipo = models.CharField(max_length=100)
     descricao = models.TextField()
