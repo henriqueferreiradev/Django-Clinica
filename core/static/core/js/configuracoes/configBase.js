@@ -218,7 +218,9 @@ document.querySelectorAll('form').forEach(form => {
     form.addEventListener('submit', function (e) {
         const requiredFields = this.querySelectorAll('[required]');
         let valid = true;
-
+        if (form.id === 'escalaForm') {
+            return;
+        }
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
                 valid = false;
@@ -1439,3 +1441,6 @@ window.PlanoContasModal = {
     refresh: carregarContas
 };
 
+
+
+ 

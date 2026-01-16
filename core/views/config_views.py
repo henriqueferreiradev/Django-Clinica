@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ConfigAgenda, ContaBancaria, ESTADO_CIVIL, Especialidade, Fornecedor, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, User, VINCULO, ValidadeBeneficios, ValidadeReposicao
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ConfigAgenda, ContaBancaria, ESTADO_CIVIL, EscalaBaseProfissional, Especialidade, Fornecedor, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, User, VINCULO, ValidadeBeneficios, ValidadeReposicao
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.template.context_processors import request
 
 @login_required(login_url='login')
 
@@ -331,6 +332,30 @@ def configuracao_view(request):
             )
             
             messages.success(request, 'Configurações salvas com sucesso!')
+        
+        
+        elif tipo == 'escala_base_profissional':
+
+            prof_id = request.POST.get('profissional_id')
+            profissional = Profissional.objects.get(id=prof_id)
+
+            for dia in ['seg','ter','qua','qui','sex','sab','dom']:
+
+                ativo = request.POST.get(f'disp[{dia}][ativo]') == 'on'
+                inicio = request.POST.get(f'disp[{dia}][inicio]') or None
+                fim = request.POST.get(f'disp[{dia}][fim]') or None
+
+                EscalaBaseProfissional.objects.update_or_create(
+                    profissional=profissional,
+                    dia_semana=dia,
+                    defaults={
+                        'ativo': ativo,
+                        'hora_inicio': inicio,
+                        'hora_fim': fim
+                    }
+                )
+
+            return JsonResponse({'success': True})
 
         '''
         =====================================================================================
@@ -484,7 +509,8 @@ def configuracao_view(request):
     servicos, total_servicos_ativos, mostrar_todos_servico, filtra_inativo_servico = filtrar_ativos_inativos(request, Servico, prefixo='servico')
     especialidades, total_especialidades_ativas, mostrar_todos_especialidade, filtra_inativo_especialidade = filtrar_ativos_inativos(request, Especialidade, prefixo='especialidade')
     fornecedores, total_fornecedores_ativas, mostrar_todos_fornecedores, filtra_inativo_fornecedores = filtrar_ativos_inativos(request, Fornecedor, prefixo='fornecedor')
-    
+    from django.db.models import Exists, OuterRef
+
     try:
         config = ConfigAgenda.objects.first()
     except:
@@ -494,6 +520,16 @@ def configuracao_view(request):
     profissionais = Profissional.objects.all()
     fornecedores = Fornecedor.objects.all()
     categorias = CategoriaContasReceber.objects.all()
+    escala_ativa = EscalaBaseProfissional.objects.filter(
+        profissional=OuterRef('pk'),
+        ativo=True
+    )
+
+    profissionais = profissionais.annotate(
+        escala_configurada=Exists(escala_ativa)
+    )
+
+    
     print(categorias)
  
     
@@ -519,8 +555,24 @@ def configuracao_view(request):
             'FCR': ValidadeReposicao.objects.filter(tipo_reposicao='fcr').first(),
         },
         'config':config,
+         
     })
 
+def obter_escala_profissional(request, prof_id):
+    escalas = EscalaBaseProfissional.objects.filter(profissional_id=prof_id)
+    data = {}
+    
+    for escala in escalas:
+        data[escala.dia_semana] = {
+            'profissional': escala.profissional.nome,
+            'ativo': escala.ativo,
+            'inicio': escala.hora_inicio.strftime('%H:%M') if escala.hora_inicio else '',
+            'fim': escala.hora_fim.strftime('%H:%M') if escala.hora_fim else '',
+        }
+        
+    return JsonResponse(data)
+    
+    
 def testes(request):
     
     return render(request, 'core/agendamentos/testes.html')

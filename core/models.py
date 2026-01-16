@@ -994,10 +994,26 @@ class ConfigAgenda(models.Model):
             'dias_formatados': self.dias_formatados() if hasattr(self, 'dias_formatados') else ', '.join(self.dias_funcionamento)
         }
         
-class EscalaBase(models.Model):
-    profissional = models.ForeignKey(Profissional,on_delete=models.SET_NULL, null=True)
-    dias_trabalho = models.JSONField(default=list)
-            
+class EscalaBaseProfissional(models.Model):
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE,related_name="escala_base")
+    dia_semana = models.CharField(max_length=3, choices=[
+            ('seg', 'Segunda'),
+            ('ter', 'Terça'),
+            ('qua', 'Quarta'),
+            ('qui', 'Quinta'),
+            ('sex', 'Sexta'),
+            ('sab', 'Sábado'),
+            ('dom', 'Domingo'),
+        ]
+    )
+
+    ativo = models.BooleanField(default=False)
+    hora_inicio = models.TimeField(null=True, blank=True)
+    hora_fim = models.TimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('profissional', 'dia_semana')
+
 
 class Pendencia(models.Model):
     tipo = models.CharField(max_length=100)

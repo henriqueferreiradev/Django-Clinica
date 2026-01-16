@@ -467,9 +467,7 @@
                     Os horários por dia são opcionais — se deixados em branco, valem os horários gerais da clínica.
                 </div>
 
-                <form method="POST" id="escalaForm">
-                    {% csrf_token %}
-                    <input type="hidden" name="tipo" value="escala_base" />
+ 
                     
                     <!-- Campos ocultos para todos os profissionais -->
                     <div id="hiddenFields" style="display: none;">
@@ -493,9 +491,15 @@
                             <div class="prof-info">
                                 <h4 class='status-badge'>{{ prof.nome }}</h4>
                                 <div class="prof-status">
-                                    <span class="status-badge" id="status_{{ prof.id }}">
-                                        <i class='bx bx-time'></i> Não configurado
-                                    </span>
+                                    {% if prof.escala_configurada %}
+                                        <span class="status-badge configurado">
+                                            <i class='bx bx-check-circle'></i> Configurado
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge">
+                                            <i class='bx bx-time'></i> Não configurado
+                                        </span>
+                                    {% endif %}
                                 </div>
                             </div>
                             <button type="button" class="btn-config" data-prof-id="{{ prof.id }}">
@@ -506,11 +510,7 @@
                         <div class="config-info"><i class='bx bx-info-circle'></i> Nenhum profissional encontrado.</div>
                         {% endfor %}
                     </div>
-
-                    <button type="submit" class="btn-submit mt-3">
-                        <i class='bx bx-save'></i> Salvar Todas as Escalas
-                    </button>
-                </form>
+ 
             </div>
 
             <!-- Modal para configuração - FORA DO FORM, NO FINAL DO BODY -->
@@ -522,15 +522,7 @@
                     </div>
                     
                     <div class="modal-body">
-                        <div class="modal-prof-info">
-                            <div class="prof-avatar-lg">
-                                <i class='bx bx-user'></i>
-                            </div>
-                            <div>
-                                <h4 id="modalProfNome"></h4>
-                                <p class="prof-id" id="modalProfId"></p>
-                            </div>
-                        </div>
+ 
 
                         <div class="escala-form">
                             <div class="dias-escala">
@@ -1743,193 +1735,197 @@
 {% block scripts %}
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* =========================
+       VARIÁVEIS GLOBAIS
+    ========================= */
     const modal = document.getElementById('modalEscala');
-    const closeModal = document.getElementById('closeModal');
-    const configButtons = document.querySelectorAll('.btn-config');
+    const closeModalBtn = document.getElementById('closeModal');
     const btnSalvarModal = document.getElementById('btnSalvarModal');
     const btnLimparModal = document.getElementById('btnLimparModal');
-    const modalProfNome = document.getElementById('modalProfNome');
-    const modalProfId = document.getElementById('modalProfId');
-    
+
     let profissionalAtual = null;
-    
-    // Dias da semana para facilitar manipulação
-    const dias = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
-    
-    // Abrir modal ao clicar em configurar
-    configButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const profId = this.dataset.profId;
-            const profCard = this.closest('.prof-card-select');
-            const profNome = profCard.querySelector('h4').textContent;
-            
-            profissionalAtual = profId;
-            modalProfNome.textContent = profNome;
-            modalProfId.textContent = `ID: ${profId}`;
-            
-            // Carregar dados existentes
-            carregarDadosProfissional(profId);
-            
-            // Abrir modal
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Previne scroll do body
+
+    const dias = ['seg','ter','qua','qui','sex','sab'];
+
+    /* =========================
+       ABRIR MODAL
+    ========================= */
+    document.querySelectorAll('.btn-config').forEach(btn => {
+        btn.addEventListener('click', () => {
+            abrirModalEscala(btn.dataset.profId);
         });
     });
-    
-    // Fechar modal
-    closeModal.addEventListener('click', function() {
-        fecharModal();
-    });
-    
-    // Fechar modal ao clicar fora
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            fecharModal();
-        }
-    });
-    
-    // Fechar modal com ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            fecharModal();
-        }
-    });
-    
-    // Função para fechar modal
+
+    function abrirModalEscala(profId) {
+        profissionalAtual = profId;
+        limparModalEscala();
+
+        fetch(`/api/escala-profissional/${profId}/`)
+            .then(res => res.json())
+            .then(data => {
+                preencherModalEscala(data);
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            })
+            .catch(() => {
+                mostrarMensagem('Erro ao carregar escala', 'error');
+            });
+    }
+
+    /* =========================
+       FECHAR MODAL
+    ========================= */
     function fecharModal() {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
         profissionalAtual = null;
     }
-    
-    // Salvar configuração do modal
-    btnSalvarModal.addEventListener('click', function() {
-        if (!profissionalAtual) return;
-        
-        // Atualizar campos ocultos
-        dias.forEach(dia => {
-            const ativo = document.getElementById(`modal_${dia}_ativo`).checked;
-            const inicio = document.getElementById(`modal_${dia}_inicio`).value;
-            const fim = document.getElementById(`modal_${dia}_fim`).value;
-            
-            // Atualizar campos ocultos
-            const hiddenAtivo = document.getElementById(`hidden_${profissionalAtual}_${dia}_ativo`);
-            const hiddenInicio = document.getElementById(`hidden_${profissionalAtual}_${dia}_inicio`);
-            const hiddenFim = document.getElementById(`hidden_${profissionalAtual}_${dia}_fim`);
-            
-            if (hiddenAtivo) hiddenAtivo.checked = ativo;
-            if (hiddenInicio) hiddenInicio.value = inicio;
-            if (hiddenFim) hiddenFim.value = fim;
-        });
-        
-        // Atualizar status do profissional
-        atualizarStatusProfissional(profissionalAtual, true);
-        
-        // Fechar modal
-        fecharModal();
-        
-        // Mostrar mensagem de sucesso
-        mostrarNotificacao('Escala salva com sucesso!', 'success');
+
+    closeModalBtn.addEventListener('click', fecharModal);
+
+    modal.addEventListener('click', e => {
+        if (e.target === modal) fecharModal();
     });
-    
-    // Limpar configuração
-    btnLimparModal.addEventListener('click', function() {
-        if (!confirm('Tem certeza que deseja limpar toda a escala deste profissional?')) {
-            return;
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            fecharModal();
         }
-        
+    });
+
+    /* =========================
+       PREENCHER MODAL (BANCO → MODAL)
+    ========================= */
+    function preencherModalEscala(data) {
+        Object.keys(data).forEach(dia => {
+            const info = data[dia];
+
+            const chk = document.getElementById(`modal_${dia}_ativo`);
+            const inicio = document.getElementById(`modal_${dia}_inicio`);
+            const fim = document.getElementById(`modal_${dia}_fim`);
+
+            if (!chk) return;
+
+            chk.checked = info.ativo;
+            inicio.value = info.inicio || '';
+            fim.value = info.fim || '';
+        });
+    }
+
+    /* =========================
+       LIMPAR MODAL
+    ========================= */
+    function limparModalEscala() {
         dias.forEach(dia => {
             document.getElementById(`modal_${dia}_ativo`).checked = false;
             document.getElementById(`modal_${dia}_inicio`).value = '';
             document.getElementById(`modal_${dia}_fim`).value = '';
         });
+    }
+
+    btnLimparModal.addEventListener('click', () => {
+        if (!confirm('Deseja limpar toda a escala deste profissional?')) return;
+        limparModalEscala();
     });
-    
-    // Função para carregar dados do profissional
-    function carregarDadosProfissional(profId) {
+
+    /* =========================
+       SALVAR ESCALA
+    ========================= */
+    btnSalvarModal.addEventListener('click', () => {
+        if (!profissionalAtual) return;
+
+        const formData = new FormData();
+        formData.append(
+            'csrfmiddlewaretoken',
+            document.querySelector('[name=csrfmiddlewaretoken]').value
+        );
+        formData.append('tipo', 'escala_base_profissional');
+        formData.append('profissional_id', profissionalAtual);
+
         dias.forEach(dia => {
-            const hiddenAtivo = document.getElementById(`hidden_${profId}_${dia}_ativo`);
-            const hiddenInicio = document.getElementById(`hidden_${profId}_${dia}_inicio`);
-            const hiddenFim = document.getElementById(`hidden_${profId}_${dia}_fim`);
-            
-            if (hiddenAtivo) {
-                document.getElementById(`modal_${dia}_ativo`).checked = hiddenAtivo.checked;
-            }
-            
-            if (hiddenInicio) {
-                document.getElementById(`modal_${dia}_inicio`).value = hiddenInicio.value;
-            }
-            
-            if (hiddenFim) {
-                document.getElementById(`modal_${dia}_fim`).value = hiddenFim.value;
+            const ativo = document.getElementById(`modal_${dia}_ativo`).checked;
+            const inicio = document.getElementById(`modal_${dia}_inicio`).value;
+            const fim = document.getElementById(`modal_${dia}_fim`).value;
+
+            if (ativo) {
+                formData.append(`disp[${dia}][ativo]`, 'on');
+                formData.append(`disp[${dia}][inicio]`, inicio || '');
+                formData.append(`disp[${dia}][fim]`, fim || '');
             }
         });
-    }
-    
-    // Função para atualizar status visual
-    function atualizarStatusProfissional(profId, configurado) {
-        const statusElement = document.getElementById(`status_${profId}`);
-        const template = configurado ? 
-            document.getElementById('statusConfigurado').content.cloneNode(true) :
-            document.getElementById('statusNaoConfigurado').content.cloneNode(true);
-        
-        statusElement.innerHTML = '';
-        statusElement.appendChild(template);
-    }
-    
-    // Função para mostrar notificação (pode ser substituída por um toast)
-    function mostrarNotificacao(mensagem, tipo) {
-        // Cria um elemento de notificação
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${tipo === 'success' ? '#10b981' : '#ef4444'};
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-        `;
-        notification.textContent = mensagem;
-        
-        document.body.appendChild(notification);
-        
-        // Remove após 3 segundos
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
-    
-    // Inicializar status baseado nos campos existentes
-    function inicializarStatus() {
-        const profCards = document.querySelectorAll('.prof-card-select');
-        profCards.forEach(card => {
-            const profId = card.dataset.profId;
-            let temConfiguracao = false;
-            
-            // Verificar se algum dia está configurado
-            dias.forEach(dia => {
-                const hiddenAtivo = document.getElementById(`hidden_${profId}_${dia}_ativo`);
-                if (hiddenAtivo && hiddenAtivo.checked) {
-                    temConfiguracao = true;
-                }
-            });
-            
-            if (temConfiguracao) {
-                atualizarStatusProfissional(profId, true);
+
+        fetch('', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                mostrarMensagem('Escala salva com sucesso!', 'success');
+                atualizarStatusProfissional(profissionalAtual, true);
+                fecharModal();
+            } else {
+                mostrarMensagem(data.error || 'Erro ao salvar', 'error');
             }
+        })
+        .catch(() => {
+            mostrarMensagem('Erro ao salvar escala', 'error');
         });
+    });
+function limparModalEscala() {
+    dias.forEach(dia => {
+        const chk = document.getElementById(`modal_${dia}_ativo`);
+        const inicio = document.getElementById(`modal_${dia}_inicio`);
+        const fim = document.getElementById(`modal_${dia}_fim`);
+
+        if (!chk || !inicio || !fim) return;
+
+        chk.checked = false;
+        inicio.value = '';
+        fim.value = '';
+    });
+}
+
+    /* =========================
+       STATUS VISUAL
+    ========================= */
+async function atualizarStatusProfissional(profId) {
+  try {
+    const resp = await fetch(`/api/escala-profissional/${profId}/`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    const data = await resp.json();
+
+    // Se qualquer dia tiver ativo = true -> configurado
+    const configurado = Object.values(data).some(d => d && d.ativo === true);
+
+    const el = document.getElementById(`status_${profId}`);
+    if (!el) return;
+
+    if (configurado) {
+      el.innerHTML = `<span class="status-badge configurado"><i class='bx bx-check-circle'></i> Configurado</span>`;
+    } else {
+      el.innerHTML = `<span class="status-badge"><i class='bx bx-time'></i> Não configurado</span>`;
     }
-    
-    // Inicializar ao carregar
-    inicializarStatus();
+  } catch (e) {
+    console.error('Erro ao atualizar status:', e);
+  }
+}
+
+// Rodar pra todos ao carregar
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.prof-card-select').forEach(card => {
+    atualizarStatusProfissional(card.dataset.profId);
+  });
+});
+
+
 });
 </script>
+
     <script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
     <script src="{% static 'core/js/configuracoes/configBase.js' %}"></script>
 {% endblock %}
