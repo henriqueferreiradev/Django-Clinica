@@ -463,90 +463,182 @@
             
             <div class="form-content">
                 <div class="config-info">
-                    <i class='bx bx-info-circle'></i> Marque os dias padrão de cada profissional. Os horários por dia são
-                    opcionais — se deixados em branco, valem os horários gerais da clínica definidos acima.
+                    <i class='bx bx-info-circle'></i> Clique em um profissional para configurar sua escala base. 
+                    Os horários por dia são opcionais — se deixados em branco, valem os horários gerais da clínica.
                 </div>
 
-                <form method="POST">
+                <form method="POST" id="escalaForm">
                     {% csrf_token %}
                     <input type="hidden" name="tipo" value="escala_base" />
+                    
+                    <!-- Campos ocultos para todos os profissionais -->
+                    <div id="hiddenFields" style="display: none;">
+                        {% for prof in profissionais %}
+                            {% for dia in dias_semana %}
+                            <input type="checkbox" name="disp[{{prof.id}}][{{dia.sigla}}][ativo]" 
+                                id="hidden_{{prof.id}}_{{dia.sigla}}_ativo">
+                            <input type="time" name="disp[{{prof.id}}][{{dia.sigla}}][inicio]" 
+                                id="hidden_{{prof.id}}_{{dia.sigla}}_inicio">
+                            <input type="time" name="disp[{{prof.id}}][{{dia.sigla}}][fim]" 
+                                id="hidden_{{prof.id}}_{{dia.sigla}}_fim">
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
 
-                    {% for prof in profissionais %}
-                    <div class="disp-card">
-                        <div class="pill"><i class='bx bx-user'></i> {{ prof.nome }}</div>
-                        <div class="pill"><i class='bx bx-id-card'></i> ID: {{ prof.id }}</div>
-
-                        <div class="week-grid">
-                            <div class="day-label">
-                                <label class="checkbox-option">
-                                    <input type="checkbox" name="disp[{{prof.id}}][seg][ativo]">
-                                    Segunda
-                                </label>
+                    <!-- Grid de profissionais -->
+                    <div class="profissionais-grid">
+                        {% for prof in profissionais %}
+                        <div class="prof-card-select" data-prof-id="{{ prof.id }}">
                             
-                             
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][seg][inicio]"
-                                placeholder="Início">
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][seg][fim]" placeholder="Fim">
+                            <div class="prof-info">
+                                <h4 class='status-badge'>{{ prof.nome }}</h4>
+                                <div class="prof-status">
+                                    <span class="status-badge" id="status_{{ prof.id }}">
+                                        <i class='bx bx-time'></i> Não configurado
+                                    </span>
+                                </div>
                             </div>
-                            <div class="day-label">
-                                <label class="checkbox-option">
-                                    <input type="checkbox" name="disp[{{prof.id}}][ter][ativo]">
-                                    Terça
-                                </label>
-                             
-                            
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][ter][inicio]">
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][ter][fim]">
-                             </div>
-                            <div class="day-label">
-                                <label class="checkbox-option">
-                                    <input type="checkbox" name="disp[{{prof.id}}][qua][ativo]">
-                                    Quarta
-                                </label>
-                             
-                             
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][qua][inicio]">
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][qua][fim]">
-                             </div>
-                            <div class="day-label">
-                                <label class="checkbox-option">
-                                    <input type="checkbox" name="disp[{{prof.id}}][qui][ativo]">
-                                    Quinta
-                                </label>
-                           
-                           
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][qui][inicio]">
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][qui][fim]">
-                           </div>
-                            <div class="day-label">
-                                <label class="checkbox-option">
-                                    <input type="checkbox" name="disp[{{prof.id}}][sex][ativo]">
-                                    Sexta
-                                </label>
-                          
-                             
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][sex][inicio]">
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][sex][fim]">
-                           </div>
-                            <div class="day-label">
-                                <label class="checkbox-option">
-                                    <input type="checkbox" name="disp[{{prof.id}}][sab][ativo]">
-                                    Sábado
-                                </label>
-                             
-                             
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][sab][inicio]">
-                            <input class="input-field" type="time" name="disp[{{prof.id}}][sab][fim]">
+                            <button type="button" class="btn-config" data-prof-id="{{ prof.id }}">
+                                <i class='bx bx-cog'></i> 
+                            </button>
+                        </div>
+                        {% empty %}
+                        <div class="config-info"><i class='bx bx-info-circle'></i> Nenhum profissional encontrado.</div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="submit" class="btn-submit mt-3">
+                        <i class='bx bx-save'></i> Salvar Todas as Escalas
+                    </button>
+                </form>
+            </div>
+
+            <!-- Modal para configuração - FORA DO FORM, NO FINAL DO BODY -->
+            <div class="modal-overlay" id="modalEscala">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3><i class='bx bx-calendar'></i> Configurar Escala</h3>
+                        <button class="modal-close" id="closeModal">&times;</button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="modal-prof-info">
+                            <div class="prof-avatar-lg">
+                                <i class='bx bx-user'></i>
+                            </div>
+                            <div>
+                                <h4 id="modalProfNome"></h4>
+                                <p class="prof-id" id="modalProfId"></p>
+                            </div>
+                        </div>
+
+                        <div class="escala-form">
+                            <div class="dias-escala">
+                                <!-- Segunda -->
+                                <div class="dia-escala-item">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="modal_seg_ativo">
+                                        <span class="dia-nome-modal">Segunda</span>
+                                    </label>
+                                    <div class="horarios-modal">
+                                        <input type="time" id="modal_seg_inicio" class="time-input-modal" placeholder="08:00">
+                                        <span class="time-sep-modal">às</span>
+                                        <input type="time" id="modal_seg_fim" class="time-input-modal" placeholder="17:00">
+                                    </div>
+                                </div>
+
+                                <!-- Terça -->
+                                <div class="dia-escala-item">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="modal_ter_ativo">
+                                        <span class="dia-nome-modal">Terça</span>
+                                    </label>
+                                    <div class="horarios-modal">
+                                        <input type="time" id="modal_ter_inicio" class="time-input-modal" placeholder="08:00">
+                                        <span class="time-sep-modal">às</span>
+                                        <input type="time" id="modal_ter_fim" class="time-input-modal" placeholder="17:00">
+                                    </div>
+                                </div>
+
+                                <!-- Quarta -->
+                                <div class="dia-escala-item">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="modal_qua_ativo">
+                                        <span class="dia-nome-modal">Quarta</span>
+                                    </label>
+                                    <div class="horarios-modal">
+                                        <input type="time" id="modal_qua_inicio" class="time-input-modal" placeholder="08:00">
+                                        <span class="time-sep-modal">às</span>
+                                        <input type="time" id="modal_qua_fim" class="time-input-modal" placeholder="17:00">
+                                    </div>
+                                </div>
+
+                                <!-- Quinta -->
+                                <div class="dia-escala-item">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="modal_qui_ativo">
+                                        <span class="dia-nome-modal">Quinta</span>
+                                    </label>
+                                    <div class="horarios-modal">
+                                        <input type="time" id="modal_qui_inicio" class="time-input-modal" placeholder="08:00">
+                                        <span class="time-sep-modal">às</span>
+                                        <input type="time" id="modal_qui_fim" class="time-input-modal" placeholder="17:00">
+                                    </div>
+                                </div>
+
+                                <!-- Sexta -->
+                                <div class="dia-escala-item">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="modal_sex_ativo">
+                                        <span class="dia-nome-modal">Sexta</span>
+                                    </label>
+                                    <div class="horarios-modal">
+                                        <input type="time" id="modal_sex_inicio" class="time-input-modal" placeholder="08:00">
+                                        <span class="time-sep-modal">às</span>
+                                        <input type="time" id="modal_sex_fim" class="time-input-modal" placeholder="17:00">
+                                    </div>
+                                </div>
+
+                                <!-- Sábado -->
+                                <div class="dia-escala-item">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="modal_sab_ativo">
+                                        <span class="dia-nome-modal">Sábado</span>
+                                    </label>
+                                    <div class="horarios-modal">
+                                        <input type="time" id="modal_sab_inicio" class="time-input-modal" placeholder="08:00">
+                                        <span class="time-sep-modal">às</span>
+                                        <input type="time" id="modal_sab_fim" class="time-input-modal" placeholder="17:00">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="btnLimparModal">
+                                    <i class='bx bx-trash'></i> Limpar
+                                </button>
+                                <button type="button" class="btn btn-primary" id="btnSalvarModal">
+                                    <i class='bx bx-check'></i> Salvar
+                                </button>
                             </div>
                         </div>
                     </div>
-                    {% empty %}
-                    <div class="config-info"><i class='bx bx-info-circle'></i> Nenhum profissional encontrado.</div>
-                    {% endfor %}
-
-                    <button type="submit" class="btn-submit mt-3"><i class='bx bx-save'></i> Salvar Escala Base</button>
-                </form>
+                </div>
             </div>
+
+            <!-- Template para status badge (usado no JavaScript) -->
+            <template id="statusConfigurado">
+                <span class="status-badge configurado">
+                    <i class='bx bx-check-circle'></i> Configurado
+                </span>
+            </template>
+
+            <template id="statusNaoConfigurado">
+                <span class="status-badge">
+                    <i class='bx bx-time'></i> Não configurado
+                </span>
+            </template>
+
         </div>
 
         <div class="form">
@@ -1649,6 +1741,195 @@
 {% endblock %}
 
 {% block scripts %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('modalEscala');
+    const closeModal = document.getElementById('closeModal');
+    const configButtons = document.querySelectorAll('.btn-config');
+    const btnSalvarModal = document.getElementById('btnSalvarModal');
+    const btnLimparModal = document.getElementById('btnLimparModal');
+    const modalProfNome = document.getElementById('modalProfNome');
+    const modalProfId = document.getElementById('modalProfId');
+    
+    let profissionalAtual = null;
+    
+    // Dias da semana para facilitar manipulação
+    const dias = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
+    
+    // Abrir modal ao clicar em configurar
+    configButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const profId = this.dataset.profId;
+            const profCard = this.closest('.prof-card-select');
+            const profNome = profCard.querySelector('h4').textContent;
+            
+            profissionalAtual = profId;
+            modalProfNome.textContent = profNome;
+            modalProfId.textContent = `ID: ${profId}`;
+            
+            // Carregar dados existentes
+            carregarDadosProfissional(profId);
+            
+            // Abrir modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Previne scroll do body
+        });
+    });
+    
+    // Fechar modal
+    closeModal.addEventListener('click', function() {
+        fecharModal();
+    });
+    
+    // Fechar modal ao clicar fora
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            fecharModal();
+        }
+    });
+    
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            fecharModal();
+        }
+    });
+    
+    // Função para fechar modal
+    function fecharModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        profissionalAtual = null;
+    }
+    
+    // Salvar configuração do modal
+    btnSalvarModal.addEventListener('click', function() {
+        if (!profissionalAtual) return;
+        
+        // Atualizar campos ocultos
+        dias.forEach(dia => {
+            const ativo = document.getElementById(`modal_${dia}_ativo`).checked;
+            const inicio = document.getElementById(`modal_${dia}_inicio`).value;
+            const fim = document.getElementById(`modal_${dia}_fim`).value;
+            
+            // Atualizar campos ocultos
+            const hiddenAtivo = document.getElementById(`hidden_${profissionalAtual}_${dia}_ativo`);
+            const hiddenInicio = document.getElementById(`hidden_${profissionalAtual}_${dia}_inicio`);
+            const hiddenFim = document.getElementById(`hidden_${profissionalAtual}_${dia}_fim`);
+            
+            if (hiddenAtivo) hiddenAtivo.checked = ativo;
+            if (hiddenInicio) hiddenInicio.value = inicio;
+            if (hiddenFim) hiddenFim.value = fim;
+        });
+        
+        // Atualizar status do profissional
+        atualizarStatusProfissional(profissionalAtual, true);
+        
+        // Fechar modal
+        fecharModal();
+        
+        // Mostrar mensagem de sucesso
+        mostrarNotificacao('Escala salva com sucesso!', 'success');
+    });
+    
+    // Limpar configuração
+    btnLimparModal.addEventListener('click', function() {
+        if (!confirm('Tem certeza que deseja limpar toda a escala deste profissional?')) {
+            return;
+        }
+        
+        dias.forEach(dia => {
+            document.getElementById(`modal_${dia}_ativo`).checked = false;
+            document.getElementById(`modal_${dia}_inicio`).value = '';
+            document.getElementById(`modal_${dia}_fim`).value = '';
+        });
+    });
+    
+    // Função para carregar dados do profissional
+    function carregarDadosProfissional(profId) {
+        dias.forEach(dia => {
+            const hiddenAtivo = document.getElementById(`hidden_${profId}_${dia}_ativo`);
+            const hiddenInicio = document.getElementById(`hidden_${profId}_${dia}_inicio`);
+            const hiddenFim = document.getElementById(`hidden_${profId}_${dia}_fim`);
+            
+            if (hiddenAtivo) {
+                document.getElementById(`modal_${dia}_ativo`).checked = hiddenAtivo.checked;
+            }
+            
+            if (hiddenInicio) {
+                document.getElementById(`modal_${dia}_inicio`).value = hiddenInicio.value;
+            }
+            
+            if (hiddenFim) {
+                document.getElementById(`modal_${dia}_fim`).value = hiddenFim.value;
+            }
+        });
+    }
+    
+    // Função para atualizar status visual
+    function atualizarStatusProfissional(profId, configurado) {
+        const statusElement = document.getElementById(`status_${profId}`);
+        const template = configurado ? 
+            document.getElementById('statusConfigurado').content.cloneNode(true) :
+            document.getElementById('statusNaoConfigurado').content.cloneNode(true);
+        
+        statusElement.innerHTML = '';
+        statusElement.appendChild(template);
+    }
+    
+    // Função para mostrar notificação (pode ser substituída por um toast)
+    function mostrarNotificacao(mensagem, tipo) {
+        // Cria um elemento de notificação
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${tipo === 'success' ? '#10b981' : '#ef4444'};
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        `;
+        notification.textContent = mensagem;
+        
+        document.body.appendChild(notification);
+        
+        // Remove após 3 segundos
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+    
+    // Inicializar status baseado nos campos existentes
+    function inicializarStatus() {
+        const profCards = document.querySelectorAll('.prof-card-select');
+        profCards.forEach(card => {
+            const profId = card.dataset.profId;
+            let temConfiguracao = false;
+            
+            // Verificar se algum dia está configurado
+            dias.forEach(dia => {
+                const hiddenAtivo = document.getElementById(`hidden_${profId}_${dia}_ativo`);
+                if (hiddenAtivo && hiddenAtivo.checked) {
+                    temConfiguracao = true;
+                }
+            });
+            
+            if (temConfiguracao) {
+                atualizarStatusProfissional(profId, true);
+            }
+        });
+    }
+    
+    // Inicializar ao carregar
+    inicializarStatus();
+});
+</script>
     <script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
     <script src="{% static 'core/js/configuracoes/configBase.js' %}"></script>
 {% endblock %}

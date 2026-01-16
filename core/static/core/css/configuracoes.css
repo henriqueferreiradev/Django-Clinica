@@ -379,6 +379,15 @@ tbody tr:hover {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .status-badge.active {
@@ -1062,3 +1071,330 @@ select.input-field {
     flex-direction: row;
 }
 
+
+/* Grid de profissionais */
+.profissionais-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.prof-card-select {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.prof-card-select:hover {
+    border-color: var(--roxoPrincipal);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.1);
+}
+
+.prof-avatar {
+    width: 50px;
+    height: 50px;
+    background: #f0f4ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--roxoPrincipal);
+}
+
+.prof-info {
+    flex: 1;
+}
+
+.prof-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    color: #2d3748;
+}
+
+.prof-id {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.prof-status {
+    margin-top: 8px;
+}
+
+
+.status-badge.configurado {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.btn-config {
+    background: var(--roxoPrincipal);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-config:hover {
+    background: var(--roxo-primary-hover);
+}
+
+/* MODAL - CENTRALIZADO NA TELA */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-container {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+    margin: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #64748b;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #f1f5f9;
+    color: #2d3748;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-prof-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.prof-avatar-lg {
+    width: 60px;
+    height: 60px;
+    background: #f0f4ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--roxoPrincipal);
+}
+
+/* Formulário dentro do modal */
+.dias-escala {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.dia-escala-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5em;
+    background: #f8fafc;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.dia-escala-item:hover {
+    background: #f1f5f9;
+}
+
+.dia-checkbox-modal {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.dia-checkbox-modal input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 2px solid #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dia-checkbox-modal input[type="checkbox"]:checked {
+    background-color: var(--roxoPrincipal);
+    border-color: var(--roxoPrincipal);
+}
+
+.dia-nome-modal {
+    font-weight: 500;
+    color: #475569;
+    min-width: 70px;
+}
+
+.horarios-modal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.time-input-modal {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #334155;
+    background: white;
+    width: 100px;
+    transition: all 0.2s;
+}
+
+.time-input-modal:focus {
+    outline: none;
+    border-color: var(--roxoPrincipal);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.time-sep-modal {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* Botões do modal */
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+}
+
+
+
+
+
+/* Responsividade */
+@media (max-width: 640px) {
+    .profissionais-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-container {
+        width: 95%;
+        margin: 10px;
+        max-height: 90vh;
+    }
+
+    .dia-escala-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .horarios-modal {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .time-input-modal {
+        width: 100%;
+    }
+}
