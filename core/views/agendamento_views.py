@@ -187,6 +187,44 @@ def agenda_board(request):
     })
 
 
+
+from django.http import JsonResponse
+from datetime import datetime
+from core.models import EscalaBaseProfissional
+
+def profissionais_trabalham_no_dia(request):
+    date_str = request.GET.get('date')  # YYYY-MM-DD
+    if not date_str:
+        return JsonResponse({'error': 'Data não informada'}, status=400)
+
+    data = datetime.strptime(date_str, '%Y-%m-%d').date()
+
+    # mapear weekday -> sigla usada no banco
+    mapa_dias = {
+        0: 'seg',
+        1: 'ter',
+        2: 'qua',
+        3: 'qui',
+        4: 'sex',
+        5: 'sab',
+        6: 'dom',
+    }
+
+    dia_semana = mapa_dias[data.weekday()]
+
+    profissionais_ids = (
+        EscalaBaseProfissional.objects
+        .filter(dia_semana=dia_semana, ativo=True)
+        .values_list('profissional_id', flat=True)
+        .distinct()
+    )
+
+    return JsonResponse({
+        'dia': dia_semana,
+        'profissionais': list(profissionais_ids)
+    })
+
+
 from django.http import JsonResponse
 
 from django.http import JsonResponse

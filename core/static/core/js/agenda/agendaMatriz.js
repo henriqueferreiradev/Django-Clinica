@@ -185,26 +185,54 @@ document.querySelectorAll('.prof-card').forEach(card => {
 });
 
 // Filtro "Trabalha hoje" - SIMPLIFICADO
-document.getElementById('working-today-check').addEventListener('change', function () {
-    document.querySelectorAll('.prof-card').forEach(card => {
-        if (this.checked) {
-            // Mostrar apenas quem trabalha (simulação)
-            // Aqui você pode integrar com sua lógica real
-            const trabalhaHoje = Math.random() > 0.3; // 70% trabalham
-            if (!trabalhaHoje) {
-                card.style.opacity = '0.3';
-                card.style.pointerEvents = 'none';
-            } else {
-                card.style.opacity = '1';
-                card.style.pointerEvents = 'auto';
-            }
-        } else {
-            // Mostrar todos
-            card.style.opacity = '1';
-            card.style.pointerEvents = 'auto';
+document.getElementById('working-today-check')
+    .addEventListener('change', async function () {
+
+        const checked = this.checked;
+        const selectedDate = document.body.dataset.selectedDate;
+
+        if (!checked) {
+            // Mostrar todos novamente
+            document.querySelectorAll('.prof-card').forEach(card => {
+                card.style.display = '';
+            });
+            document.querySelectorAll('th[data-prof-id], td[data-prof-id]').forEach(el => {
+                el.style.display = '';
+            });
+            return;
+        }
+
+        try {
+            const res = await fetch(
+                `/api/profissionais-trabalham/?date=${selectedDate}`
+            );
+            const data = await res.json();
+
+            const idsPermitidos = data.profissionais.map(String);
+
+            // SIDEBAR
+            document.querySelectorAll('.prof-card').forEach(card => {
+                const profId = card.dataset.profId;
+                card.style.display = idsPermitidos.includes(profId) ? '' : 'none';
+            });
+
+            // HEADER DA TABELA
+            document.querySelectorAll('th[data-prof-id]').forEach(th => {
+                const profId = th.dataset.profId;
+                th.style.display = idsPermitidos.includes(profId) ? '' : 'none';
+            });
+
+            // CÉLULAS
+            document.querySelectorAll('td[data-prof-id]').forEach(td => {
+                const profId = td.dataset.profId;
+                td.style.display = idsPermitidos.includes(profId) ? '' : 'none';
+            });
+
+        } catch (err) {
+            console.error(err);
+            mostrarMensagem('Erro ao filtrar profissionais', 'error');
         }
     });
-});
 
 
 
