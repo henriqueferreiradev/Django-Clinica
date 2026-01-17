@@ -644,8 +644,8 @@
             <div class="form-content">
                 <div class="config-info">
                     <i class='bx bx-info-circle'></i> Use para ajustes pontuais (ex.: veio numa terça excepcionalmente ou
-                    faltou num dia fixo).
-                    Marque <b>Disponível</b> para forçar presença no dia; desmarcado significa <b>Indisponível</b>
+                    faltou num dia fixo). 
+                    <p>Marque <b>Disponível</b> para forçar presença no dia; desmarcado significa <b>Indisponível</b>
                     (sobrescreve a escala).
                 </div>
 
@@ -1375,6 +1375,120 @@
                 </form>
             </div>
         </div>
+        <div class="form">
+    <div class="form-header" onclick="toggleFormSection(this)">
+        <h2><i class='bx bx-message-add'></i> Mensagens Padrão</h2>
+        <button class="form-toggle">
+            <i class='bx bx-chevron-down'></i>
+        </button>
+    </div>
+    
+    <div class="form-content">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Primeira mensagem -->
+            <div class="mensagem-item">
+                <div class="form-grid">
+                    <!-- Título da Mensagem 1 -->
+                    <div class="form-group">
+                        <label for="titulo_1"><i class='bx bx-title'></i> Título da Mensagem</label>
+                        <input type="text" class="input-field" id="titulo_1" name="titulo_1" 
+                               placeholder="Ex: Lembrete de Consulta">
+                    </div>
+
+                    <!-- Conteúdo da Mensagem 1 -->
+                    <div class="form-group full-width">
+                        <label for="mensagem_1"><i class='bx bx-message-detail'></i> Conteúdo da Mensagem</label>
+                        <textarea class="input-field" rows="4" id="mensagem_1" name="mensagem_1" 
+                                  placeholder="Ex: Olá {{paciente}}, lembramos que você tem uma consulta agendada para {{data}} às {{hora}}."></textarea>
+                        <small style="color:var(--cinza-medio);">Use variáveis: <b>{{paciente}}</b>, <b>{{data}}</b>, <b>{{hora}}</b>, <b>{{profissional}}</b>, <b>{{local}}</b></small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segunda mensagem -->
+            <div class="mensagem-item">
+                <div class="form-grid">
+                    <!-- Título da Mensagem 2 -->
+                    <div class="form-group">
+                        <label for="titulo_2"><i class='bx bx-title'></i> Título da Mensagem</label>
+                        <input type="text" class="input-field" id="titulo_2" name="titulo_2" 
+                               placeholder="Ex: Confirmação de Consulta">
+                    </div>
+
+                    <!-- Conteúdo da Mensagem 2 -->
+                    <div class="form-group full-width">
+                        <label for="mensagem_2"><i class='bx bx-message-detail'></i> Conteúdo da Mensagem</label>
+                        <textarea class="input-field" rows="4" id="mensagem_2" name="mensagem_2" 
+                                  placeholder="Ex: Olá {{paciente}}, sua consulta com {{profissional}} foi confirmada para {{data}} às {{hora}} no {{local}}."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terceira mensagem -->
+            <div class="mensagem-item">
+                <div class="form-grid">
+                    <!-- Título da Mensagem 3 -->
+                    <div class="form-group">
+                        <label for="titulo_3"><i class='bx bx-title'></i> Título da Mensagem</label>
+                        <input type="text" class="input-field" id="titulo_3" name="titulo_3" 
+                               placeholder="Ex: Cancelamento de Consulta">
+                    </div>
+
+                    <!-- Conteúdo da Mensagem 3 -->
+                    <div class="form-group full-width">
+                        <label for="mensagem_3"><i class='bx bx-message-detail'></i> Conteúdo da Mensagem</label>
+                        <textarea class="input-field" rows="4" id="mensagem_3" name="mensagem_3" 
+                                  placeholder="Ex: Olá {{paciente}}, informamos que sua consulta de {{data}} foi cancelada. Entre em contato para reagendar."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quarta mensagem -->
+            <div class="mensagem-item">
+                <div class="form-grid">
+                    <!-- Título da Mensagem 4 -->
+                    <div class="form-group">
+                        <label for="titulo_4"><i class='bx bx-title'></i> Título da Mensagem</label>
+                        <input type="text" class="input-field" id="titulo_4" name="titulo_4" 
+                               placeholder="Ex: Lembrete de Pagamento">
+                    </div>
+
+                    <!-- Conteúdo da Mensagem 4 -->
+                    <div class="form-group full-width">
+                        <label for="mensagem_4"><i class='bx bx-message-detail'></i> Conteúdo da Mensagem</label>
+                        <textarea class="input-field" rows="4" id="mensagem_4" name="mensagem_4" 
+                                  placeholder="Ex: Olá {{paciente}}, lembramos que seu pagamento está pendente. Entre em contato para regularizar."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quinta mensagem -->
+            <div class="mensagem-item">
+                <div class="form-grid">
+                    <!-- Título da Mensagem 5 -->
+                    <div class="form-group">
+                        <label for="titulo_5"><i class='bx bx-title'></i> Título da Mensagem</label>
+                        <input type="text" class="input-field" id="titulo_5" name="titulo_5" 
+                               placeholder="Ex: Aviso Genérico">
+                    </div>
+
+                    <!-- Conteúdo da Mensagem 5 -->
+                    <div class="form-group full-width">
+                        <label for="mensagem_5"><i class='bx bx-message-detail'></i> Conteúdo da Mensagem</label>
+                        <textarea class="input-field" rows="4" id="mensagem_5" name="mensagem_5" 
+                                  placeholder="Ex: Olá {{paciente}}, temos um aviso importante para você."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class='bx bx-save'></i> Salvar Todas as Mensagens
+            </button>
+        </form>
+    </div>
+</div>
     </div>
 
     <!-- Aba Pacotes & Benefícios -->
@@ -1890,7 +2004,7 @@ function limparModalEscala() {
 }
 
     /* =========================
-       STATUS VISUAL
+    STATUS VISUAL
     ========================= */
 async function atualizarStatusProfissional(profId) {
   try {

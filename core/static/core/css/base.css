@@ -576,8 +576,8 @@ textarea {
 
 .bell-icon:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(33, 150, 243, 0.3);
-  background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+  box-shadow: 0 6px 18px rgba(156, 33, 243, 0.3);
+  background: linear-gradient(135deg, var(roxo) 0%, #90caf9 100%);
   border: 2px solid var(--preto);
   color: white
 }
