@@ -1015,6 +1015,12 @@ class EscalaBaseProfissional(models.Model):
         unique_together = ('profissional', 'dia_semana')
 
 
+class MensagemPadrao(models.Model):
+    titulo = models.CharField(max_length=150)
+    mensagem = models.TextField(blank=True)
+    criado_em = models.DateField(auto_now_add=True) 
+    ativo = models.BooleanField(default=False)
+
 class Pendencia(models.Model):
     tipo = models.CharField(max_length=100)
     descricao = models.TextField()
