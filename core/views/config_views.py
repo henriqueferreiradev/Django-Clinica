@@ -369,7 +369,11 @@ def configuracao_view(request):
                 MensagemPadrao.objects.create(
                     titulo=titulo,
                     mensagem=mensagem,
+                    ativo=True,
                 )
+            
+            messages.success(request,'Nova mensagem salva com sucesso!')
+             
             
 
 
@@ -589,7 +593,20 @@ def obter_escala_profissional(request, prof_id):
         
     return JsonResponse(data)
     
+def obter_mensagem_padrao(request):
+    mensagens =  MensagemPadrao.objects.filter(ativo=True)
+    data = []
     
+    for mensagem in mensagens:
+        data.append({
+            'titulo':mensagem.titulo,
+            'mensagem': mensagem.mensagem,
+            'criado_em': mensagem.criado_em,
+        })
+        
+    return JsonResponse({'mensagens':data})
+        
+        
 def testes(request):
     
     return render(request, 'core/agendamentos/testes.html')

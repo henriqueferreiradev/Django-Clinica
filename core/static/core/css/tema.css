@@ -79,15 +79,11 @@
   transition: background-color 0.3s, color 0.3s;
   margin: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--roxoPrincipal) var(--branco);
 }
 
-/* Afeta todas as scrollbars do site */
-* {
-  scrollbar-width: thin;
-  /* Firefox */
-  scrollbar-color: var(--roxoPrincipal) var(--branco);
-  /* Firefox (cor barra, cor trilho) */
-}
+ 
 
 /* Chrome, Safari e Edge */
 *::-webkit-scrollbar {
@@ -575,3 +571,4 @@ select::-ms-expand {
 .toast-close:hover {
   color: white;
 }
+

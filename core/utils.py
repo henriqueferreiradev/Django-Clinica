@@ -80,6 +80,8 @@ def gerar_horarios(inicio="07:00", fim="19:00"):
         horarios.append(inicio_dt.strftime("%H:%M"))
         inicio_dt += timedelta(minutes=30)
     return horarios
+
+
 def gerar_mensagem_confirmacao(ag):
     """
     Mensagem de confirmação para WhatsApp/E-mail.

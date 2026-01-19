@@ -42,6 +42,7 @@ urlpatterns = [
     path('api/plano-contas/', api_views.api_plano_contas, name='api_plano_contas'),
     path('api/contar-pendencias-dia/', api_views.contar_pendencias_dia, name='contar_pendencias_dia'),
     path('api/escala-profissional/<int:prof_id>/', config_views.obter_escala_profissional, name='obter_escala_profissional'),
+    path('api/mensagens-padrao/', config_views.obter_mensagem_padrao, name='obter_mensagem_padrao'),
 
     path('api/salvar-evolucao/', api_views.salvar_evolucao, name='salvar_evolucao'),
     path('api/listar-evolucoes/<int:paciente_id>/', api_views.listar_evolucoes, name='listar_evolucoes'),

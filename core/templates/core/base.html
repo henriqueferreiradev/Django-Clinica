@@ -220,16 +220,16 @@
         </div>
 
         <div class="topbar-div">
+                <div class="notification-area">
+          <div class="message-icon" id="messageIcon">
+              <i class="fa-solid fa-message"></i>
+          </div>
+        </div>
+
         <div class="notification-area">
           <div class="bell-icon" id="bellIcon">
               <i class="fas fa-bell"></i>
               <div class="notification-count" id="notificationCount">0</div>
-          </div>
-        </div>
-        <div class="notification-area">
-          <div class="bell-icon" id="bellIcon">
-              <i class="fa-solid fa-message"></i>
-               
           </div>
         </div>
 
@@ -247,34 +247,60 @@
         </div>
       </div>
       <div class="notification-modal" id="notificationModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Notificações da Clínica</h3>
-                <div class="close-modal" id="closeModal">
-                    <i class="fas fa-times"></i>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- Notificações serão carregadas dinamicamente -->
-                <div id="notificationsList"></div>
-                
-                <!-- Template para notificação (oculto) -->
-                <div class="notification-item template" style="display: none;">
-                    <div class="notification-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="notification-text">
-                        <h4>Título da Notificação</h4>
-                        <p>Descrição da notificação</p>
-                        <div class="notification-time">Horário</div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="mark-all-read" id="markAllRead">Marcar todas como lidas</button>
-                <button class="clear-all" id="clearAll">Limpar todas</button>
-            </div>
-        </div>
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h3>Notificações da Clínica</h3>
+                  <div class="close-modal" id="notificationCloseModal">
+                      <i class="fas fa-times"></i>
+                  </div>
+              </div>
+              <div class="modal-body">
+                  <!-- Notificações serão carregadas dinamicamente -->
+                  <div id="notificationsList"></div>
+                  
+                  <!-- Template para notificação (oculto) -->
+                  <div class="notification-item template" style="display: none;">
+                      <div class="notification-icon">
+                          <i class="fas fa-calendar-check"></i>
+                      </div>
+                      <div class="notification-text">
+                          <h4>Título da Notificação</h4>
+                          <p>Descrição da notificação</p>
+                          <div class="notification-time">Horário</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button class="mark-all-read" id="notificationMarkAllRead">Marcar todas como lidas</button>
+                  <button class="clear-all" id="notificationClearAll">Limpar todas</button>
+              </div>
+          </div>
+      </div>
+
+      <div class="message-modal" id="messageModal">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h3>Mensagens da Clínica</h3>
+                  <div class="close-modal" id="messageCloseModal">
+                      <i class="fas fa-times"></i>
+                  </div>
+              </div>
+              <div class="modal-body">
+                  <input class='input-s' type='search' style='width:100%'>
+ 
+                  <div id="messagesList"></div>
+                  
+                  <!-- Template para mensagem (oculto) -->
+                  <div class="message-item template" style="display: none;">
+                      <div class="message-text">
+                          <h4></h4>
+                          <p></p>
+                          <div class="message-time"></div>
+                      </div>
+                  </div>
+              </div>
+ 
+          </div>
       </div>
       {% endblock %}
       {% block content %}
