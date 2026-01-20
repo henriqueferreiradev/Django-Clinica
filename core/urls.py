@@ -7,6 +7,7 @@ from core.views import (
     config_views,
     dashboard_views,
     financeiro_views,
+    notificacoes_views,
     pacientes_views,
     profissionais_views,
     logs_views,
@@ -16,6 +17,7 @@ from core.views import (
     administrativo_views,
     frequencia_views,
     lembretes_views,
+    notificacoes_views,
 )
 
  
@@ -107,7 +109,7 @@ urlpatterns = [
     path('financeiro/folha-pagamento', financeiro_views.folha_pagamento_view, name='folha_pagamento'),
     path('financeiro/relatorios', financeiro_views.relatorios_view, name='financeiro_relatorios'),
 
-
+    path('api/notificacoes/', notificacoes_views.listar_notificacoes, name='listar_notificacoes'),
     
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
     path('agenda_profissional/', profissionais_views.agenda_profissional, name='agenda_profissional'),

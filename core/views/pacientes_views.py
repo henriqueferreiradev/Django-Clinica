@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import HistoricoStatus, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, TIPO_VINCULO, VinculoFamiliar
+from core.models import HistoricoStatus, Lembrete, Notificacao, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, TIPO_VINCULO, VinculoFamiliar
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -526,15 +526,29 @@ def pre_cadastro(request):
             paciente.foto = foto
             paciente.save()
 
-       
-        Pendencia.objects.create(
-            tipo='Pré-cadastro',
-            descricao=f"Conferir pré-cadastro de {paciente.nome}",
-            vinculado_paciente=paciente,
-            resolvido=False
+        Notificacao.objects.create(
+            usuario=request.user,
+            paciente=paciente,
+            titulo='Novo pré-cadastro realizado',
+            mensagem=(f'O paciente {paciente.nome} realizou um pré-cadastro.'
+                      'É necessário conferir e confirmar os dados.'),
+            tipo='alerta',
+            url=f'/pacientes/editar/{paciente.id}/',
         )
     
-        
+        Lembrete.objects.create(
+            usuario=request.user,
+            tipo_evento='cadastro',
+            origem='pre_cadastro',
+            data_disparo=timezone.now() + timedelta(days=1),
+            titulo='Pré-cadastro pendente de conferência',
+            mensagem=(
+                f'O pré-cadastro do paciente {paciente.nome} '
+                'ainda não foi conferido.'
+            ),
+            paciente=paciente
+        )
+
         return render(request, 'core/pacientes/pre_cadastro_confirmacao.html')
 
     return render(request, 'core/pacientes/pre_cadastro.html', {

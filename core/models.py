@@ -1742,8 +1742,63 @@ class AvaliacaoFisioterapeutica(models.Model):
     
     def __str__(self):
         return f"Avaliação {self.paciente} - {self.data_avaliacao.date()}"
+
+class Notificacao(models.Model):
+    TIPO_NOTIFICACAO_CHOICES = [
+        ('info', 'Informação'),
+        ('alerta', 'Alerta'),
+        ('sucesso', 'Sucesso'),
+        ('erro', 'Erro'),
+        ('lembrete', 'Lembrete'),
+    ]
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, blank=True, null=True)
+    titulo = models.CharField(max_length=100)
+    mensagem = models.TextField()
+    tipo = models.CharField(max_length=20, choices=TIPO_NOTIFICACAO_CHOICES, default='info')
+    lida = models.BooleanField(default=False)
+    url = models.CharField(max_length=255, blank=True, null=True)
+    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
     
-    
+    class Meta:
+        ordering = ['-criado_em']
+
+class Lembrete(models.Model):
+    TIPO_EVENTO_CHOICES = [
+        ('agendamento', 'Agendamento'),
+        ('pagamento', 'Pagamento'),
+        ('cadastro', 'Cadastro'),
+        ('nf', 'Nota Fiscal'),
+        ('manual', 'Manual'),
+    ]
+
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lembretes')
+    tipo_evento = models.CharField(max_length=30, choices=TIPO_EVENTO_CHOICES)
+    data_disparo = models.DateTimeField()
+    titulo = models.CharField(max_length=100)
+    mensagem = models.TextField()
+    disparado = models.BooleanField(default=False)
+    paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True, blank=True)
+    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
+    origem = models.CharField(max_length=50,blank=True,null=True, help_text='Ex: nf_pendente, pacote_finalizado, pagamento')
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+class NotaFiscalPendente(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
+    receita  = models.ForeignKey(Receita, on_delete=models.CASCADE)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    competencia = models.DateField(help_text='Mês/Ano fiscal da NF')
+    status = models.CharField(max_length=20, choices=[('pendente','Pendente'),('emitida','Emitida')], default='pendente')
+    previsao_emissao = models.DateField(null=True, blank=True)
+    emitida_em = models.DateField(null=True, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+
+
+
+
+
 def popular_plano_contas_inicial():
     """
     Popula o banco de dados com o plano de contas da clínica
