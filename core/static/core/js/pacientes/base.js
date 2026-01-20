@@ -131,18 +131,18 @@ function toggleDropdown(button) {
     }
 
 
-function handleClickOutside(event) {
-    if (!wrapper.contains(event.target)) {
-        dropdown.style.display = "none";
-        document.removeEventListener("click", handleClickOutside);
+    function handleClickOutside(event) {
+        if (!wrapper.contains(event.target)) {
+            dropdown.style.display = "none";
+            document.removeEventListener("click", handleClickOutside);
+        }
     }
-}
 
-setTimeout(() => {
-    if (dropdown.style.display === "flex") {
-        document.addEventListener("click", handleClickOutside);
-    }
-}, 10);
+    setTimeout(() => {
+        if (dropdown.style.display === "flex") {
+            document.addEventListener("click", handleClickOutside);
+        }
+    }, 10);
 }
 
 function temporizadorAlerta() {
@@ -169,7 +169,7 @@ function ocultarPopup(elemento) {
     const popup = elemento.querySelector('.tooltip-popup');
     popup.style.display = 'none';
 }
- 
+
 
 // ===== DEBUG RESPONSÁVEL MENOR DE IDADE =====
 (function () {

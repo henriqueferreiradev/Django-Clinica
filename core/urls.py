@@ -15,7 +15,9 @@ from core.views import (
     equipamentos_views,
     administrativo_views,
     frequencia_views,
+    lembretes_views,
 )
+
  
 
 urlpatterns = [
@@ -147,5 +149,7 @@ urlpatterns = [
     
     path("frequencias", frequencia_views.frequencias_get, name="frequencias_get"),
     path("frequencias/salvar", frequencia_views.frequencias_post, name="frequencias_post"),
+
+    path('lembretes/', lembretes_views.lembrete_views, name='lembretes')
     
 ]

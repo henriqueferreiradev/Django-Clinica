@@ -551,7 +551,8 @@ textarea {
   margin-left: auto;
 }
 
-.bell-icon, .message-icon {
+.bell-icon,
+.message-icon {
   position: relative;
   width: 40px;
   height: 40px;
@@ -561,24 +562,26 @@ textarea {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 4px 12px rgba(149, 33, 243, 0.2);
   transition: all 0.3s ease;
   border: 2px solid var(--roxoPrincipal);
 }
 
 
 
-.bell-icon i, .message-icon i {
+.bell-icon i,
+.message-icon i {
   font-size: 16px;
   color: var(--roxoPrincipal);
   animation: gentleRing 5s infinite ease-in-out;
 }
 
-.bell-icon:hover, .message-icon:hover{
+.bell-icon:hover,
+.message-icon:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(156, 33, 243, 0.3);
   background: linear-gradient(135deg, var(roxo) 0%, #90caf9 100%);
-  border: 2px solid var(--preto);
+  border: 2px solid var(--roxo-primary-hover);
   color: white
 }
 
@@ -623,7 +626,8 @@ textarea {
 }
 
 /* Modal de Notificações */
-.notification-modal, .message-modal {
+.notification-modal,
+.message-modal {
   display: none;
   position: fixed;
   top: 0;
@@ -635,12 +639,14 @@ textarea {
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.3s ease;
-  
+
 }
+
 .message-modal {
-  
-  overflow-y: auto; 
+
+  overflow-y: auto;
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -654,7 +660,7 @@ textarea {
 .modal-content {
   background: white;
   width: 90%;
-  max-width: 450px;
+  max-width: 600px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -675,9 +681,9 @@ textarea {
 }
 
 .modal-header {
-  padding: 20px 25px;
-  background: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
-  color: white;
+  padding: 16px;
+  background: var(--branco);
+  color: var(--roxoPrincipal);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -715,6 +721,10 @@ textarea {
   min-height: 150px;
 }
 
+.modal-body {
+  padding: 16px;
+}
+
 #notificationsList:empty::before {
   content: "Nenhuma notificação no momento";
   display: block;
@@ -723,15 +733,15 @@ textarea {
   color: #757575;
   font-style: italic;
 }
- /* Alternativa: altura relativa à tela */
+
 #messagesList {
-  max-height: 60vh; /* 60% da altura da tela */
+  max-height: 60vh;
   overflow-y: auto;
   padding-right: 5px;
 }
 
-/* Mantém o mesmo estilo da scrollbar */
 #messagesList::-webkit-scrollbar {
+
   width: 8px;
 }
 
@@ -741,11 +751,14 @@ textarea {
 }
 
 #messagesList::-webkit-scrollbar-thumb {
+  display: none;
   background-color: var(--roxoPrincipal);
   border-radius: 4px;
   border: 2px solid var(--cinza-claro);
 }
-.notification-item, .message-item {
+
+.notification-item,
+.message-item {
   display: flex;
   padding: 18px 20px;
   border: 1px solid #f0f0f0;
@@ -754,11 +767,13 @@ textarea {
   border-radius: 16px;
   margin: .5em 0;
 }
+
 .message-item:hover {
-   
-  background-color: #e8f5e9;
-  border: 1px solid green;
+
+  background-color: #9b58b415;
+  border: 1px solid var(--roxoPrincipal);
 }
+
 .notification-item:hover {
   background-color: #f8f9fa;
 }
@@ -789,7 +804,8 @@ textarea {
   flex-grow: 1;
 }
 
-.notification-text h4, .message-text h4 {
+.notification-text h4,
+.message-text h4 {
   font-size: 15px;
   margin: 0 0 5px 0;
   color: #212121;
@@ -797,7 +813,8 @@ textarea {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-.notification-text p, .message-text p {
+.notification-text p,
+.message-text p {
   font-size: 14px;
   color: #616161;
   line-height: 1.4;
@@ -805,7 +822,8 @@ textarea {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-.notification-time, .message-time {
+.notification-time,
+.message-time {
   font-size: 12px;
   color: #9e9e9e;
   font-weight: 500;
@@ -915,5 +933,3 @@ textarea {
   padding: 8px 15px;
   font-size: 0.95em;
 }
-
- 

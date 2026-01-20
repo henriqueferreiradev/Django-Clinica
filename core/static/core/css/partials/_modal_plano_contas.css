@@ -61,14 +61,7 @@
     }
 }
 
-.modal-header {
-    padding: 25px 30px;
-    background: var(--branco);
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+
 
 .modal-title {
     font-size: 24px;
@@ -98,13 +91,6 @@
     transform: rotate(90deg);
 }
 
-.modal-body {
-    padding: 25px 30px;
-    overflow-y: auto;
-    flex-grow: 1;
-    background-color: var(--branco);
-
-}
 
 .search-container {
     margin-bottom: 25px;

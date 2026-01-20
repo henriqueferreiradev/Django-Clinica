@@ -1204,24 +1204,7 @@ select.input-field {
     }
 }
 
-.modal-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid #e9ecef;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #f8fafc;
-    border-radius: 16px 16px 0 0;
-}
 
-.modal-header h3 {
-    margin: 0;
-    color: #2d3748;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 18px;
-}
 
 .modal-close {
     background: none;
@@ -1245,9 +1228,7 @@ select.input-field {
     color: #2d3748;
 }
 
-.modal-body {
-    padding: 24px;
-}
+
 
 .modal-prof-info {
     display: flex;
@@ -1398,6 +1379,3 @@ select.input-field {
         width: 100%;
     }
 }
-
-
-
