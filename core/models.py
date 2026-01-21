@@ -1387,37 +1387,47 @@ class Receita(models.Model):
             )
         ]
     def atualizar_status_por_pagamentos(self):
-        """
-        Atualiza o status da receita baseado no saldo e vencimento
-        """
         from datetime import date
         from decimal import Decimal
-        
+
+        status_anterior = self.status  # 🔑 guarda antes
+
         print(f"DEBUG - Atualizando receita {self.id}")
         print(f"  Valor total: {self.valor}")
         print(f"  Total pago: {self.total_pago}")
         print(f"  Saldo calculado: {self.saldo}")
         print(f"  Vencimento: {self.vencimento}")
-        
-        # Verifica se está totalmente pago
+
+        # Define novo status
         if self.saldo <= Decimal('0'):
-            self.status = 'pago'
-            print(f"  Status -> 'pago' (saldo <= 0)")
+            novo_status = 'pago'
         else:
-            # Verifica se está atrasado
             hoje = date.today()
             if self.vencimento and self.vencimento < hoje:
-                self.status = 'atrasado'
-                print(f"  Status -> 'atrasado' (vencimento {self.vencimento} < {hoje})")
+                novo_status = 'atrasado'
             else:
-                self.status = 'pendente'
-                print(f"  Status -> 'pendente' (saldo positivo)")
-        
-        # SALVA A ALTERAÇÃO
+                novo_status = 'pendente'
+
+        self.status = novo_status
+
+        # 🔔 NOTIFICA APENAS SE:
+        # - saldo zerou
+        # - antes NÃO era pago
+        if (
+            self.saldo <= Decimal('0')
+            and status_anterior != 'pago'
+            and self.paciente
+            and self.paciente.nf_imposto_renda is True
+        ):
+            print('chegou no paciente pra notificar')
+            print('chegou no paciente pra notificar')
+            print('chegou no paciente pra notificar')
+            # aqui entra o Notificacao.objects.create(...)
+
+        # Salva
         self.save(update_fields=['status'])
         print(f"  Status salvo: {self.status}")
-        
-        # Retorna o saldo atual para possível uso
+
         return self.saldo
 
 class Lancamento(models.Model):

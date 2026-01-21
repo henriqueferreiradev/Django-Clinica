@@ -792,7 +792,7 @@ def criar_agendamento(request):
         paciente=paciente,
         pacote=pacote,
         valor_final=valor_final,
-        vencimento=primeira_data_real,  # CORRETO!
+        vencimento=primeira_data_real, 
         forma_pagamento=forma_pagamento,
         valor_pago_inicial=valor_pago_inicial_param  # <-- CORRIGIDO
     )

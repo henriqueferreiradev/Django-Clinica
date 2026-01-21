@@ -23,8 +23,14 @@
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}" />
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
     <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
+    <link
+      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
 
   <body>
@@ -44,7 +50,7 @@
       <ul class="nav-links">
         <li>
           <a href="{% url 'dashboard' %}">
-            <i class="fas fa-tachometer-alt"></i>
+            <i class="bx bx-grid-alt"></i>
             <span class="link_name">Dashboard</span>
           </a>
           <ul class="sub-menu blank">
@@ -55,11 +61,15 @@
         </li>
         <li>
           <a href="{% url 'dashboard_adm' %}">
-            <i class="fas fa-building"></i>
+            <i class="fas fa-cog"></i>
             <span class="link_name">Administrativo</span>
           </a>
           <ul class="sub-menu">
-            <li><a class="link_name" href="{% url 'dashboard_adm' %}">Administrativo</a></li>
+            <li>
+              <a class="link_name" href="{% url 'dashboard_adm' %}"
+                >Administrativo</a
+              >
+            </li>
             <li><a href="{% url 'dashboard_adm' %}">Dashboard</a></li>
             <li><a href="#">Notas Fiscais</a></li>
           </ul>
@@ -68,7 +78,7 @@
         <li>
           <div class="iocn-link">
             <a href="{% url 'pacientes' %}">
-              <i class="fa-solid fa-users"></i>
+              <i class="bx bx-collection"></i>
               <span class="link_name">Pacientes</span>
             </a>
             <i class="bx bxs-chevron-down arrow"></i>
@@ -89,7 +99,7 @@
         <li>
           <div class="iocn-link">
             <a href="#">
-              <i class="fas fa-user-md"></i>
+              <i class="bx bx-book-alt"></i>
               <span class="link_name">Profissionais</span>
             </a>
             <i class="bx bxs-chevron-down arrow"></i>
@@ -106,7 +116,7 @@
         <li>
           <div class="iocn-link">
             <a href="#">
-              <i class="fas fa-calendar-alt"></i>
+              <i class="bx bx-food-menu"></i>
               <span class="link_name">Agenda</span>
             </a>
             <i class="bx bxs-chevron-down arrow"></i>
@@ -122,7 +132,7 @@
         <li>
           <div class="iocn-link">
             <a href="#">
-              <i class="fas fa-dollar-sign"></i>
+              <i class="bx bx-pie-chart-alt-2"></i>
               <span class="link_name">Financeiro</span>
             </a>
             <i class="bx bxs-chevron-down arrow"></i>
@@ -144,7 +154,7 @@
 
         <li>
           <a href="{% url 'lembretes' %}">
-            <i class="fa-solid fa-bell"></i>
+            <i class="bx bx-bell"></i>
             <span class="link_name">Lembretes</span>
           </a>
           <ul class="sub-menu blank">
@@ -155,7 +165,7 @@
         {% if request.user.tipo != 'profissional' %}
         <li>
           <a href="#">
-            <i class="fas fa-clipboard-list"></i>
+            <i class="bx bx-line-chart"></i>
             <span class="link_name">Relatórios</span>
           </a>
           <ul class="sub-menu blank">
@@ -165,7 +175,7 @@
 
         <li>
           <a href="{% url 'auditoria_logs' %}">
-            <i class="fas fa-clipboard-list"></i>
+            <i class="bx bx-line-chart"></i>
             <span class="link_name">Logs</span>
           </a>
           <ul class="sub-menu blank">
@@ -183,7 +193,7 @@
 
         <li>
           <a href="{% url 'config' %}">
-            <i class="fas fa-cog"></i>
+            <i class="bx bx-cog"></i>
             <span class="link_name">Configurações</span>
           </a>
           <ul class="sub-menu">
@@ -326,31 +336,37 @@
         "core/partials/alertas.html" %} {% endblock %}
       </div>
     </section>
- 
+
+    <!-- ==========================================================
+       ✅ BOTTOM NAV (MOBILE/TABLET)
+       ========================================================== -->
     <div class="bottom-nav-bar">
       <a
         href="{% url 'dashboard' %}"
         class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
       >
-        <i class="fas fa-tachometer-alt"></i>
+        <i class="bx bx-grid-alt"></i>
         <span class="nav-item-text">Dashboard</span>
       </a>
-      <a
-        href="{% url 'agenda' %}"
-        class="nav-item {% if 'pacientes' in request.path or 'paciente' in request.path and request.resolver_match.url_name != 'dashboard' %}active{% endif %}"
-      >
-        <i class="fas fa-calendar-alt"></i>
-        <span class="nav-item-text">Agenda</span>
-      </a>
+
       <a
         href="{% url 'pacientes' %}"
         class="nav-item {% if 'pacientes' in request.path or 'paciente' in request.path and request.resolver_match.url_name != 'dashboard' %}active{% endif %}"
       >
-        <i class="fas fa-solid fa-users"></i>
+        <i class="bx bx-collection"></i>
         <span class="nav-item-text">Pacientes</span>
       </a>
 
-      <a href="#"
+      <a
+        href="{% url 'profissionais' %}"
+        class="nav-item {% if 'profissionais' in request.path %}active{% endif %}"
+      >
+        <i class="bx bx-book-alt"></i>
+        <span class="nav-item-text">Profiss.</span>
+      </a>
+
+      <a
+        href="#"
         class="nav-item menu-button"
         onclick="toggleMobileMenu(event)"
       >
@@ -362,76 +378,39 @@
     <!-- ==========================================================
        ✅ OVERLAY MENU (MOBILE/TABLET) - LATERAL DIREITA
        ========================================================== -->
-    <div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="overlayCloseIfClickedOutside(event)">
+    <div
+      id="mobileMenuOverlay"
+      class="mobile-menu-overlay"
+      onclick="overlayCloseIfClickedOutside(event)"
+    >
       <div class="mobile-menu">
         <div class="mobile-menu-header">
-          <strong>Menu</strong>
+          <strong>Navegação</strong>
           <button onclick="toggleMobileMenu(event)" aria-label="Fechar">
             <i class="fas fa-times"></i>
           </button>
         </div>
 
         <div class="mobile-menu-body">
-          <div class="mobile-menu-accordion">
-            <button type="button" class="mobile-acc-btn" onclick="toggleSubmenu(this)">
-              <span class="left">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Agenda</span>
-              </span>
-              <i class="bx bx-chevron-down chevron"></i>
-            </button>
-
-            <div class="mobile-acc-panel">
-              <a href="{% url 'agenda' %}">Agenda</a>
-              <a href="{% url 'agenda_board' %}">Agenda Matriz</a>
-            </div>
-          </div>
-          <div class="mobile-menu-accordion">
-            <button type="button" class="mobile-acc-btn" onclick="toggleSubmenu(this)">
-              <span class="left">
-                <i class="fas fa-user-md"></i>
-                <span>Profissionais</span>
-              </span>
-              <i class="bx bx-chevron-down chevron"></i>
-            </button>
-
-            <div class="mobile-acc-panel">
-              <a href="{% url 'profissionais' %}">Ver Profissionais</a>
-              <a href="{% url 'cadastrar_profissional' %}">Novo Profissional</a>
-            </div>
-          </div>
-          <div class="mobile-menu-accordion">
-            <button
-              type="button"
-              class="mobile-acc-btn"
-              onclick="toggleSubmenu(this)"
-            >
-              <span class="left">
-                <i class="fas fa-building "></i>
-                <span>Administrativo</span>
-              </span>
-              <i class="bx bx-chevron-down chevron"></i>
-            </button>
-
-            <div class="mobile-acc-panel">
-              <a href="{% url 'dashboard_adm' %}">Dashboard</a>
-              <a href="#">Notas Fiscais</a>
-            </div>
-          </div>
+          <!-- Itens simples -->
+          <a href="{% url 'agenda' %}" class="mobile-menu-item-link">
+            <i class="bx bx-food-menu"></i>
+            <span>Agenda</span>
+          </a>
 
           <a href="#" class="mobile-menu-item-link">
-            <i class="fa-solid fa-bell"></i>
+            <i class="bx bx-bell"></i>
             <span>Lembretes</span>
           </a>
 
           {% if request.user.tipo != 'profissional' %}
           <a href="#" class="mobile-menu-item-link">
-            <i class="fas fa-clipboard-list"></i>
+            <i class="bx bx-line-chart"></i>
             <span>Relatórios</span>
           </a>
           {% endif %} {% if request.user.tipo != 'profissional' %}
           <a href="{% url 'auditoria_logs' %}" class="mobile-menu-item-link">
-            <i class="fas fa-clipboard-list"></i>
+            <i class="bx bx-line-chart"></i>
             <span>Logs</span>
           </a>
           {% endif %}
@@ -445,7 +424,7 @@
               onclick="toggleSubmenu(this)"
             >
               <span class="left">
-                <i class="fas fa-dollar-sign"></i>
+                <i class="bx bx-pie-chart-alt-2"></i>
                 <span>Financeiro</span>
               </span>
               <i class="bx bx-chevron-down chevron"></i>
@@ -466,9 +445,13 @@
           <!-- Accordion: Config -->
           {% if request.user.tipo != 'profissional' %}
           <div class="mobile-menu-accordion">
-            <button type="button" class="mobile-acc-btn" onclick="toggleSubmenu(this)">
+            <button
+              type="button"
+              class="mobile-acc-btn"
+              onclick="toggleSubmenu(this)"
+            >
               <span class="left">
-                <i class="fas fa-cog"></i>
+                <i class="bx bx-cog"></i>
                 <span>Configurações</span>
               </span>
               <i class="bx bx-chevron-down chevron"></i>
@@ -529,6 +512,10 @@
     {% block scripts %}{% endblock %}
     <script type="module" src="{% static 'core/js/alertas/main.js' %}"></script>
     <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
+
+    <!-- =========================
+       ✅ JS DO MENU MOBILE
+       ========================= -->
     <script>
       function toggleMobileMenu(event) {
         if (event) event.preventDefault();
