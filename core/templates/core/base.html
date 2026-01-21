@@ -310,6 +310,82 @@
   </section>
   
   {% block scripts %}{% endblock %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const bell = document.getElementById('bellIcon');
+    const modal = document.getElementById('notificationModal');
+    const closeBtn = document.getElementById('notificationCloseModal');
+    const list = document.getElementById('notificationsList');
+    const count = document.getElementById('notificationCount');
+    const template = document.querySelector('.notification-item.template');
+
+    function carregarNotificacoes() {
+        fetch('/api/notificacoes/')
+            .then(res => res.json())
+            .then(data => {
+                list.innerHTML = '';
+                count.textContent = data.total_nao_lidas;
+
+                data.notificacoes.forEach(n => {
+                    const item = template.cloneNode(true);
+                    item.style.display = 'flex';
+                    item.classList.remove('template');
+
+                    item.querySelector('h4').textContent = n.titulo;
+                    item.querySelector('p').textContent = n.mensagem;
+                    item.querySelector('.notification-time').textContent = n.tempo;
+
+                    if (!n.lida) {
+                        item.classList.add('unread');
+                    }
+
+                    item.addEventListener('click', () => {
+                        marcarComoLida(n.id);
+                        if (n.url) window.location.href = n.url;
+                    });
+
+                    list.appendChild(item);
+                });
+            });
+    }
+
+    function marcarComoLida(id) {
+        fetch(`/api/notificacoes/${id}/lida/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        }).then(() => carregarNotificacoes());
+    }
+
+    bell.addEventListener('click', () => {
+        modal.classList.add('active');
+        carregarNotificacoes();
+    });
+
+    closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+
+    carregarNotificacoes(); // inicial
+});
+
+// CSRF helper
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 
   <script type="module" src="{% static 'core/js/alertas/main.js' %}"></script>
   <script src="{% static 'core/js/base/scriptBase.js' %}"></script>

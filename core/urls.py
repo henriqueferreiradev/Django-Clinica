@@ -152,6 +152,7 @@ urlpatterns = [
     path("frequencias", frequencia_views.frequencias_get, name="frequencias_get"),
     path("frequencias/salvar", frequencia_views.frequencias_post, name="frequencias_post"),
 
-    path('lembretes/', lembretes_views.lembrete_views, name='lembretes')
+    path('lembretes/', lembretes_views.lembrete_views, name='lembretes'),
+   
     
 ]
