@@ -110,7 +110,8 @@ urlpatterns = [
     path('financeiro/relatorios', financeiro_views.relatorios_view, name='financeiro_relatorios'),
 
     path('api/notificacoes/', notificacoes_views.listar_notificacoes, name='listar_notificacoes'),
-    
+        path('administrativo/dashboard/', administrativo_views.dashboard, name="dashboard_adm"),
+    path('administrativo/notas_fiscais/', administrativo_views.notas_fiscais_views,name='notas_fiscais'),
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
     path('agenda_profissional/', profissionais_views.agenda_profissional, name='agenda_profissional'),
     path('agenda/board', agendamento_views.agenda_board, name='agenda_board'),
@@ -147,8 +148,7 @@ urlpatterns = [
  
  
  
-    path('dashboard-adm/', administrativo_views.dashboard, name="dashboard_adm"),
-    
+
     path("frequencias", frequencia_views.frequencias_get, name="frequencias_get"),
     path("frequencias/salvar", frequencia_views.frequencias_post, name="frequencias_post"),
 

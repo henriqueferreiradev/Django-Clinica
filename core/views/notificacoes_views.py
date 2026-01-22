@@ -9,7 +9,7 @@ from core.models import Notificacao
 @login_required
 def listar_notificacoes(request):
  
-    notificacoes = Notificacao.objects.filter(usuario=request.user)  # Filtro primeiro
+    notificacoes = Notificacao.objects.filter(usuario=request.user, lida=False)  # Filtro primeiro
    
 
     data = []

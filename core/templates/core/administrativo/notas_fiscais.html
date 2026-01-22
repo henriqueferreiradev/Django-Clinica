@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendências de Nota Fiscal</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+          --roxoPrincipal: #6D398E;
+          --roxoPrincipal-hover: #76378f11;
+          --roxoPrincipal-hover2: #76378f;
+          --roxo-primary-hover: #9b58b4;
+          --verdePrincipal: #92cbad;
+          --branco: #FFF;
+          --bg-btn-1: #eee;
+          --preto: #000;
+          --cinzaBorda: #ccc;
+          --cinzaEscuro: #6e6e6e;
+          --fontePrincipal: 'Inter';
+          --bg-color: #E4E9F7;
+          --hover-dropdown: #F0F0F0;
+          --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
+          --btn-red-exclude: #ff000025;
+          --btn-red-font: #efc4c4;
+          --cinza-escuro: #555;
+          --cinza-medio: #888;
+          --cinza-claro: #eee;
+          --cinza-borda: #ddd;
+          --erro: #ff0000;
+          --titulo-perfil: #64748b;
+          --dourado: #D4AF37;
+          --verde-sucesso: #10B981;
+          --vermelho-alerta: #EF4444;
+          --sombra-suave: 0 10px 40px rgba(0, 0, 0, 0.08);
+          --sombra-destaque: 0 15px 35px rgba(109, 57, 142, 0.15);
+          --borda-arredondada: 16px;
+          --transicao: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+          /* Espaçamentos */
+          --espaco-xs: 0.5rem;
+          --espaco-sm: 1rem;
+          --espaco-md: 1.5rem;
+          --espaco-lg: 2rem;
+          --espaco-xl: 3rem;
+
+          /* Bordas */
+          --borda-radius: 8px;
+          --borda-radius-sm: 4px;
+
+          /* Sombras */
+          --sombra: 0 2px 10px rgba(0, 0, 0, 0.1);
+          --sombra-focus: 0 0 0 3px rgba(127, 67, 150, 0.3);
+
+          --backgroundCard: #FFF;
+          --backgroundCard-hover: #6d398e38;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--fontePrincipal), sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--cinza-escuro);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--espaco-sm);
+        }
+
+        /* Cabeçalho da Página */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--espaco-lg);
+            flex-wrap: wrap;
+            gap: var(--espaco-sm);
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--roxoPrincipal);
+            font-weight: 700;
+        }
+
+        .page-title p {
+            color: var(--cinza-medio);
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        .page-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--espaco-sm);
+        }
+
+        .pendencies-counter {
+            background-color: var(--branco);
+            padding: var(--espaco-sm) var(--espaco-md);
+            border-radius: var(--borda-arredondada);
+            box-shadow: var(--sombra);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--roxoPrincipal);
+        }
+
+        .counter-number {
+            background-color: var(--roxoPrincipal);
+            color: var(--branco);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        /* Cards de Resumo */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--espaco-sm);
+            margin-bottom: var(--espaco-lg);
+        }
+
+        .card {
+            background-color: var(--backgroundCard);
+            border-radius: var(--borda-arredondada);
+            padding: var(--espaco-md);
+            box-shadow: var(--sombra);
+            transition: var(--transicao);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--sombra-destaque);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--espaco-sm);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .card.open .card-icon {
+            background-color: rgba(109, 57, 142, 0.1);
+            color: var(--roxoPrincipal);
+        }
+
+        .card.overdue .card-icon {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--vermelho-alerta);
+        }
+
+        .card.value .card-icon {
+            background-color: rgba(212, 175, 55, 0.1);
+            color: var(--dourado);
+        }
+
+        .card.resolved .card-icon {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--verde-sucesso);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--cinza-medio);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .card-description {
+            font-size: 0.85rem;
+            color: var(--cinza-medio);
+        }
+
+        /* Filtros */
+        .filters-section {
+            background-color: var(--branco);
+            border-radius: var(--borda-arredondada);
+            padding: var(--espaco-md);
+            margin-bottom: var(--espaco-lg);
+            box-shadow: var(--sombra);
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--espaco-md);
+        }
+
+        .filters-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--roxoPrincipal);
+        }
+
+        .clear-filters {
+            background: none;
+            border: none;
+            color: var(--roxo-primary-hover);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transicao);
+        }
+
+        .clear-filters:hover {
+            color: var(--roxoPrincipal);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--espaco-sm);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: var(--cinza-escuro);
+            font-weight: 500;
+        }
+
+        .filter-select, .filter-input {
+            padding: 10px 12px;
+            border: 1px solid var(--cinza-borda);
+            border-radius: var(--borda-radius);
+            font-size: 0.95rem;
+            color: var(--cinza-escuro);
+            transition: var(--transicao);
+            background-color: var(--branco);
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--roxoPrincipal);
+            box-shadow: var(--sombra-focus);
+        }
+
+        /* Tabela */
+        .table-container {
+            background-color: var(--branco);
+            border-radius: var(--borda-arredondada);
+            overflow: hidden;
+            box-shadow: var(--sombra);
+            margin-bottom: var(--espaco-xl);
+        }
+
+        .table-header {
+            padding: var(--espaco-md);
+            border-bottom: 1px solid var(--cinza-claro);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--roxoPrincipal);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: var(--espaco-xs);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--borda-radius);
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transicao);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background-color: var(--roxoPrincipal);
+            color: var(--branco);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--roxo-primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-btn-1);
+            color: var(--cinza-escuro);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--cinza-borda);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background-color: var(--roxoPrincipal-hover);
+        }
+
+        .table th {
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--roxoPrincipal);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--cinza-claro);
+            font-size: 0.95rem;
+        }
+
+        .table tbody tr {
+            transition: var(--transicao);
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--backgroundCard-hover);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-overdue {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--vermelho-alerta);
+        }
+
+        .status-emitted {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--verde-sucesso);
+        }
+
+        .status-cancelled {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        /* Ações da tabela */
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: 1px solid var(--cinza-borda);
+            color: var(--cinza-medio);
+            cursor: pointer;
+            transition: var(--transicao);
+        }
+
+        .action-btn:hover {
+            background-color: var(--roxoPrincipal-hover);
+            color: var(--roxoPrincipal);
+            border-color: var(--roxoPrincipal);
+        }
+
+        .action-btn.emit:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--verde-sucesso);
+            border-color: var(--verde-sucesso);
+        }
+
+        .action-btn.cancel:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--vermelho-alerta);
+            border-color: var(--vermelho-alerta);
+        }
+
+        /* Tipos de nota */
+        .note-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .note-type.nfse {
+            color: var(--roxoPrincipal);
+        }
+
+        .note-type.nfe {
+            color: var(--verde-sucesso);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: var(--branco);
+            border-radius: var(--borda-arredondada);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--sombra-destaque);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: var(--espaco-md);
+            border-bottom: 1px solid var(--cinza-claro);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--roxoPrincipal);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--cinza-medio);
+            cursor: pointer;
+            transition: var(--transicao);
+        }
+
+        .modal-close:hover {
+            color: var(--roxoPrincipal);
+        }
+
+        .modal-body {
+            padding: var(--espaco-md);
+        }
+
+        .form-group {
+            margin-bottom: var(--espaco-sm);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--cinza-escuro);
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--cinza-borda);
+            border-radius: var(--borda-radius);
+            font-size: 0.95rem;
+            color: var(--cinza-escuro);
+            transition: var(--transicao);
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--roxoPrincipal);
+            box-shadow: var(--sombra-focus);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--espaco-sm);
+        }
+
+        .modal-footer {
+            padding: var(--espaco-md);
+            border-top: 1px solid var(--cinza-claro);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--espaco-sm);
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Estados vazios */
+        .empty-state {
+            padding: var(--espaco-xl) var(--espaco-md);
+            text-align: center;
+            color: var(--cinza-medio);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--cinza-borda);
+            margin-bottom: var(--espaco-sm);
+        }
+
+        .empty-title {
+            font-size: 1.2rem;
+            margin-bottom: var(--espaco-xs);
+            color: var(--cinza-escuro);
+        }
+
+        .empty-description {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho da página -->
+        <header class="page-header">
+            <div class="page-title">
+                <h1>Pendências de Nota Fiscal</h1>
+                <p>Notas fiscais pendentes de emissão ou regularização</p>
+            </div>
+            <div class="page-actions">
+                <div class="pendencies-counter">
+                    <span class="counter-number">12</span>
+                    <span>Pendências Abertas</span>
+                </div>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+            </div>
+        </header>
+
+        <!-- Cards de resumo -->
+        <section class="summary-cards">
+            <div class="card open">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Pendências Abertas</div>
+                        <div class="card-value">12</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="card-description">Aguardando emissão</div>
+            </div>
+            
+            <div class="card overdue">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Pendências Vencidas</div>
+                        <div class="card-value">3</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="card-description">Fora do prazo</div>
+            </div>
+            
+            <div class="card value">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Valor Total Pendente</div>
+                        <div class="card-value">R$ 8.425,00</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <div class="card-description">Soma das pendências</div>
+            </div>
+            
+            <div class="card resolved">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Resolvidas Hoje</div>
+                        <div class="card-value">5</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="card-description">Notas emitidas hoje</div>
+            </div>
+        </section>
+
+        <!-- Filtros -->
+        <section class="filters-section">
+            <div class="filters-header">
+                <div class="filters-title">Filtrar Pendências</div>
+                <button class="clear-filters">
+                    <i class="fas fa-times"></i> Limpar filtros
+                </button>
+            </div>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">📅 Período do pagamento</label>
+                    <input type="date" class="filter-input" value="2023-10-01">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">👤 Paciente</label>
+                    <select class="filter-select">
+                        <option value="">Todos os pacientes</option>
+                        <option value="1">Maria da Silva</option>
+                        <option value="2">João Santos</option>
+                        <option value="3">Ana Oliveira</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">💳 Forma de pagamento</label>
+                    <select class="filter-select">
+                        <option value="">Todas as formas</option>
+                        <option value="cartao">Cartão de Crédito</option>
+                        <option value="boleto">Boleto Bancário</option>
+                        <option value="pix">PIX</option>
+                        <option value="dinheiro">Dinheiro</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">📌 Status</label>
+                    <select class="filter-select">
+                        <option value="">Todos os status</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="emitida">Emitida</option>
+                        <option value="vencida">Vencida</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">🧾 Tipo de nota</label>
+                    <select class="filter-select">
+                        <option value="">Todos os tipos</option>
+                        <option value="nfse">NFS-e</option>
+                        <option value="nfe">NF-e</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">🏥 Unidade/Clínica</label>
+                    <select class="filter-select">
+                        <option value="">Todas as unidades</option>
+                        <option value="centro">Centro</option>
+                        <option value="zona-sul">Zona Sul</option>
+                        <option value="zona-norte">Zona Norte</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabela principal -->
+        <section class="table-container">
+            <div class="table-header">
+                <div class="table-title">Pendências de Nota Fiscal</div>
+                <div class="table-actions">
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-sync-alt"></i> Atualizar
+                    </button>
+                    <button class="btn btn-primary" id="btnNewPayment">
+                        <i class="fas fa-plus"></i> Novo Lançamento
+                    </button>
+                </div>
+            </div>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Pagamento</th>
+                        <th>Valor</th>
+                        <th>Forma Pagamento</th>
+                        <th>Data</th>
+                        <th>Tipo de Nota</th>
+                        <th>Motivo</th>
+                        <th>Prazo</th>
+                        <th>Status</th>
+                        <th>Responsável</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Linha 1 -->
+                    <tr>
+                        <td>Maria da Silva</td>
+                        <td>#PAY-2023-0456</td>
+                        <td>R$ 850,00</td>
+                        <td>Cartão de Crédito</td>
+                        <td>05/10/2023</td>
+                        <td><span class="note-type nfse"><i class="fas fa-file-invoice"></i> NFS-e</span></td>
+                        <td>Pagamento recebido</td>
+                        <td>15/10/2023</td>
+                        <td><span class="status-badge status-pending">Pendente</span></td>
+                        <td>—</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn emit" title="Emitir Nota" onclick="openEmitModal()">
+                                    <i class="fas fa-file-invoice"></i>
+                                </button>
+                                <button class="action-btn" title="Marcar como Resolvido" onclick="openResolveModal()">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Linha 2 -->
+                    <tr>
+                        <td>João Santos</td>
+                        <td>#PAY-2023-0457</td>
+                        <td>R$ 1.200,00</td>
+                        <td>PIX</td>
+                        <td>03/10/2023</td>
+                        <td><span class="note-type nfe"><i class="fas fa-file-contract"></i> NF-e</span></td>
+                        <td>Pacote</td>
+                        <td>10/10/2023</td>
+                        <td><span class="status-badge status-overdue">Vencida</span></td>
+                        <td>—</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn emit" title="Emitir Nota" onclick="openEmitModal()">
+                                    <i class="fas fa-file-invoice"></i>
+                                </button>
+                                <button class="action-btn" title="Marcar como Resolvido" onclick="openResolveModal()">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Linha 3 -->
+                    <tr>
+                        <td>Ana Oliveira</td>
+                        <td>#PAY-2023-0458</td>
+                        <td>R$ 450,00</td>
+                        <td>Boleto</td>
+                        <td>01/10/2023</td>
+                        <td><span class="note-type nfse"><i class="fas fa-file-invoice"></i> NFS-e</span></td>
+                        <td>Reposição</td>
+                        <td>08/10/2023</td>
+                        <td><span class="status-badge status-emitted">Emitida</span></td>
+                        <td>Carlos M.</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn" title="Visualizar Detalhes">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Linha 4 -->
+                    <tr>
+                        <td>Roberto Alves</td>
+                        <td>#PAY-2023-0459</td>
+                        <td>R$ 2.500,00</td>
+                        <td>Cartão de Crédito</td>
+                        <td>28/09/2023</td>
+                        <td><span class="note-type nfe"><i class="fas fa-file-contract"></i> NF-e</span></td>
+                        <td>Ajuste manual</td>
+                        <td>05/10/2023</td>
+                        <td><span class="status-badge status-cancelled">Cancelada</span></td>
+                        <td>—</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn" title="Visualizar Detalhes">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" title="Reativar">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Linha 5 -->
+                    <tr>
+                        <td>Carla Mendes</td>
+                        <td>#PAY-2023-0460</td>
+                        <td>R$ 650,00</td>
+                        <td>Dinheiro</td>
+                        <td>06/10/2023</td>
+                        <td><span class="note-type nfse"><i class="fas fa-file-invoice"></i> NFS-e</span></td>
+                        <td>Pagamento recebido</td>
+                        <td>16/10/2023</td>
+                        <td><span class="status-badge status-pending">Pendente</span></td>
+                        <td>—</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn emit" title="Emitir Nota" onclick="openEmitModal()">
+                                    <i class="fas fa-file-invoice"></i>
+                                </button>
+                                <button class="action-btn" title="Marcar como Resolvido" onclick="openResolveModal()">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Estado vazio (escondido por padrão) -->
+            <div class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i class="far fa-check-circle"></i>
+                </div>
+                <h3 class="empty-title">Nenhuma pendência encontrada</h3>
+                <p class="empty-description">Parabéns! Todas as notas fiscais estão regularizadas. Novas pendências aparecerão aqui automaticamente quando um pagamento exigir emissão de nota.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal Emitir Nota -->
+    <div class="modal-overlay" id="emitModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Emitir Nota Fiscal</div>
+                <button class="modal-close" onclick="closeModal('emitModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Paciente</label>
+                    <input type="text" class="form-input" value="Maria da Silva" readonly>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">CPF/CNPJ</label>
+                        <input type="text" class="form-input" value="123.456.789-00" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Valor</label>
+                        <input type="text" class="form-input" value="R$ 850,00" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Serviço</label>
+                    <input type="text" class="form-input" value="Consulta médica especializada" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Data do pagamento</label>
+                    <input type="text" class="form-input" value="05/10/2023" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo de nota *</label>
+                    <select class="form-input">
+                        <option value="">Selecione o tipo de nota</option>
+                        <option value="nfse" selected>NFS-e (Nota Fiscal de Serviços)</option>
+                        <option value="nfe">NF-e (Nota Fiscal de Produtos)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Número da nota (se já emitida)</label>
+                    <input type="text" class="form-input" placeholder="Informe o número da nota fiscal">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Observação (opcional)</label>
+                    <textarea class="form-textarea" placeholder="Adicione observações sobre a emissão"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('emitModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="emitNote()">Emitir Nota</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Resolver Pendência -->
+    <div class="modal-overlay" id="resolveModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Marcar como Resolvido</div>
+                <button class="modal-close" onclick="closeModal('resolveModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Número da nota *</label>
+                    <input type="text" class="form-input" placeholder="Informe o número da nota fiscal" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Data de emissão *</label>
+                    <input type="date" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Observação (opcional)</label>
+                    <textarea class="form-textarea" placeholder="Adicione observações sobre a resolução"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('resolveModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="resolvePendency()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cancelar/Justificar -->
+    <div class="modal-overlay" id="cancelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Justificar / Cancelar Pendência</div>
+                <button class="modal-close" onclick="closeModal('cancelModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Motivo *</label>
+                    <select class="form-input" required>
+                        <option value="">Selecione o motivo</option>
+                        <option value="estorno">Pagamento estornado</option>
+                        <option value="erro">Erro de lançamento</option>
+                        <option value="nao_aplica">Não se aplica</option>
+                        <option value="outro">Outro motivo</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Observação *</label>
+                    <textarea class="form-textarea" placeholder="Descreva o motivo do cancelamento/justificativa" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('cancelModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="cancelPendency()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funções para controle dos modais
+        function openEmitModal() {
+            document.getElementById('emitModal').classList.add('active');
+        }
+        
+        function openResolveModal() {
+            document.getElementById('resolveModal').classList.add('active');
+        }
+        
+        function openCancelModal() {
+            document.getElementById('cancelModal').classList.add('active');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        // Funções para ações dos botões (simulação)
+        function emitNote() {
+            alert('Nota fiscal emitida com sucesso! Esta pendência será marcada como resolvida.');
+            closeModal('emitModal');
+        }
+        
+        function resolvePendency() {
+            alert('Pendência marcada como resolvida!');
+            closeModal('resolveModal');
+        }
+        
+        function cancelPendency() {
+            alert('Pendência justificada/cancelada!');
+            closeModal('cancelModal');
+        }
+        
+        // Fechar modal ao clicar fora
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+        
+        // Atualizar contadores (exemplo de interação)
+        document.querySelectorAll('.filter-select, .filter-input').forEach(element => {
+            element.addEventListener('change', function() {
+                // Simula uma filtragem
+                document.querySelector('.counter-number').textContent = '8';
+                document.querySelector('.card.open .card-value').textContent = '8';
+            });
+        });
+        
+        // Limpar filtros
+        document.querySelector('.clear-filters').addEventListener('click', function() {
+            document.querySelectorAll('.filter-select').forEach(select => {
+                select.value = '';
+            });
+            document.querySelector('.filter-input').value = '2023-10-01';
+            
+            // Restaura contadores
+            document.querySelector('.counter-number').textContent = '12';
+            document.querySelector('.card.open .card-value').textContent = '12';
+        });
+    </script>
+</body>
+</html>

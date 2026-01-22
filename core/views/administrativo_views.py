@@ -9,4 +9,5 @@ def dashboard(request):
   
     })
 
- 
+def notas_fiscais_views(request):
+    return render(request, 'core/administrativo/notas_fiscais.html')

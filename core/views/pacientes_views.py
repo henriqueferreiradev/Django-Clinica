@@ -366,6 +366,11 @@ def editar_paciente_view(request,id):
         
         paciente.save()
         messages.success(request, f'Dados de {paciente.nome} atualizados!')
+        Notificacao.objects.filter(
+            paciente=paciente,
+            titulo='Novo pré-cadastro realizado',
+            lida=False).update(lida=True)
+        
         print("Conferido:", paciente.conferido)
         print("Pré-cadastro:", paciente.pre_cadastro)   
         

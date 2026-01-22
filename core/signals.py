@@ -3,6 +3,8 @@ from django.dispatch import receiver
 from .models import Paciente, Pagamento, Profissional
 from .utils import criar_pasta_foto_paciente, criar_pasta_foto_profissional
 import os
+from core.views.agendamento_views import atualizar_contagem_pacote
+from core.services.fiscal import criar_evento_nf_pendente
 
 @receiver(post_save, sender=Paciente)
 def criar_pasta_ao_criar_paciente(sender, instance, created, **kwargs):
@@ -60,12 +62,22 @@ def deletar_imagem_antiga_profissional(sender, instance, **kwargs):
             os.remove(caminho)
 
 
-
 @receiver(post_save, sender=Pagamento)
 def atualizar_receita_apos_pagamento(sender, instance, created, **kwargs):
-    """
-    Atualiza automaticamente a receita quando um pagamento é salvo/alterado
-    """
-    if instance.receita:
-        print(f"SIGNAL: Pagamento {instance.id} salvo para receita {instance.receita.id}")
-        instance.receita.atualizar_status_por_pagamentos()
+    print('\n[SIGNAL] post_save Pagamento disparado')
+    print('[SIGNAL] Pagamento ID:', instance.id)
+    print('[SIGNAL] Pagamento status:', instance.status)
+    print('[SIGNAL] Created:', created)
+
+    if instance.status != 'pago':
+        print('[SIGNAL] Status != pago → abortando')
+        return
+
+    receita = instance.receita
+    print('[SIGNAL] Receita ID:', receita.id)
+    print('[SIGNAL] Receita status ANTES:', receita.status)
+
+    receita.atualizar_status_por_pagamentos()
+
+    receita.refresh_from_db()
+    print('[SIGNAL] Receita status DEPOIS:', receita.status)

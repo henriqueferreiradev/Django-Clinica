@@ -1387,18 +1387,19 @@ class Receita(models.Model):
             )
         ]
     def atualizar_status_por_pagamentos(self):
-        from datetime import date
         from decimal import Decimal
+        from datetime import date
+        from core.services.fiscal import criar_evento_nf_pendente
 
-        status_anterior = self.status  # 🔑 guarda antes
+        print('\n[RECEITA] atualizar_status_por_pagamentos')
+        print('[RECEITA] ID:', self.id)
+        print('[RECEITA] Status atual:', self.status)
+        print('[RECEITA] Total pago:', self.total_pago)
+        print('[RECEITA] Valor receita:', self.valor)
+        print('[RECEITA] Saldo:', self.saldo)
 
-        print(f"DEBUG - Atualizando receita {self.id}")
-        print(f"  Valor total: {self.valor}")
-        print(f"  Total pago: {self.total_pago}")
-        print(f"  Saldo calculado: {self.saldo}")
-        print(f"  Vencimento: {self.vencimento}")
+        status_anterior = self.status
 
-        # Define novo status
         if self.saldo <= Decimal('0'):
             novo_status = 'pago'
         else:
@@ -1408,16 +1409,27 @@ class Receita(models.Model):
             else:
                 novo_status = 'pendente'
 
+        print('[RECEITA] Novo status calculado:', novo_status)
+
+        if novo_status == status_anterior:
+            print('[RECEITA] Status não mudou → saindo')
+            return
+
         self.status = novo_status
-
- 
-    
-
-        # Salva
         self.save(update_fields=['status'])
-        print(f"  Status salvo: {self.status}")
 
-        return self.saldo
+        print('[RECEITA] Status SALVO:', self.status)
+
+        if (
+            status_anterior != 'pago'
+            and novo_status == 'pago'
+            and self.paciente
+            and self.paciente.nf_imposto_renda
+        ):
+            print('[RECEITA] CONDIÇÃO NF ATINGIDA → criando NF pendente')
+            criar_evento_nf_pendente(self)
+        else:
+            print('[RECEITA] CONDIÇÃO NF NÃO ATINGIDA')
 
 class Lancamento(models.Model):
     TIPO_CHOICES = (
@@ -1782,6 +1794,8 @@ class Lembrete(models.Model):
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)
     origem = models.CharField(max_length=50,blank=True,null=True, help_text='Ex: nf_pendente, pacote_finalizado, pagamento')
     criado_em = models.DateTimeField(auto_now_add=True)
+
+
 
 class NotaFiscalPendente(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)

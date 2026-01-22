@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.context_processors import request
-from core.models import Agendamento, AvaliacaoFisioterapeutica, CategoriaContasReceber, CategoriaFinanceira, Evolucao, Paciente, PacotePaciente, Pagamento, Profissional, Prontuario, Receita
+from core.models import Agendamento, AvaliacaoFisioterapeutica, CategoriaContasReceber, CategoriaFinanceira, Evolucao, Notificacao, Paciente, PacotePaciente, Pagamento, Profissional, Prontuario, Receita
 from django.utils import timezone
 from django.templatetags.static import static
 from django.http import JsonResponse
@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.test import RequestFactory
 import json
 from core.models import Pagamento
+from core.services.fiscal import criar_evento_nf_pendente
 # core/views/api_views.py
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
@@ -160,8 +161,12 @@ from django.views.decorators.http import require_POST
 @login_required
 @require_POST
 def api_registrar_pagamento(request, receita_id):
+    
     receita = get_object_or_404(Receita, id=receita_id)
 
+    
+    
+    
     # JSON obrigatório
     try:
         data = json.loads(request.body or "{}")
@@ -222,7 +227,7 @@ def api_registrar_pagamento(request, receita_id):
         if observacoes and hasattr(pagamento, 'observacoes'):
             pagamento.observacoes = observacoes
             pagamento.save(update_fields=['observacoes'])
-
+        
     except ValueError as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
     except Exception:
