@@ -1410,19 +1410,8 @@ class Receita(models.Model):
 
         self.status = novo_status
 
-        # 🔔 NOTIFICA APENAS SE:
-        # - saldo zerou
-        # - antes NÃO era pago
-        if (
-            self.saldo <= Decimal('0')
-            and status_anterior != 'pago'
-            and self.paciente
-            and self.paciente.nf_imposto_renda is True
-        ):
-            print('chegou no paciente pra notificar')
-            print('chegou no paciente pra notificar')
-            print('chegou no paciente pra notificar')
-            # aqui entra o Notificacao.objects.create(...)
+ 
+    
 
         # Salva
         self.save(update_fields=['status'])
