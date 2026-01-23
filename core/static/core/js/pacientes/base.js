@@ -1,3 +1,67 @@
+// Função para mostrar mensagens
+function mostrarMensagem(mensagem, tipo = 'success') {
+    const toastContainer = document.getElementById('toast-container') || criarToastContainer();
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo} toast-slide-in`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    ${getIcon(tipo)}
+                </div>
+                <div class="toast-title">
+                    ${getTitle(tipo)}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div>${mensagem}</div>
+        </div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Remove após 5 segundos
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('toast-slide-out');
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 5000);
+}
+
+// Funções auxiliares
+function criarToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+function getIcon(tipo) {
+    const icons = {
+        'success': '<i class="fas fa-check-circle"></i>',
+        'warning': '<i class="fas fa-exclamation-triangle"></i>',
+        'error': '<i class="fas fa-exclamation-circle"></i>',
+        'info': '<i class="fas fa-info-circle"></i>'
+    };
+    return icons[tipo] || icons['info'];
+}
+
+function getTitle(tipo) {
+    const titles = {
+        'success': 'Sucesso',
+        'warning': 'Aviso',
+        'error': 'Erro',
+        'info': 'Informação'
+    };
+    return titles[tipo] || 'Mensagem';
+}
+
+
 function abrirFicha(url) {
     const novaAba = window.open(url, '_blank');
     novaAba.onload = function () {
@@ -122,129 +186,109 @@ function ocultarPopup(elemento) {
     popup.style.display = 'none';
 }
 
+const form = document.getElementById('multiStepForm');
 
-// ===== DEBUG RESPONSÁVEL MENOR DE IDADE =====
-(function () {
-    console.log("✅ DEBUG responsável iniciado");
+form.addEventListener('submit', function (e) {
+    e.preventDefault(); // impede submit normal
 
-    const nascimentoInput = document.querySelector("#nascimento");
-    const boxResponsavel = document.querySelector("#responsavelBox");
-
-    console.log("🔎 nascimentoInput encontrado?", !!nascimentoInput, nascimentoInput);
-    console.log("🔎 responsavelBox encontrado?", !!boxResponsavel, boxResponsavel);
-
-    if (!nascimentoInput) {
-        console.warn("❌ #nascimento não encontrado. Confere o id no HTML.");
-        return;
-    }
-
-    if (!boxResponsavel) {
-        console.warn("❌ #responsavelBox não encontrado. Confere se a div existe no step-2 com esse id.");
-        return;
-    }
-
-    function parseBRDate(str) {
-        // aceita DD/MM/AAAA
-        if (!str || typeof str !== "string") return null;
-
-        const parts = str.split("/");
-        if (parts.length !== 3) return null;
-
-        const [dd, mm, yyyy] = parts.map(p => parseInt(p, 10));
-        if (!dd || !mm || !yyyy) return null;
-
-        const dt = new Date(yyyy, mm - 1, dd);
-        // valida se a data não virou outra (ex: 32/13/2020)
-        if (dt.getFullYear() !== yyyy || dt.getMonth() !== (mm - 1) || dt.getDate() !== dd) return null;
-
-        return dt;
-    }
-
-    function calcIdade(nascDate) {
-        const hoje = new Date();
-        let idade = hoje.getFullYear() - nascDate.getFullYear();
-        const m = hoje.getMonth() - nascDate.getMonth();
-        if (m < 0 || (m === 0 && hoje.getDate() < nascDate.getDate())) idade--;
-        return idade;
-    }
-
-    function isMenorDeIdade(valor) {
-        const dt = parseBRDate(valor);
-        console.log("📅 parseBRDate:", valor, "=>", dt);
-
-        if (!dt) return false;
-
-        const idade = calcIdade(dt);
-        console.log("🎯 idade calculada:", idade);
-
-        return idade < 18;
-    }
-
-    function toggleResponsavel() {
-        const valor = nascimentoInput.value;
-        console.log("🧪 nascimentoInput.value:", valor);
-
-        const menor = isMenorDeIdade(valor);
-        console.log("👶 é menor?", menor);
-
-        if (menor) {
-            boxResponsavel.classList.remove("hidden");
-            console.log("✅ removi .hidden do responsavelBox");
-            // torna obrigatórios só os campos do box
-            boxResponsavel.querySelectorAll("input, select, textarea").forEach(el => {
-                el.setAttribute("required", "true");
-            });
-        } else {
-            boxResponsavel.classList.add("hidden");
-            console.log("✅ adicionei .hidden no responsavelBox");
-            boxResponsavel.querySelectorAll("input, select, textarea").forEach(el => {
-                el.removeAttribute("required");
-                el.classList.remove("error");
-            });
+    fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
         }
+    })
+        .then(async r => {
+            let data;
+            try {
+                data = await r.json();
+            } catch {
+                throw { erro: 'Erro inesperado no servidor' };
+            }
 
-        console.log("📦 classList do responsavelBox:", boxResponsavel.className);
-        console.log("📦 display computado:", window.getComputedStyle(boxResponsavel).display);
-    }
+            if (!r.ok) throw data;
+            return data;
+        })
+        .then(data => {
+            if (!data.ok) {
+                mostrarMensagem(data.erro, 'error');
+                return;
+            }
 
-    // Eventos (testa todos pra garantir)
-    ["input", "change", "blur"].forEach(evt => {
-        nascimentoInput.addEventListener(evt, () => {
-            console.log(`🟣 evento disparou: ${evt}`);
-            toggleResponsavel();
+            // ✅ sucesso
+            window.location.href = data.redirect;
+        })
+        .catch(err => {
+            mostrarMensagem(err.erro || 'Erro ao enviar formulário', 'error');
         });
-    });
-
-    // Teste manual no console:
-    window.__toggleResponsavel = toggleResponsavel;
-    console.log("🧰 Use no console: __toggleResponsavel()");
-})();
-
-
-
-const radios = [
-    document.getElementById("nf_reembolso_plano"),
-    document.getElementById("nf_imposto_renda"),
-    document.getElementById("nf_nao_aplica"),
-];
-
-radios.forEach(r => {
-    r.addEventListener("change", () => {
-        radios.forEach(other => {
-            if (other !== r) other.checked = false;
-        });
-    });
 });
-document.querySelector('input[name="q"]').addEventListener('keyup', function () {
-    const search = this.value.toLowerCase();
-    const rows = document.querySelectorAll("table tbody tr");
 
-    rows.forEach(function (row) {
-        const nome = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
-        const cpf = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
 
-        const match = nome.includes(search) || cpf.includes(search);
-        row.style.display = match ? "" : "none";
+
+(function () {
+    const nascimentoInput = document.querySelector("#nascimento");
+    const template = document.getElementById("responsavelTemplate");
+    const mount = document.getElementById("responsavelMount");
+  
+    if (!nascimentoInput || !template || !mount) return;
+  
+    function parseBRDate(str) {
+      if (!str || typeof str !== "string") return null;
+      const parts = str.split("/");
+      if (parts.length !== 3) return null;
+  
+      const [dd, mm, yyyy] = parts.map(p => parseInt(p, 10));
+      if (!dd || !mm || !yyyy) return null;
+  
+      const dt = new Date(yyyy, mm - 1, dd);
+      if (dt.getFullYear() !== yyyy || dt.getMonth() !== (mm - 1) || dt.getDate() !== dd) return null;
+      return dt;
+    }
+  
+    function calcIdade(nascDate) {
+      const hoje = new Date();
+      let idade = hoje.getFullYear() - nascDate.getFullYear();
+      const m = hoje.getMonth() - nascDate.getMonth();
+      if (m < 0 || (m === 0 && hoje.getDate() < nascDate.getDate())) idade--;
+      return idade;
+    }
+  
+    function isMenorDeIdade(valor) {
+      const dt = parseBRDate(valor);
+      if (!dt) return false;
+      return calcIdade(dt) < 18;
+    }
+  
+    function existeResponsavelNoDOM() {
+      return !!document.getElementById("responsavelBox");
+    }
+  
+    function montarResponsavel() {
+      if (existeResponsavelNoDOM()) return;
+      const fragment = template.content.cloneNode(true);
+      mount.appendChild(fragment);
+    }
+  
+    function desmontarResponsavel() {
+      const box = document.getElementById("responsavelBox");
+      if (box) box.remove();
+    }
+  
+    function syncResponsavel() {
+      const menor = isMenorDeIdade(nascimentoInput.value);
+  
+      if (menor) {
+        montarResponsavel();
+      } else {
+        desmontarResponsavel();
+      }
+    }
+  
+    ["input", "change", "blur"].forEach(evt => {
+      nascimentoInput.addEventListener(evt, syncResponsavel);
     });
-
-})
+  
+    // roda uma vez ao carregar (caso já venha preenchido)
+    syncResponsavel();
+  })();
+  

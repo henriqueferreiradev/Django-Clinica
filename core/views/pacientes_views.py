@@ -466,8 +466,16 @@ def pre_cadastro(request):
         nf_reembolso_plano =request.POST.get('nf_reembolso_plano') == 'true'
         politica_ver = request.POST.get('politica_privacidade_versao') or 'v1.0-2025-08-20'
         
-        if consentimento_tratamento:
-            messages.error(request, 'Você precisa aceitar o termo de consentimento (LGPD) para continuar')
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+        if not consentimento_tratamento:
+            if is_ajax:
+                return JsonResponse({
+                    'ok': False,
+                    'erro': 'Você precisa aceitar o termo de consentimento (LGPD)'
+                }, status=400)
+
+ 
             
         nome = request.POST.get('nome')
         cpf = request.POST.get('cpf')
@@ -599,7 +607,34 @@ def pre_cadastro(request):
                 tipo=request.POST.get('resp_vinculo'),
                 responsavel_legal=True,
             )
+            if eh_menor:
+                Notificacao.objects.create(
+                    usuario=request.user,
+                    paciente=responsavel,
+                    titulo='Responsável por paciente menor de idade',
+                    mensagem=(
+                        f'Você foi cadastrado como responsável legal pelo paciente '
+                        f'{paciente.nome}. É necessário conferir os dados do dependente.'
+                    ),
+                    tipo='alerta',
+                    url=f'/pacientes/editar/{paciente.id}/',
+                )
 
+                Lembrete.objects.create(
+                    usuario=request.user,
+                    tipo_evento='cadastro',
+                    origem='pre_cadastro_responsavel',
+                    data_disparo=timezone.now() + timedelta(days=1),
+                    titulo='Pré-cadastro de dependente pendente',
+                    mensagem=(
+                        f'O pré-cadastro do dependente {paciente.nome} '
+                        'ainda não foi conferido.'
+                    ),
+                    paciente=paciente
+                )
+
+                            
+                
         Notificacao.objects.create(
             usuario=request.user,
             paciente=paciente,
@@ -633,6 +668,7 @@ def pre_cadastro(request):
         'cor_choices': COR_RACA,
         'vinculo_choices': VINCULO,
     })
+    
 def pre_cadastro_tokenizado(request, token):
     valido = verificar_token_acesso(token)
     if not valido:

@@ -237,283 +237,286 @@
                 </div>
               </div>
             </div>
-          <div id="responsavelBox" class="responsavel-box hidden">
-            <h3 class="form-step-title">Dados do Responsável</h3>
-            <p class="form-info-text" style="margin-top: 0;">
-              Identificamos que o paciente é menor de idade, é necessário cadastrar os dados do responsável legal.
-            </p>
+            <template id="responsavelTemplate">
+              <div id="responsavelBox" class="responsavel-box">
+                <h3 class="form-step-title">Dados do Responsável</h3>
+                <p class="form-info-text" style="margin-top: 0;">
+                  Identificamos que o paciente é menor de idade, é necessário cadastrar os dados do responsável legal.
+                </p>
 
-            
-            <div class="form-row">
-              <div class="form-field">
-                <label for="resp_nome" class="form-label">
-                  Nome <span class="required">*</span>
-                </label>
-                <input
-                  id="resp_nome"
-                  class="form-input capitalize-input "
-                  type="text"
-                  name="resp_nome"
-                  required
-                  aria-required="true"
-                />
-              </div>
+                
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="resp_nome" class="form-label">
+                      Nome <span class="required">*</span>
+                    </label>
+                    <input
+                      id="resp_nome"
+                      class="form-input capitalize-input "
+                      type="text"
+                      name="resp_nome"
+                      required
+                      aria-required="true"
+                    />
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_sobrenome" class="form-label">
-                  Sobrenome <span class="required">*</span>
-                </label>
-                <input
-                  id="resp_sobrenome"
-                  class="form-input capitalize-input"
-                  type="text"
-                  name="resp_sobrenome"
-                  required
-                  aria-required="true"
-                />
-              </div>
+                  <div class="form-field">
+                    <label for="resp_sobrenome" class="form-label">
+                      Sobrenome <span class="required">*</span>
+                    </label>
+                    <input
+                      id="resp_sobrenome"
+                      class="form-input capitalize-input"
+                      type="text"
+                      name="resp_sobrenome"
+                      required
+                      aria-required="true"
+                    />
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_nomeSocial" class="form-label">Nome Social</label>
-                <input id="resp_nomeSocial"
-                  class="form-input capitalize-input"
-                  type="text"
-                  name="resp_nomeSocial"
-                />
-              </div>
-            </div>
+                  <div class="form-field">
+                    <label for="resp_nomeSocial" class="form-label">Nome Social</label>
+                    <input id="resp_nomeSocial"
+                      class="form-input capitalize-input"
+                      type="text"
+                      name="resp_nomeSocial"
+                    />
+                  </div>
+                </div>
 
-            <!-- RG, CPF, Nascimento -->
-            <div class="form-row">
-              <div class="form-field">
-                <label for="resp_rg" class="form-label">RG</label>
-                <input
-                  id="resp_rg"
-                  class="form-input rg-mask"
-                  type="text"
-                  name="resp_rg"
-                  inputmode="numeric"
-                />
-              </div>
+                <!-- RG, CPF, Nascimento -->
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="resp_rg" class="form-label">RG</label>
+                    <input
+                      id="resp_rg"
+                      class="form-input rg-mask"
+                      type="text"
+                      name="resp_rg"
+                      inputmode="numeric"
+                    />
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_cpf" class="form-label">
-                  CPF <span class="required">*</span>
-                </label>
-                <input 
-                  id="resp_cpf" 
-                  class="form-input cpf-mask" 
-                  type="text" 
-                  name="resp_cpf" 
-                  required 
-                  aria-required="true" 
-                  inputmode="numeric"
-                />
-                <span id="resp_cpf-feedback" class="error-message"></span>
-              </div>
+                  <div class="form-field">
+                    <label for="resp_cpf" class="form-label">
+                      CPF <span class="required">*</span>
+                    </label>
+                    <input 
+                      id="resp_cpf" 
+                      class="form-input cpf-mask" 
+                      type="text" 
+                      name="resp_cpf" 
+                      required 
+                      aria-required="true" 
+                      inputmode="numeric"
+                    />
+                    <span id="resp_cpf-feedback" class="error-message"></span>
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_nascimento" class="form-label">
-                  Nascimento <span class="required">*</span>
-                </label>
-                <input
-                  id="resp_nascimento"
-                  class="form-input date-mask"
-                  type="text"
-                  name="resp_nascimento"
-                  required
-                  aria-required="true"
-                  placeholder="DD/MM/AAAA"
-                />
-              </div>
-            </div>
+                  <div class="form-field">
+                    <label for="resp_nascimento" class="form-label">
+                      Nascimento <span class="required">*</span>
+                    </label>
+                    <input
+                      id="resp_nascimento"
+                      class="form-input date-mask"
+                      type="text"
+                      name="resp_nascimento"
+                      required
+                      aria-required="true"
+                      placeholder="DD/MM/AAAA"
+                    />
+                  </div>
+                </div>
 
-            <!-- Cor, Sexo, Estado Civil, Profissão -->
-            <div class="form-row">
-              <div class="form-field">
-                <label for="resp_cor" class="form-label">Cor/Raça</label>
-                <select 
-                  id="resp_cor" 
-                  name="resp_cor" 
-                  class="form-select"
-                >
-                  <option value="" disabled selected>Selecione</option>
-                  {% for value, label in cor_choices %}
-                    <option value="{{ value }}">{{ label }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+                <!-- Cor, Sexo, Estado Civil, Profissão -->
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="resp_cor" class="form-label">Cor/Raça</label>
+                    <select 
+                      id="resp_cor" 
+                      name="resp_cor" 
+                      class="form-select"
+                    >
+                      <option value="" disabled selected>Selecione</option>
+                      {% for value, label in cor_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_sexo" class="form-label">Sexo</label>
-                <select 
-                  id="resp_sexo" 
-                  name="resp_sexo" 
-                  class="form-select"
-                >
-                  <option value="" disabled selected>Selecione</option>
-                  {% for value, label in sexo_choices %}
-                    <option value="{{ value }}">{{ label }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+                  <div class="form-field">
+                    <label for="resp_sexo" class="form-label">Sexo</label>
+                    <select 
+                      id="resp_sexo" 
+                      name="resp_sexo" 
+                      class="form-select"
+                    >
+                      <option value="" disabled selected>Selecione</option>
+                      {% for value, label in sexo_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_estado_civil" class="form-label">
-                  Estado Civil <span class="required">*</span>
-                </label>
-                <select
-                  id="resp_estado_civil"
-                  name="resp_estado_civil"
-                  class="form-select"
-                  required
-                  aria-required="true"
-                >
-                  <option value="" disabled selected>Selecione</option>
-                  {% for value, label in estado_civil_choices %}
-                    <option value="{{ value }}">{{ label }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+                  <div class="form-field">
+                    <label for="resp_estado_civil" class="form-label">
+                      Estado Civil <span class="required">*</span>
+                    </label>
+                    <select
+                      id="resp_estado_civil"
+                      name="resp_estado_civil"
+                      class="form-select"
+                      required
+                      aria-required="true"
+                    >
+                      <option value="" disabled selected>Selecione</option>
+                      {% for value, label in estado_civil_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_profissao" class="form-label">Profissão</label>
-                <input
-                  id="resp_profissao"
-                  class="form-input"
-                  type="text"
-                  name="resp_profissao"
-                />
-              </div>
-            </div>
+                  <div class="form-field">
+                    <label for="resp_profissao" class="form-label">Profissão</label>
+                    <input
+                      id="resp_profissao"
+                      class="form-input"
+                      type="text"
+                      name="resp_profissao"
+                    />
+                  </div>
+                </div>
 
-            <!-- Naturalidade, UF, Mídia, Rede Social -->
-            <div class="form-row">
-              <div class="form-field">
-                <label for="resp_naturalidade" class="form-label">
-                  Naturalidade <span class="required">*</span>
-                </label>
-                <input
-                  id="resp_naturalidade"
-                  class="form-input"
-                  type="text"
-                  name="resp_naturalidade"
-                  required
-                  aria-required="true"
-                />
-              </div>
+                <!-- Naturalidade, UF, Mídia, Rede Social -->
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="resp_naturalidade" class="form-label">
+                      Naturalidade <span class="required">*</span>
+                    </label>
+                    <input
+                      id="resp_naturalidade"
+                      class="form-input"
+                      type="text"
+                      name="resp_naturalidade"
+                      required
+                      aria-required="true"
+                    />
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_uf" class="form-label">
-                  UF <span class="required">*</span>
-                </label>
-                <select
-                  id="resp_uf"
-                  name="resp_uf"
-                  class="form-select"
-                  required
-                  aria-required="true"
-                >
-                  <option value="" disabled selected>Selecione</option>
-                  {% for value, label in uf_choices %}
-                    <option value="{{ value }}">{{ label }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+                  <div class="form-field">
+                    <label for="resp_uf" class="form-label">
+                      UF <span class="required">*</span>
+                    </label>
+                    <select
+                      id="resp_uf"
+                      name="resp_uf"
+                      class="form-select"
+                      required
+                      aria-required="true"
+                    >
+                      <option value="" disabled selected>Selecione</option>
+                      {% for value, label in uf_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_midia" class="form-label">
-                  Como nos conheceu? <span class="required">*</span>
-                </label>
-                <select
-                  id="resp_midia"
-                  name="resp_midia"
-                  class="form-select"
-                  required
-                  aria-required="true"
-                >
-                  <option value="" disabled selected>Selecione</option>
-                  {% for value, label in midia_choices %}
-                    <option value="{{ value }}">{{ label }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+                  <div class="form-field">
+                    <label for="resp_midia" class="form-label">
+                      Como nos conheceu? <span class="required">*</span>
+                    </label>
+                    <select
+                      id="resp_midia"
+                      name="resp_midia"
+                      class="form-select"
+                      required
+                      aria-required="true"
+                    >
+                      <option value="" disabled selected>Selecione</option>
+                      {% for value, label in midia_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
 
-              <div class="form-field">
-                <label for="resp_redeSocial" class="form-label">Rede Social</label>
-                <input
-                  id="resp_redeSocial"
-                  class="form-input"
-                  type="text"
-                  name="resp_redeSocial"
-                />
-              </div>
-            </div>
+                  <div class="form-field">
+                    <label for="resp_redeSocial" class="form-label">Rede Social</label>
+                    <input
+                      id="resp_redeSocial"
+                      class="form-input"
+                      type="text"
+                      name="resp_redeSocial"
+                    />
+                  </div>
+                </div>
 
-            <!-- Foto + Observação -->
-            <div class="form-row">
-              <div class="form-field form-field-file">
-                <label for="resp_foto" class="form-label">Foto do responsável (opcional)</label>
-                <div class="file-upload-wrapper">
-                  <input
-                    id="resp_foto"
-                    name="resp_foto"
-                    type="file"
-                    accept="image/*"
-                    onchange="previewImage(event)"
-                    aria-describedby="resp_fileHelp"
-                  />
-                  <label for="resp_foto" class="file-upload-label">
-                    <span class="file-upload-icon">
-                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 5V19M5 12H19" stroke="#7F4396" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                    </span>
-                    <span class="file-upload-text">Selecione uma foto</span>
-                  </label>
-                  <div id="filePreviewResp" class="file-preview"></div>
-                  <small id="resp_fileHelp" class="form-help-text">
-                    Formatos aceitos: JPG, PNG (máx. 2MB)
-                  </small>
+                <!-- Foto + Observação -->
+                <div class="form-row">
+                  <div class="form-field form-field-file">
+                    <label for="resp_foto" class="form-label">Foto do responsável (opcional)</label>
+                    <div class="file-upload-wrapper">
+                      <input
+                        id="resp_foto"
+                        name="resp_foto"
+                        type="file"
+                        accept="image/*"
+                        onchange="previewImage(event)"
+                        aria-describedby="resp_fileHelp"
+                      />
+                      <label for="resp_foto" class="file-upload-label">
+                        <span class="file-upload-icon">
+                          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M5 12H19" stroke="#7F4396" stroke-width="2" stroke-linecap="round"/>
+                          </svg>
+                        </span>
+                        <span class="file-upload-text">Selecione uma foto</span>
+                      </label>
+                      <div id="filePreviewResp" class="file-preview"></div>
+                      <small id="resp_fileHelp" class="form-help-text">
+                        Formatos aceitos: JPG, PNG (máx. 2MB)
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="resp_observacao" class="form-label">Observação</label>
+                    <textarea
+                      id="resp_observacao"
+                      class="form-textarea"
+                      name="resp_observacao"
+                      maxlength="500"
+                      aria-describedby="resp_charCount"
+                    ></textarea>
+                    <div id="resp_charCount" class="char-count">
+                      <span class="current-count">0</span>/500 caracteres
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Vínculo -->
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="resp_vinculo" class="form-label">
+                      Vínculo com o paciente <span class="required">*</span>
+                    </label>
+                    <select
+                      id="resp_vinculo"
+                      name="resp_vinculo"
+                      class="form-select"
+                      required
+                      aria-required="true"
+                    >
+                      <option value="" disabled selected>Selecione</option>
+                      <option value="pai">Pai</option>
+                      <option value="mae">Mãe</option>
+                      <option value="responsavel">Responsável legal</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-
-              <div class="form-field">
-                <label for="resp_observacao" class="form-label">Observação</label>
-                <textarea
-                  id="resp_observacao"
-                  class="form-textarea"
-                  name="resp_observacao"
-                  maxlength="500"
-                  aria-describedby="resp_charCount"
-                ></textarea>
-                <div id="resp_charCount" class="char-count">
-                  <span class="current-count">0</span>/500 caracteres
-                </div>
-              </div>
-            </div>
-
-            <!-- Vínculo -->
-            <div class="form-row">
-              <div class="form-field">
-                <label for="resp_vinculo" class="form-label">
-                  Vínculo com o paciente <span class="required">*</span>
-                </label>
-                <select
-                  id="resp_vinculo"
-                  name="resp_vinculo"
-                  class="form-select"
-                  required
-                  aria-required="true"
-                >
-                  <option value="" disabled selected>Selecione</option>
-                  <option value="pai">Pai</option>
-                  <option value="mae">Mãe</option>
-                  <option value="responsavel">Responsável legal</option>
-                </select>
-              </div>
-            </div>
-          </div>
+            </template>
+            <div id="responsavelMount"></div>
             <div class="form-navigation">
               <button type="button" class="btn btn-next" aria-controls="step-2">
                 Próximo

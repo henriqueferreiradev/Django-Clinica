@@ -642,11 +642,7 @@ input.error {
   transform: translateY(-2px);
 
 }
-
-.hidden {
-  display: none;
-}
-
+ 
 .responsavel-box {
   margin-top: 2rem;
   padding: 1.25rem;
