@@ -63,32 +63,32 @@ function getTitle(tipo) {
 
 let arrow = document.querySelectorAll(".arrow");
 for (var i = 0; i < arrow.length; i++) {
-  arrow[i].addEventListener("click", (e) => {
-    let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
-    arrowParent.classList.toggle("showMenu");
-  });
+    arrow[i].addEventListener("click", (e) => {
+        let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+        arrowParent.classList.toggle("showMenu");
+    });
 }
 
 let sidebar = document.querySelector(".sidebar");
 let sidebarBtn = document.querySelector(".bx-menu");
 console.log(sidebarBtn);
 sidebarBtn.addEventListener("click", () => {
-  sidebar.classList.toggle("close");
+    sidebar.classList.toggle("close");
 });
 
 
 
 window.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll("input").forEach(input => {
-    input.setAttribute("autocomplete", "off");
-  });
+    document.querySelectorAll("input").forEach(input => {
+        input.setAttribute("autocomplete", "off");
+    });
 });
 
 function temporizadorAlerta() {
-  setTimeout(() => {
-    const alert = document.getElementById("alert-container");
-    if (alert) alert.style.display = "none";
-  }, 4000);
+    setTimeout(() => {
+        const alert = document.getElementById("alert-container");
+        if (alert) alert.style.display = "none";
+    }, 4000);
 }
 
 
@@ -99,12 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationIcon = document.getElementById('bellIcon');
     const notificationModal = document.getElementById('notificationModal');
     const notificationClose = document.getElementById('notificationCloseModal');
-    
+
     // Elementos das Mensagens
     const messageIcon = document.getElementById('messageIcon');
     const messageModal = document.getElementById('messageModal');
     const messageClose = document.getElementById('messageCloseModal');
-    
+
     // Variável para armazenar todas as mensagens
     let todasMensagens = [];
 
@@ -115,134 +115,134 @@ document.addEventListener('DOMContentLoaded', () => {
             notificationModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         });
-        
+
         // Fechar modal de notificações
         const closeNotificationModal = () => {
             notificationModal.style.display = 'none';
             document.body.style.overflow = 'auto';
         };
-        
+
         notificationClose.addEventListener('click', closeNotificationModal);
-        
+
         // Fechar ao clicar fora (notificações)
         notificationModal.addEventListener('click', (e) => {
             if (e.target === notificationModal) closeNotificationModal();
         });
     }
-    
+
     // ===== MENSAGENS =====
     if (messageIcon && messageModal && messageClose) {
         // Abrir modal de mensagens
         messageIcon.addEventListener('click', carregarMensagens);
-        
+
         // Fechar modal de mensagens
         const closeMessageModal = () => {
             messageModal.style.display = 'none';
             document.body.style.overflow = 'auto';
         };
-        
+
         messageClose.addEventListener('click', closeMessageModal);
-        
+
         // Fechar ao clicar fora (mensagens)
         messageModal.addEventListener('click', (e) => {
             if (e.target === messageModal) closeMessageModal();
         });
     }
-    
+
     // ===== FUNÇÃO PARA CARREGAR MENSAGENS =====
     function carregarMensagens() {
         const messagesList = document.getElementById('messagesList');
-        
+
         messageModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-    
+
         fetch(`/api/mensagens-padrao/`)
-        .then(res => res.json())
-        .then(response => {
-            console.log('Dados recebidos da API:', response);
-            
-            // Armazenar todas as mensagens
-            todasMensagens = response.mensagens || [];
-            console.log('Total de mensagens:', todasMensagens.length);
-            
-            // Renderizar todas as mensagens inicialmente
-            renderizarMensagens(todasMensagens);
-            
-            // Configurar a busca
-            configurarBusca();
-        })
-        .catch((error) => {
-            console.error('Erro ao carregar mensagens:', error);
-            mostrarMensagem('Erro ao carregar mensagens', 'error');
-        });
+            .then(res => res.json())
+            .then(response => {
+                console.log('Dados recebidos da API:', response);
+
+                // Armazenar todas as mensagens
+                todasMensagens = response.mensagens || [];
+                console.log('Total de mensagens:', todasMensagens.length);
+
+                // Renderizar todas as mensagens inicialmente
+                renderizarMensagens(todasMensagens);
+
+                // Configurar a busca
+                configurarBusca();
+            })
+            .catch((error) => {
+                console.error('Erro ao carregar mensagens:', error);
+                mostrarMensagem('Erro ao carregar mensagens', 'error');
+            });
     }
-    
+
     // ===== FUNÇÃO PARA RENDERIZAR MENSAGENS =====
     function renderizarMensagens(mensagens) {
         const messagesList = document.getElementById('messagesList');
-        
+
         // Limpar lista atual
         messagesList.innerHTML = '';
-        
+
         // Verificar se há mensagens
         if (!mensagens || mensagens.length === 0) {
             messagesList.innerHTML = '<p class="no-messages">Nenhuma mensagem encontrada</p>';
             return;
         }
-        
+
         // Para cada mensagem, criar um item
         mensagens.forEach(mensagem => {
             // Encontrar o template
             const template = document.querySelector('.message-item.template');
-            
+
             if (!template) {
                 console.error('Template não encontrado!');
                 return;
             }
-            
+
             // Clonar o template
             const newMessage = template.cloneNode(true);
             newMessage.style.display = 'flex'; // Tornar visível
-            
+
             // Remover a classe template
             newMessage.classList.remove('template');
-            
+
             // Preencher os dados conforme a estrutura da API
             const messageTitle = newMessage.querySelector('h4');
             const messageDescription = newMessage.querySelector('p');
             const messageTime = newMessage.querySelector('.message-time');
-            
+
             // Usando os nomes corretos das propriedades
             if (messageTitle) messageTitle.textContent = mensagem.titulo || 'Sem título';
             if (messageDescription) messageDescription.textContent = mensagem.mensagem || 'Sem conteúdo';
-            
+
             // Formatando a data corretamente
             if (messageTime && mensagem.criado_em) {
                 messageTime.textContent = `Atualizado em: ${formatarData(mensagem.criado_em)}`;
             } else {
                 messageTime.textContent = 'Data não disponível';
             }
-            
+
             // Adicionar à lista
             messagesList.appendChild(newMessage);
         });
-        
+
         console.log(`${mensagens.length} mensagens renderizadas`);
     }
-    
+
     // ===== FUNÇÃO PARA CONFIGURAR BUSCA =====
     function configurarBusca() {
         // Encontrar o input de busca (já existe no HTML)
         const searchInput = document.querySelector('#messageModal input[type="search"]');
-        
+
         if (!searchInput) {
             console.error('Input de busca não encontrado!');
             return;
         }
-        
+
         // Limpar valor anterior
         searchInput.value = '';
-        
+
         // Configurar placeholder e estilo
         searchInput.placeholder = 'Buscar no título ou mensagem...';
         searchInput.style.padding = '10px 15px';
@@ -250,19 +250,19 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.style.border = '1px solid #ddd';
         searchInput.style.borderRadius = '6px';
         searchInput.style.fontSize = '14px';
-        
+
         // Evento de busca em tempo real
-        searchInput.addEventListener('input', function(e) {
+        searchInput.addEventListener('input', function (e) {
             const termo = e.target.value.toLowerCase().trim();
             filtrarMensagens(termo);
         });
-        
+
         // Foco no campo de busca ao abrir o modal
         setTimeout(() => {
             searchInput.focus();
         }, 300);
     }
-    
+
     // ===== FUNÇÃO PARA FILTRAR MENSAGENS =====
     function filtrarMensagens(termoBusca) {
         if (!termoBusca || termoBusca === '') {
@@ -270,22 +270,22 @@ document.addEventListener('DOMContentLoaded', () => {
             renderizarMensagens(todasMensagens);
             return;
         }
-        
+
         // Filtrar mensagens pelo título ou conteúdo
         const mensagensFiltradas = todasMensagens.filter(mensagem => {
             const titulo = (mensagem.titulo || '').toLowerCase();
             const conteudo = (mensagem.mensagem || '').toLowerCase();
-            
+
             return titulo.includes(termoBusca) || conteudo.includes(termoBusca);
         });
-        
+
         // Renderizar as mensagens filtradas
         renderizarMensagens(mensagensFiltradas);
-        
+
         // Mostrar contador de resultados
         mostrarContadorResultados(mensagensFiltradas.length, termoBusca);
     }
-    
+
     // ===== FUNÇÃO PARA MOSTRAR CONTADOR DE RESULTADOS =====
     function mostrarContadorResultados(quantidade, termoBusca) {
         // Remover contador anterior se existir
@@ -293,11 +293,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (contadorAnterior) {
             contadorAnterior.remove();
         }
-        
+
         if (termoBusca) {
             const searchInput = document.querySelector('#messageModal input[type="search"]');
             const modalBody = document.querySelector('#messageModal .modal-body');
-            
+
             if (searchInput && modalBody) {
                 const contador = document.createElement('div');
                 contador.className = 'contador-busca';
@@ -309,13 +309,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     font-style: italic;
                     padding: 0 5px;
                 `;
-                
+
                 // Inserir após o campo de busca
                 searchInput.parentNode.insertBefore(contador, searchInput.nextSibling);
             }
         }
     }
-    
+
     // ===== FUNÇÃO PARA FORMATAR DATA =====
     function formatarData(dataString) {
         try {
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const [ano, mes, dia] = partes;
                 return `${dia}/${mes}/${ano}`;
             }
-            
+
             // Tenta converter se for outro formato
             const data = new Date(dataString);
             if (!isNaN(data.getTime())) {
@@ -334,14 +334,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ano = data.getFullYear();
                 return `${dia}/${mes}/${ano}`;
             }
-            
+
             return dataString; // Retorna a string original se não conseguir formatar
         } catch (e) {
             console.error('Erro ao formatar data:', e);
             return dataString;
         }
     }
-    
+
     // ===== FECHAR COM ESC (PARA AMBOS) =====
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 notificationModal.style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
-            
+
             // Fechar modal de mensagens se estiver aberto
             if (messageModal && messageModal.style.display === 'flex') {
                 messageModal.style.display = 'none';
@@ -363,10 +363,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Função para copiar mensagem ao clicar no item
 function configurarCliqueParaCopiarMensagem() {
     // Usar delegação de eventos para funcionar com elementos dinâmicos
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         // Verificar se o clique foi em um item de mensagem (não no template original)
         const messageItem = e.target.closest('.message-item:not(.template)');
-        
+
         if (messageItem) {
             copiarTextoMensagem(messageItem);
         }
@@ -377,32 +377,32 @@ function configurarCliqueParaCopiarMensagem() {
 function copiarTextoMensagem(messageItem) {
     // Encontrar o elemento que contém o texto da mensagem
     const messageTextElement = messageItem.querySelector('p');
-    
+
     if (!messageTextElement) {
         mostrarMensagem('Elemento da mensagem não encontrado', 'error');
         return;
     }
-    
+
     // Pegar o texto da mensagem
     const textoMensagem = messageTextElement.textContent.trim();
-    
+
     if (!textoMensagem) {
         mostrarMensagem('Mensagem vazia', 'warning');
         return;
     }
-    
+
     // Usar a Clipboard API para copiar
     navigator.clipboard.writeText(textoMensagem)
         .then(() => {
             // Feedback de sucesso usando a função existente
             mostrarMensagem('Mensagem copiada para a área de transferência!', 'success');
-            
+
             // Adicionar feedback visual temporário no item
             adicionarFeedbackVisual(messageItem);
         })
         .catch(err => {
             console.error('Erro ao copiar:', err);
-            
+
             // Fallback para navegadores mais antigos
             copiarComFallback(textoMensagem, messageItem);
         });
@@ -417,14 +417,14 @@ function copiarComFallback(texto, messageItem) {
         textarea.style.position = 'fixed';
         textarea.style.opacity = '0';
         document.body.appendChild(textarea);
-        
+
         // Selecionar e copiar
         textarea.select();
         textarea.setSelectionRange(0, 99999); // Para mobile
-        
+
         const sucesso = document.execCommand('copy');
         document.body.removeChild(textarea);
-        
+
         if (sucesso) {
             mostrarMensagem('Mensagem copiada para a área de transferência!', 'success');
             adicionarFeedbackVisual(messageItem);
@@ -441,7 +441,7 @@ function copiarComFallback(texto, messageItem) {
 function adicionarFeedbackVisual(messageItem) {
     // Adicionar classe de destaque
     messageItem.classList.add('copied');
-    
+
     // Remover destaque após 1.5 segundos
     setTimeout(() => {
         messageItem.classList.remove('copied');

@@ -531,6 +531,75 @@ def pre_cadastro(request):
             paciente.foto = foto
             paciente.save()
 
+        # Lógica para responsável (se paciente for menor)
+        idade = calcular_idade(nascimento_formatada)
+        eh_menor = idade < 18
+
+        if eh_menor:
+            resp_nascimento = request.POST.get('resp_nascimento')
+
+            try: 
+                resp_nascimento_dt = datetime.strptime(resp_nascimento, '%d/%m/%Y').date()
+            except ValueError:
+                messages.error(request, 'Data de nascimento do responsável inválida')
+                paciente.delete()  # Deleta o paciente criado pois há erro no responsável
+                return redirect('pre_cadastro')
+
+            resp_cpf = request.POST.get('resp_cpf')
+
+            responsavel = Paciente.objects.filter(cpf=resp_cpf).first()
+
+            if not responsavel:
+                responsavel = Paciente.objects.create(
+                    nome=request.POST.get('resp_nome'),
+                    sobrenome=request.POST.get('resp_sobrenome'),
+                    nomeSocial=request.POST.get('resp_nomeSocial'),
+                    cpf=resp_cpf,
+                    rg=request.POST.get('resp_rg'),
+                    data_nascimento=resp_nascimento_dt,
+                    cor_raca=request.POST.get('resp_cor'),
+                    sexo=request.POST.get('resp_sexo'),
+                    estado_civil=request.POST.get('resp_estado_civil'),
+                    profissao=request.POST.get('resp_profissao'),
+                    naturalidade=request.POST.get('resp_naturalidade'),
+                    uf=request.POST.get('resp_uf'),
+                    midia=request.POST.get('resp_midia'),
+                    redeSocial=request.POST.get('resp_redeSocial'),
+                    observacao=request.POST.get('resp_observacao'),
+                    cep=request.POST.get('resp_cep', request.POST.get('cep')),
+                    rua=request.POST.get('resp_rua', request.POST.get('rua')),
+                    numero=request.POST.get('resp_numero', request.POST.get('numero')),
+                    complemento=request.POST.get('resp_complemento', request.POST.get('complemento')),
+                    bairro=request.POST.get('resp_bairro', request.POST.get('bairro')),
+                    cidade=request.POST.get('resp_cidade', request.POST.get('cidade')),
+                    estado=request.POST.get('resp_estado', request.POST.get('estado')),
+                    telefone=request.POST.get('resp_telefone'),
+                    celular=request.POST.get('resp_celular'),
+                    consentimento_tratamento=consentimento_tratamento,
+                    consentimento_lgpd=consentimento_imagem,
+                    consentimento_marketing=consent_marketing,
+                    politica_privacidade_versao=politica_ver,
+                    data_consentimento=timezone.now(),
+                    ip_consentimento=request.META.get('REMOTE_ADDR'),
+                    nf_nao_aplica=nf_nao_aplica,
+                    nf_imposto_renda=nf_imposto_renda,
+                    nf_reembolso_plano=nf_reembolso_plano,
+                    pre_cadastro=True,  # Mantém como pré-cadastro
+                    conferido=False,
+                    ativo=False,
+                )
+            
+            if request.FILES.get('resp_foto'):
+                responsavel.foto = request.FILES['resp_foto']
+                responsavel.save()
+            
+            VinculoFamiliar.objects.create(
+                paciente=paciente,
+                familiar=responsavel,
+                tipo=request.POST.get('resp_vinculo'),
+                responsavel_legal=True,
+            )
+
         Notificacao.objects.create(
             usuario=request.user,
             paciente=paciente,
@@ -564,7 +633,6 @@ def pre_cadastro(request):
         'cor_choices': COR_RACA,
         'vinculo_choices': VINCULO,
     })
-
 def pre_cadastro_tokenizado(request, token):
     valido = verificar_token_acesso(token)
     if not valido:

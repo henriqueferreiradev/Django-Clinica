@@ -898,6 +898,7 @@ textarea {
   .home-section .home-content .bx-menu {
     display: none;
   }
+
   .topbar-div .dropdown {
     display: none;
   }
@@ -1084,10 +1085,10 @@ textarea {
     border-radius: 14px;
     text-decoration: none;
     color: var(--preto);
-    font-weight: 700;
-    border: 1px solid var(--cinzaBorda);
+    border: none;
     background: var(--branco);
     margin-bottom: 10px;
+    font-size: 16px;
   }
 
   .mobile-menu-item-btn {
@@ -1127,7 +1128,7 @@ textarea {
      ACCORDION
      ========================= */
   .mobile-menu-accordion {
-    border: 1px solid var(--cinzaBorda);
+
     border-radius: 14px;
     margin-bottom: 10px;
     overflow: hidden;
@@ -1143,8 +1144,8 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-weight: 800;
     color: var(--preto);
+    font-size: 16px;
   }
 
   .mobile-acc-btn .left {

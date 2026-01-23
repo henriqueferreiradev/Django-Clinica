@@ -11,54 +11,6 @@ function setPage(pageNumber, event) {
     document.getElementById("paginator-form").submit();
 }
 
-function inputMasks() {
-    const cpfInput = document.getElementById('cpfInput');
-    if (cpfInput) {
-        IMask(cpfInput, {
-            mask: '000.000.000-00'
-        });
-    }
-
-    const telefoneInput = document.getElementById('telefoneInput');
-    if (telefoneInput) {
-        IMask(telefoneInput, {
-            mask: '(00) 0000-0000'
-        });
-    }
-
-    const cepInput = document.getElementById('cepInput');
-    if (cepInput) {
-        IMask(cepInput, {
-            mask: '00.000-000'
-        });
-    }
-
-    const celularInput = document.getElementById('celularInput');
-    if (celularInput) {
-        IMask(celularInput, {
-            mask: '(00) 00000-0000'
-        });
-    }
-
-    const rgInput = document.getElementById('rgInput');
-    if (rgInput) {
-        IMask(rgInput, {
-            mask: '00.000.000-0'
-        });
-    }
-    const telEmergenciaInput = document.getElementById('telEmergenciaInput');
-    if (telEmergenciaInput) {
-        IMask(telEmergenciaInput, {
-            mask: '(00) 00000-0000'
-        });
-        const nascimentoInput = document.getElementById('nascimentoInput');
-        if (nascimentoInput) {
-            IMask(nascimentoInput, {
-                mask: '00/00/0000'
-            });
-        }
-    }
-}
 function montarEndereco(data) {
     const partes = []
 
@@ -270,7 +222,19 @@ function ocultarPopup(elemento) {
 
 
 
+const radios = [
+    document.getElementById("nf_reembolso_plano"),
+    document.getElementById("nf_imposto_renda"),
+    document.getElementById("nf_nao_aplica"),
+];
 
+radios.forEach(r => {
+    r.addEventListener("change", () => {
+        radios.forEach(other => {
+            if (other !== r) other.checked = false;
+        });
+    });
+});
 document.querySelector('input[name="q"]').addEventListener('keyup', function () {
     const search = this.value.toLowerCase();
     const rows = document.querySelectorAll("table tbody tr");

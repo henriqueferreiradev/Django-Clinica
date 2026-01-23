@@ -12,7 +12,7 @@ function previewImage(event) {
     if (file) {
         const reader = new FileReader();
 
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             preview.src = e.target.result;
             preview.style.display = 'block'; // Exibe a imagem
         };
@@ -27,24 +27,8 @@ function setPage(pageNumber, event) {
     document.getElementById("paginator-form").submit();
 }
 
-function inputMasks() {
-    const cpfInput = document.getElementById('cpfInput');
-    if (cpfInput) {
-        IMask(cpfInput, {
-            mask: '000.000.000-00'
-        });
-    }
 
-    const telefoneInput = document.getElementById('telefoneInput');
-    if (telefoneInput) {
-        IMask(telefoneInput, {
-            mask: '(00) 0000-0000'
-        });
-    }
-}
- 
 
- 
 document.querySelector('input[name="q"]').addEventListener('keyup', function () {
     const search = this.value.toLowerCase();
     const rows = document.querySelectorAll("table tbody tr");
@@ -78,7 +62,7 @@ function montarEndereco(data) {
     if (data.bairro) partes.push(data.bairro)
 
     const cidadeEstado = []
-   
+
     if (data.cidade) partes.push(data.cidade)
     if (data.estado) partes.push(data.estado)
     if (cidadeEstado.length) partes.push(cidadeEstado.join(' -'))
@@ -88,10 +72,10 @@ function montarEndereco(data) {
     return partes.join(', ')
 
 }
- 
+
 function abrirFicha(url) {
     const novaAba = window.open(url, '_blank');
     novaAba.onload = function () {
-      novaAba.print();
+        novaAba.print();
     };
-  }
+}

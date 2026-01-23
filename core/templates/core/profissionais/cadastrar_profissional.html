@@ -64,20 +64,6 @@
                   aria-required="true"
                 />
               </div>
-
-              <div class="form-field">
-                <label for="nomeSocial" class="form-label">Nome Social</label>
-                <input
-                  id="nomeSocial"
-                  class="form-input capitalize-input"
-                  type="text"
-                  name="nomeSocial"
-                />
-              </div>
-            </div>
-
-            <!-- RG, CPF, CNPJ, Nascimento -->
-            <div class="form-row">
               <div class="form-field">
                 <label for="rg" class="form-label">RG</label>
                 <input
@@ -88,6 +74,12 @@
                   inputmode="numeric"
                 />
               </div>
+
+            </div>
+
+            <!-- RG, CPF, CNPJ, Nascimento -->
+            <div class="form-row">
+
 
               <div class="form-field">
                 <label for="cpf" class="form-label">
@@ -104,18 +96,6 @@
                 />
                 <span id="cpf-feedback" class="error-message"></span>
               </div>
-
-              <div class="form-field">
-                <label for="cnpj" class="form-label">CNPJ</label>
-                <input
-                  id="cnpj"
-                  class="form-input cnpj-mask"
-                  type="text"
-                  name="cnpj"
-                  inputmode="numeric"
-                />
-              </div>
-
               <div class="form-field">
                 <label for="nascimento" class="form-label">
                   Nascimento <span class="required">*</span>
@@ -130,6 +110,26 @@
                   placeholder="DD/MM/AAAA"
                 />
               </div>
+              <div class="form-field">
+                <label for="cnpj" class="form-label">CNPJ</label>
+                <input
+                  id="cnpj"
+                  class="form-input cnpj-mask"
+                  type="text"
+                  name="cnpj"
+                  inputmode="numeric"
+                />
+              </div>
+              <div class="form-field">
+                <label for="nomeSocial" class="form-label">Razão Social</label>
+                <input
+                  id="nomeSocial"
+                  class="form-input capitalize-input"
+                  type="text"
+                  name="nomeSocial"
+                />
+              </div>
+
             </div>
 
             <!-- Cor, Sexo, Estado Civil -->
@@ -548,7 +548,7 @@
                 </label>
                 <input
                   id="celular"
-                  class="form-input cellphone-mask"
+                  class="form-input cel-mask"
                   type="text"
                   name="celular"
                   required

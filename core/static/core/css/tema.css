@@ -83,7 +83,7 @@
   scrollbar-color: var(--roxoPrincipal) var(--branco);
 }
 
- 
+
 
 /* Chrome, Safari e Edge */
 *::-webkit-scrollbar {
@@ -330,7 +330,7 @@ select::-ms-expand {
   align-items: center;
   gap: var(--espaco-xs);
   cursor: pointer;
-  padding: var(--espaco-sm) 0;
+  padding-bottom: var(--espaco-xs);
 }
 
 .checkbox-option input[type="checkbox"] {
@@ -372,7 +372,7 @@ select::-ms-expand {
   align-items: center;
   gap: var(--espaco-xs);
   cursor: pointer;
-  padding: var(--espaco-sm) 0;
+  padding-bottom: var(--espaco-xs);
 }
 
 .radio-option input[type="radio"] {
@@ -571,4 +571,3 @@ select::-ms-expand {
 .toast-close:hover {
   color: white;
 }
-

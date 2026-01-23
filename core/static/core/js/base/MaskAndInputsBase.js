@@ -55,6 +55,10 @@ function inputMasks() {
     document.querySelectorAll('.cnpj-mask').forEach(input => {
         IMask(input, { mask: '00.000.000/0000-00' });
     });
+
+    document.querySelectorAll('.insta-mask').forEach(input => {
+        IMask(input, { mask: '@' });
+    });
 }
 function capitalizeWords(str) {
     const lowercaseWords = ['da', 'de', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'com'];

@@ -484,13 +484,13 @@
                 </label>
                 <input
                   id="celular"
-                  class="form-input cellphone-mask"
+                  class="form-input cel-mask"
                   type="text"
                   name="celular"
                   required
                   aria-required="true"
                   inputmode="tel"
-                  value='{{ paciente.telefone }}'
+                  value='{{ paciente.celular }}'
                 />
               </div>
             </div>
@@ -672,21 +672,23 @@
                   </a>.
                 </p>
 
-                <label class="checkbox-option">
-                  <input type="checkbox" name="nf_reembolso_plano" value='true' {% if paciente.nf_reembolso_plano %}checked{% endif %}/>
+                <label class="radio-option">
+                  <input type="radio" name="nf_reembolso_plano" id="nf_reembolso_plano" value="true"
+                    {% if paciente.nf_reembolso_plano %}checked{% endif %}>
                   <span>Reembolso de plano de saúde</span>
                 </label>
 
-                <label class="checkbox-option">
-                  <input type="checkbox" name="nf_imposto_renda" value='true' {% if paciente.nf_imposto_renda %}checked{% endif %}/>
+                <label class="radio-option">
+                  <input type="radio" name="nf_imposto_renda" id="nf_imposto_renda" value="true"
+                    {% if paciente.nf_imposto_renda %}checked{% endif %}>
                   <span>Declaração de imposto de renda</span>
                 </label>
 
-                <label class="checkbox-option">
-                  <input type="checkbox" name="nf_nao_aplica" value='true'{% if paciente.nf_nao_aplica %}checked{% endif %}/>
+                <label class="radio-option">
+                  <input type="radio" name="nf_nao_aplica" id="nf_nao_aplica" value="true"
+                    {% if paciente.nf_nao_aplica %}checked{% endif %}>
                   <span>Não se aplica</span>
                 </label>
-
                 <input type="hidden" name="politica_privacidade_versao" value="v1.0-2025-08-20" />
               </div>
 
@@ -740,19 +742,10 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- Mantenha esta ordem EXATA -->
 <script type="module" src="{% static 'core/js/pacientes/main.js' %}"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
 <script src="{% static 'core/js/base/validadorCpfCnpj.js' %}"></script>
 <script src="{% static 'core/js/base/cep.js' %}"></script>
 <script src="{% static 'core/js/pacientes/base.js' %}"></script>
-<script>
-console.log("Debug - Arquivos carregados:");
-console.log({
-    mainJs: typeof Main !== 'undefined',
-    mask: typeof IMask !== 'undefined',
-    base: typeof PacienteBase !== 'undefined'
-});
-</script>
 {% endblock %}

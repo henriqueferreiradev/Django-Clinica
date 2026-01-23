@@ -285,14 +285,14 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
               </div>
             </div>
           </div>
-          <!-- RESPONSÁVEL (APARECE SÓ SE FOR MENOR) -->
+          
           <div id="responsavelBox" class="responsavel-box hidden">
             <h3 class="form-step-title">Dados do Responsável</h3>
             <p class="form-info-text" style="margin-top: 0;">
-              Como o paciente é menor de idade, é necessário cadastrar os dados do responsável legal.
+              Identificamos que o paciente é menor de idade, é necessário cadastrar os dados do responsável legal.
             </p>
 
-            <!-- Nome / Sobrenome / Nome Social -->
+            
             <div class="form-row">
               <div class="form-field">
                 <label for="resp_nome" class="form-label">
@@ -721,7 +721,7 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                 </label>
                 <input
                   id="celular"
-                  class="form-input cellphone-mask"
+                  class="form-input cel-mask"
                   type="text"
                   name="celular"
                   required
@@ -873,8 +873,6 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                 informados na Política de Privacidade.
               </small>
             </section>
-              
-
             <section class="lgpd-section" style="margin-top: 1.5rem">
               <div class="lgpd-box" style="
                     background: var(--branco);
@@ -904,18 +902,18 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
                   </a>.
                 </p>
 
-                <label class="checkbox-option">
-                  <input type="checkbox" name="nf_reembolso_plano" value='true' />
+                <label class="radio-option">
+                  <input type="radio" name="nf_reembolso_plano" id='nf_reembolso_plano' value='true' />
                   <span>Reembolso de plano de saúde</span>
                 </label>
 
-                <label class="checkbox-option">
-                  <input type="checkbox" name="nf_imposto_renda" value='true' />
+                <label class="radio-option">
+                  <input type="radio" name="nf_imposto_renda" if='nf_imposto_renda' value='true' />
                   <span>Declaração de imposto de renda</span>
                 </label>
 
-                <label class="checkbox-option">
-                  <input type="checkbox" name="nf_nao_aplica" value='true'/>
+                <label class="radio-option">
+                  <input type="radio" name="nf_nao_aplica" id='nf_nao_aplica' value='true'/>
                   <span>Não se aplica</span>
                 </label>
 
@@ -974,19 +972,10 @@ Paciente - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
 {% endblock %}
 
 {% block scripts %}
-<!-- Mantenha esta ordem EXATA -->
 <script type="module" src="{% static 'core/js/pacientes/main.js' %}"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
 <script src="{% static 'core/js/base/validadorCpfCnpj.js' %}"></script>
 <script src="{% static 'core/js/base/cep.js' %}"></script>
 <script src="{% static 'core/js/pacientes/base.js' %}"></script>
-<script>
-console.log("Debug - Arquivos carregados:");
-console.log({
-    mainJs: typeof Main !== 'undefined',
-    mask: typeof IMask !== 'undefined',
-    base: typeof PacienteBase !== 'undefined'
-});
-</script>
 {% endblock %}
