@@ -461,6 +461,7 @@
     justify-content: center;
     transition: all 0.3s ease;
     font-size: 20px;
+    background: var(--backgroundCard);
 }
 
 .social-btn:hover {
@@ -503,7 +504,7 @@
 .qrcode-section {
     text-align: center;
     padding: 24px;
-    background: var(--cinzaClaro);
+    background: var(--backgroundCard);
     border-radius: 12px;
     margin-top: 24px;
 }
@@ -620,4 +621,70 @@
     .btn-group {
         flex-direction: column;
     }
+}
+
+
+.dropdown-menu {
+    position: absolute;
+
+    background: var(--backgroundCard);
+    border: 1px solid var(--cinzaBorda);
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    display: none;
+    flex-direction: column;
+    min-width: 150px;
+    z-index: 10;
+    color: var(--preto);
+    padding: 5px;
+
+
+}
+
+@media (max-width: 768px) {
+    .dropdown-menu {
+        right: 10px;
+        min-width: 180px;
+    }
+}
+
+.link-edit {
+    padding: 8px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--preto);
+    box-shadow: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    text-decoration: none;
+    background-color: var(--roxoPrincipal);
+}
+
+.link-edit i {
+    font-size: 18px;
+}
+
+.badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    min-width: 90px;
+}
+
+.status-pendente {
+    background-color: #f39c12;
+    padding: .4em .8em;
+    border-radius: 20px;
+    color: white !important;
+    font-size: 12px;
+    font-weight: 600;
 }

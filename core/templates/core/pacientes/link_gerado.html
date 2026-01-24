@@ -6,7 +6,9 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/pacientes/link_gerado.css' %}">
-<link rel="stylesheet" href="{% static 'core/css/pacientes/pacientes.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/partials/_dropdown.css' %}">
+ 
+
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
 <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
  
@@ -98,7 +100,7 @@
                     <tr>
                         <th>Nome</th>
                         <th>CPF</th>
-                        <th>Celular</th>
+                        <th>Data Pré-cadastro</th>
                         <th>Nascimento</th>
                         <th>Status</th>
                         <th>Ações</th>
@@ -109,50 +111,20 @@
                     {% for paciente in pacientes %}
                     <tr>
                         <td>{{ paciente.nome }}</td>
-                        <td>{{ paciente.cpf|default:"-" }}</td>
                         <td>{{ paciente.celular|default:"-" }}</td>
+                        <td>{{ paciente.data_cadastro|date:"d/m/Y"|default:"-" }}</td>
                         <td>{{ paciente.data_nascimento|date:"d/m/Y"|default:"-" }}</td>
                         <td>
-                            <span class="status-badge status-pendente">
-                                <i class='bx bx-time'></i>
+                            <span class="badge status-pendente">
+                                
                                 Pendente
                             </span>
                         </td>
                         <td>
-                            <div class="action-dropdown">
-                                <button class="action-btn" onclick="toggleDropdown(this)">
-                                    <i class='bx bx-dots-vertical-rounded'></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a href="{% url 'perfil_paciente' paciente.id %}" class="dropdown-item">
-                                        <i class='bx bx-user'></i>
-                                        Ver Perfil
-                                    </a>
-                                    <a href="{% url 'editar_paciente' paciente.id %}" class="dropdown-item">
-                                        <i class='bx bx-edit'></i>
-                                        Editar
-                                    </a>
-                                    <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')" class="dropdown-item">
-                                        <i class='bx bx-file'></i>
-                                        Gerar Ficha
-                                    </button>
-                                    <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')" class="dropdown-item">
-                                        <i class='bx bx-calendar-plus'></i>
-                                        Novo Agendamento
-                                    </button>
-                                    <form method="POST" action="{% url 'pacientes' %}" style="margin: 0;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="delete_id" value="{{ paciente.id }}">
-                                        <button type="submit" 
-                                                onclick="return confirm('Deseja realmente inativar este paciente?')"
-                                                class="dropdown-item"
-                                                style="color: #dc3545;">
-                                            <i class='bx bx-user-x'></i>
-                                            Inativar
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
+                            <a href="{% url 'editar_paciente' paciente.id %}" class="link-edit">
+                                <i class='bx bx-edit'></i>
+                                Editar
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
