@@ -30,10 +30,7 @@
                         Novo Link
                     </button>
                 </form>
-                <button type="button" class="btn-secondary" id="refreshTable">
-                    <i class='bx bx-refresh'></i>
-                    Atualizar
-                </button>
+ 
             </div>
         </div>
 
@@ -88,10 +85,7 @@
                 <i class='bx bx-list-ul'></i>
                 Pré-Cadastros Recentes
             </h2>
-            <button class="refresh-btn" onclick="location.reload()">
-                <i class='bx bx-refresh'></i>
-                Atualizar
-            </button>
+ 
         </div>
 
         <div class="table-container">
@@ -99,9 +93,7 @@
                 <thead>
                     <tr>
                         <th>Nome</th>
-                        <th>CPF</th>
                         <th>Data Pré-cadastro</th>
-                        <th>Nascimento</th>
                         <th>Status</th>
                         <th>Ações</th>
                     </tr>
@@ -111,20 +103,11 @@
                     {% for paciente in pacientes %}
                     <tr>
                         <td>{{ paciente.nome }}</td>
-                        <td>{{ paciente.celular|default:"-" }}</td>
                         <td>{{ paciente.data_cadastro|date:"d/m/Y"|default:"-" }}</td>
-                        <td>{{ paciente.data_nascimento|date:"d/m/Y"|default:"-" }}</td>
-                        <td>
-                            <span class="badge status-pendente">
-                                
-                                Pendente
-                            </span>
-                        </td>
+                        <td><span class="badge status-pendente">Pendente</span></td>
                         <td>
                             <a href="{% url 'editar_paciente' paciente.id %}" class="link-edit">
-                                <i class='bx bx-edit'></i>
-                                Editar
-                            </a>
+                                <i class='bx bx-edit'></i>Editar</a>
                         </td>
                     </tr>
                     {% endfor %}

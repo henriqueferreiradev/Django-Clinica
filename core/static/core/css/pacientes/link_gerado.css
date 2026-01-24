@@ -1,13 +1,12 @@
 :root {
-    --roxoPrincipal: #7E4396;
+   
     --roxoClaro: #9B58B4;
-    --roxoSuave: #F5EEF9;
+    --roxoSuave: #7e43961a;
     --verde: #28A745;
     --cinzaClaro: #F8F9FA;
     --cinzaBorda: #E0E0E0;
     --cinzaTexto: #6C757D;
-    --branco: #FFFFFF;
-    --preto: #343A40;
+ 
 }
 
 
@@ -461,7 +460,7 @@
     justify-content: center;
     transition: all 0.3s ease;
     font-size: 20px;
-    background: var(--backgroundCard);
+     
 }
 
 .social-btn:hover {
@@ -496,7 +495,7 @@
     color: white;
 }
 
-.social-btn.instagram {
+.social-btn.instagram:hover {
     background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
     color: white;
 }
@@ -504,7 +503,7 @@
 .qrcode-section {
     text-align: center;
     padding: 24px;
-    background: var(--backgroundCard);
+    background: var(--roxoSuave);
     border-radius: 12px;
     margin-top: 24px;
 }
@@ -623,24 +622,7 @@
     }
 }
 
-
-.dropdown-menu {
-    position: absolute;
-
-    background: var(--backgroundCard);
-    border: 1px solid var(--cinzaBorda);
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    display: none;
-    flex-direction: column;
-    min-width: 150px;
-    z-index: 10;
-    color: var(--preto);
-    padding: 5px;
-
-
-}
-
+ 
 @media (max-width: 768px) {
     .dropdown-menu {
         right: 10px;
@@ -656,7 +638,7 @@
     border-radius: 7px;
     cursor: pointer;
     text-align: left;
-    color: var(--preto);
+    color: white;
     box-shadow: none;
     width: 100%;
     display: flex;

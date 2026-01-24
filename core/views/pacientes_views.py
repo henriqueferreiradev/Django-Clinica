@@ -874,7 +874,7 @@ def perfil_paciente(request,paciente_id):
 @login_required
 def gerar_link_publico_precadastro(request):
     token = gerar_token_acesso_unico()
-    link = request.build_absolute_uri(f"/pacientes/link/{token}/")
+    link = request.build_absolute_uri(f"/pre-cadastro/link/{token}/")
 
     qr = qrcode.make(link)
     buffer = BytesIO()
