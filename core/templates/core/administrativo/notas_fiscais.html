@@ -645,7 +645,7 @@
                 <div class="card-header">
                     <div>
                         <div class="card-title">Pendências Abertas</div>
-                        <div class="card-value">12</div>
+                        <div class="card-value">{{ nf_pendente_count}}</div>
                     </div>
                     <div class="card-icon">
                         <i class="fas fa-clock"></i>
@@ -779,31 +779,28 @@
                 <thead>
                     <tr>
                         <th>Paciente</th>
-                        <th>Pagamento</th>
+                        <th>Produto/Serviço</th>
                         <th>Valor</th>
-                        <th>Forma Pagamento</th>
                         <th>Data</th>
-                        <th>Tipo de Nota</th>
-                        <th>Motivo</th>
+                        <th>Finalidade</th>
                         <th>Prazo</th>
-                        <th>Status</th>
-                        <th>Responsável</th>
+                        <th>Status</th> 
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Linha 1 -->
+                    {% for nota in nf_pendente_lista %}
                     <tr>
-                        <td>Maria da Silva</td>
-                        <td>#PAY-2023-0456</td>
-                        <td>R$ 850,00</td>
-                        <td>Cartão de Crédito</td>
+                        <td>{{ nota.paciente }}</td>
+                        <td>{{ nota.receita.pacote.servico.nome }} | {{ nota.receita.pacote.servico.qtd_sessoes }} sessões</td>
+                        <td>{{ nota.receita.valor }}</td>
                         <td>05/10/2023</td>
-                        <td><span class="note-type nfse"><i class="fas fa-file-invoice"></i> NFS-e</span></td>
-                        <td>Pagamento recebido</td>
+                        <td>
+                            {% if nota.paciente.nf_reembolso_}
+                            <span class="note-type nfse"><i class="fas fa-file-invoice"></i>{{ nota.paciente.nf }}</span></td>
                         <td>15/10/2023</td>
                         <td><span class="status-badge status-pending">Pendente</span></td>
-                        <td>—</td>
+                        
                         <td>
                             <div class="action-buttons">
                                 <button class="action-btn emit" title="Emitir Nota" onclick="openEmitModal()">
@@ -818,108 +815,8 @@
                             </div>
                         </td>
                     </tr>
-                    
-                    <!-- Linha 2 -->
-                    <tr>
-                        <td>João Santos</td>
-                        <td>#PAY-2023-0457</td>
-                        <td>R$ 1.200,00</td>
-                        <td>PIX</td>
-                        <td>03/10/2023</td>
-                        <td><span class="note-type nfe"><i class="fas fa-file-contract"></i> NF-e</span></td>
-                        <td>Pacote</td>
-                        <td>10/10/2023</td>
-                        <td><span class="status-badge status-overdue">Vencida</span></td>
-                        <td>—</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn emit" title="Emitir Nota" onclick="openEmitModal()">
-                                    <i class="fas fa-file-invoice"></i>
-                                </button>
-                                <button class="action-btn" title="Marcar como Resolvido" onclick="openResolveModal()">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                    <!-- Linha 3 -->
-                    <tr>
-                        <td>Ana Oliveira</td>
-                        <td>#PAY-2023-0458</td>
-                        <td>R$ 450,00</td>
-                        <td>Boleto</td>
-                        <td>01/10/2023</td>
-                        <td><span class="note-type nfse"><i class="fas fa-file-invoice"></i> NFS-e</span></td>
-                        <td>Reposição</td>
-                        <td>08/10/2023</td>
-                        <td><span class="status-badge status-emitted">Emitida</span></td>
-                        <td>Carlos M.</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn" title="Visualizar Detalhes">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                    <!-- Linha 4 -->
-                    <tr>
-                        <td>Roberto Alves</td>
-                        <td>#PAY-2023-0459</td>
-                        <td>R$ 2.500,00</td>
-                        <td>Cartão de Crédito</td>
-                        <td>28/09/2023</td>
-                        <td><span class="note-type nfe"><i class="fas fa-file-contract"></i> NF-e</span></td>
-                        <td>Ajuste manual</td>
-                        <td>05/10/2023</td>
-                        <td><span class="status-badge status-cancelled">Cancelada</span></td>
-                        <td>—</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn" title="Visualizar Detalhes">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn" title="Reativar">
-                                    <i class="fas fa-redo"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                    <!-- Linha 5 -->
-                    <tr>
-                        <td>Carla Mendes</td>
-                        <td>#PAY-2023-0460</td>
-                        <td>R$ 650,00</td>
-                        <td>Dinheiro</td>
-                        <td>06/10/2023</td>
-                        <td><span class="note-type nfse"><i class="fas fa-file-invoice"></i> NFS-e</span></td>
-                        <td>Pagamento recebido</td>
-                        <td>16/10/2023</td>
-                        <td><span class="status-badge status-pending">Pendente</span></td>
-                        <td>—</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn emit" title="Emitir Nota" onclick="openEmitModal()">
-                                    <i class="fas fa-file-invoice"></i>
-                                </button>
-                                <button class="action-btn" title="Marcar como Resolvido" onclick="openResolveModal()">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    {% endfor %}
+ 
                 </tbody>
             </table>
             
@@ -997,7 +894,9 @@
 
     <!-- Modal Resolver Pendência -->
     <div class="modal-overlay" id="resolveModal">
+
         <div class="modal">
+            
             <div class="modal-header">
                 <div class="modal-title">Marcar como Resolvido</div>
                 <button class="modal-close" onclick="closeModal('resolveModal')">&times;</button>
@@ -1005,17 +904,20 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Número da nota *</label>
-                    <input type="text" class="form-input" placeholder="Informe o número da nota fiscal" required>
+                    <input type="text" name='numero_nota' class="form-input" placeholder="Informe o número da nota fiscal" required>
                 </div>
-                
+                <div class="form-group">
+                    <label class="form-label">Link da nota *</label>
+                    <input type="text" name='link_nota' class="form-input" placeholder="Informe o link da nota fiscal" required>
+                </div>
                 <div class="form-group">
                     <label class="form-label">Data de emissão *</label>
-                    <input type="date" class="form-input" required>
+                    <input type="date" name='emissao_nota' class="form-input" required>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Observação (opcional)</label>
-                    <textarea class="form-textarea" placeholder="Adicione observações sobre a resolução"></textarea>
+                    <textarea class="form-textarea" name='observacao_nota' placeholder="Adicione observações sobre a resolução"></textarea>
                 </div>
             </div>
             <div class="modal-footer">

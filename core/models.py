@@ -1808,6 +1808,18 @@ class NotaFiscalPendente(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
 
 
+class NotaFiscalEmitida(models.Model):
+    pendencia = models.ForeignKey(NotaFiscalPendente, on_delete=models.CASCADE, related_name='emissoes')
+    numero = models.CharField(max_length=50)
+    link = models.URLField()
+    data_emissao = models.DateField()
+    observacao = models.TextField(null=True, blank=True)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-data_emissao']
+
 
 class TokenAcessoPublico(models.Model):
     token = models.CharField(max_length=255, unique=True)
