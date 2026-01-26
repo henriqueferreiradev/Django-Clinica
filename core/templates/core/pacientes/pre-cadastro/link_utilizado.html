@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Link já utilizado| Ponto de Equilíbrio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Orbitron:wght@400..900&family=Rouge+Script&display=swap');
+        
+        :root {
+            --fontTitulo: 'Rouge Script', cursive;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .gradient-header {
+            background: linear-gradient(135deg, #7F4396 0%, #9c50c0 100%);
+        }
+        
+        .header-curve {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
+        }
+        
+        .header-curve svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 100px;
+        }
+        
+        .header-curve .shape-fill {
+            fill: url(#header-gradient);
+        }
+        
+        .card-container {
+            position: relative;
+            z-index: 10;
+            margin-top: -4rem;
+        }
+        
+        .error-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .logo-title {
+            font-family: var(--fontTitulo);
+            color: #7F4396;
+            font-size: 3.5rem;
+            line-height: 1;
+        }
+        
+        .whatsapp-btn {
+            background-color: #57B778;
+            transition: all 0.3s ease;
+        }
+        
+        .whatsapp-btn:hover {
+            background-color: #2b7b47;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+            animation-delay: 0.5s;
+            opacity: 0;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.8s ease forwards;
+            animation-delay: 0.7s;
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            to { 
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .illustration {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .logo-title {
+                font-size: 2.5rem;
+            }
+            
+            .illustration-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section with Curve -->
+    <header class="relative gradient-header text-white pt-16 pb-32 overflow-hidden">
+        <div class="container mx-auto px-4 md:px-6 text-center">
+            <div class="max-w-3xl mx-auto">
+                <img src="{% static 'core/img/icons/logoRoxoFull.png' %}" alt="Logo Ponto de Equilíbrio" class="mx-auto h-20 mb-4 fade-in">
+                <h1 class="text-3xl md:text-4xl font-bold fade-in">Link já utilizado</h1>
+            </div>
+        </div>
+        
+        <!-- SVG Curve -->
+        <div class="header-curve">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="header-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#8641a1" />
+                        <stop offset="100%" stop-color="#7F4396" />
+                    </linearGradient>
+                </defs>
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 md:px-6 card-container">
+        <div class="max-w-6xl mx-auto">
+            <div class="error-card flex flex-col md:flex-row overflow-hidden fade-in">
+                <!-- Text Content -->
+                <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                    <h2 class="logo-title mb-4">Este link já foi utilizado.</h2>
+                    <p class="text-gray-600 mb-6 text-lg">Este acesso é válido apenas para um único uso.</p>
+                    <p class="text-gray-600 mb-8 text-lg">Se precisar acessar novamente, solicite um novo link.</p>
+                    
+                    <a href="#" class="whatsapp-btn text-white font-semibold py-3 px-6 rounded-lg inline-flex items-center justify-center gap-2 self-start fade-in">
+                        <i class="fab fa-whatsapp text-2xl"></i>
+                        <span>Solicite pelo Whatsapp</span>
+                    </a>
+                </div>
+                
+                <!-- Illustration -->
+                <div class="w-full md:w-1/2 p-8 flex items-center justify-center illustration-container">
+                    <img src="{% static 'core/img/icons/link_expirado.jpg' %}" alt="Ilustração link expirado" class="illustration slide-in">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#7F4396] text-white py-8 mt-12">
+        <div class="container mx-auto px-4 md:px-6 text-center">
+            <p class="text-sm opacity-90">© <span id="current-year"></span> Ponto de Equilíbrio. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById("current-year").textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

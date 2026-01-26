@@ -14,7 +14,7 @@ import os
 from dateutil.relativedelta import relativedelta
 import uuid
 from django.db.models import Q
-from django.forms import CharField
+from django.forms import CharField, DateTimeField
  
 from core.services.status_beneficios import calcular_beneficio
 from django.db.models import Sum
@@ -1806,6 +1806,25 @@ class NotaFiscalPendente(models.Model):
     previsao_emissao = models.DateField(null=True, blank=True)
     emitida_em = models.DateField(null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
+
+
+
+class TokenAcessoPublico(models.Model):
+    token = models.CharField(max_length=255, unique=True)
+    finalidade = models.CharField(max_length=100)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    expira_em = models.DateTimeField()
+    usado_em = models.DateTimeField(blank=True, null=True)
+    ip_uso = models.GenericIPAddressField(null=True, blank=True)
+    ativo = models.BooleanField(default=True)
+
+    def is_expired(self):
+        return timezone.now() > self.expira_em
+
+    def is_used(self):
+        return self.usado_em is not None
+
+
 
 
 

@@ -12,7 +12,7 @@ from django.contrib import messages
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
 from django.template.context_processors import request
-from core.tokens import gerar_token_acesso_unico, verificar_token_acesso
+from core.tokens import gerar_token_acesso_unico, rate_limit_ip, verificar_token_acesso
 import qrcode
 import base64
 from io import BytesIO
@@ -457,7 +457,23 @@ def dados_paciente(request, paciente_id):
 
 def pre_cadastro(request):
     if request.method == 'POST':
-        
+        if not rate_limit_ip(
+                request,
+                prefixo='pre_cadastro',
+                limite=5,
+                janela=3600  
+                ):
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'ok': False,
+                    'erro': 'Muitas tentativas. Aguarde e tente novamente.'
+                    }, status=429)
+
+
+            messages.error(request, 'Muitas tentativas. Aguarde e tente novamente.')
+            return redirect('pre_cadastro')
+
+
         consentimento_tratamento = request.POST.get('consentimento_tratamento') == 'true'
         consentimento_imagem = request.POST.get('consentimento_imagem') == 'true'
         consent_marketing = request.POST.get('consentimento_marketing') == 'true'
@@ -657,7 +673,10 @@ def pre_cadastro(request):
             ),
             paciente=paciente
         )
-
+        registro = getattr(request, "token_publico", None)
+        registro.usado_em = timezone.now()
+        registro.ip_uso = request.META.get('REMOTE_ADDR')
+        registro.save()
         return render(request, 'core/pacientes/pre_cadastro_confirmacao.html')
 
     return render(request, 'core/pacientes/pre_cadastro.html', {
@@ -670,12 +689,43 @@ def pre_cadastro(request):
     })
     
 def pre_cadastro_tokenizado(request, token):
-    valido = verificar_token_acesso(token)
-    if not valido:
-        return render(request, 'core/pacientes/link_expirado.html')   
+    registro, status = verificar_token_acesso(
+        token,
+        ip=request.META.get('REMOTE_ADDR')
+    )
 
-    return pre_cadastro(request) 
+    if status == "expirado":
+        return render(request, 'core/pacientes/pre-cadastro/link_expirado.html')
 
+    if status == "ja_utilizado":
+        return render(request, 'core/pacientes/pre-cadastro/link_utilizado.html')
+
+    if status != "ok":
+        return render(request, 'core/pacientes/pre-cadastro/link_invalido.html')
+
+    request.token_publico = registro  # injeta no request
+    return pre_cadastro(request)
+
+@login_required
+def gerar_link_publico_precadastro(request):
+    token = gerar_token_acesso_unico()
+    link = request.build_absolute_uri(f"/pre-cadastro/link/{token}/")
+
+    qr = qrcode.make(link)
+    buffer = BytesIO()
+    qr.save(buffer, format='PNG')
+    img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+    
+    
+    pacientes = Paciente.objects.filter(pre_cadastro=True)
+    print(pacientes)
+    
+    return render(request, 'core/pacientes/link_gerado.html', {
+        'link_tokenizado':link,
+        'qrcode_base64':img_base64,
+        'pacientes':pacientes
+    })
 
 
 FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
@@ -871,26 +921,6 @@ def perfil_paciente(request,paciente_id):
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
 
-@login_required
-def gerar_link_publico_precadastro(request):
-    token = gerar_token_acesso_unico()
-    link = request.build_absolute_uri(f"/pre-cadastro/link/{token}/")
-
-    qr = qrcode.make(link)
-    buffer = BytesIO()
-    qr.save(buffer, format='PNG')
-    img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    
-    
-    pacientes = Paciente.objects.filter(pre_cadastro=True)
-    print(pacientes)
-    
-    return render(request, 'core/pacientes/link_gerado.html', {
-        'link_tokenizado':link,
-        'qrcode_base64':img_base64,
-        'pacientes':pacientes
-    })
 
 def visualizar_respostas_formulario(request, resposta_id):
     resposta = get_object_or_404(RespostaFormulario, id=resposta_id)

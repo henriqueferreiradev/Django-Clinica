@@ -49,7 +49,7 @@
             </div>
         </div>
 
-        <div class="share-section">
+        <div class="link-display">
             <p class="section-title">Compartilhar via</p>
             <div class="social-buttons-grid">
                 <button onclick="enviarWhatsapp()" class="social-btn whatsapp">
@@ -106,8 +106,7 @@
                         <td>{{ paciente.data_cadastro|date:"d/m/Y"|default:"-" }}</td>
                         <td><span class="badge status-pendente">Pendente</span></td>
                         <td>
-                            <a href="{% url 'editar_paciente' paciente.id %}" class="link-edit">
-                                <i class='bx bx-edit'></i>Editar</a>
+                            <a href="{% url 'editar_paciente' paciente.id %}" class="link-edit">Editar</a>
                         </td>
                     </tr>
                     {% endfor %}
