@@ -387,7 +387,7 @@
             color: #ffc107;
         }
 
-        .status-overdue {
+        .status-cancelled {
             background-color: rgba(239, 68, 68, 0.1);
             color: var(--vermelho-alerta);
         }
@@ -397,9 +397,9 @@
             color: var(--verde-sucesso);
         }
 
-        .status-cancelled {
+        .status-overdue {
             background-color: rgba(108, 117, 125, 0.1);
-            color: #6c757d;
+            color: #7d6c6cff;
         }
 
         /* Ações da tabela */
@@ -671,7 +671,7 @@
                 <div class="card-header">
                     <div>
                         <div class="card-title">Valor Total Pendente</div>
-                        <div class="card-value">R$ 8.425,00</div>
+                        <div class="card-value">R$ {{ nf_pendente_soma|floatformat:2 }}</div>
                     </div>
                     <div class="card-icon">
                         <i class="fas fa-money-bill-wave"></i>
@@ -781,7 +781,7 @@
                         <th>Paciente</th>
                         <th>Produto/Serviço</th>
                         <th>Valor</th>
-                        <th>Data</th>
+                        <th>Data Pag.</th>
                         <th>Finalidade</th>
                         <th>Prazo</th>
                         <th>Status</th> 
@@ -791,15 +791,32 @@
                 <tbody>
                     {% for nota in nf_pendente_lista %}
                     <tr>
-                        <td>{{ nota.paciente }}</td>
+                        <td>{{ nota.paciente.nome }} {{ nota.paciente.sobrenome }}</td>
                         <td>{{ nota.receita.pacote.servico.nome }} | {{ nota.receita.pacote.servico.qtd_sessoes }} sessões</td>
-                        <td>{{ nota.receita.valor }}</td>
-                        <td>05/10/2023</td>
+                        <td>R$ {{ nota.receita.valor }}</td>
+                        <td>{{ nota.receita.ultimo_pagamento|date:"d/m/Y" }}</td>
                         <td>
-                            {% if nota.paciente.nf_reembolso_}
-                            <span class="note-type nfse"><i class="fas fa-file-invoice"></i>{{ nota.paciente.nf }}</span></td>
-                        <td>15/10/2023</td>
-                        <td><span class="status-badge status-pending">Pendente</span></td>
+                            {% if nota.paciente.nf_reembolso_plano %}
+                            <span class="note-type nfse"><i class="fas fa-file-invoice"></i> Reembolso Plano </span></td>
+                            {% elif nota.paciente.nf_imposto_renda %}
+                            <span class="note-type nfe"><i class="fas fa-file-invoice"></i> Imposto de Renda </span></td>
+                            {% else %}
+                            <strong><i class="fas fa-file-invoice"></i>Erro! Sem Finalidade</strong>
+                            {% endif %}
+                        </td>
+                        <td>{{ nota.previsao_emissao|date:'d/m/Y'}}</td>
+                        <td>
+                            {% if nota.status == 'pendente' %}
+                            <span class="status-badge status-pending">Pendente </span></td>
+                            {% elif nota.status == 'emitida' %}
+                            <span class="status-badge status-emitted">Emitida </span></td>
+                            {% elif nota.status == 'cancelada' %}
+                            <span class="status-badge status-cancelled">Cancelada </span></td>
+                            {% else %}
+                            <span class="status-badge status-cancelled"></i>Não Infomado</span>
+                            {% endif %}
+                        </td>
+                       
                         
                         <td>
                             <div class="action-buttons">

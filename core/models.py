@@ -13,7 +13,7 @@ from django.utils.text import slugify
 import os
 from dateutil.relativedelta import relativedelta
 import uuid
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.forms import CharField, DateTimeField
  
 from core.services.status_beneficios import calcular_beneficio
@@ -1364,7 +1364,7 @@ class Receita(models.Model):
     observacoes = models.TextField(blank=True, null=True)
     recibo = models.FileField(upload_to="recibos/receitas/", blank=True, null=True)
 
-
+    
     @property
     def total_pago(self):
         """Retorna a soma de todos os pagamentos PAGOS desta receita"""
@@ -1377,6 +1377,16 @@ class Receita(models.Model):
     def saldo(self):
         """Calcula o valor que ainda falta pagar"""
         return self.valor - self.total_pago
+
+    @property 
+    def ultimo_pagamento(self):
+        """
+        Retorna a data do ultimo pagamento PAGO desta receita
+        """
+        return (self.pagamentos.filter(status='pago').aggregate(ultima=Max('data')))['ultima']
+    
+    
+
     class Meta:
         # ADICIONE ESTE CONSTRAINT
         constraints = [
@@ -1445,6 +1455,7 @@ class Lancamento(models.Model):
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=(('pago', 'Pago'), ('pendente', 'Pendente')), default='pendente')
     observacoes = models.TextField(blank=True, null=True)
+
 
     def __str__(self):
         return f"{self.tipo} - {self.descricao} - {self.valor}"
@@ -1802,7 +1813,7 @@ class NotaFiscalPendente(models.Model):
     receita  = models.ForeignKey(Receita, on_delete=models.CASCADE)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     competencia = models.DateField(help_text='Mês/Ano fiscal da NF')
-    status = models.CharField(max_length=20, choices=[('pendente','Pendente'),('emitida','Emitida')], default='pendente')
+    status = models.CharField(max_length=20, choices=[('pendente','Pendente'),('emitida','Emitida'), ('cancelada','Cancelada')], default='pendente')
     previsao_emissao = models.DateField(null=True, blank=True)
     emitida_em = models.DateField(null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
@@ -1837,7 +1848,7 @@ class TokenAcessoPublico(models.Model):
         return self.usado_em is not None
 
 
-
+ 
 
 
 

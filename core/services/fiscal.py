@@ -1,15 +1,21 @@
+from datetime import timedelta
+
+
 def criar_evento_nf_pendente(receita):
     from core.models import NotaFiscalPendente, Notificacao
     from django.contrib.auth import get_user_model
 
     User = get_user_model()
-
+    base = receita.ultimo_pagamento.date()
+    previsao = base + timedelta(days=3)
     nf, created = NotaFiscalPendente.objects.get_or_create(
         receita=receita,
         defaults={
             'paciente': receita.paciente,
             'valor': receita.valor,
-            'competencia': receita.vencimento.replace(day=1)
+            'competencia': receita.vencimento.replace(day=1),
+            'previsao_emissao': previsao,
+            
         }
     )
 
