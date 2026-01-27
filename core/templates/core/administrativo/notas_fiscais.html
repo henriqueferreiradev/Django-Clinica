@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -363,9 +365,7 @@
             transition: var(--transicao);
         }
 
-        .table tbody tr:hover {
-            background-color: var(--backgroundCard-hover);
-        }
+ 
 
         .table tbody tr:last-child td {
             border-bottom: none;
@@ -618,6 +618,170 @@
             max-width: 400px;
             margin: 0 auto;
         }
+        /* Estilos para edição em linha */
+.editable {
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.editable.editing {
+    background-color: var(--roxoPrincipal-hover);
+}
+
+.edit-input {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    border: 2px solid var(--roxoPrincipal);
+    border-radius: var(--borda-radius);
+    background: var(--branco);
+    font-size: 0.9rem;
+}
+
+.editable .display-text {
+    padding: 0.25rem 0;
+}
+
+.btn-acao.salvar:hover {
+    background: var(--verde-sucesso);
+    color: var(--branco);
+}
+
+.btn-acao.cancelar:hover {
+    background: var(--vermelho-alerta);
+    color: var(--branco);
+}
+/* Ações na tabela */
+.acoes-cell {
+    display: flex;
+    gap: var(--espaco-xs);
+}
+
+.btn-acao {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: 1px solid var(--cinza-borda);
+            color: var(--cinza-medio);
+            cursor: pointer;
+            transition: var(--transicao);
+}
+
+.btn-acao:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-suave);
+}
+
+.btn-acao.editar:hover {
+    background: var(--verde-sucesso);
+    color: var(--branco);
+}
+
+.btn-acao.excluir:hover {
+    background: var(--vermelho-alerta);
+    color: var(--branco);
+}
+
+
+.toast-container {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 320px;
+  z-index: 10000;
+}
+
+.toast-container>*+* {
+  margin-top: 12px;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.toast-slide-in {
+  animation: slideInRight 0.5s forwards;
+}
+
+.toast-slide-out {
+  animation: slideOutRight 0.5s forwards;
+}
+
+.toast {
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  position: relative;
+}
+
+.toast-success {
+  background-color: #22C55E;
+}
+
+.toast-error {
+  background-color: #EF4444;
+}
+
+.toast-warning {
+  background-color: #F59E0B;
+}
+
+.toast-info {
+  background-color: #3B82F6;
+}
+
+.toast-content {
+  padding: 16px;
+}
+
+.toast-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.toast-icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.toast-title {
+  font-weight: bold;
+}
+
+.toast-close {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.7);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.toast-close:hover {
+  color: white;
+}
     </style>
 </head>
 <body>
@@ -760,7 +924,9 @@
                 </div>
             </div>
         </section>
-
+    <form style="display:none">
+        {% csrf_token %}
+    </form>
         <!-- Tabela principal -->
         <section class="table-container">
             <div class="table-header">
@@ -769,7 +935,7 @@
                     <button class="btn btn-secondary">
                         <i class="fas fa-sync-alt"></i> Atualizar
                     </button>
-                    <button class="btn btn-primary" id="btnNewPayment">
+                    <button class="btn btn-primary" onclick="openEmitModal()" id="btnNewPayment">
                         <i class="fas fa-plus"></i> Novo Lançamento
                     </button>
                 </div>
@@ -784,7 +950,7 @@
                         <th>Data Pag.</th>
                         <th>Finalidade</th>
                         <th>Prazo (D+3)</th>
-                        <th>Status</th> 
+                        <th>Status</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -804,7 +970,14 @@
                             <strong><i class="fas fa-file-invoice"></i>Erro! Sem Finalidade</strong>
                             {% endif %}
                         </td>
-                        <td>{{ nota.previsao_emissao|date:'d/m/Y'}}</td>
+                        <td class="editable" data-field="previsao_emissao" data-id='{{nota.id}}' data-model="nota">
+                            <span class="display-text">{{ nota.previsao_emissao|date:'d/m/Y' }}</span>
+                            <input type="date"
+                                            class="edit-input"
+                                            value="{{ nota.previsao_emissao|date:'Y-m-d' }}"
+                                            style="display:none">
+                        </td>
+                    
                         <td>
                             {% if nota.status == 'pendente' %}
                             <span class="status-badge status-pending">Pendente </span></td>
@@ -813,21 +986,30 @@
                             {% elif nota.status == 'cancelada' %}
                             <span class="status-badge status-cancelled">Cancelada </span></td>
                             {% else %}
-                            <span class="status-badge status-cancelled"></i>Não Infomado</span>
+                            <span class="status-badge status-avoled"></i>Não Infomado</span>
                             {% endif %}
                         </td>
-                       
-                        
+ 
+
                         <td>
                             <div class="action-buttons">
-                                <button class="action-btn emit" title="Emitir Nota" onclick="openEmitModal()">
+ 
+                                <button class="action-btn resolve" title="Marcar como Resolvido" onclick="openResolveModal()">
                                     <i class="fas fa-file-invoice"></i>
-                                </button>
-                                <button class="action-btn" title="Marcar como Resolvido" onclick="openResolveModal()">
-                                    <i class="fas fa-check"></i>
                                 </button>
                                 <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
                                     <i class="fas fa-times"></i>
+                                </button>
+                                <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                    onclick="salvarEdicao(this)">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                    onclick="cancelarEdicao(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                    <i class="fas fa-edit"></i>
                                 </button>
                             </div>
                         </td>
@@ -974,70 +1156,9 @@
             </div>
         </div>
     </div>
+    {% block scripts %}
 
-    <script>
-        // Funções para controle dos modais
-        function openEmitModal() {
-            document.getElementById('emitModal').classList.add('active');
-        }
-        
-        function openResolveModal() {
-            document.getElementById('resolveModal').classList.add('active');
-        }
-        
-        function openCancelModal() {
-            document.getElementById('cancelModal').classList.add('active');
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-        
-        // Funções para ações dos botões (simulação)
-        function emitNote() {
-            alert('Nota fiscal emitida com sucesso! Esta pendência será marcada como resolvida.');
-            closeModal('emitModal');
-        }
-        
-        function resolvePendency() {
-            alert('Pendência marcada como resolvida!');
-            closeModal('resolveModal');
-        }
-        
-        function cancelPendency() {
-            alert('Pendência justificada/cancelada!');
-            closeModal('cancelModal');
-        }
-        
-        // Fechar modal ao clicar fora
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('active');
-                }
-            });
-        });
-        
-        // Atualizar contadores (exemplo de interação)
-        document.querySelectorAll('.filter-select, .filter-input').forEach(element => {
-            element.addEventListener('change', function() {
-                // Simula uma filtragem
-                document.querySelector('.counter-number').textContent = '8';
-                document.querySelector('.card.open .card-value').textContent = '8';
-            });
-        });
-        
-        // Limpar filtros
-        document.querySelector('.clear-filters').addEventListener('click', function() {
-            document.querySelectorAll('.filter-select').forEach(select => {
-                select.value = '';
-            });
-            document.querySelector('.filter-input').value = '2023-10-01';
-            
-            // Restaura contadores
-            document.querySelector('.counter-number').textContent = '12';
-            document.querySelector('.card.open .card-value').textContent = '12';
-        });
-    </script>
+    <script src="{% static '/core/js/administrativo/nfBase.js' %}"></script>
+    {% endblock %}
 </body>
 </html>
