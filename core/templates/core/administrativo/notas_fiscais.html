@@ -908,6 +908,7 @@
     <form style="display:none">
         {% csrf_token %}
     </form>
+    <input type="hidden" id="notaId">
         <!-- Tabela principal -->
         <section class="table-container">
             <div class="table-header">
@@ -937,7 +938,6 @@
                 </thead>
                 <tbody>
                     {% for nota in nf_pendente_lista %}
-                    <input type="hidden" id="notaId" value="{{ nota.id|default:'' }}">
 
                     <tr>
                         <td>{{ nota.paciente.nome }} {{ nota.paciente.sobrenome }}</td>
@@ -976,24 +976,29 @@
 
                         <td>
                             <div class="action-buttons">
- 
-                                <button class="action-btn resolve" title="Marcar como Resolvido" onclick="openResolveModal()">
-                                    <i class="fas fa-file-invoice"></i>
-                                </button>
-                                <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <button class="btn-acao salvar" title="Salvar" style="display: none;"
-                                    onclick="salvarEdicao(this)">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
-                                    onclick="cancelarEdicao(this)">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
-                                    <i class="fas fa-edit"></i>
-                                </button>
+                                {% if nota.status == 'emitida' %}
+                                    <button class="action-btn resolve" title="Ver nota"  data-nota-id='{{ nota.id }}' onclick="openInfoModal()">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </button>
+                                {% else %}
+                                    <button class="action-btn resolve" title="Marcar como Resolvido"  data-nota-id='{{ nota.id }}' onclick="openResolveModal(this)">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </button>
+                                    <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                        onclick="salvarEdicao(this)">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                        onclick="cancelarEdicao(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -1063,7 +1068,55 @@
             </div>
         </div>
     </div>
+    <div class="modal-overlay" id="infoModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Nova Nota Fiscal</div>
+                <button class="modal-close" onclick="closeModal('infoModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Paciente</label>
+                    <input type="text" class="form-input" value="Maria da Silva" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Serviço</label>
+                    <input type="text" class="form-input" value="Consulta médica especializada">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">CPF/CNPJ</label>
+                        <input type="text" class="form-input" value="123.456.789-00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Valor</label>
+                        <input type="text" class="form-input" value="R$ 850,00">
+                    </div>
+                </div>
+                
 
+                
+                <div class="form-group">
+                    <label class="form-label">Data do pagamento</label>
+                    <input type="text" class="form-input" value="05/10/2023">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo de nota *</label>
+                    <select class="form-input">
+                        <option value="">Selecione o tipo de nota</option>
+                        <option value="nf_reembolso_plano">Reembolso Plano</option>
+                        <option value="nf_imposto_renda">Imposto de Renda</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('emitModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="emitNote()">Salvar Nota</button>
+            </div>
+        </div>
+    </div>
     <!-- Modal Resolver Pendência -->
     <div class="modal-overlay" id="resolveModal">
 

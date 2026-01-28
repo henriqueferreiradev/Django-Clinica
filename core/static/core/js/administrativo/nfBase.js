@@ -348,13 +348,19 @@ function openEmitModal() {
 
     document.getElementById('emitModal').classList.add('active');
 }
+function openInfoModal() {
 
-function openResolveModal() {
+    document.getElementById('infoModal').classList.add('active');
+
+    
 
 
+}
+function openResolveModal(btn) {
+    const notaId = btn.dataset.notaId;
+    document.getElementById('notaId').value = notaId;
     document.getElementById('resolveModal').classList.add('active');
 }
-
 function openCancelModal() {
     document.getElementById('cancelModal').classList.add('active');
 }
@@ -362,27 +368,70 @@ function openCancelModal() {
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
 }
+function getCSRFToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+async function apiRequest(url, data, method = 'POST') {
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
 
+            body: JSON.stringify(data)
+
+        });
+
+        return await response.json();
+    } catch (error) {
+        console.error('Erro na requisição:', error);
+        return { success: false, error: 'Erro de conexão' };
+    }
+}
 // Funções para ações dos botões (simulação)
 function emitNote() {
     alert('Nota fiscal emitida com sucesso! Esta pendência será marcada como resolvida.');
     closeModal('emitModal');
 }
 
-function resolvePendency() {
-    const modal = document.getElementById('resolveModal')
-    const notaId = document.getElementById('notaId')
-    numero = document.getElementById('numero_nota')
-    link = document.getElementById('link_nota')
-    data_emissao = document.getElementById('emissao_nota')
-    observacao = document.getElementById('observacao_nota')
-    console.log(`Abriu: ${notaId}`)
+async function resolvePendency() {
+    const notaId = document.getElementById('notaId').value;
 
+    const dados = {
+        pendencia: notaId,
+        numero: document.getElementById('numero_nota').value,
+        link: document.getElementById('link_nota').value,
+        data_emissao: document.getElementById('emissao_nota').value,
+        observacao: document.getElementById('observacao_nota').value
+    };
 
-    alert('Pendência marcada como resolvida!');
-    closeModal('resolveModal');
+    console.log(dados);
+
+    const res = await apiRequest('/api/salvar-nf/', dados);
+
+    if (res.success) {
+        mostrarMensagem('Dados enviados com sucesso', 'success');
+        closeModal('resolveModal');
+        // opcional: atualizar a linha ou dar reload
+    } else {
+        mostrarMensagem('Erro ao salvar: ' + res.error, 'error');
+    }
 }
-
 function cancelPendency() {
     alert('Pendência justificada/cancelada!');
     closeModal('cancelModal');

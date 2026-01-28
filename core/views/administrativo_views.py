@@ -1,12 +1,15 @@
 from datetime import datetime
 from multiprocessing import context
+import stat
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
-from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.contrib import contenttypes, messages
+from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Sum
 from django.http import JsonResponse
-from core.models import NotaFiscalPendente
+from django.core.exceptions import ObjectDoesNotExist
+import json
+from core.models import NotaFiscalEmitida, NotaFiscalPendente
 
 def dashboard(request):
  
@@ -51,3 +54,71 @@ def notas_fiscais_views(request):
         }
 
     return render(request, 'core/administrativo/notas_fiscais.html', context)
+
+ 
+
+def salvar_notafiscal(request):
+    try:
+        if request.method == 'POST' and request.content_type == 'application/json':
+            data = json.loads(request.body)
+            print(data)
+            nota_pendente = get_object_or_404(NotaFiscalPendente, id=int(data['pendencia']))
+            
+            
+            NotaFiscalEmitida.objects.create(
+                pendencia = nota_pendente,
+                numero = data['numero'],
+                link = data['link'],
+                data_emissao = data['data_emissao'],
+                observacao = data['observacao'],
+            )
+            
+                        
+            nota_pendente.status = 'emitida'
+            nota_pendente.emitida_em = data['data_emissao']
+            nota_pendente.save(update_fields=['status', 'emitida_em'])
+             
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse(
+                {'success': False, 'error': 'Content-Type inválido'},
+                status=400
+            )
+
+    except Exception as e:
+        print('ERRO:', e)
+        return JsonResponse(
+            {'success': False, 'error': str(e)},
+            status=500
+        )
+        
+
+def api_detalhes_notafiscal(request, notafiscal_id):
+    try:
+        
+        nota_fiscal = NotaFiscalEmitida.objects.filter(id=notafiscal_id)    
+        nota_data = []
+        
+        
+        for nota in nota_fiscal:
+            nota_data.append({
+                'id':nota.id,
+                'pendencia_id':nota.pendencia_id,
+                'numero':nota.numero,
+                'link':nota.link,
+                'data_emissao':nota.data_emissao,
+                'observacao':nota.observacao
+                
+                
+            })
+        return JsonResponse({
+            'success': True,
+            'notas': nota_data,
+            'total': len(nota_data)
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'notas': []
+        }, status=500)

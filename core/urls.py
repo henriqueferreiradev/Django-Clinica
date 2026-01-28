@@ -59,6 +59,8 @@ urlpatterns = [
     path('api/criar-pasta/', api_views.criar_pasta_imagem, name='criar_pasta_imagem'),
     path('agendamentos/<int:agendamento_id>/alterar-status/', agendamento_views.alterar_status_agendamento, name='alterar_status_agendamento'),
     path('api/profissionais-trabalham/', agendamento_views.profissionais_trabalham_no_dia, name='profissionais_trabalham'),
+    path('api/salvar-nf/', administrativo_views.salvar_notafiscal, name='salvar_notafiscal'),
+    path('api/detalhe-nf-emitida/<int:notafiscal_id>/',administrativo_views.api_detalhes_notafiscal, name='api_detalhes_notafiscal'),
 
     #RECEITAS    
     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_pagamento, name='dados_pagamento'),
