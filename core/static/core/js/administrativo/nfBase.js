@@ -345,10 +345,13 @@ document.addEventListener('keydown', function (e) {
 
 // Funções para controle dos modais
 function openEmitModal() {
+
     document.getElementById('emitModal').classList.add('active');
 }
 
 function openResolveModal() {
+
+
     document.getElementById('resolveModal').classList.add('active');
 }
 
@@ -367,6 +370,15 @@ function emitNote() {
 }
 
 function resolvePendency() {
+    const modal = document.getElementById('resolveModal')
+    const notaId = document.getElementById('notaId')
+    numero = document.getElementById('numero_nota')
+    link = document.getElementById('link_nota')
+    data_emissao = document.getElementById('emissao_nota')
+    observacao = document.getElementById('observacao_nota')
+    console.log(`Abriu: ${notaId}`)
+
+
     alert('Pendência marcada como resolvida!');
     closeModal('resolveModal');
 }

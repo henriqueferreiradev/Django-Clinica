@@ -20,15 +20,6 @@ def notas_fiscais_views(request):
     nf_pendente_soma  = NotaFiscalPendente.objects.filter(status='pendente').aggregate(total=Sum('valor'))['total'] or 0
 
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         tipo = request.POST.get('tipo')
         

@@ -868,12 +868,12 @@
             </div>
             <div class="filters-grid">
                 <div class="filter-group">
-                    <label class="filter-label">📅 Período do pagamento</label>
+                    <label class="filter-label">Período do pagamento</label>
                     <input type="date" class="filter-input" value="2023-10-01">
                 </div>
                 
                 <div class="filter-group">
-                    <label class="filter-label">👤 Paciente</label>
+                    <label class="filter-label">Paciente</label>
                     <select class="filter-select">
                         <option value="">Todos os pacientes</option>
                         <option value="1">Maria da Silva</option>
@@ -882,19 +882,9 @@
                     </select>
                 </div>
                 
-                <div class="filter-group">
-                    <label class="filter-label">💳 Forma de pagamento</label>
-                    <select class="filter-select">
-                        <option value="">Todas as formas</option>
-                        <option value="cartao">Cartão de Crédito</option>
-                        <option value="boleto">Boleto Bancário</option>
-                        <option value="pix">PIX</option>
-                        <option value="dinheiro">Dinheiro</option>
-                    </select>
-                </div>
                 
                 <div class="filter-group">
-                    <label class="filter-label">📌 Status</label>
+                    <label class="filter-label">Status</label>
                     <select class="filter-select">
                         <option value="">Todos os status</option>
                         <option value="pendente">Pendente</option>
@@ -905,23 +895,14 @@
                 </div>
                 
                 <div class="filter-group">
-                    <label class="filter-label">🧾 Tipo de nota</label>
+                    <label class="filter-label">Finalidade</label>
                     <select class="filter-select">
-                        <option value="">Todos os tipos</option>
-                        <option value="nfse">NFS-e</option>
-                        <option value="nfe">NF-e</option>
+                        <option value="">Todas as finalidades</option>
+                        <option value="nf_reembolso_plano">Reembolso Plano</option>
+                        <option value="nf_imposto_renda">Imposto de Renda</option>
                     </select>
                 </div>
                 
-                <div class="filter-group">
-                    <label class="filter-label">🏥 Unidade/Clínica</label>
-                    <select class="filter-select">
-                        <option value="">Todas as unidades</option>
-                        <option value="centro">Centro</option>
-                        <option value="zona-sul">Zona Sul</option>
-                        <option value="zona-norte">Zona Norte</option>
-                    </select>
-                </div>
             </div>
         </section>
     <form style="display:none">
@@ -956,6 +937,8 @@
                 </thead>
                 <tbody>
                     {% for nota in nf_pendente_lista %}
+                    <input type="hidden" id="notaId" value="{{ nota.id|default:'' }}">
+
                     <tr>
                         <td>{{ nota.paciente.nome }} {{ nota.paciente.sobrenome }}</td>
                         <td>{{ nota.receita.pacote.servico.nome }} | {{ nota.receita.pacote.servico.qtd_sessoes }} sessões</td>
@@ -1034,59 +1017,49 @@
     <div class="modal-overlay" id="emitModal">
         <div class="modal">
             <div class="modal-header">
-                <div class="modal-title">Emitir Nota Fiscal</div>
+                <div class="modal-title">Nova Nota Fiscal</div>
                 <button class="modal-close" onclick="closeModal('emitModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Paciente</label>
-                    <input type="text" class="form-input" value="Maria da Silva" readonly>
+                    <input type="text" class="form-input" value="Maria da Silva">
                 </div>
-                
+                <div class="form-group">
+                    <label class="form-label">Serviço</label>
+                    <input type="text" class="form-input" value="Consulta médica especializada">
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">CPF/CNPJ</label>
-                        <input type="text" class="form-input" value="123.456.789-00" readonly>
+                        <input type="text" class="form-input" value="123.456.789-00">
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Valor</label>
-                        <input type="text" class="form-input" value="R$ 850,00" readonly>
+                        <input type="text" class="form-input" value="R$ 850,00">
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label">Serviço</label>
-                    <input type="text" class="form-input" value="Consulta médica especializada" readonly>
-                </div>
+
                 
                 <div class="form-group">
                     <label class="form-label">Data do pagamento</label>
-                    <input type="text" class="form-input" value="05/10/2023" readonly>
+                    <input type="text" class="form-input" value="05/10/2023">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Tipo de nota *</label>
                     <select class="form-input">
                         <option value="">Selecione o tipo de nota</option>
-                        <option value="nfse" selected>NFS-e (Nota Fiscal de Serviços)</option>
-                        <option value="nfe">NF-e (Nota Fiscal de Produtos)</option>
+                        <option value="nf_reembolso_plano">Reembolso Plano</option>
+                        <option value="nf_imposto_renda">Imposto de Renda</option>
                     </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Número da nota (se já emitida)</label>
-                    <input type="text" class="form-input" placeholder="Informe o número da nota fiscal">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Observação (opcional)</label>
-                    <textarea class="form-textarea" placeholder="Adicione observações sobre a emissão"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('emitModal')">Cancelar</button>
-                <button class="btn btn-primary" onclick="emitNote()">Emitir Nota</button>
+                <button class="btn btn-primary" onclick="emitNote()">Salvar Nota</button>
             </div>
         </div>
     </div>
@@ -1103,20 +1076,20 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Número da nota *</label>
-                    <input type="text" name='numero_nota' class="form-input" placeholder="Informe o número da nota fiscal" required>
+                    <input id='numero_nota' type="text" name='numero_nota' class="form-input" placeholder="Informe o número da nota fiscal" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Link da nota *</label>
-                    <input type="text" name='link_nota' class="form-input" placeholder="Informe o link da nota fiscal" required>
+                    <input id='link_nota' type="text" name='link_nota' class="form-input" placeholder="Informe o link da nota fiscal" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Data de emissão *</label>
-                    <input type="date" name='emissao_nota' class="form-input" required>
+                    <input id='emissao_nota' type="date" name='emissao_nota' class="form-input" required>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Observação (opcional)</label>
-                    <textarea class="form-textarea" name='observacao_nota' placeholder="Adicione observações sobre a resolução"></textarea>
+                    <textarea id='observacao_nota' class="form-textarea" name='observacao_nota' placeholder="Adicione observações sobre a resolução"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1138,9 +1111,8 @@
                     <label class="form-label">Motivo *</label>
                     <select class="form-input" required>
                         <option value="">Selecione o motivo</option>
-                        <option value="estorno">Pagamento estornado</option>
-                        <option value="erro">Erro de lançamento</option>
-                        <option value="nao_aplica">Não se aplica</option>
+                        <option value="p_desconto">Pagamento com desconto</option>
+                        <option value="p_nao_quis">Paciente não quis</option>
                         <option value="outro">Outro motivo</option>
                     </select>
                 </div>
