@@ -367,9 +367,10 @@ def editar_paciente_view(request,id):
         paciente.save()
         messages.success(request, f'Dados de {paciente.nome} atualizados!')
         Notificacao.objects.filter(
-            paciente=paciente,
-            titulo='Novo pré-cadastro realizado',
-            lida=False).update(lida=True)
+            titulo='Responsável por paciente menor de idade',
+            url=f'/pacientes/editar/{paciente.id}/',
+            lida=False
+        ).update(lida=True)
         
         print("Conferido:", paciente.conferido)
         print("Pré-cadastro:", paciente.pre_cadastro)   
@@ -406,7 +407,11 @@ def buscar_pacientes(request):
     if termo:
         pacientes = Paciente.objects.filter( Q(nome__icontains=termo) | Q(cpf__icontains=termo), ativo=True )[:10]
 
-        resultados = [{'id':p.id, 'nome':p.nome,'sobrenome':p.sobrenome, 'cpf':p.cpf}
+        resultados = [{'id':p.id, 
+                       'nome':p.nome,
+                       'sobrenome':p.sobrenome, 
+                       'cpf':p.cpf,
+                       }
                       for p in pacientes]
 
     return JsonResponse({'resultados': resultados})

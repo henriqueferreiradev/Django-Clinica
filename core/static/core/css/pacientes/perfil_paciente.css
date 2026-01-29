@@ -371,7 +371,16 @@ header {
     opacity: 1;
     visibility: visible;
 }
+.finalidade_link {
+    text-decoration: underline;
+    color: #2563eb;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
 
+}
+ 
 .timeline-content {
     background-color: var(--backgroundCard);
     padding: 12px;

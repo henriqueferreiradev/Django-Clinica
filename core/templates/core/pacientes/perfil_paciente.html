@@ -35,6 +35,16 @@
                     <div>
                         <h1 class="patient-name">{{ paciente.nome }} {{ paciente.sobrenome }}</h1>
                         <p class="patient-id">ID: {{ paciente.id }}</p>
+                        <p class="patient-id">
+                            Finalidade NF:
+                            {% if paciente.nf_imposto_renda %} Imposto de Renda
+                            {% elif paciente.nf_reembolso_plano %} Reembolso Plano de Saúde
+                            {% elif paciente.nf_nao_aplica %} Não necessita de NF
+                            {% else %} Sem finalidade cadastrada. <a class='finalidade_link' href='/pacientes/editar/{{paciente.id}}/'>Cadastre agora!</a>
+                            {% endif %}
+                            
+                        </p>
+
                          
                         
                     </div>

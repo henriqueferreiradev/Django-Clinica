@@ -222,7 +222,19 @@ form.addEventListener('submit', function (e) {
             mostrarMensagem(err.erro || 'Erro ao enviar formulário', 'error');
         });
 });
+  const radios = [
+    document.getElementById("nf_reembolso_plano"),
+    document.getElementById("nf_imposto_renda"),
+    document.getElementById("nf_nao_aplica"),
+  ];
 
+  radios.forEach(r => {
+    r.addEventListener("change", () => {
+      radios.forEach(other => {
+        if (other !== r) other.checked = false;
+      });
+    });
+  });
 
 
 (function () {

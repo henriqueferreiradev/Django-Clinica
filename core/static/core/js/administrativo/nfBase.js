@@ -491,3 +491,96 @@ document.querySelector('.clear-filters').addEventListener('click', function () {
     document.querySelector('.counter-number').textContent = '12';
     document.querySelector('.card.open .card-value').textContent = '12';
 });
+
+
+
+// Função para copiar mensagem ao clicar no item
+function configurarCliqueParaCopiarMensagem() {
+    // Usar delegação de eventos para funcionar com elementos dinâmicos
+    document.addEventListener('click', function (e) {
+        // Verificar se o clique foi em um item de mensagem (não no template original)
+        const messageItem = e.target.closest('.message-item:not(.template)');
+
+        if (messageItem) {
+            copiarTextoMensagem(messageItem);
+        }
+    });
+}
+
+// Função principal para copiar o texto da mensagem
+function copiarTextoMensagem(messageItem) {
+    // Encontrar o elemento que contém o texto da mensagem
+    const messageTextElement = messageItem.querySelector('p');
+
+    if (!messageTextElement) {
+        mostrarMensagem('Elemento da mensagem não encontrado', 'error');
+        return;
+    }
+
+    // Pegar o texto da mensagem
+    const textoMensagem = messageTextElement.textContent.trim();
+
+    if (!textoMensagem) {
+        mostrarMensagem('Mensagem vazia', 'warning');
+        return;
+    }
+
+    // Usar a Clipboard API para copiar
+    navigator.clipboard.writeText(textoMensagem)
+        .then(() => {
+            // Feedback de sucesso usando a função existente
+            mostrarMensagem('Mensagem copiada para a área de transferência!', 'success');
+
+            // Adicionar feedback visual temporário no item
+            adicionarFeedbackVisual(messageItem);
+        })
+        .catch(err => {
+            console.error('Erro ao copiar:', err);
+
+            // Fallback para navegadores mais antigos
+            copiarComFallback(textoMensagem, messageItem);
+        });
+}
+
+// Fallback para navegadores sem Clipboard API
+function copiarComFallback(texto, messageItem) {
+    try {
+        // Criar um textarea temporário
+        const textarea = document.createElement('textarea');
+        textarea.value = texto;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+
+        // Selecionar e copiar
+        textarea.select();
+        textarea.setSelectionRange(0, 99999); // Para mobile
+
+        const sucesso = document.execCommand('copy');
+        document.body.removeChild(textarea);
+
+        if (sucesso) {
+            mostrarMensagem('Mensagem copiada para a área de transferência!', 'success');
+            adicionarFeedbackVisual(messageItem);
+        } else {
+            mostrarMensagem('Erro ao copiar a mensagem', 'error');
+        }
+    } catch (err) {
+        console.error('Erro no fallback:', err);
+        mostrarMensagem('Erro ao copiar a mensagem', 'error');
+    }
+}
+
+// Adicionar feedback visual temporário no item
+function adicionarFeedbackVisual(messageItem) {
+    // Adicionar classe de destaque
+    messageItem.classList.add('copied');
+
+    // Remover destaque após 1.5 segundos
+    setTimeout(() => {
+        messageItem.classList.remove('copied');
+    }, 1500);
+}
+
+// Inicializar quando a página carregar
+document.addEventListener('DOMContentLoaded', configurarCliqueParaCopiarMensagem);

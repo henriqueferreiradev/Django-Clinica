@@ -32,13 +32,13 @@ def criar_evento_nf_pendente(receita):
         Notificacao.objects.create(
             usuario=usuario,
             paciente=receita.paciente,
-            titulo='Emitir NF - ação necessária',
-            mensagem=(
-                'Receita quitada e o paciente solicita nota fiscal. '
-                'Defina a previsão de emissão ou marque como emitida.'
+            titulo = 'Emissão de Nota Fiscal – ação necessária',
+            mensagem = (
+                f'A receita do paciente {receita.paciente.nome} foi quitada e há solicitação de nota fiscal. '
+                'Por favor, defina a previsão de emissão ou marque a nota como emitida.'
             ),
             tipo='alerta',
-            url=f'/financeiro/notas-fiscais/?paciente={receita.paciente.id}',
+            url=f'/administrativo/notas_fiscais/?paciente={receita.paciente.id}',
         )
 
     return nf

@@ -217,7 +217,7 @@
                             {% if servico.qtd_sessoes >= 2 %}
                             <option value="{{ servico.id }}" data-valor="{{ servico.valor }}"
                                 class="servico-banco servico-pacote">
-                                {{ servico.nome }} - R$ {{ servico.valor }}
+                                {{ servico.nome }} | {{ servico.qtd_sessoes }} {% if qtd_sessoes == 1 %} Sessão {% else %} Sessões {% endif %}- R$ {{ servico.valor }}
                             </option>
                             {% endif %}  
                             {% endfor %}

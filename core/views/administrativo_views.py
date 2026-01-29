@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime 
 from multiprocessing import context
 import stat
 from django.contrib.auth.forms import AuthenticationForm
@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 import json
 from core.models import NotaFiscalEmitida, NotaFiscalPendente
 
@@ -18,11 +19,17 @@ def dashboard(request):
     })
 
 def notas_fiscais_views(request):
+    
+    paciente_id = request.GET.get('paciente')
     nf_pendente_count = NotaFiscalPendente.objects.filter(status='pendente').count()
     nf_pendente_lista = NotaFiscalPendente.objects.select_related('paciente')
-    nf_pendente_soma  = NotaFiscalPendente.objects.filter(status='pendente').aggregate(total=Sum('valor'))['total'] or 0
 
-    
+    if paciente_id:
+        nf_pendente_lista = nf_pendente_lista.filter(paciente_id=paciente_id)
+    nf_pendente_soma  = NotaFiscalPendente.objects.filter(status='pendente').aggregate(total=Sum('valor'))['total'] or 0
+    hoje = timezone.now().date()
+    nf_emitidas_hoje_count = NotaFiscalEmitida.objects.filter(data_emissao=hoje).count()
+    print(nf_emitidas_hoje_count)
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         tipo = request.POST.get('tipo')
         
@@ -51,6 +58,7 @@ def notas_fiscais_views(request):
         'nf_pendente_count':nf_pendente_count,
         'nf_pendente_lista':nf_pendente_lista,
         'nf_pendente_soma':nf_pendente_soma,
+        'nf_emitidas_hoje_count':nf_emitidas_hoje_count,
         }
 
     return render(request, 'core/administrativo/notas_fiscais.html', context)
@@ -116,8 +124,8 @@ def api_detalhes_notafiscal_por_pendencia(request, pendencia_id):
                 'numero': nota.numero,
                 'link': nota.link,
                 'data_emissao': nota.data_emissao,
-                'observacao': nota.observacao,
-                'usuario': nota.usuario.username if nota.usuario else None
+                'observacao': nota.observacao if nota.observacao else 'Sem observação registrada.',
+                 
             }
         })
     except NotaFiscalPendente.DoesNotExist:
