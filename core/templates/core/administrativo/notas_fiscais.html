@@ -977,7 +977,7 @@
                         <td>
                             <div class="action-buttons">
                                 {% if nota.status == 'emitida' %}
-                                    <button class="action-btn resolve" title="Ver nota"  data-nota-id='{{ nota.id }}' onclick="openInfoModal()">
+                                    <button class="action-btn resolve" title="Ver nota"  data-nota-id='{{ nota.id }}' onclick="openInfoModal(this)">
                                         <i class="fas fa-file-invoice"></i>
                                     </button>
                                 {% else %}
@@ -1028,7 +1028,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Paciente</label>
-                    <input type="text" class="form-input" value="Maria da Silva">
+                    <input type="text" class="form-input">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Serviço</label>
@@ -1068,53 +1068,45 @@
             </div>
         </div>
     </div>
+
     <div class="modal-overlay" id="infoModal">
+
         <div class="modal">
+            
             <div class="modal-header">
-                <div class="modal-title">Nova Nota Fiscal</div>
+                <div class="modal-title">Informações da Nota Fiscal</div>
                 <button class="modal-close" onclick="closeModal('infoModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Paciente</label>
-                    <input type="text" class="form-input" value="Maria da Silva" readonly>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Serviço</label>
-                    <input type="text" class="form-input" value="Consulta médica especializada">
-                </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">CPF/CNPJ</label>
-                        <input type="text" class="form-input" value="123.456.789-00">
+                        <label class="form-label">Paciente</label>
+                        <p id='nfPaciente' type="text"   class="form-input" ></p>
                     </div>
-                    
                     <div class="form-group">
-                        <label class="form-label">Valor</label>
-                        <input type="text" class="form-input" value="R$ 850,00">
+                        <label class="form-label">Documento</label>
+                        <p id='nfDocumento' type="text"   class="form-input" ></p>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Número da nota *</label>
+                    <p id='nfNumero' type="text"   class="form-input"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Link da nota *</label>
+                    <p id='nfLink' type="text"   class="form-input"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data de emissão *</label>
+                    <p id='nfData' class="form-input"></p>
+                </div>
                 
+                <div class="form-group">
+                    <label class="form-label">Observação (opcional)</label>
+                    <p id='nfObs' class="form-textarea"></p>
+                </div>
+            </div>
 
-                
-                <div class="form-group">
-                    <label class="form-label">Data do pagamento</label>
-                    <input type="text" class="form-input" value="05/10/2023">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Tipo de nota *</label>
-                    <select class="form-input">
-                        <option value="">Selecione o tipo de nota</option>
-                        <option value="nf_reembolso_plano">Reembolso Plano</option>
-                        <option value="nf_imposto_renda">Imposto de Renda</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('emitModal')">Cancelar</button>
-                <button class="btn btn-primary" onclick="emitNote()">Salvar Nota</button>
-            </div>
         </div>
     </div>
     <!-- Modal Resolver Pendência -->

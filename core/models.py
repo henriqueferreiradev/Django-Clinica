@@ -1820,7 +1820,7 @@ class NotaFiscalPendente(models.Model):
 
 
 class NotaFiscalEmitida(models.Model):
-    pendencia = models.ForeignKey(NotaFiscalPendente, on_delete=models.CASCADE, related_name='emissoes')
+    pendencia = models.OneToOneField(NotaFiscalPendente, on_delete=models.CASCADE, related_name='nota_emitida')
     numero = models.CharField(max_length=50)
     link = models.URLField()
     data_emissao = models.DateField()

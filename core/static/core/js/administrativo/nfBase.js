@@ -348,14 +348,39 @@ function openEmitModal() {
 
     document.getElementById('emitModal').classList.add('active');
 }
-function openInfoModal() {
+
+
+async function openInfoModal(button) {
+    const pendenciaId = button.dataset.notaId;
+
+    // salva no hidden se precisar depois
+    document.getElementById('notaId').value = pendenciaId;
 
     document.getElementById('infoModal').classList.add('active');
 
-    
+    try {
+        const res = await apiRequest(`/api/detalhe-nf-emitida/pendencia/${pendenciaId}/`);
 
+        if (!res.success || !res.nota) {
+            console.warn('Nenhuma nota encontrada');
+            return;
+        }
 
+        console.log('Detalhes da nota:', res.nota);
+
+        document.getElementById('nfNumero').innerText = res.nota.numero;
+        document.getElementById('nfPaciente').innerText = res.nota.paciente;
+        document.getElementById('nfDocumento').innerText = res.nota.documento;
+
+        document.getElementById('nfData').innerText = formatarDataBR(res.nota.data_emissao);
+        document.getElementById('nfLink').innerText = res.nota.link;
+        document.getElementById('nfObs').innerText = res.nota.observacao;
+
+    } catch (err) {
+        console.error('Erro ao buscar nota fiscal:', err);
+    }
 }
+
 function openResolveModal(btn) {
     const notaId = btn.dataset.notaId;
     document.getElementById('notaId').value = notaId;

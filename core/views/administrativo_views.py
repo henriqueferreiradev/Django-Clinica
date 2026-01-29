@@ -92,33 +92,33 @@ def salvar_notafiscal(request):
             status=500
         )
         
+ 
 
-def api_detalhes_notafiscal(request, notafiscal_id):
+def api_detalhes_notafiscal_por_pendencia(request, pendencia_id):
     try:
-        
-        nota_fiscal = NotaFiscalEmitida.objects.filter(id=notafiscal_id)    
-        nota_data = []
-        
-        
-        for nota in nota_fiscal:
-            nota_data.append({
-                'id':nota.id,
-                'pendencia_id':nota.pendencia_id,
-                'numero':nota.numero,
-                'link':nota.link,
-                'data_emissao':nota.data_emissao,
-                'observacao':nota.observacao
-                
-                
-            })
+        pendencia = NotaFiscalPendente.objects.select_related('nota_emitida').get(id=pendencia_id)
+
+        if not hasattr(pendencia, 'nota_emitida'):
+            return JsonResponse({
+                'success': False,
+                'error': 'Nota ainda não emitida'
+            }, status=404)
+
+        nota = pendencia.nota_emitida
+
         return JsonResponse({
             'success': True,
-            'notas': nota_data,
-            'total': len(nota_data)
+            'nota': {
+                'id': nota.id,
+                'pendencia_id': pendencia.id,
+                'paciente': f'{pendencia.paciente.nome} {pendencia.paciente.sobrenome}',
+                'documento': pendencia.paciente.cpf,
+                'numero': nota.numero,
+                'link': nota.link,
+                'data_emissao': nota.data_emissao,
+                'observacao': nota.observacao,
+                'usuario': nota.usuario.username if nota.usuario else None
+            }
         })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'error': str(e),
-            'notas': []
-        }, status=500)
+    except NotaFiscalPendente.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Pendência não encontrada'}, status=404)
