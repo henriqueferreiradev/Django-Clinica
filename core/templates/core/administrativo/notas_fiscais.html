@@ -833,7 +833,7 @@
                 <div class="card-header">
                     <div>
                         <div class="card-title">Pendências Vencidas</div>
-                        <div class="card-value">3</div>
+                        <div class="card-value">{{nf_atrasado_count}}</div>
                     </div>
                     <div class="card-icon">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -870,52 +870,58 @@
         </section>
 
         <!-- Filtros -->
-        <section class="filters-section">
-            <div class="filters-header">
-                <div class="filters-title">Filtrar Pendências</div>
-                <button class="clear-filters">
-                    <i class="fas fa-times"></i> Limpar filtros
-                </button>
-            </div>
-            <div class="filters-grid">
+        <form method="GET">
+            <section class="filters-section">
+                <div class="filters-header">
+                    <div class="filters-title">Filtrar Pendências</div>
+                    <button type="button" class="clear-filters"
+                            onclick="window.location.href='{% url 'notas_fiscais' %}'">
+                        <i class="fas fa-times"></i> Limpar filtros
+                    </button>
 
-                
-                <div class="filter-group">
-                    <label class="filter-label">Paciente</label>
-                    <input type="date" class="filter-input" name='paciente'>
                 </div>
-                
-                <div class="filter-group">
-                    <label class="filter-label">Período do pagamento</label>
-                    <input type="date" class="filter-input" name='data_pagamento'>
+                <div class="filters-grid">
+
+                    
+
+                    <div class="filter-group">
+                        <label class="filter-label">Paciente</label>
+                        <input  type="search" class="filter-input" name='paciente' placeholder='Buscar pacientes' value='{{ request.GET.paciente }}'>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Prazo</label>
+                        <input type="date" class="filter-input" name='prazo' value='{{ request.GET.prazo }}'>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select name='status' class="filter-select">
+                            <option value="">Todos os status</option>
+                            <option value="pendente"{% if request.GET.status == 'pendente' %}selected{% endif %} >Pendente</option>
+                            <option value="emitida" {% if request.GET.status == 'emitida' %}selected{% endif %}>Emitida</option>
+                            <option value="atrasado" {% if request.GET.status == 'atrasado' %}selected{% endif %}>Atrasado</option>
+                            <option value="cancelada" {% if request.GET.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Finalidade</label>
+                        <select name='finalidade' class="filter-select">
+                            <option value="">Todas as finalidades</option>
+                            <option value="nf_reembolso_plano" {% if request.GET.status == 'nf_reembolso_plano' %}selected{% endif %}>Reembolso Plano</option>
+                            <option value="nf_imposto_renda" {% if request.GET.status == 'nf_imposto_renda' %}selected{% endif %}>Imposto de Renda</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
                 </div>
 
-                <div class="filter-group">
-                    <label class="filter-label">Status</label>
-                    <select class="filter-select">
-                        <option value="">Todos os status</option>
-                        <option value="pendente">Pendente</option>
-                        <option value="emitida">Emitida</option>
-                        <option value="vencida">Vencida</option>
-                        <option value="cancelada">Cancelada</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label class="filter-label">Finalidade</label>
-                    <select class="filter-select">
-                        <option value="">Todas as finalidades</option>
-                        <option value="nf_reembolso_plano">Reembolso Plano</option>
-                        <option value="nf_imposto_renda">Imposto de Renda</option>
-                    </select>
-                </div>
-                
-            </div>
-        </section>
-    <form style="display:none">
-        {% csrf_token %}
-    </form>
-    <input type="hidden" id="notaId">
+            </section>
+        </form>
+        <form style="display:none">{% csrf_token %}</form>
+        <input type="hidden" id="notaId">
         <!-- Tabela principal -->
         <section class="table-container">
             <div class="table-header">
@@ -929,7 +935,7 @@
                     </button>
                 </div>
             </div>
-            
+            {% if nf_pendente_lista %}
             <table class="table">
                 <thead>
                     <tr>
@@ -944,6 +950,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    
                     {% for nota in nf_pendente_lista %}
 
                     <tr>
@@ -973,6 +980,8 @@
                             <span class="status-badge status-pending">Pendente </span></td>
                             {% elif nota.status == 'emitida' %}
                             <span class="status-badge status-emitted">Emitida </span></td>
+                            {% elif nota.status == 'atrasado' %}
+                            <span class="status-badge status-overdue">Atrasado </span></td>
                             {% elif nota.status == 'cancelada' %}
                             <span class="status-badge status-cancelled">Cancelada </span></td>
                             {% else %}
@@ -983,7 +992,7 @@
 
                         <td>
                             <div class="action-buttons">
-                                {% if nota.status == 'emitida' %}
+                                {% if nota.status == 'emitida' or nota.status == 'cancelada' %}
                                     <button class="action-btn resolve" title="Ver nota"  data-nota-id='{{ nota.id }}' onclick="openInfoModal(this)">
                                         <i class="fas fa-file-invoice"></i>
                                     </button>
@@ -991,7 +1000,7 @@
                                     <button class="action-btn resolve" title="Marcar como Resolvido"  data-nota-id='{{ nota.id }}' onclick="openResolveModal(this)">
                                         <i class="fas fa-file-invoice"></i>
                                     </button>
-                                    <button class="action-btn cancel" title="Justificar/Cancelar" onclick="openCancelModal()">
+                                    <button class="action-btn cancel" title="Justificar/Cancelar" data-nota-id='{{ nota.id }}' onclick="openCancelModal(this)">
                                         <i class="fas fa-times"></i>
                                     </button>
                                     <button class="btn-acao salvar" title="Salvar" style="display: none;"
@@ -1013,19 +1022,21 @@
  
                 </tbody>
             </table>
-            
-            <!-- Estado vazio (escondido por padrão) -->
-            <div class="empty-state" style="display: none;">
+            {% else %}
+             
+            <div class="empty-state">
                 <div class="empty-icon">
                     <i class="far fa-check-circle"></i>
                 </div>
                 <h3 class="empty-title">Nenhuma pendência encontrada</h3>
                 <p class="empty-description">Parabéns! Todas as notas fiscais estão regularizadas. Novas pendências aparecerão aqui automaticamente quando um pagamento exigir emissão de nota.</p>
             </div>
+            {% endif %}
         </section>
     </div>
 
     <!-- Modal Emitir Nota -->
+
     <div class="modal-overlay" id="emitModal">
         <div class="modal">
             <div class="modal-header">
@@ -1164,7 +1175,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Motivo *</label>
-                    <select class="form-input" required>
+                    <select id='motivo_canc' class="form-input" required>
                         <option value="">Selecione o motivo</option>
                         <option value="p_desconto">Pagamento com desconto</option>
                         <option value="p_nao_quis">Paciente não quis</option>
@@ -1174,7 +1185,7 @@
                 
                 <div class="form-group">
                     <label class="form-label">Observação *</label>
-                    <textarea class="form-textarea" placeholder="Descreva o motivo do cancelamento/justificativa" required></textarea>
+                    <textarea id='obs_canc' class="form-textarea" placeholder="Descreva o motivo do cancelamento/justificativa" required></textarea>
                 </div>
             </div>
             <div class="modal-footer">

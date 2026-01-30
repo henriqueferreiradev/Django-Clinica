@@ -386,7 +386,9 @@ function openResolveModal(btn) {
     document.getElementById('notaId').value = notaId;
     document.getElementById('resolveModal').classList.add('active');
 }
-function openCancelModal() {
+function openCancelModal(btn) {
+    const notaId = btn.dataset.notaId;
+    document.getElementById('notaId').value = notaId;
     document.getElementById('cancelModal').classList.add('active');
 }
 
@@ -457,7 +459,27 @@ async function resolvePendency() {
         mostrarMensagem('Erro ao salvar: ' + res.error, 'error');
     }
 }
-function cancelPendency() {
+async function cancelPendency() {
+    const notaId = document.getElementById('notaId').value;
+
+    const dados = {
+        pendencia: notaId,
+        motivo_cancelamento: document.getElementById('motivo_canc').value,
+        observacao: document.getElementById('obs_canc').value,
+
+    };
+
+    console.log(dados);
+
+    const res = await apiRequest('/api/cancelar-nf/', dados);
+
+    if (res.success) {
+        mostrarMensagem('Dados enviados com sucesso', 'success');
+        closeModal('cancelModal');
+        // opcional: atualizar a linha ou dar reload
+    } else {
+        mostrarMensagem('Erro ao salvar: ' + res.error, 'error');
+    }
     alert('Pendência justificada/cancelada!');
     closeModal('cancelModal');
 }

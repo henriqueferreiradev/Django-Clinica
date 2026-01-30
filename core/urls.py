@@ -60,7 +60,11 @@ urlpatterns = [
     path('agendamentos/<int:agendamento_id>/alterar-status/', agendamento_views.alterar_status_agendamento, name='alterar_status_agendamento'),
     path('api/profissionais-trabalham/', agendamento_views.profissionais_trabalham_no_dia, name='profissionais_trabalham'),
     path('api/salvar-nf/', administrativo_views.salvar_notafiscal, name='salvar_notafiscal'),
-path('api/detalhe-nf-emitida/pendencia/<int:pendencia_id>/', administrativo_views.api_detalhes_notafiscal_por_pendencia),
+    path('api/cancelar-nf/', administrativo_views.cancelar_notafiscal, name='cancelar_notafiscal'),
+    
+    
+    
+    path('api/detalhe-nf-emitida/pendencia/<int:pendencia_id>/', administrativo_views.api_detalhes_notafiscal_por_pendencia),
     #RECEITAS    
     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_pagamento, name='dados_pagamento'),
      

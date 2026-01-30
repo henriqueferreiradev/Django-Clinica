@@ -1434,12 +1434,16 @@ class Receita(models.Model):
             status_anterior != 'pago'
             and novo_status == 'pago'
             and self.paciente
-            and self.paciente.nf_imposto_renda
+            and (
+                self.paciente.nf_imposto_renda
+                or self.paciente.nf_reembolso_plano
+            )
         ):
             print('[RECEITA] CONDIÇÃO NF ATINGIDA → criando NF pendente')
             criar_evento_nf_pendente(self)
         else:
             print('[RECEITA] CONDIÇÃO NF NÃO ATINGIDA')
+
 
 class Lancamento(models.Model):
     TIPO_CHOICES = (
@@ -1813,10 +1817,22 @@ class NotaFiscalPendente(models.Model):
     receita  = models.ForeignKey(Receita, on_delete=models.CASCADE)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     competencia = models.DateField(help_text='Mês/Ano fiscal da NF')
-    status = models.CharField(max_length=20, choices=[('pendente','Pendente'),('emitida','Emitida'), ('cancelada','Cancelada')], default='pendente')
+    status = models.CharField(max_length=20, choices=[('pendente','Pendente'),('emitida','Emitida'),('atrasado','Atrasado'), ('cancelada','Cancelada')], default='pendente')
     previsao_emissao = models.DateField(null=True, blank=True)
     emitida_em = models.DateField(null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
+    
+    def atualizar_status(self):
+        if self.status == 'emitida':
+            return
+    
+        hoje = timezone.now().date()
+        if self.previsao_emissao and hoje > self.previsao_emissao:
+            self.status = 'atrasado'
+        
+        else: 
+            self.status = 'pendente'
+
 
 
 class NotaFiscalEmitida(models.Model):
@@ -1830,6 +1846,23 @@ class NotaFiscalEmitida(models.Model):
     
     class Meta:
         ordering = ['-data_emissao']
+
+class NotaFiscalCancelada(models.Model):
+    pendencia = models.OneToOneField(
+        NotaFiscalPendente,
+        on_delete=models.CASCADE,
+        related_name='cancelamento'
+    )
+
+    MOTIVOS = [
+        ('p_desconto', 'Pagamento com desconto'),
+        ('p_nao_quis', 'Paciente não quis'),
+        ('outro', 'Outro'),
+    ]
+
+    motivo_cancelamento = models.CharField(max_length=30, choices=MOTIVOS)
+    observacao = models.TextField(null=True, blank=True)
+    data_cancelamento = models.DateTimeField(auto_now_add=True)
 
 
 class TokenAcessoPublico(models.Model):

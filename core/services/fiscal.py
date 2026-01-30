@@ -1,13 +1,21 @@
 from datetime import timedelta
 
-
 def criar_evento_nf_pendente(receita):
     from core.models import NotaFiscalPendente, Notificacao
     from django.contrib.auth import get_user_model
 
+    # ✅ só se a receita estiver quitada
+    if receita.status != 'pago':
+        return None
+
+    if not receita.ultimo_pagamento:
+        return None
+
     User = get_user_model()
+
     base = receita.ultimo_pagamento.date()
     previsao = base + timedelta(days=3)
+
     nf, created = NotaFiscalPendente.objects.get_or_create(
         receita=receita,
         defaults={
@@ -15,14 +23,13 @@ def criar_evento_nf_pendente(receita):
             'valor': receita.valor,
             'competencia': receita.vencimento.replace(day=1),
             'previsao_emissao': previsao,
-            
         }
     )
 
+    # 🔕 NF já existia → não recria notificação
     if not created:
-        return nf  # NF já existia, não cria nada novo
+        return nf
 
-    # 🔔 usuários que DEVEM receber
     usuarios_destino = User.objects.filter(
         ativo=True,
         tipo__in=['financeiro', 'admin', 'gerente']
@@ -32,8 +39,8 @@ def criar_evento_nf_pendente(receita):
         Notificacao.objects.create(
             usuario=usuario,
             paciente=receita.paciente,
-            titulo = 'Emissão de Nota Fiscal – ação necessária',
-            mensagem = (
+            titulo='Emissão de Nota Fiscal – ação necessária',
+            mensagem=(
                 f'A receita do paciente {receita.paciente.nome} foi quitada e há solicitação de nota fiscal. '
                 'Por favor, defina a previsão de emissão ou marque a nota como emitida.'
             ),
