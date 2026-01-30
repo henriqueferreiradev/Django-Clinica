@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import HistoricoStatus, Lembrete, Notificacao, User, Paciente,Agendamento,Pagamento,PacotePaciente,RespostaFormulario,RespostaPergunta, Pendencia,Especialidade, FrequenciaMensal, ESTADO_CIVIL, MIDIA_ESCOLHA, VINCULO, COR_RACA, UF_ESCOLHA,SEXO_ESCOLHA, TIPO_VINCULO, VinculoFamiliar
+from core.models import Agendamento, COR_RACA, ESTADO_CIVIL, Especialidade, FrequenciaMensal, HistoricoStatus, Lembrete, MIDIA_ESCOLHA, NotaFiscalEmitida, Notificacao, Paciente, PacotePaciente, Pagamento, Pendencia, RespostaFormulario, RespostaPergunta, SEXO_ESCOLHA, Servico, TIPO_VINCULO, UF_ESCOLHA, User, VINCULO, VinculoFamiliar
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -9,6 +9,7 @@ from django.db.models import Q, Min, Max,Count,Sum, F, ExpressionWrapper, Durati
 from django.http import JsonResponse 
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
+from django.db.models.functions import ExtractYear
 from core.utils import get_semana_atual,calcular_porcentagem_formas, registrar_log
 from django.conf import settings
 from django.template.context_processors import request
@@ -975,3 +976,23 @@ def lista_status(request, paciente_id):
     } for historico in historicos]
 
     return JsonResponse(data, safe=False)
+
+
+def lista_notas_fiscais_paciente(request, paciente_id):
+    
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    listar_notas_fiscais = NotaFiscalEmitida.objects.select_related('pendencia','pendencia__paciente').filter(pendencia__paciente_id=paciente_id).order_by('-data_emissao')
+    anos_disponiveis = (listar_notas_fiscais.annotate(ano=ExtractYear('data_emissao')).values_list('ano', flat=True).distinct().order_by('-ano'))
+    
+    notas_fiscais_count = listar_notas_fiscais.count()
+    servicos = Servico.objects.filter(ativo=True)
+    print(listar_notas_fiscais)
+    context= {
+        'paciente':paciente,
+        'listar_notas_fiscais':listar_notas_fiscais,
+        'notas_fiscais_count':notas_fiscais_count,
+        'servicos':servicos,
+        'anos_disponiveis':anos_disponiveis,
+    }
+    
+    return render(request, 'core/pacientes/notas_fiscais/lista_notas_fiscais_paciente.html', context)

@@ -68,7 +68,7 @@ textarea {
   left: 0;
   height: 100%;
   width: 260px;
-  background: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
+  background: var(--roxoPrincialGradient);
   z-index: 100;
   transition: all 0.5s ease;
   border-radius: 0 15px 15px 0;

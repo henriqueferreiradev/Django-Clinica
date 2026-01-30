@@ -5,6 +5,7 @@
   --roxoPrincipal-hover: #76378f11;
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
+  --roxoPrincialGradient:linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
   --verdePrincipal: #92cbad;
   --branco: #FFF;
   --bg-btn-1: #eee;
@@ -54,6 +55,7 @@
   --roxoPrincipal-hover: rgba(118, 55, 143, 0.067);
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
+  
   --verdePrincipal: #92cbad;
   --cinza-claro: #0E101A;
   --branco: #121623;
