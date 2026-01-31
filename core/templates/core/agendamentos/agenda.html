@@ -99,9 +99,7 @@
 
  
                     {% if ag.codigo|slice:":3" != "BEN" %}
-                        <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>
-                            ⚠️ D - Desmarcação
-                        </option>
+
 
                         <option value="desistencia_remarcacao" {% if ag.status == 'desistencia_remarcacao' %}selected{% endif %}>
                             ⚠️ DCR - Desmarcação com reposição
@@ -110,8 +108,11 @@
                         <option value="falta_remarcacao" {% if ag.status == 'falta_remarcacao' %}selected{% endif %}>
                             ⚠️ FCR - Falta com reposição
                         </option>
+                                                <option value="desistencia" {% if ag.status == 'desistencia' %}selected{% endif %}>
+                            ❌ D - Desmarcação
+                        </option>
                     {% endif %}
- 
+                        
                     <option value="falta_cobrada" {% if ag.status == 'falta_cobrada' %}selected{% endif %}>
                         ❌ FC - Falta cobrada
                     </option>

@@ -164,11 +164,10 @@ STATUS_CHOICES = [
     ('pre', 'Pré-Agendado'),
     ('agendado', 'Agendado'),
     ('finalizado', 'Consulta finalizada!'),
-    ('desistencia', 'D - Desmarcação'),
     ('desistencia_remarcacao', 'DCR - Desmarcação com reposição'),
     ('falta_remarcacao', 'FCR - Falta com reposição'),
-    
     ('falta_cobrada', 'FC - Falta cobrada'),
+    ('desistencia', 'D - Desistência'),
 ]
 TIPO_VINCULO = [
     ('pai', 'Pai'),
