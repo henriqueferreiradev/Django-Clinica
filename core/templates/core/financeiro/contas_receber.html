@@ -96,7 +96,7 @@
             <div class="kpi-content">
                 <div class="kpi-text">
                     <div class="kpi-title">Total a Receber</div>
-                    <div class="kpi-value">{{total_pendente}}</div>
+                    <div class="kpi-value">R$ {{total_pendente|floatformat:2}}</div>
                     <div class="kpi-info">Em aberto</div>
                 </div>
                 <div class="kpi-icon">
@@ -109,7 +109,7 @@
             <div class="kpi-content">
                 <div class="kpi-text">
                     <div class="kpi-title">Atrasados</div>
-                    <div class="kpi-value">{{total_atrasado}}</div>
+                    <div class="kpi-value">R$ {{total_atrasado|floatformat:2}}</div>
                     <div class="kpi-info">Não recebidos</div>
                 </div>
                 <div class="kpi-icon">
@@ -122,7 +122,7 @@
             <div class="kpi-content">
                 <div class="kpi-text">
                     <div class="kpi-title">Vencem Hoje</div>
-                    <div class="kpi-value">{{total_vence_hoje}}</div>
+                    <div class="kpi-value">R$ {{total_vence_hoje|floatformat:2}}</div>
                     <div class="kpi-info">Para receber hoje</div>
                 </div>
                 <div class="kpi-icon">

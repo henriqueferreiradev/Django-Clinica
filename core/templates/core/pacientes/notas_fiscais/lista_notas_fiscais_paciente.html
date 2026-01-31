@@ -318,13 +318,14 @@
             gap: var(--espaco-sm);
         }
 
-        .btn-action {
-            width: 42px;
-            height: 42px;
+        .nfe-link {
+            padding: .5em 1em;
             border-radius: var(--borda-radius);
             display: flex;
             align-items: center;
             justify-content: center;
+            gap:.5em;
+            
             background-color: var(--bg-btn-1);
             border: 1px solid var(--cinza-borda);
             color: var(--cinza-escuro);
@@ -332,7 +333,7 @@
             transition: var(--transicao);
         }
 
-        .btn-action:hover {
+        .nfe-link:hover {
             background-color: var(--roxoPrincipal);
             color: var(--branco);
             border-color: var(--roxoPrincipal);
@@ -599,12 +600,12 @@
                         </td>
                         <td>
                             <div class="invoice-actions">
-                                <button class="btn-action" title="Acessar na Receita Federal" data-nf="NF-2023-001245">
-                                    <i class="fas fa-external-link-alt"></i>
-                                </button>
-                                <button class="btn-action" title="Baixar PDF" data-nf="NF-2023-001245">
-                                    <i class="fas fa-download"></i>
-                                </button>
+                                <a class="nfe-link" href='{{nota.link}}' target='_blank' rel='noopener noreferrer'>
+                                 
+                                    <i class="fas fa-external-link-alt"></i> Acessar
+                                
+                            </a>
+ 
                             </div>
                         </td>
                     </tr>
@@ -850,34 +851,7 @@
             emptyState.style.display = 'none';
         }
 
-        // Configurar botões de ação
-        function setupActionButtons() {
-            document.querySelectorAll('.btn-action').forEach(button => {
-                button.addEventListener('click', function() {
-                    const action = this.querySelector('i').className;
-                    const nfNumber = this.getAttribute('data-nf');
-                    
-                    if (action.includes('external-link-alt')) {
-                        // Simular abertura de link externo
-                        alert(`Redirecionando para a nota ${nfNumber} no site da Receita Federal...`);
-                        // Em um sistema real, aqui seria window.open('URL_DA_NOTA', '_blank');
-                    } else if (action.includes('download')) {
-                        // Simular download do PDF
-                        alert(`Iniciando download do PDF da nota fiscal ${nfNumber}...`);
-                        // Em um sistema real, aqui seria o início do download do arquivo
-                    }
-                    
-                    // Feedback visual com suas cores
-                    this.style.background = 'var(--roxoPrincialGradient)';
-                    this.style.color = 'var(--branco)';
-                    
-                    setTimeout(() => {
-                        this.style.background = '';
-                        this.style.color = '';
-                    }, 300);
-                });
-            });
-        }
+ 
     </script>
 </body>
 </html>

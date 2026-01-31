@@ -947,8 +947,28 @@
         </div>
 
         <div class="modal-body">
-            <!-- Informações Básicas -->
             <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Colaborador</label>
+                    <input type="text" id="employeeNameInput" class="form-control" value="Dra. Ana Silva">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor/Hora (R$)</label>
+                    <input type="text" id="hourlyRate" class="form-control currency-input" value="R$ 150,00">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Mês/Ano</label>
+                    <select class="form-select">
+                        <option value="salario">Salário</option>
+                        <option value="passagem">Passagem</option>
+                        <option value="ferias">Férias</option>
+                        <option value="13">Décimo terceiro</option>
+                        
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label">Mês/Ano</label>
                     <select id="monthYearSelect" class="form-select">
@@ -966,16 +986,9 @@
                         <option value="12/2025">Dezembro/2025</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Colaborador</label>
-                    <input type="text" id="employeeNameInput" class="form-control" value="Dra. Ana Silva">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Valor/Hora (R$)</label>
-                    <input type="text" id="hourlyRate" class="form-control currency-input" value="R$ 150,00">
-                </div>
             </div>
 
+ 
             <!-- Observações -->
             <div class="form-group">
                 <label class="form-label">Observações</label>
@@ -987,7 +1000,7 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label class="form-label">Horas trabalhadas</label>
-                    <input type="text" id="workedHours" class="form-control time-input" value="160:00">
+                    <input type="text" id="workedHours" class="form-control time-input" >
                 </div>
                 <div class="form-group">
                     <label class="form-label">Horas trabalhadas em valores (R$)</label>
@@ -1010,7 +1023,11 @@
                     <input type="text" id="referralCommission" class="form-control currency-input">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Férias + 1/3 (R$)</label>
+                    <label class="form-label">Férias (R$)</label>
+                    <input type="text" id="vacationBonus" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">1/3 Férias (R$)</label>
                     <input type="text" id="vacationBonus" class="form-control currency-input">
                 </div>
                 <div class="form-group">
@@ -1041,6 +1058,10 @@
                 <div class="form-group">
                     <label class="form-label">Desconto INSS (R$)</label>
                     <input type="text" id="inssDiscount" class="form-control currency-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Desconto INSS Férias (R$)</label>
+                    <input type="text" id="inssDiscountVacation" class="form-control currency-input">
                 </div>
                 <div class="form-group">
                     <label class="form-label">IRRF folha (R$)</label>
