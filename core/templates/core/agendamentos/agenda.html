@@ -505,6 +505,37 @@
         </div>
     </div>
 </div>
+    <div style='display:flex' class="modal-overlay" id="exConfModal">
+
+        <div class="modal">
+            
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h2>Confirmar exclusão?</h2>
+                    <span>Você está aplicando <strong>desistência</strong> a uma sessão avulsa. Essa ação precisa ser confirmada, pois, irá gerar o cancelamento da receita no sistema.</span>
+                </div>
+                <button class="modal-close" onclick="closeModal('infoModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                
+
+ 
+                
+ 
+ 
+                
+                <div class="form-group">
+                    <label class="form-label">Motivo do cancelamento</label>
+                    <p id='motivo_cancelamento_sessao' class="form-textarea"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Digite CONFIRMAR para continuar!</label>
+                    <p id='confID' type="text"   class="form-input" ></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
 {% include "core/partials/_modal_agendamento.html" %}
 {% include "core/partials/modal_edit_agenda.html" %}
 {% include "core/partials/alertas.html" %}

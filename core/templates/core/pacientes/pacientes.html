@@ -101,7 +101,20 @@
             </tr>
             {% empty %}
             <tr>
-              <td colspan="8" class="text-center">Nenhum paciente encontrado.</td>
+              <td colspan="8" class="text-center">
+ 
+            <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="far fa-check-circle"></i>
+                        </div>
+                        <h3 class="empty-title">Nenhum paciente encontrado</h3>
+                        <p class="empty-description">
+                        Não encontramos pacientes com os critérios informados. 
+                        Tente ajustar os filtros ou realizar um novo cadastro.
+                        </p>
+
+                    </div> 
+              </td>
             </tr>
             {% endfor %}
           </tbody>

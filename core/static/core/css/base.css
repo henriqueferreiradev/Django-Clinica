@@ -1334,3 +1334,27 @@ textarea {
     overflow: hidden !important;
   }
 }
+
+/* Estados vazios */
+.empty-state {
+  padding: var(--espaco-xl) var(--espaco-md);
+  text-align: center;
+  color: var(--cinza-medio);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  color: var(--cinza-borda);
+  margin-bottom: var(--espaco-sm);
+}
+
+.empty-title {
+  font-size: 1.2rem;
+  margin-bottom: var(--espaco-xs);
+  color: var(--cinza-escuro);
+}
+
+.empty-description {
+  max-width: 400px;
+  margin: 0 auto;
+}

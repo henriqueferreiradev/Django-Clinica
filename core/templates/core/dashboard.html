@@ -191,7 +191,14 @@
             </tr>
           {% endfor %}
         {% else %}
-          <tr><td class='linha-vazia' colspan="8">Nenhum agendamento encontrado.</td></tr>
+          <tr>
+          <td colspan="8">
+            <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="far fa-check-circle"></i>
+                        </div>
+                        <h3 class="empty-title">Nenhum agendamento para hoje!</h3>
+                    </div></td></tr>
         {% endif %}
       </tbody>
       

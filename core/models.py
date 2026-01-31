@@ -14,7 +14,7 @@ import os
 from dateutil.relativedelta import relativedelta
 import uuid
 from django.db.models import Q, Max
-from django.forms import CharField, DateTimeField
+from django.forms import CharField, DateTimeField, ValidationError
  
 from core.services.status_beneficios import calcular_beneficio
 from django.db.models import Sum
@@ -1348,6 +1348,7 @@ class Receita(models.Model):
         ('pendente', 'Pendente'),
         ('pago', 'Pago'),
         ('atrasado', 'Atrasado'),
+        ('cancelada', 'Cancelada'),
     )
     paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True, blank=True)  
     categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'receita'})
@@ -1395,11 +1396,28 @@ class Receita(models.Model):
                 condition=models.Q(pacote__isnull=False)
             )
         ]
+        
+    def atualizar_receita_por_status(self,status_agendamento):
+        if status_agendamento == 'desistencia':
+            if self.status == 'pago':
+                raise ValidationError( 'Não é possível cancelar uma receita já paga.')
+        
+            self.status = 'cancelada'
+            self.save(update_fields=['status'])
+            print('MODELS>>>> RECEITA FOI EXCLUIDA CM SUCESSO')
+        ...
+        
+        
     def atualizar_status_por_pagamentos(self):
         from decimal import Decimal
         from datetime import date
         from core.services.fiscal import criar_evento_nf_pendente
-
+        
+        if self.status == 'cancelada':
+            print('[RECEITA] Status cancelada → ignorando atualização automática')
+            return
+        
+        
         print('\n[RECEITA] atualizar_status_por_pagamentos')
         print('[RECEITA] ID:', self.id)
         print('[RECEITA] Status atual:', self.status)

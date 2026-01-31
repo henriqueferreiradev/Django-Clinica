@@ -1492,58 +1492,90 @@ def api_usar_beneficio(request):
     except Exception as e:
         return JsonResponse({'ok': False, 'error': str(e)}, status=400)
 
-
-        
 def alterar_status_agendamento(request, agendamento_id):
     try:
         agendamento = Agendamento.objects.get(pk=agendamento_id)
         data = json.loads(request.body)
         novo_status = data.get('status')
-        
-        status_validos = ['pre', 'agendado', 'finalizado', 'desistencia', 
-                          'desistencia_remarcacao', 'falta_remarcacao', 'falta_cobrada', 'dcr','fcr','d']
-        
-        if novo_status not in status_validos:
-            return JsonResponse({'success': False, 'error': 'Status inválido'}, status=400)
 
-        # ✅ trava se for tentar colocar em "pre" OU "agendado"
+        status_validos = [
+            'pre', 'agendado', 'finalizado', 'desistencia',
+            'desistencia_remarcacao', 'falta_remarcacao',
+            'falta_cobrada', 'dcr', 'fcr', 'd'
+        ]
+
+        # ❌ status inválido
+        if novo_status not in status_validos:
+            return JsonResponse(
+                {'success': False, 'error': 'Status inválido'},
+                status=400
+            )
+
+        # ✅ trava conflito de horário
         if novo_status in STATUS_BLOQUEIAM_HORARIO:
             if existe_conflito_profissional(
                 profissional=agendamento.profissional_1,
                 data=agendamento.data,
-                hora_inicio=agendamento.hora_inicio,  # pode mandar time direto
+                hora_inicio=agendamento.hora_inicio,
                 hora_fim=agendamento.hora_fim,
                 ignorar_agendamento_id=agendamento.id
             ):
                 return JsonResponse({
                     'success': False,
-                    'error': f'❌ Conflito de agenda: {agendamento.profissional_1} já tem outro {"/".join(STATUS_BLOQUEIAM_HORARIO)} nesse horário.'
+                    'error': (
+                        f'❌ Conflito de agenda: '
+                        f'{agendamento.profissional_1} já tem outro '
+                        f'{"/".join(STATUS_BLOQUEIAM_HORARIO)} nesse horário.'
+                    )
                 }, status=400)
 
-        
-        # REMOVA OU MODIFIQUE ESTA VERIFICAÇÃO - Ela está bloqueando a alteração
-        # if agendamento.pacote and not agendamento.pacote.ativo:
-        #     return JsonResponse({
-        #         'success': False, 
-        #         'error': f'Pacote {agendamento.pacote.codigo} está desativado.'
-        #     }, status=400)
-        
-        # Em vez disso, apenas registre um aviso (mas permita a alteração)
+        # 🔥 REGRA DE DESISTÊNCIA
+        # Só é permitida para sessão avulsa (serviço com 1 sessão)
+        if novo_status == 'desistencia':
+            if not agendamento.servico or agendamento.servico.qtd_sessoes != 1:
+                return JsonResponse({
+                    'success': False,
+                    'error': (
+                        'Desistência só é permitida para sessões avulsas '
+                        '(serviço de 1 sessão). Para pacotes, use DCR ou Falta.'
+                    )
+                }, status=400)
+
+            print("DESISTÊNCIA aplicada em sessão avulsa")
+
+        # ⚠️ aviso se pacote estiver desativado (mas permite)
         if agendamento.pacote and not agendamento.pacote.ativo:
-            print(f"AVISO: Alterando status em pacote desativado: {agendamento.pacote.codigo}")
-        
+            print(
+                f"AVISO: Alterando status em pacote desativado: "
+                f"{agendamento.pacote.codigo}"
+            )
+
+        # 📅 controla data de desmarcação
         if novo_status in ['desistencia', 'desistencia_remarcacao', 'falta_remarcacao']:
-            agendamento.data_desmarcacao = datetime.combine(agendamento.data, time.min)   
+            agendamento.data_desmarcacao = datetime.combine(
+                agendamento.data, time.min
+            )
         elif agendamento.data_desmarcacao and novo_status in ['pre', 'agendado', 'finalizado']:
             agendamento.data_desmarcacao = None
 
+        # 💾 salva status do agendamento
         agendamento.status = novo_status
         agendamento.save()
-        
-        # ATUALIZAR CONTAGEM DE SESSÕES DO PACOTE (se houver pacote)
+
+        # 🔥 cancela receita AVULSA vinculada ao agendamento (se existir)
+        if novo_status == 'desistencia':
+            receita = Receita.objects.filter(
+                pacote=agendamento.pacote
+            ).exclude(status='cancelada').first()
+            print('RECEITA FOI EXCLUIDA CM SUCESSO')
+            if receita:
+                receita.atualizar_receita_por_status('desistencia')
+
+        # 🔁 atualiza contagem do pacote (se houver)
         if agendamento.pacote:
             atualizar_contagem_pacote(agendamento.pacote)
-        
+
+        # 🧾 log
         registrar_log(
             usuario=request.user,
             acao='Alteração de Status',
@@ -1551,13 +1583,22 @@ def alterar_status_agendamento(request, agendamento_id):
             objeto_id=agendamento.id,
             descricao=f'Status alterado para {novo_status}'
         )
-        
-        return JsonResponse({'success': True, 'message': 'Status atualizado com sucesso'})
-        
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Status atualizado com sucesso'
+        })
+
     except Agendamento.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Agendamento não encontrado'}, status=404)
+        return JsonResponse(
+            {'success': False, 'error': 'Agendamento não encontrado'},
+            status=404
+        )
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        return JsonResponse(
+            {'success': False, 'error': str(e)},
+            status=500
+        )
 
 def atualizar_contagem_pacote(pacote):
     """Atualiza contagem de sessões consumidas do pacote"""
