@@ -1683,3 +1683,329 @@ button[type="submit"]:disabled:hover {
     border-color: #ffc107;
     box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
 }
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background-color: var(--branco);
+    border-radius: var(--borda-arredondada);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--sombra-destaque);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal {
+    transform: translateY(0);
+}
+
+.modal-header {
+    padding: var(--espaco-md);
+    border-bottom: 1px solid var(--cinza-claro);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--roxoPrincipal);
+}
+
+.modal-title h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--roxoPrincipal);
+}
+
+.modal-title span {
+    font-size: 14px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--cinza-medio);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--cinza-medio);
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.modal-close:hover {
+    color: var(--roxoPrincipal);
+}
+
+.modal-body {
+    padding: var(--espaco-md);
+}
+
+.form-group {
+    margin-bottom: var(--espaco-sm);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: var(--cinza-escuro);
+    font-size: 0.9rem;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--borda-radius);
+    font-size: 0.95rem;
+    color: var(--cinza-escuro);
+    transition: var(--transicao);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--roxoPrincipal);
+    box-shadow: var(--sombra-focus);
+}
+
+.form-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espaco-sm);
+}
+
+.modal-footer {
+    padding: var(--espaco-md);
+    border-top: 1px solid var(--cinza-claro);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--espaco-sm);
+}
+
+/* Card de Preview da Receita */
+#previewReceitaBox.preview-box {
+    background: var(--branco);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    margin: 0 0 10px 0;
+    position: relative;
+    overflow: hidden;
+    display: none;
+    /* Mantém escondido por padrão */
+}
+
+/* Cabeçalho do card com ícone de alerta */
+#previewReceitaBox.preview-box>strong:first-child {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #dc2626;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+
+/* Linhas de informação */
+#previewReceitaBox .preview-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f8fafc;
+    transition: background-color 0.2s;
+}
+
+#previewReceitaBox .preview-linha:hover {
+    background-color: #f8fafc;
+    border-radius: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+#previewReceitaBox .preview-linha:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* Rótulos */
+#previewReceitaBox .preview-linha span {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Valores */
+#previewReceitaBox .preview-linha strong {
+    color: #1e293b;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* Badge para status (estilização especial) */
+#prevStatus {
+    background-color: #fef3c7;
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Estilo especial para valor */
+#prevValor {
+    color: #059669;
+    font-size: 16px;
+}
+
+/* Estilo especial para vencimento */
+#prevVencimento {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* Borda lateral colorida para destaque */
+#previewReceitaBox.preview-box {
+    border-left: 4px solid #dc2626;
+}
+
+/* Efeito de hover no card inteiro */
+#previewReceitaBox.preview-box:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    #previewReceitaBox.preview-box {
+        padding: 16px;
+        margin: 16px 0;
+    }
+
+    #previewReceitaBox .preview-linha {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    #previewReceitaBox .preview-linha span,
+    #previewReceitaBox .preview-linha strong {
+        width: 100%;
+    }
+}
+
+.agenda-bloqueada {
+
+    opacity: 0.6;
+    pointer-events: none;
+
+}
+
+/* mantém o botão de visualizar funcionando */
+.agenda-bloqueada a {
+    pointer-events: auto;
+}
+
+/* cursor de bloqueio */
+.agenda-bloqueada {
+    cursor: not-allowed;
+}
+
+
+
+
+.agenda-bloqueada .btn-editar-agendamento,
+.agenda-bloqueada .btn-salvar-status,
+.agenda-bloqueada select {
+    pointer-events: none;
+}
+
+.badge {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translatey(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 6px;
+    width: fit-content;
+    height: 37px;
+}
+
+.badge-danger {
+    background: rgb(255, 0, 25);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.25);
+}
+
+
+.agenda-item.agenda-bloqueada {
+    display: grid;
+    grid-template-columns: 140px 1fr 280px;
+    gap: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: var(--branco);
+    border-radius: var(--borda-radius);
+    box-shadow: var(--sombraSuave);
+    transition: var(--transicao);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease-out forwards;
+
+}
+
+.agenda-item.agenda-bloqueada.status-desistencia {
+    border: 1px solid #292929;
+
+    background:
+        repeating-linear-gradient(45deg,
+            rgba(85, 83, 83, 0.25),
+            rgba(85, 83, 83, 0.25) 12px,
+            transparent 12px,
+            transparent 24px);
+}
+
+.agenda-item.agenda-bloqueada::before {
+    background-color: #292929;
+}

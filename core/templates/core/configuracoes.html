@@ -1546,6 +1546,45 @@
                 </form>
             </div>
         </div>
+                <div class="form">
+            <div class="form-header" onclick="toggleFormSection(this)">
+                <h2><i class='bx bx-building'></i> Documentos da Clínica</h2>
+                <button class="form-toggle">
+                    <i class='bx bx-chevron-down'></i>
+                </button>
+            </div>
+            
+            <div class="form-content">
+                <form method="POST" id="form-documentos-empresa">
+                    <input type="hidden" name="tipo" value="doc-empresa" />
+                    {% csrf_token %}
+                    <div class="form-grid">
+
+                        <!-- Dados básicos -->
+                        <div class="form-group">
+                            <label for="cnpj"><i class='bx bx-id-card'></i>Tipo do Documento</label>
+                            <input class="input-field" name="tipo_documento" placeholder="Digite o tipo de documento (CNES, CREFITO...) " type="text"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="razao_social"><i class='bx bx-briefcase-alt-2'></i>Possui validade?</label>
+                            <select class="input-field" name="validade_yes_no" required>
+                                <option selected value="">Selecione...</option>
+                                <option value="yes">Sim</option>
+                                <option value="no">Não</option>
+                            </select>
+                        </div>
+
+                         
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class='bx bx-save'></i> Salvar Dados
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
  
     <!-- Aba Estoque -->

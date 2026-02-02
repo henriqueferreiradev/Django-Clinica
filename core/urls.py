@@ -120,6 +120,7 @@ urlpatterns = [
     path('api/notificacoes/', notificacoes_views.listar_notificacoes, name='listar_notificacoes'),
     path('administrativo/dashboard/', administrativo_views.dashboard, name="dashboard_adm"),
     path('administrativo/notas_fiscais/', administrativo_views.notas_fiscais_views,name='notas_fiscais'),
+    path('administrativo/documentos/', administrativo_views.documentos_clinica_views ,name='documentos_clinica'),
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
     path('agenda_profissional/', profissionais_views.agenda_profissional, name='agenda_profissional'),
     path('agenda/board', agendamento_views.agenda_board, name='agenda_board'),
@@ -130,7 +131,7 @@ urlpatterns = [
     path('agendamento/json/<int:agendamento_id>/', agendamento_views.pegar_agendamento, name='get_agendamento'),
     path('agendamento/editar/<int:agendamento_id>/', agendamento_views.editar_agendamento, name='editar_agendamento'),
     path('agendamento/<int:pk>/remarcar/', agendamento_views.remarcar_agendamento, name='remarcar_agendamento'),
-    
+    path('agendamento/<int:agendamento_id>/preview-receita/', agendamento_views.preview_receita_desistencia, name='preview_receita_desistencia'),
 
     path('config/', config_views.configuracao_view, name='config'),
     

@@ -1204,7 +1204,10 @@ class FrequenciaMensal(models.Model):
 
     def __str__(self):
         return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status} ({self.freq_sistema}/{self.freq_programada})"
-
+class TipoDocumentoEmpresa(models.Model):
+    tipo_documento = models.CharField(max_length=100)
+    validade = models.CharField(max_length=20)
+    ativo = models.BooleanField(default=False)
 class HistoricoStatus(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="historico_status")
     mes = models.PositiveIntegerField()

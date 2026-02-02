@@ -208,3 +208,11 @@ def api_detalhes_notafiscal_por_pendencia(request, pendencia_id):
         })
     except NotaFiscalPendente.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Pendência não encontrada'}, status=404)
+
+
+def documentos_clinica_views(request):
+
+    context = {
+
+    }
+    return render(request, 'core/administrativo/documentos.html', context)

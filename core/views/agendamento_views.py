@@ -956,7 +956,7 @@ def verificar_pacotes_ativos(request, paciente_id):
     
     # Mapeamento status -> tipo (TUDO EM MINÚSCULO)
     status_para_tipo = {
-        'desistencia': 'd',           # minúsculo
+        
         'desistencia_remarcacao': 'dcr',  # minúsculo  
         'falta_remarcacao': 'fcr'     # minúsculo
     }
@@ -1145,7 +1145,18 @@ def listar_agendamentos(filtros=None, query=None):
                 sessoes_restantes = None
         pacote = getattr(ag, 'pacote', None)
         pacote_ativo = pacote.ativo if pacote else None
+        receita_obs = None
 
+        pagamento = Pagamento.objects.filter(
+            agendamento=ag
+        ).select_related('receita').first()
+
+        if pagamento and pagamento.receita:
+            receita_obs = pagamento.receita.observacoes
+            print(receita_obs)
+        else:
+            print('achou nada')
+        
         dados_agrupados[chave_data].append({
             'id': ag.id,
             'hora_inicio': ag.hora_inicio.strftime('%H:%M') if ag.hora_inicio else '',
@@ -1163,6 +1174,7 @@ def listar_agendamentos(filtros=None, query=None):
             'is_pacote': is_pacote,
             'pacote_ativo':pacote_ativo,
             'tags':ag.tags,
+            'receita_observacoes': receita_obs,
         })
 
     return dados_agrupados
@@ -1497,6 +1509,11 @@ def alterar_status_agendamento(request, agendamento_id):
         agendamento = Agendamento.objects.get(pk=agendamento_id)
         data = json.loads(request.body)
         novo_status = data.get('status')
+        confirmacao = data.get('confirmacao')
+        motivo_cancelamento = data.get('motivo_cancelamento','').strip()
+
+
+
 
         status_validos = [
             'pre', 'agendado', 'finalizado', 'desistencia',
@@ -1564,13 +1581,31 @@ def alterar_status_agendamento(request, agendamento_id):
 
         # 🔥 cancela receita AVULSA vinculada ao agendamento (se existir)
         if novo_status == 'desistencia':
+
+            if confirmacao != 'CONFIRMAR':
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Confirmação inválida. Digite CONFIRMAR.'
+                }, status=400)
+
+            if not agendamento.servico or agendamento.servico.qtd_sessoes != 1:
+                return JsonResponse({
+                    'success':False,
+                    'error': 'Desistência só é permitida para sessões avulsas.'
+                }, status=400)
+
             receita = Receita.objects.filter(
                 pacote=agendamento.pacote
             ).exclude(status='cancelada').first()
             print('RECEITA FOI EXCLUIDA CM SUCESSO')
+            
             if receita:
                 receita.atualizar_receita_por_status('desistencia')
-
+ 
+            if motivo_cancelamento:
+                receita.observacoes = motivo_cancelamento
+                receita.save(update_fields=['observacoes'])
+ 
         # 🔁 atualiza contagem do pacote (se houver)
         if agendamento.pacote:
             atualizar_contagem_pacote(agendamento.pacote)
@@ -1620,3 +1655,33 @@ def atualizar_contagem_pacote(pacote):
         pacote.ativo = False
         pacote.data_desativacao = timezone.now()
         pacote.save()
+
+
+def preview_receita_desistencia(request, agendamento_id):
+    try:
+        agendamento = Agendamento.objects.select_related().get(id=agendamento_id)
+
+        receita = Receita.objects.filter(
+            pacote=agendamento.pacote
+        ).exclude(status='cancelada').first()
+
+        if not receita:
+            return JsonResponse({
+                'success':False,
+                'error':'Nenhuma receita vinculada a este pagamento'
+            })
+
+        return JsonResponse({
+            'success': True,
+            'receita': {                
+                'id': receita.id,
+                'valor':float(receita.valor),
+                'status':receita.status,
+                'vencimento':receita.vencimento.strftime('%d/%m/%Y')
+            }
+        })
+    except Agendamento.DoesNotExist:
+        return JsonResponse({'success':False, 'error':'Agendamento não encontrado'})
+
+
+

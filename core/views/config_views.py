@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ConfigAgenda, ContaBancaria, ESTADO_CIVIL, EscalaBaseProfissional, Especialidade, Fornecedor, MIDIA_ESCOLHA, MensagemPadrao, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, User, VINCULO, ValidadeBeneficios, ValidadeReposicao
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ConfigAgenda, ContaBancaria, ESTADO_CIVIL, EscalaBaseProfissional, Especialidade, Fornecedor, MIDIA_ESCOLHA, MensagemPadrao, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, TipoDocumentoEmpresa, User, VINCULO, ValidadeBeneficios, ValidadeReposicao
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -376,7 +376,23 @@ def configuracao_view(request):
              
             
 
+        elif tipo == 'doc-empresa':
+            tipo_documento = request.POST.get('tipo_documento')
+            validade = request.POST.get('validade_yes_no')
 
+            if not tipo_documento or not validade:
+                return JsonResponse({'error':'Deu ruim'})
+
+            else:
+
+                TipoDocumentoEmpresa.objects.create(
+                    tipo_documento=tipo_documento,
+                    validade=validade,
+                    ativo=True,
+                )
+            
+            messages.success(request,'Documento salvo com sucesso!')
+             
 
         '''
         =====================================================================================

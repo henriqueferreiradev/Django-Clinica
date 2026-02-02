@@ -579,7 +579,7 @@ async function verificarPacoteAtivo() {
 
                 if (usarPacoteBtn) {
 
-                    usarPacoteBtn.textContent = 'Criar Novo Pacote';
+                    usarPacoteBtn.textContent = 'Criar Novo Pacote/Sessão Avulsa';
                     usarPacoteBtn.onclick = function () {
                         // Limpa todos os avisos
                         limparAvisos();
@@ -1611,11 +1611,61 @@ function openRecorrente() {
 }
 
 
+async function abrirModalConfirmacaoDesistencia() {
+    const modal = document.getElementById('exConfModal');
+    modal.classList.add('active');
 
+    const previewBox = document.getElementById('previewReceitaBox');
+    previewBox.style.display = 'none';
+
+    try {
+        const resp = await fetch(
+            `/agendamento/${agendamentoPendenteConfirmacao}/preview-receita/`
+        );
+        const data = await resp.json();
+
+        if (!data.success) {
+            mostrarMensagem(data.error || 'Erro ao carregar receita', 'warning');
+            return;
+        }
+
+        document.getElementById('prevValor').textContent =
+            `R$ ${data.receita.valor.toFixed(2)}`;
+
+        document.getElementById('prevStatus').textContent =
+            data.receita.status.toUpperCase();
+
+        document.getElementById('prevVencimento').textContent =
+            data.receita.vencimento;
+
+        previewBox.style.display = 'block';
+
+    } catch (e) {
+        console.error(e);
+        mostrarMensagem('Erro ao buscar preview da receita', 'error');
+    }
+}
+
+
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('active');
+}
 
 
 // Função para atualizar status via AJAX
-async function atualizarStatusAgendamento(agendamentoId, novoStatus) {
+async function atualizarStatusAgendamento(agendamentoId, novoStatus, extraData = {}) {
+    const linha = document.querySelector(
+        `.agenda-item [data-agendamento-id="${agendamentoId}"]`
+    )?.closest('.agenda-item');
+
+    if (linha?.classList.contains('agenda-bloqueada')) {
+        mostrarMensagem(
+            '⚠️ Este agendamento está em desistência e não pode mais ser alterado.',
+            'warning'
+        );
+        return false;
+    }
     const csrfToken = getCookie('csrftoken');
 
     try {
@@ -1626,7 +1676,8 @@ async function atualizarStatusAgendamento(agendamentoId, novoStatus) {
                 'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({
-                status: novoStatus
+                status: novoStatus,
+                ...extraData
             })
         });
 
@@ -1634,19 +1685,50 @@ async function atualizarStatusAgendamento(agendamentoId, novoStatus) {
 
         if (result.success) {
             mostrarMensagem(result.message || 'Status atualizado com sucesso!', 'success');
-
-            // Atualizar a aparência visual do item na lista
             atualizarAparenciaStatus(agendamentoId, novoStatus);
-
             return true;
         } else {
-            mostrarMensagem('Erro: ' + (result.error || 'Erro desconhecido'), 'error');
+            mostrarMensagem(result.error || 'Erro ao atualizar status', 'error');
             return false;
         }
     } catch (error) {
         console.error('Erro ao atualizar status:', error);
         mostrarMensagem('Erro ao conectar com o servidor', 'error');
         return false;
+    }
+}
+
+async function confirmarDesistencia() {
+    const confirmacaoInput = document.getElementById('confID');
+    const motivoInput = document.getElementById('motivo_cancelamento_sessao');
+
+    if (!agendamentoPendenteConfirmacao) {
+        mostrarMensagem('Agendamento inválido para confirmação', 'error');
+        return;
+    }
+
+    const confirmacao = confirmacaoInput?.value?.trim().toUpperCase();
+    const motivo = motivoInput?.value?.trim() || '';
+
+    if (confirmacao !== 'CONFIRMAR') {
+        mostrarMensagem('Digite CONFIRMAR para continuar.', 'warning');
+        return;
+    }
+
+    // chama backend
+    const sucesso = await atualizarStatusAgendamento(
+        agendamentoPendenteConfirmacao,
+        'desistencia',
+        {
+            confirmacao: 'CONFIRMAR',
+            motivo_cancelamento: motivo
+        }
+    );
+
+    if (sucesso) {
+        mostrarMensagem('Desistência confirmada e receita cancelada.', 'success');
+        closeModal('exConfModal');
+        agendamentoPendenteConfirmacao = null;
     }
 }
 
@@ -1902,7 +1984,7 @@ function adicionarValidacaoTempoReal() {
         });
     }
 }
-
+let agendamentoPendenteConfirmacao = null;
 function formularioTemErro() {
     // se existir qualquer erro de validação visível
     return document.querySelectorAll('.erro-validacao').length > 0;
@@ -1927,6 +2009,12 @@ document.addEventListener('DOMContentLoaded', function () {
             // Desabilitar botão durante a requisição
             this.disabled = true;
             this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            if (novoStatus === 'desistencia') {
+                agendamentoPendenteConfirmacao = agendamentoId;
+                abrirModalConfirmacaoDesistencia();
+                return;
+            }
 
             const sucesso = await atualizarStatusAgendamento(agendamentoId, novoStatus);
 
