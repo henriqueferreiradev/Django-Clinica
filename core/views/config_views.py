@@ -374,25 +374,24 @@ def configuracao_view(request):
             
             messages.success(request,'Nova mensagem salva com sucesso!')
              
-            
 
         elif tipo == 'doc-empresa':
             tipo_documento = request.POST.get('tipo_documento')
-            validade = request.POST.get('validade_yes_no')
+            validade_raw = request.POST.get('validade_yes_no')
 
-            if not tipo_documento or not validade:
-                return JsonResponse({'error':'Deu ruim'})
+            if not tipo_documento or validade_raw not in ['yes', 'no']:
+                return JsonResponse({'error': 'Dados inválidos'}, status=400)
 
-            else:
+            exige_validade = True if validade_raw == 'yes' else False
 
-                TipoDocumentoEmpresa.objects.create(
-                    tipo_documento=tipo_documento,
-                    validade=validade,
-                    ativo=True,
-                )
-            
-            messages.success(request,'Documento salvo com sucesso!')
-             
+            TipoDocumentoEmpresa.objects.create(
+                tipo_documento=tipo_documento,
+                exige_validade=exige_validade,
+                ativo=True,
+            )
+
+            messages.success(request, 'Documento salvo com sucesso!')
+
 
         '''
         =====================================================================================

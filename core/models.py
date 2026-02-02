@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 from doctest import BLANKLINE_MARKER
 from urllib.parse import DefragResult
+from colorama import Fore
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
@@ -465,8 +466,9 @@ class DocumentoProfissional(models.Model):
     def __str__(self):
         return f'{self.tipo_documento} - {self.profissional}'
     
-class DocumentoClinica(models.Model):
-    ...
+ 
+
+
 class CategoriaConta(models.Model):
     """
     Categoria principal: Receita ou Despesa
@@ -1206,8 +1208,50 @@ class FrequenciaMensal(models.Model):
         return f"{self.paciente.nome} - {self.mes:02d}/{self.ano} - {self.status} ({self.freq_sistema}/{self.freq_programada})"
 class TipoDocumentoEmpresa(models.Model):
     tipo_documento = models.CharField(max_length=100)
-    validade = models.CharField(max_length=20)
+    exige_validade = models.BooleanField(default=False)
     ativo = models.BooleanField(default=False)
+    
+    
+
+import uuid
+from django.utils import timezone
+
+class DocumentoClinica(models.Model):
+    tipo = models.ForeignKey(TipoDocumentoEmpresa, on_delete=models.PROTECT, related_name='documentos')
+    nome = models.CharField(max_length=150,editable=False)
+    arquivo = models.FileField(upload_to='documentos/clinica/')
+    validade = models.DateField(null=True,blank=True)
+    public_id = models.UUIDField(default=uuid.uuid4,editable=False,unique=True)
+    observacao = models.TextField()
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def status_calculado(self):
+        hoje = timezone.now().date()
+
+        if not self.validade:
+            return 'sem_validade'
+
+        if hoje > self.validade:
+            return 'vencido'
+
+        dias_para_vencer = (self.validade - hoje).days
+
+        if dias_para_vencer <= 30:
+            return 'vencimento_proximo'
+
+        return 'valido'
+
+    def save(self, *args, **kwargs):
+        # 🔒 Nome sempre derivado do tipo
+        self.nome = self.tipo.tipo_documento
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.nome} ({self.criado_em.strftime('%d/%m/%Y')})"
+
+
+
 class HistoricoStatus(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="historico_status")
     mes = models.PositiveIntegerField()

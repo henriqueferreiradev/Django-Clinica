@@ -645,27 +645,25 @@
             </div>
             <div class="modal-body">
                 <form id="documentForm">
-                    <div class="form-group">
-                        <label for="docName">Nome do Documento *</label>
-                        <input type="text" id="docName" placeholder="Ex: RG, CPF, Contrato, Alvará, Certificado" required>
-                    </div>
                     
                     <div class="form-group">
                         <label for="docType">Tipo do Documento</label>
-                        <select id="docType">
+                        <select name="docType" id="docType" required>
                             <option value="">Selecione um tipo</option>
-                            <option value="Pessoal">Pessoal</option>
-                            <option value="Financeiro">Financeiro</option>
-                            <option value="Profissional">Profissional</option>
-                            <option value="Jurídico">Jurídico</option>
-                            <option value="Saúde">Saúde</option>
-                            <option value="Outro">Outro</option>
+                            {% for documento in lista_documentos %}
+                                <option
+                                    value="{{ documento.id }}"
+                                    data-exige-validade="{{ documento.exige_validade|yesno:'1,0' }}"
+                                >
+                                    {{ documento.tipo_documento }}
+                                </option>
+                            {% endfor %}
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="docExpiry">Validade do Documento</label>
-                        <input type="date" id="docExpiry">
+                        <input type="date" id="docExpiry" name='docExpiry'>
                         <p class="help-text">Caso o documento possua validade, informe a data de expiração</p>
                     </div>
                     
@@ -675,14 +673,14 @@
                             <i class="fas fa-cloud-upload-alt"></i>
                             <p>Clique para selecionar ou arraste o arquivo</p>
                             <p class="help-text">Formatos aceitos: PDF, JPG, PNG (Tamanho máximo: 10MB)</p>
-                            <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                            <input type="file" id="fileInput" name='docImg' accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
                         </div>
                         <div class="file-name" id="fileName"></div>
                     </div>
                     
                     <div class="form-group">
                         <label for="docNotes">Observações</label>
-                        <textarea id="docNotes" rows="3" placeholder="Adicione observações ou informações adicionais sobre este documento..."></textarea>
+                        <textarea id="docNotes" name='docNotes' rows="3" placeholder="Adicione observações ou informações adicionais sobre este documento..."></textarea>
                     </div>
                 </form>
             </div>
@@ -693,421 +691,11 @@
         </div>
     </div>
 
-    <script>
-        // Dados iniciais de exemplo
-        let documents = [
-            {
-                id: 1,
-                name: "RG - Frente e Verso",
-                type: "Pessoal",
-                uploadDate: "2023-10-15",
-                expiryDate: "2030-05-20",
-                status: "valid",
-                fileName: "rg_frente_verso.pdf",
-                fileType: "pdf",
-                notes: "Documento de identificação oficial"
-            },
-            {
-                id: 2,
-                name: "CPF",
-                type: "Pessoal",
-                uploadDate: "2023-11-05",
-                expiryDate: "",
-                status: "no-expiry",
-                fileName: "cpf_cadastro.pdf",
-                fileType: "pdf",
-                notes: "Cadastro de Pessoa Física"
-            },
-            {
-                id: 3,
-                name: "Contrato de Prestação de Serviços",
-                type: "Jurídico",
-                uploadDate: "2023-09-20",
-                expiryDate: "2024-09-20",
-                status: "valid",
-                fileName: "contrato_prestacao.pdf",
-                fileType: "pdf",
-                notes: "Vigência de 12 meses"
-            },
-            {
-                id: 4,
-                name: "Certificado de Conclusão",
-                type: "Profissional",
-                uploadDate: "2023-12-10",
-                expiryDate: "",
-                status: "no-expiry",
-                fileName: "certificado_conclusao.jpg",
-                fileType: "jpg",
-                notes: "Curso de especialização em Gestão"
-            },
-            {
-                id: 5,
-                name: "Alvará de Funcionamento",
-                type: "Jurídico",
-                uploadDate: "2023-08-05",
-                expiryDate: "2023-12-31",
-                status: "expired",
-                fileName: "alvara_funcionamento.pdf",
-                fileType: "pdf",
-                notes: "Vencido, necessário renovação"
-            },
-            {
-                id: 6,
-                name: "Comprovante de Residência",
-                type: "Pessoal",
-                uploadDate: "2023-11-28",
-                expiryDate: "2024-01-15",
-                status: "warning",
-                fileName: "comprovante_residencia.pdf",
-                fileType: "pdf",
-                notes: "Conta de luz - próximo do vencimento"
-            }
-        ];
-
-        // Elementos DOM
-        const modalOverlay = document.getElementById('modalOverlay');
-        const openModalBtn = document.getElementById('openModalBtn');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const saveDocBtn = document.getElementById('saveDocBtn');
-        const fileUploadArea = document.getElementById('fileUploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileName = document.getElementById('fileName');
-        const docForm = document.getElementById('documentForm');
-        const documentsTableBody = document.getElementById('documentsTableBody');
-        const emptyRow = document.getElementById('emptyRow');
-        const totalDocsElement = document.getElementById('totalDocs');
-        const expiredDocsElement = document.getElementById('expiredDocs');
-        const warningDocsElement = document.getElementById('warningDocs');
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            renderDocuments();
-            updateStats();
-            
-            // Verificar documentos próximos do vencimento e vencidos
-            checkExpiryDates();
-            
-            // Adicionar event listeners
-            setupEventListeners();
-        });
-
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Abrir modal
-            openModalBtn.addEventListener('click', openModal);
-            
-            // Fechar modal
-            closeModalBtn.addEventListener('click', closeModal);
-            cancelBtn.addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', function(e) {
-                if (e.target === modalOverlay) {
-                    closeModal();
-                }
-            });
-
-            // Upload de arquivo
-            fileUploadArea.addEventListener('click', function() {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', function() {
-                if (fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    fileName.textContent = `Arquivo selecionado: ${file.name}`;
-                    fileName.classList.add('show');
-                } else {
-                    fileName.textContent = '';
-                    fileName.classList.remove('show');
-                }
-            });
-
-            // Salvar documento
-            saveDocBtn.addEventListener('click', saveDocument);
-
-            // Permitir arrastar e soltar arquivos
-            fileUploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.style.borderColor = '#6D398E';
-                this.style.backgroundColor = '#76378f11';
-            });
-
-            fileUploadArea.addEventListener('dragleave', function() {
-                this.style.borderColor = '#ddd';
-                this.style.backgroundColor = '';
-            });
-
-            fileUploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.style.borderColor = '#ddd';
-                this.style.backgroundColor = '';
-                
-                if (e.dataTransfer.files.length) {
-                    fileInput.files = e.dataTransfer.files;
-                    const file = fileInput.files[0];
-                    fileName.textContent = `Arquivo selecionado: ${file.name}`;
-                    fileName.classList.add('show');
-                }
-            });
-        }
-
-        // Funções
-        function openModal() {
-            modalOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            docForm.reset();
-            fileName.textContent = '';
-            fileName.classList.remove('show');
-        }
-
-        function saveDocument() {
-            const docName = document.getElementById('docName').value;
-            const docType = document.getElementById('docType').value;
-            const docExpiry = document.getElementById('docExpiry').value;
-            const docNotes = document.getElementById('docNotes').value;
-            const file = fileInput.files[0];
-            
-            // Validação básica
-            if (!docName.trim()) {
-                showNotification('Por favor, preencha o nome do documento', 'error');
-                return;
-            }
-            
-            if (!file) {
-                showNotification('Por favor, selecione um arquivo', 'error');
-                return;
-            }
-            
-            // Verificar tipo de arquivo
-            const fileType = file.type;
-            if (!fileType.match(/(pdf|jpeg|jpg|png)/)) {
-                showNotification('Por favor, selecione um arquivo nos formatos permitidos: PDF, JPG, PNG', 'error');
-                return;
-            }
-            
-            // Gerar ID único
-            const newId = documents.length > 0 ? Math.max(...documents.map(d => d.id)) + 1 : 1;
-            
-            // Determinar status com base na validade
-            let status = 'no-expiry';
-            if (docExpiry) {
-                const expiryDate = new Date(docExpiry);
-                const today = new Date();
-                const diffTime = expiryDate - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                if (diffDays < 0) {
-                    status = 'expired';
-                } else if (diffDays <= 30) {
-                    status = 'warning';
-                } else {
-                    status = 'valid';
-                }
-            }
-            
-            // Extrair extensão do arquivo
-            const fileExtension = file.name.split('.').pop().toLowerCase();
-            
-            // Adicionar documento
-            const newDocument = {
-                id: newId,
-                name: docName,
-                type: docType || 'Não especificado',
-                uploadDate: new Date().toISOString().split('T')[0],
-                expiryDate: docExpiry,
-                status: status,
-                fileName: file.name,
-                fileType: fileExtension,
-                notes: docNotes
-            };
-            
-            documents.unshift(newDocument);
-            
-            // Fechar modal e atualizar interface
-            closeModal();
-            renderDocuments();
-            updateStats();
-            
-            // Feedback visual
-            showNotification('Documento salvo com sucesso!', 'success');
-        }
-
-        function renderDocuments() {
-            documentsTableBody.innerHTML = '';
-            
-            if (documents.length === 0) {
-                emptyRow.style.display = 'table-row';
-                return;
-            }
-            
-            emptyRow.style.display = 'none';
-            
-            documents.forEach(doc => {
-                const row = document.createElement('tr');
-                
-                // Formatar data
-                const uploadDateFormatted = formatDate(doc.uploadDate);
-                
-                // Status e validade
-                let statusText, statusClass, expiryDisplay;
-                
-                if (doc.status === 'expired') {
-                    statusText = 'Vencido';
-                    statusClass = 'status-expired';
-                    expiryDisplay = `<span class="expired">${formatDate(doc.expiryDate)}</span>`;
-                } else if (doc.status === 'warning') {
-                    statusText = 'Próximo do vencimento';
-                    statusClass = 'status-warning';
-                    expiryDisplay = `<span class="warning-text">${formatDate(doc.expiryDate)}</span>`;
-                } else if (doc.status === 'valid') {
-                    statusText = 'Válido';
-                    statusClass = 'status-valid';
-                    expiryDisplay = formatDate(doc.expiryDate);
-                } else {
-                    statusText = 'Sem validade';
-                    statusClass = 'status-no-expiry';
-                    expiryDisplay = '-';
-                }
-                
-                // Ícone do tipo de arquivo
-                let fileIcon = 'fas fa-file';
-                if (doc.fileType === 'pdf') fileIcon = 'fas fa-file-pdf';
-                else if (doc.fileType === 'jpg' || doc.fileType === 'jpeg' || doc.fileType === 'png') fileIcon = 'fas fa-file-image';
-                
-                row.innerHTML = `
-                    <td>
-                        <i class="${fileIcon}" style="color: #7f8c8d; margin-right: 8px;"></i>
-                        ${doc.name}
-                    </td>
-                    <td>${doc.type}</td>
-                    <td>${uploadDateFormatted}</td>
-                    <td>${expiryDisplay}</td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="action-btn view" onclick="viewDocument(${doc.id})" title="Visualizar">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn download" onclick="downloadDocument(${doc.id})" title="Baixar">
-                                <i class="fas fa-download"></i>
-                            </button>
-                            <button class="action-btn delete" onclick="deleteDocument(${doc.id})" title="Excluir">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                
-                documentsTableBody.appendChild(row);
-            });
-        }
-
-        function updateStats() {
-            totalDocsElement.textContent = documents.length;
-            
-            const expiredCount = documents.filter(doc => doc.status === 'expired').length;
-            const warningCount = documents.filter(doc => doc.status === 'warning').length;
-            
-            expiredDocsElement.textContent = expiredCount;
-            warningDocsElement.textContent = warningCount;
-        }
-
-        function checkExpiryDates() {
-            const today = new Date();
-            
-            documents.forEach(doc => {
-                if (doc.expiryDate) {
-                    const expiryDate = new Date(doc.expiryDate);
-                    const diffTime = expiryDate - today;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
-                    if (diffDays < 0 && doc.status !== 'expired') {
-                        doc.status = 'expired';
-                    } else if (diffDays <= 30 && diffDays >= 0 && doc.status !== 'warning' && doc.status !== 'expired') {
-                        doc.status = 'warning';
-                    }
-                }
-            });
-            
-            renderDocuments();
-            updateStats();
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            
-            const date = new Date(dateString);
-            return date.toLocaleDateString('pt-BR');
-        }
-
-        function viewDocument(id) {
-            const doc = documents.find(d => d.id === id);
-            if (!doc) return;
-            
-            // Em um sistema real, isso abriria o arquivo
-            // Para demonstração, simulamos com uma notificação
-            showNotification(`Visualizando documento: ${doc.name}`, 'info');
-            
-            // Simulação de abertura em nova aba
-            // window.open(`/documents/${doc.id}`, '_blank');
-        }
-
-        function downloadDocument(id) {
-            const doc = documents.find(d => d.id === id);
-            if (!doc) return;
-            
-            // Em um sistema real, isso iniciaria o download do arquivo
-            showNotification(`Iniciando download: ${doc.name}`, 'info');
-            
-            // Simulação de download
-            // const link = document.createElement('a');
-            // link.href = `/documents/download/${doc.id}`;
-            // link.download = doc.fileName;
-            // link.click();
-        }
-
-        function deleteDocument(id) {
-            if (confirm('Tem certeza que deseja excluir este documento? Esta ação não pode ser desfeita.')) {
-                documents = documents.filter(doc => doc.id !== id);
-                renderDocuments();
-                updateStats();
-                showNotification('Documento excluído com sucesso!', 'success');
-            }
-        }
-
-        function showNotification(message, type) {
-            // Remover notificação anterior se existir
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-            
-            // Criar nova notificação
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            // Remover após 3 segundos
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            }, 3000);
-        }
-    </script>
  
 {% include "core/partials/alertas.html" %}
 {% endblock %}
 
 {% block scripts %}
-
+<script src="{% static '/core/js/administrativo/docBase.js' %}"></script>
  
 {% endblock %}

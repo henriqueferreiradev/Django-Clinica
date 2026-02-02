@@ -9,8 +9,9 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from django.template.context_processors import request
 import json
-from core.models import NotaFiscalCancelada, NotaFiscalEmitida, NotaFiscalPendente
+from core.models import DocumentoClinica, NotaFiscalCancelada, NotaFiscalEmitida, NotaFiscalPendente, TipoDocumentoEmpresa
 
 def dashboard(request):
  
@@ -211,8 +212,45 @@ def api_detalhes_notafiscal_por_pendencia(request, pendencia_id):
 
 
 def documentos_clinica_views(request):
-
+    lista_documentos = TipoDocumentoEmpresa.objects.filter(ativo = True)
+    todos_documentos = DocumentoClinica.objects.all().count()
+    todos_documentos_vencidos = DocumentoClinica.objects.filter()
     context = {
-
+        'lista_documentos':lista_documentos
     }
     return render(request, 'core/administrativo/documentos.html', context)
+
+def salvar_documento_empresa(request):
+    try:
+        if request.method == 'POST':
+            print(DocumentoClinica)
+
+            tipo = TipoDocumentoEmpresa.objects.get(id=request.POST.get('docType'))
+
+            if tipo.exige_validade and not request.POST.get('docExpiry'):
+                return JsonResponse(
+                    {'success': False, 'error': 'Este tipo de documento exige validade.'},
+                    status=400
+    )
+
+            
+            DocumentoClinica.objects.create(
+                tipo_id=request.POST.get('docType'),
+                validade=request.POST.get('docExpiry') or None,
+                arquivo=request.FILES.get('arquivo'),
+                observacao=request.POST.get('docNotes')
+            )
+
+            return JsonResponse({'success': True})
+
+        return JsonResponse(
+            {'success': False, 'error': 'Método inválido'},
+            status=400
+        )
+
+    except Exception as e:
+        print('ERRO:', e)
+        return JsonResponse(
+            {'success': False, 'error': str(e)},
+            status=500
+        )
