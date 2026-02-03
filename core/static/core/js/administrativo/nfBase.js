@@ -347,6 +347,7 @@ document.addEventListener('keydown', function (e) {
 function openEmitModal() {
 
     document.getElementById('emitModal').classList.add('active');
+    configurarAutocompletePacientes();
 }
 
 
@@ -606,3 +607,81 @@ function adicionarFeedbackVisual(messageItem) {
 
 // Inicializar quando a página carregar
 document.addEventListener('DOMContentLoaded', configurarCliqueParaCopiarMensagem);
+
+function configurarAutocompletePacientes() {
+    const input = document.getElementById('busca');
+    const sugestoes = document.getElementById('sugestoes');
+    const pacienteIdInput = document.getElementById('paciente_id');
+
+
+    if (!input || !sugestoes || !pacienteIdInput) return;
+
+    input.addEventListener('input', async () => {
+        const query = input.value.trim();
+
+
+
+        try {
+            const res = await fetch(`/api/buscar-pacientes/?q=${encodeURIComponent(query)}`);
+            if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
+
+            const data = await res.json();
+            sugestoes.innerHTML = '';
+            sugestoes.style.display = 'block';
+            (data.resultados || []).forEach(paciente => {
+                const div = document.createElement('div');
+                div.textContent = `${paciente.nome} ${paciente.sobrenome}`;
+                div.style.padding = '.7em';
+                div.style.cursor = 'pointer';
+
+                div.onclick = () => {
+                    input.value = `${paciente.nome} ${paciente.sobrenome}`;
+                    pacienteIdInput.value = paciente.id;
+
+                    sugestoes.innerHTML = '';
+                    sugestoes.style.display = 'none';
+
+                    carregarServicosPaciente(paciente.id);
+                };
+
+                sugestoes.appendChild(div);
+            });
+            
+        } catch (error) {
+            console.error('Erro ao buscar pacientes:', error);
+        }
+    });
+}
+
+async function carregarServicosPaciente(pacienteId) {
+    const select = document.getElementById('servicoSelect');
+    select.innerHTML = '<option>Carregando...</option>';
+
+    const res = await fetch(`/api/paciente/${pacienteId}/servicos/`);
+    const data = await res.json();
+
+    select.innerHTML = '<option value="">Selecione um serviço</option>';
+
+    data.servicos.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.nome;
+        opt.dataset.valor = s.valor;
+        opt.dataset.data = s.data_pagamento;
+        select.appendChild(opt);
+
+    });
+}
+
+document.getElementById('servicoSelect').addEventListener('change', () => {
+  const select = document.getElementById('servicoSelect');
+  const opt = select.options[select.selectedIndex];
+
+  // pega do dataset da option
+  const valor = opt.dataset.valor;
+  const data = opt.dataset.data;
+
+  // preenche inputs
+  document.getElementById('valorPago').value = valor ? `R$ ${valor}` : '';
+  document.getElementById('dataPag').value = data || '';
+});

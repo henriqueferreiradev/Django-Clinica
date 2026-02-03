@@ -797,6 +797,39 @@
 .toast-close:hover {
   color: white;
 }
+
+/* Sugestões de pacientes */
+#sugestoes {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--branco);
+    border: 2px solid var(--roxoPrincipal);
+    border-top: none;
+    border-radius: 0 0 var(--borda-radius) var(--borda-radius);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    display: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+#sugestoes div {
+    padding: var(--espaco-sm);
+    cursor: pointer;
+    transition: var(--transicao);
+    border-bottom: 1px solid var(--cinza-claro);
+}
+
+#sugestoes div:hover {
+    background-color: var(--roxoPrincipal-hover);
+}
+
+#sugestoes div:last-child {
+    border-bottom: none;
+}
+
     </style>
 </head>
 <body>
@@ -1045,32 +1078,33 @@
                 <button class="modal-close" onclick="closeModal('emitModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Paciente</label>
-                    <input type="text" class="form-input">
+                <div class="form-group" style="position: relative;">
+                    <label class="form-label" for="busca">Paciente</label>
+                    <input id="busca" class="form-input" type="text">
+                    <input type="hidden" id="paciente_id">
+                    <div id="sugestoes"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Serviço</label>
-                    <input type="text" class="form-input" value="Consulta médica especializada">
+                    <select id="servicoSelect" class="form-input">
+                        <option value="">Selecione um paciente primeiro</option>
+                    </select>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">CPF/CNPJ</label>
-                        <input type="text" class="form-input" value="123.456.789-00">
-                    </div>
-                    
-                    <div class="form-group">
                         <label class="form-label">Valor</label>
-                        <input type="text" class="form-input" value="R$ 850,00">
+                        <input type="text" class="form-input" id='valorPago'>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data do pagamento</label>
+                        <input type="text" class="form-input" id='dataPag'>
                     </div>
                 </div>
                 
 
                 
-                <div class="form-group">
-                    <label class="form-label">Data do pagamento</label>
-                    <input type="text" class="form-input" value="05/10/2023">
-                </div>
+
                 
                 <div class="form-group">
                     <label class="form-label">Tipo de nota *</label>

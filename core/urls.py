@@ -62,7 +62,7 @@ urlpatterns = [
     path('api/salvar-nf/', administrativo_views.salvar_notafiscal, name='salvar_notafiscal'),
     path('api/cancelar-nf/', administrativo_views.cancelar_notafiscal, name='cancelar_notafiscal'),
     path('api/salvar-documento/', administrativo_views.salvar_documento_empresa, name='salvar_documento_empresa'),
-    
+    path('api/paciente/<int:paciente_id>/servicos/', pacientes_views.servicos_paciente),
     
     
     path('api/detalhe-nf-emitida/pendencia/<int:pendencia_id>/', administrativo_views.api_detalhes_notafiscal_por_pendencia),

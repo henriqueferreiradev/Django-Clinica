@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import Agendamento, COR_RACA, ESTADO_CIVIL, Especialidade, FrequenciaMensal, HistoricoStatus, Lembrete, MIDIA_ESCOLHA, NotaFiscalEmitida, Notificacao, Paciente, PacotePaciente, Pagamento, Pendencia, RespostaFormulario, RespostaPergunta, SEXO_ESCOLHA, Servico, TIPO_VINCULO, UF_ESCOLHA, User, VINCULO, VinculoFamiliar
+from core.models import Agendamento, COR_RACA, ESTADO_CIVIL, Especialidade, FrequenciaMensal, HistoricoStatus, Lembrete, MIDIA_ESCOLHA, NotaFiscalEmitida, Notificacao, Paciente, PacotePaciente, Pagamento, Pendencia, Receita, RespostaFormulario, RespostaPergunta, SEXO_ESCOLHA, Servico, TIPO_VINCULO, UF_ESCOLHA, User, VINCULO, VinculoFamiliar
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -416,6 +416,25 @@ def buscar_pacientes(request):
                       for p in pacientes]
 
     return JsonResponse({'resultados': resultados})
+
+@require_GET
+def servicos_paciente(request, paciente_id):
+    receitas = (
+        Receita.objects
+        .filter(paciente_id=paciente_id, status__in=['pago','pendente'])
+        .select_related('pacote__servico')
+    )
+    print(receitas)
+    servicos = []
+    for r in receitas:
+        servicos.append({
+            'id': r.id,
+            'nome': f'{r.pacote.servico.nome} ({r.pacote.servico.qtd_sessoes} sessões)',
+            'valor': float(r.valor),
+            'data_pagamento': r.ultimo_pagamento.strftime('%d/%m/%Y') if r.ultimo_pagamento else ''
+        })
+        print(servicos)
+    return JsonResponse({'servicos': servicos})
 
 def dados_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)

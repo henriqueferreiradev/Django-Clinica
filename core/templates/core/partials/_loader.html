@@ -18,9 +18,8 @@
 </div>
 
 <script>
-  window.addEventListener('load', function () {
-    setTimeout(() => {
-      document.querySelector('.content')?.classList.add('loaded');
-    }, 2000);
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.content')?.classList.add('loaded');
   });
 </script>
+

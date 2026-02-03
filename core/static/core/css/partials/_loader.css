@@ -1,7 +1,7 @@
 /* === POSICIONAMENTO (mantido) === */
-.content { position: relative; }
+body { position: relative; }
 
-.content .loader-container{
+.loader-container{
   position: absolute;
   inset: 0;                    /* top/left/right/bottom */
   display: flex;
@@ -10,7 +10,7 @@
   justify-content: center;
   gap: 1em;
   background: var(--branco);
-  z-index: 9998;
+  z-index: 999999;
   opacity: 1;
   visibility: visible;
   transition: opacity .3s ease, visibility .3s ease;
@@ -20,6 +20,7 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  overflow: hidden;
 }
 
 /* === ESTILO DO NOVO LOADER (substitui o antigo .loader, :before, :after, @keyframes antigo) === */
