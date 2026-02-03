@@ -1,4 +1,4 @@
-from datetime import datetime 
+from datetime import datetime, timedelta 
 from multiprocessing import context
 import stat
 from django.contrib.auth.forms import AuthenticationForm
@@ -212,11 +212,22 @@ def api_detalhes_notafiscal_por_pendencia(request, pendencia_id):
 
 
 def documentos_clinica_views(request):
-    lista_documentos = TipoDocumentoEmpresa.objects.filter(ativo = True)
-    todos_documentos = DocumentoClinica.objects.all().count()
-    todos_documentos_vencidos = DocumentoClinica.objects.filter()
+    hoje = timezone.now().date()
+    limite = hoje +timedelta(days=20)
+    lista_documentos = TipoDocumentoEmpresa.objects.all()
+    todos_documentos = DocumentoClinica.objects.all() 
+    todos_documentos_count = DocumentoClinica.objects.all().count()
+    todos_documentos_vencidos = DocumentoClinica.objects.filter(validade__isnull=False, validade__lt=hoje).count()
+    todos_documentos_proximos = DocumentoClinica.objects.filter(validade__isnull=False, validade__gte=hoje,validade__lte=limite).count()
+    todos_sem_validade = DocumentoClinica.objects.filter(validade__isnull=True).count()
+    
     context = {
-        'lista_documentos':lista_documentos
+        'lista_documentos':lista_documentos,
+        'todos_documentos_vencidos':todos_documentos_vencidos,
+        'todos_documentos_proximos':todos_documentos_proximos,
+        'todos_documentos':todos_documentos,
+        'todos_documentos_count':todos_documentos_count,
+        
     }
     return render(request, 'core/administrativo/documentos.html', context)
 

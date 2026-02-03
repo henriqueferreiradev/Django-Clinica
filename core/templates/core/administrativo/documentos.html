@@ -254,56 +254,59 @@
         .warning-text {
             color: var(--alert-color);
             font-weight: 600;
-        }
-
+                }
+                        /* Ações da tabela */
         .action-buttons {
             display: flex;
-            gap: 10px;
+            gap: 6px;
         }
 
         .action-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: none;
+            border: 1px solid var(--cinza-borda);
+            color: var(--cinza-medio);
             cursor: pointer;
             transition: var(--transicao);
-            border: none;
-            color: var(--branco);
-            font-size: 14px;
-        }
-
-        .action-btn.view {
-            background-color: var(--roxoPrincipal);
-        }
-
-        .action-btn.download {
-            background-color: var(--verdePrincipal);
-        }
-
-        .action-btn.delete {
-            background-color: var(--btn-red-exclude);
-            color: var(--btn-red-font);
         }
 
         .action-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: var(--roxoPrincipal-hover);
+            color: var(--roxoPrincipal);
+            border-color: var(--roxoPrincipal);
         }
 
-        .action-btn.view:hover {
-            background-color: var(--roxo-primary-hover);
+        .action-btn.emit:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--verde-sucesso);
+            border-color: var(--verde-sucesso);
         }
 
-        .action-btn.download:hover {
-            background-color: #7bb899;
+        .action-btn.cancel:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--vermelho-alerta);
+            border-color: var(--vermelho-alerta);
         }
 
-        .action-btn.delete:hover {
-            background-color: rgba(255, 0, 0, 0.3);
-            color: #ff8a8a;
+        /* Tipos de nota */
+        .note-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .note-type.nfse {
+            color: var(--roxoPrincipal);
+        }
+
+        .note-type.nfe {
+            color: var(--verde-sucesso);
         }
 
         /* Modal */
@@ -596,15 +599,15 @@
         <div class="docs-info">
             <div class="info-card">
                 <h3>Total de Documentos</h3>
-                <div class="count" id="totalDocs">0</div>
+                <div class="count" id="totalDocs">{{ todos_documentos_count }}</div>
             </div>
             <div class="info-card warning">
                 <h3>Vencidos</h3>
-                <div class="count" id="expiredDocs">0</div>
+                <div class="count" id="expiredDocs">{{ todos_documentos_vencidos }}</div>
             </div>
             <div class="info-card alerts">
                 <h3>Próximos do Vencimento</h3>
-                <div class="count" id="warningDocs">0</div>
+                <div class="count" id="warningDocs">{{ todos_documentos_proximos }}</div>
             </div>
         </div>
 
@@ -613,7 +616,6 @@
                 <thead>
                     <tr>
                         <th>Nome do Documento</th>
-                        <th>Tipo</th>
                         <th>Data de Envio</th>
                         <th>Validade</th>
                         <th>Status</th>
@@ -621,16 +623,40 @@
                     </tr>
                 </thead>
                 <tbody id="documentsTableBody">
-                    <!-- Os documentos serão carregados aqui via JavaScript -->
-                    <tr id="emptyRow" style="display: none;">
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <i class="fas fa-folder-open"></i>
-                                <h3>Nenhum documento cadastrado</h3>
-                                <p>Clique em "Enviar Documento" para adicionar seu primeiro documento.</p>
+                    {% if lista_documentos %}
+                    {% for documento in todos_documentos %}
+                        <tr>
+                            <td>{{ documento.nome }}</td>
+                            <td>{{ documento.criado_em|date:"d/m/Y" }}</td>
+                            <td>{{ documento.validade|date:"d/m/Y" }}</td>
+                            <td>{{ documento.status_calculado }}</td>
+                                                    <td>
+                            <div class="action-buttons">
+ 
+                                    <button class="action-btn resolve" title="Download"  data-nota-id='{{ nota.id }}' onclick="openResolveModal(this)">
+                                        <i class="fa-solid fa-download"></i>
+                                    </button>
+                                    <button class="action-btn cancel" title="Ver" data-nota-id='{{ nota.id }}' onclick="openCancelModal(this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                 
                             </div>
                         </td>
-                    </tr>
+                        </tr>   
+                    {% endfor %}
+                    {% else %}
+                        <tr id="emptyRow" style="display: none;">
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="fas fa-folder-open"></i>
+                                    <h3>Nenhum documento cadastrado</h3>
+                                    <p>Clique em "Enviar Documento" para adicionar seu primeiro documento.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                    {% endif %}
+                    
                 </tbody>
             </table>
         </div>
