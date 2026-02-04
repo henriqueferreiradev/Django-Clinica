@@ -585,6 +585,11 @@
                 font-size: 14px;
             }
         }
+ 
+
+
+ 
+ 
     </style>
 </head>
 <body>
@@ -629,18 +634,32 @@
                             <td>{{ documento.nome }}</td>
                             <td>{{ documento.criado_em|date:"d/m/Y" }}</td>
                             <td>{{ documento.validade|date:"d/m/Y" }}</td>
-                            <td>{{ documento.status_calculado }}</td>
+                            <td class="status-badge {% if documento.status_calculado == 'vencido' %} status-expired
+                                        {% elif documento.status_calculado == 'vencimento_proximo' %} status-no-expiry 
+                                         {% elif documento.status_calculado == 'valido' %}  status-valid  
+                                          {% elif documento.status_calculado == 'sem_vencimento' %} status-no-expiry
+                                           {% endif %} " >
+                                
+                                
+                                
+                                {{ documento.status_calculado }}</td>
                                                     <td>
                             <div class="action-buttons">
- 
-                                    <button class="action-btn resolve" title="Download"  data-nota-id='{{ nota.id }}' onclick="openResolveModal(this)">
-                                        <i class="fa-solid fa-download"></i>
-                                    </button>
-                                    <button class="action-btn cancel" title="Ver" data-nota-id='{{ nota.id }}' onclick="openCancelModal(this)">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                 
+                            {% if documento.arquivo %}
+                                <a class="action-btn resolve" href="{{ documento.arquivo.url }}" target="_blank" rel="noopener">
+                                <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a class="action-btn cancel" href="{{ documento.arquivo.url }}" download>
+                                <i class="fa-solid fa-download"></i>
+                                </a>
+                            {% else %}
+                                <span class="file-empty-msg">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                Arquivo não anexado
+                                </span>
+                            {% endif %}
                             </div>
+
                         </td>
                         </tr>   
                     {% endfor %}
