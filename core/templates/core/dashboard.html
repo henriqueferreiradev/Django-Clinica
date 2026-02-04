@@ -166,22 +166,31 @@
                   <span class="sessao">Sessões finalizadas</span>
                 {% endif %}
               </td>
-              <td class='status-col'>
-                <form method="post" action="{% url 'alterar_status_dashboard' agendamento.id %}">
-                  {% csrf_token %}
-                  <select name="status" class="status-select">
-                    <option value="pre" {% if agendamento.status == 'pre' %}selected{% endif %}>✅ Pré-Agendado</option>
-                    <option value="agendado" {% if agendamento.status == 'agendado' %}selected{% endif %}>✅ Agendado</option>
-                    <option value="finalizado" {% if agendamento.status == 'finalizado' %}selected{% endif %}>✅ Consulta finalizada!</option>
-                    <option value="desistencia" {% if agendamento.status == 'desistencia' %}selected{% endif %}>❌ D - Desmarcação</option>
-                    <option value="desistencia_remarcacao" {% if agendamento.status == 'desistencia_remarcacao' %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
-                    <option value="falta_remarcacao" {% if agendamento.status == 'falta_remarcacao' %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
-                    <option value="falta_cobrada" {% if agendamento.status == 'falta_cobrada' %}selected{% endif %}>❌ FC - Falta cobrada</option>
-                  </select>
-              </td>
+                <td class="status-col">
+                <span class="status-badge
+                    {% if agendamento.status == 'pre' %} status-pre
+                    {% elif agendamento.status == 'agendado' %} status-agendado
+                    {% elif agendamento.status == 'finalizado' %} status-finalizado
+                    {% elif agendamento.status == 'desistencia' %} status-desistencia
+                    {% elif agendamento.status == 'desistencia_remarcacao' %} status-dcr
+                    {% elif agendamento.status == 'falta_remarcacao' %} status-fcr
+                    {% elif agendamento.status == 'falta_cobrada' %} status-falta
+                    {% else %} status-default
+                    {% endif %}
+                ">
+                    {% if agendamento.status == 'pre' %}✅ Pré-Agendado
+                    {% elif agendamento.status == 'agendado' %}✅ Agendado
+                    {% elif agendamento.status == 'finalizado' %}✅ Consulta finalizada!
+                    {% elif agendamento.status == 'desistencia' %}❌ D - Desmarcação
+                    {% elif agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
+                    {% elif agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
+                    {% elif agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada
+                    {% else %}—{% endif %}
+                </span>
+                </td>
+
               <td>
                 <div class="actions-col">
-                  <button type="submit" class="action-btn tooltip"><i class='bx bx-save'></i><span class="tooltiptext">Salvar Status</span></button>
                   <a href="{% url 'confirmacao_agendamento' agendamento.id %}">
                     <button type="button" class="action-btn tooltip"><i class='bx bx-send'></i><span class="tooltiptext">Ver detalhes</span></button>
                   </a>

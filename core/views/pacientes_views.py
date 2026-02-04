@@ -52,33 +52,38 @@ def pacientes_view(request):
         return redirect('pacientes')
     
     query = request.GET.get('q', '').strip()
+    situacao = request.GET.get('situacao', '').strip()
     status = request.GET.get('status', '').strip()
     data_inicio = request.GET.get('data_inicio')
     data_fim = request.GET.get('data_fim')
-    mostrar_todos = request.GET.get('mostrar_todos')
-    filtra_inativo = request.GET.get('filtra_inativo')
-
+  
+    print(status)
     hoje = timezone.now().date()
     mes, ano = hoje.month, hoje.year
     sync_frequencias_mes(mes, ano)
 
     pacientes = Paciente.objects.all()
 
-    # Aplicar filtros
-    if not mostrar_todos:
-        pacientes = pacientes.filter(ativo=True)
-    
-    if filtra_inativo:
-        pacientes = pacientes.filter(ativo=False)
+
 
     # Filtro por status
-    if status == 'ativo':
-        pacientes = pacientes.filter(ativo=True)
-    elif status == 'inativo':
+ 
+    if situacao == 'inativo':
         pacientes = pacientes.filter(ativo=False, pre_cadastro=False)
-    elif status == 'pendente':
+    elif situacao == 'pendente':
         pacientes = pacientes.filter(pre_cadastro=True, ativo=False)   
+    else:
+        pacientes = pacientes = Paciente.objects.filter(ativo=True)
 
+    if status:
+        status = str(status).lower().strip()
+        pacientes = pacientes.filter(
+            frequencias__mes=mes,
+            frequencias__ano=ano,
+            frequencias__status=status
+        ).distinct()
+
+        print(pacientes.query)
     # Filtro por nome ou CPF
     if query:
         pacientes = pacientes.filter(
@@ -97,7 +102,7 @@ def pacientes_view(request):
     # Totais (antes da paginação)
     total_ativos = Paciente.objects.filter(ativo=True).count()
     total_filtrados = pacientes.count()
-
+    pacientes_ativos = Paciente.objects.filter(ativo=True).order_by('-id')
     # PAGINAÇÃO - EXATAMENTE COMO NO CONTAS A RECEBER
     paginator = Paginator(pacientes, 11)  # 10 pacientes por página
     page_number = request.GET.get('page')
@@ -113,11 +118,9 @@ def pacientes_view(request):
     return render(request, 'core/pacientes/pacientes.html', {
         'page_obj': page_obj,
         'query': query,
-        'status': status,
+        'situacao': situacao,
         'data_inicio': data_inicio,
         'data_fim': data_fim,
-        'mostrar_todos': mostrar_todos,
-        'filtra_inativo': filtra_inativo,
         'total_ativos': total_ativos,
         'total_filtrados': total_filtrados,
         

@@ -353,13 +353,53 @@ function getStatusText(status) {
         'pre': '✅ Pré-Agendado',
         'agendado': '✅ Agendado',
         'finalizado': '✅ Consulta finalizada!',
-        'desistencia': '❌ D - Desmarcação',
         'desistencia_remarcacao': '⚠️ DCR - Desmarcação com reposição',
         'falta_remarcacao': '⚠️ FCR - Falta com reposição',
-        'falta_cobrada': '❌ FC - Falta cobrada'
+        'falta_cobrada': '❌ FC - Falta cobrada',
+        'desistencia': '❌ D - Desistência',
     };
     return statusTexts[status] || 'Status desconhecido';
 }
+
+function montarOptionsStatus(data) {
+    let options = `
+        <option value="pre" ${data.status === 'pre' ? 'selected' : ''}>✅ Pré-Agendado</option>
+        <option value="agendado" ${data.status === 'agendado' ? 'selected' : ''}>✅ Agendado</option>
+        <option value="finalizado" ${data.status === 'finalizado' ? 'selected' : ''}>✅ Consulta finalizada!</option>
+    `;
+
+    // ❌ BEN não pode DCR / FCR
+    if (!data.codigo || !data.codigo.startsWith('BEN')) {
+        options += `
+            <option value="desistencia_remarcacao" ${data.status === 'desistencia_remarcacao' ? 'selected' : ''}>
+                ⚠️ DCR - Desmarcação com reposição
+            </option>
+            <option value="falta_remarcacao" ${data.status === 'falta_remarcacao' ? 'selected' : ''}>
+                ⚠️ FCR - Falta com reposição
+            </option>
+        `;
+    }
+
+    options += `
+        <option value="falta_cobrada" ${data.status === 'falta_cobrada' ? 'selected' : ''}>
+            ❌ FC - Falta cobrada
+        </option>
+    `;
+
+    // 🔴 Desistência SOMENTE se for sessão única
+    if (Number(data.sessoes_total) === 1) {
+        options += `
+            <option value="desistencia" ${data.status === 'desistencia' ? 'selected' : ''}>
+                ❌ D - Desistência
+            </option>
+        `;
+    }
+
+    return options;
+}
+
+
+
 
 async function abrirDetalhesAgendamento(agendamentoId) {
     const response = await fetch(`/api/agendamento/detalhar/${agendamentoId}/`);
@@ -504,13 +544,7 @@ async function abrirDetalhesAgendamento(agendamentoId) {
                 </div>
                 <div class="form-group">
                     <select name="status" class="status-select" id="status-select">
-                        <option value="pre" ${data.status === 'pre' ? 'selected' : ''}>Pré-Agendado</option>
-                        <option value="agendado" ${data.status === 'agendado' ? 'selected' : ''}>Agendado</option>
-                        <option value="finalizado" ${data.status === 'finalizado' ? 'selected' : ''}>Consulta finalizada!</option>
-                        <option value="desistencia" ${data.status === 'desistencia' ? 'selected' : ''}>D - Desmarcação</option>
-                        <option value="desistencia_remarcacao" ${data.status === 'desistencia_remarcacao' ? 'selected' : ''}>DCR - Desmarcação com reposição</option>
-                        <option value="falta_remarcacao" ${data.status === 'falta_remarcacao' ? 'selected' : ''}>FCR - Falta com reposição</option>
-                        <option value="falta_cobrada" ${data.status === 'falta_cobrada' ? 'selected' : ''}>FC - Falta cobrada</option>
+                        ${montarOptionsStatus(data)}
                     </select>
                     <div class="status-form-actions">
                         <button type="submit" class="btn-salvar-status">

@@ -38,7 +38,7 @@
           <tbody>
             {% for paciente in page_obj %}
             <tr class="
-              {% if not paciente.ativo %}inativo {% endif %}
+              {% if not paciente.ativo %}inativo{% endif %}
               {% if paciente.pre_cadastro and not paciente.conferido %}linha-pendente{% endif %}">
               <td>
                 <div class="tooltip-wrapper"
@@ -64,9 +64,9 @@
               </td>
               <td>{{ paciente.cpf }}</td>
               <td>{{ paciente.celular }}</td>
-              <td class='nascimento-chip'>{{ paciente.data_nascimento|date:"d/m/Y" }}<br>
+              <td class='nascimento-chip'>{{ paciente.data_nascimento|date:"d/m/Y" }} 
                   {% if paciente.eh_menor %}
-                    <span class="chip chip-menor">Menor de idade</span>
+                    <span data-tooltip="Paciente menor de idade." class="chip chip-menor">M</span>
                   {% endif %}
               </td>
 
@@ -88,7 +88,7 @@
               <td>
                 {% if paciente.ativo and paciente.conferido %}
                   <span class="badge status-conferido">Ativo</span>
-                {% elif paciente.ativo and not paciente.conferido %}
+                {% elif paciente.pre_cadastro and not paciente.conferido %}
                   <span class="badge status-pendente">Pendente</span>
                 {% else %}
                   <span class="badge status-inativo">Inativo</span>
@@ -127,7 +127,7 @@
       </div>
       <div class="pagination-controls">
         {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
            class="pagination-btn">Anterior</a>
         {% else %}
         <button class="pagination-btn disabled">Anterior</button>
@@ -137,13 +137,13 @@
           {% if page_obj.number == num %}
           <button class="pagination-btn active">{{ num }}</button>
           {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+          <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
              class="pagination-btn">{{ num }}</a>
           {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
            class="pagination-btn">Próxima</a>
         {% else %}
         <button class="pagination-btn disabled">Próxima</button>

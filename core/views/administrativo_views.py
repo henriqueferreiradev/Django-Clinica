@@ -63,6 +63,7 @@ def notas_fiscais_views(request):
 
    
     nf_pendente_count = nf_pendente_lista.filter(status='pendente').count()
+    nf_pendente_count_hoje = nf_pendente_lista.filter(criado_em=hoje,status='pendente').count()
     nf_pendente_soma = nf_pendente_lista.filter(status__in=['pendente', 'atrasado']).aggregate(total=Sum('valor'))['total'] or 0
     nf_atrasado_count = NotaFiscalPendente.objects.filter(status='atrasado').count()
     nf_emitidas_hoje_count = NotaFiscalEmitida.objects.filter(data_emissao=hoje).count()
@@ -107,6 +108,7 @@ def notas_fiscais_views(request):
         'nf_pendente_soma':nf_pendente_soma,
         'nf_emitidas_hoje_count':nf_emitidas_hoje_count,
         'nf_atrasado_count':nf_atrasado_count,
+        'nf_pendente_count_hoje':nf_pendente_count_hoje
         }
 
     return render(request, 'core/administrativo/notas_fiscais.html', context)

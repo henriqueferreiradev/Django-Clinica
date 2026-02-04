@@ -173,7 +173,9 @@ body {
     background-color: rgba(255, 0, 0, 0.109);
 }
 
-
+.inativo td {
+    border-bottom:1px solid #af4c4c;
+}
 .content {
     background: transparent;
     border-radius: 15px;
@@ -458,8 +460,11 @@ thead tr th:last-child {
 .linha-pendente {
     background-color: #fff3cd6f !important;
     font-weight: 600;
+    
 }
-
+.linha-pendente td {
+    border-bottom:1px solid #f39c12;
+}
 .status-pendente {
     background-color: #f39c12;
     padding: .4em .8em;
@@ -489,10 +494,30 @@ thead tr th:last-child {
 
 
 .chip-menor {
-    background: #CE93D8;
+    background: var(--roxo-primary-hover) ;
     padding: .2em .8em;
     border-radius: 16px;
     font-size: 10px;
     font-weight: bold;
     color: white;
+}
+
+[data-tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip); /* Get content from the attribute */
+  position: absolute;
+  top: 50%;
+  transform:translateY(-50%) ;
+  left: 30px;
+  padding: 8px;
+  white-space: nowrap;
+  background-color: var(--roxo-primary-hover);
+  border:1px solid var(--roxoPrincipal);
+  color: white;
+  border-radius: 4px;
+  z-index: 20;
 }

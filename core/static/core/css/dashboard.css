@@ -415,4 +415,38 @@ thead tr th:last-child {
     color: #01D4D6;
 }
 
- 
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.status-badge.status-pre {
+    border: 1px solid #5a5753;
+    background-color: rgba(90, 87, 83, 0.15);
+}
+
+.status-badge.status-agendado {
+    border: 1px solid #01D4D6;
+    background-color: hsla(181, 99%, 42%, 0.15);
+}
+
+.status-badge.status-finalizado {
+    border: 1px solid #23D31D;
+    background-color: rgba(35, 211, 29, 0.15);
+}
+
+.status-badge.status-desistencia {
+    border: 1px solid #F70000;
+    background-color: rgba(247, 0, 0, 0.15);
+}
+
+.status-badge.status-dcr {
+    border: 1px solid #F7F700;
+    background-color: rgba(247, 247, 0, 0.15);
+}

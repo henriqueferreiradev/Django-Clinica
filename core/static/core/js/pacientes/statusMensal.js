@@ -70,7 +70,7 @@ function statusLabel(statusKey) {
 function statusKeyFromPercent(p) {
   if (!isFinite(p)) return '';
   if (p >= 100) return 'premium';
-  if (p > 60) return 'vip';
+  if (p >= 60) return 'vip';
   return 'plus';
 }
 function clearBadgeClasses(el) {
@@ -182,7 +182,7 @@ function formatPercent(n) {
 function statusFromPercent(p) {
   if (!isFinite(p)) return '—';
   if (p >= 100) return 'Premium';
-  if (p > 60) return 'VIP';
+  if (p >= 60) return 'VIP';
   return 'Plus';
 }
 function classForStatus(status) {
@@ -359,7 +359,7 @@ function calcularKPIs(items) {
       : isFinite(p)
         ? p >= 100
           ? "premium"
-          : p > 60
+          : p >= 60
             ? "vip"
             : "plus"
         : "indefinido";

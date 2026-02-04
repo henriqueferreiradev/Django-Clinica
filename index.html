@@ -1,352 +1,419 @@
 {% extends 'core/base.html' %}
-
 {% load static %}
-{% block title %}Cadastrar Profissional - Ponto de Equilíbrio{% endblock %}
+
+{% block title %}Notas Fiscais - Ponto de Equilíbrio{% endblock %}
+
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/profissionais/cadastrar_profissional.css' %}">
-<link rel="stylesheet" href="{% static 'core/css/pacientes/cadastrar_paciente.css' %}">
+
+<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+
 {% endblock %}
 
-    <span class="text">{% block topbar_title %}Editar profissional - {{ profissional.nome }} {{ profissional.sobrenome }}{% endblock %}</span>
+{% block topbar_title %}Documentos{% endblock %}
 
 {% block content %}
-<div class="content">
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="form_cadastro">
-        <div class="form_cadastro-pessoa">
-            <div class="form_titulo">Informações pessoais <button class="btn-save" type="submit">Salvar</button></div>
-            <div class="form_div">
-                <div class="div_forms">
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class='input-s capitalize-input' value='{{ profissional.nome }}' type="text" name="nome" id="nomeInput" required>
-                            <span class="span-s">Nome*</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s capitalize-input' value='{{ profissional.sobrenome }}' name="sobrenome" id="sobrenomeInput" type="text" required />
-                            <span class="span-s">Sobrenome*</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s capitalize-input' value='{{ profissional.nomeSocial }}' type="text" name="nomeSocial" id="nomeSocialInput">
-                            <span class="span-s">Nome Social</span>
-                        </div>
+
+    <div class="container">
+        <!-- Cabeçalho da página -->
+        <header class="page-header">
+            <div class="page-title">
+                <h1>Pendências de Nota Fiscal</h1>
+                <p>Notas fiscais pendentes de emissão ou regularização</p>
+            </div>
+            <div class="page-actions">
+                <div class="pendencies-counter">
+                    <span class="counter-number">{{nf_pendente_count}}</span>
+                    <span>Pendências em Aberto</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Cards de resumo -->
+        <section class="summary-cards">
+ 
+            <div class="card open">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Pendências Abertas Hoje</div>
+                        <div class="card-value">{{ nf_pendente_count_hoje }}</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="card-description">Aguardando emissão</div>
+            </div>
+            <div class="card overdue">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Pendências Vencidas</div>
+                        <div class="card-value">{{nf_atrasado_count}}</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="card-description">Fora do prazo</div>
+            </div>
+            
+            <div class="card value">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Valor Total Pendente</div>
+                        <div class="card-value">R$ {{ nf_pendente_soma|floatformat:2 }}</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <div class="card-description">Soma das pendências</div>
+            </div>
+            
+            <div class="card resolved">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Resolvidas Hoje</div>
+                        <div class="card-value">{{nf_emitidas_hoje_count}}</div>
+                    </div>
+                    <div class="card-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="card-description">Notas emitidas hoje</div>
+            </div>
+        </section>
+
+        <!-- Filtros -->
+        <form method="GET">
+            <section class="filters-section">
+                <div class="filters-header">
+                    <div class="filters-title">Filtrar Pendências</div>
+                    <button type="button" class="clear-filters"
+                            onclick="window.location.href='{% url 'notas_fiscais' %}'">
+                        <i class="fas fa-times"></i> Limpar filtros
+                    </button>
+
+                </div>
+                <div class="filters-grid">
+
+                    
+
+                    <div class="filter-group">
+                        <label class="filter-label">Paciente</label>
+                        <input  type="search" class="filter-input" name='paciente' placeholder='Buscar pacientes' value='{{ request.GET.paciente }}'>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Prazo</label>
+                        <input type="date" class="filter-input" name='prazo' value='{{ request.GET.prazo }}'>
                     </div>
 
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.rg }}' name="rg" id="rgInput" type="text" required />
-                            <span class="span-s">RG</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.cpf }}' name="cpf" id="cpfInput" type="text" required />
-                            <span class="span-s">CPF*</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.cnpj }}' name="cnpj" id="cnpjInput" type="text">
-                            <span class="span-s">CNPJ</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s date-s' value='{{ profissional.data_nascimento }}' type="text" name="nascimento" id="nascimentoInput" required />
-                            <span class="span-s">Nascimento*</span>
-                        </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select name='status' class="filter-select">
+                            <option value="">Todos os status</option>
+                            <option value="pendente"{% if request.GET.status == 'pendente' %}selected{% endif %} >Pendente</option>
+                            <option value="emitida" {% if request.GET.status == 'emitida' %}selected{% endif %}>Emitida</option>
+                            <option value="atrasado" {% if request.GET.status == 'atrasado' %}selected{% endif %}>Atrasado</option>
+                            <option value="cancelada" {% if request.GET.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                        </select>
                     </div>
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <select name="cor" id="corInput" class='input-s' required>
-                           
-                            <span class="span-s">Cor/Raça</span>
-                        </div>
-
-                        <div class="formField">
-                            <select name="sexo" id="sexoInput" class='input-s' required>
-                            <option value="" disabled selected></option>
-                                {% for value, label in sexo_choices %}
-                                <option value="{{ value }}" {% if profissional.sexo == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Sexo</span>
-                        </div>
-                        <div class="formField">
-                            <select name="estado_civil" id="estadoCivilInput" class='input-s' required>
-                            <option value="" disabled selected></option>
-                                {% for value, label in estado_civil_choices %}
-                                <option value="{{ value }}" {% if profissional.estado_civil == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Estado Civil</span>
-                        </div>
-
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Finalidade</label>
+                        <select name='finalidade' class="filter-select">
+                            <option value="">Todas as finalidades</option>
+                            <option value="nf_reembolso_plano" {% if request.GET.status == 'nf_reembolso_plano' %}selected{% endif %}>Reembolso Plano</option>
+                            <option value="nf_imposto_renda" {% if request.GET.status == 'nf_imposto_renda' %}selected{% endif %}>Imposto de Renda</option>
+                        </select>
                     </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
 
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.naturalidade }}' name="naturalidade" id="naturalidadeInput" type="text" required />
-                            <span class="span-s">Naturalidade*</span>
-                        </div>
+            </section>
+        </form>
+        <form style="display:none">{% csrf_token %}</form>
+        <input type="hidden" id="notaId">
+        <!-- Tabela principal -->
+        <section class="table-container">
+            <div class="table-header">
+                <div class="table-title">Pendências de Nota Fiscal</div>
+                <div class="table-actions">
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-sync-alt"></i> Atualizar
+                    </button>
+                    <button class="btn btn-primary" onclick="openEmitModal()" id="btnNewPayment">
+                        <i class="fas fa-plus"></i> Novo Lançamento
+                    </button>
+                </div>
+            </div>
+            {% if nf_pendente_lista %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Produto/Serviço</th>
+                        <th>Valor</th>
+                        <th>Data Pag.</th>
+                        <th>Finalidade</th>
+                        <th>Prazo (D+3)</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    {% for nota in nf_pendente_lista %}
 
-                        <div class="formField">
-                            <select name="uf" id="ufInput" class='input-s' required>
-                            <option value="" disabled selected></option>
-                                {% for value, label in uf_choices %}
-                                <option value="{{ value }}" {% if profissional.uf == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">UF*</span>
-                        </div>
-                        <div class="formField">
-                            <select name="especialidade" id="especialidadeInput" class='input-s' required>
-                            <option value="" disabled selected></option>
-
-                                {% for esp in especialidade_choices %}
-                                <option value="{{ esp.id }}" {% if profissional.especialidade.id == esp.id %}selected{% endif %}>
-                                    {{ esp.nome }}
-                                {% endfor %}
-
-                            </select>
-                            <span class="span-s">Especialidade</span>
-                        </div>
-                    </div>
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <select name="conselho1" id="conselhoInput" class='input-s' required>
-                            <option value="" disabled selected></option>
-                                {% for value, label in conselho_choices %}
-                                <option value="{{ value }}" {% if profissional.conselho1 == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Conselho Principal*</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.num1_conselho }}' name="num1_conselho" id="conselho1Input" type="text">
-                            <span class="span-s"> Nº Conselho*</span>
-                        </div>
-
-
-                        <div class="formField">
-                            <select name="conselho2" id="conselhoInput" class='input-s' >
-                            <option value="" disabled selected></option>
-                                {% for value, label in conselho_choices %}
-                                <option value="{{ value }}" {% if profissional.conselho2  == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Conselho Comp.</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.num2_conselho }}' name="num2_conselho" id="conselho1Input" type="text">
-                            <span class="span-s"> Nº Conselho</span>
-                        </div>
-                    </div>
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <select name="conselho3" id="conselhoInput" class='input-s' >
-                            <option value="" disabled selected></option>
-                                {% for value, label in conselho_choices %}
-                                <option value="{{ value }}" {% if profissional.conselho3  == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Conselho Comp.</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.num3_conselho }}' name="num3_conselho" id="conselho1Input" type="text">
-                            <span class="span-s"> Nº Conselho</span>
-                        </div>
-                        
-                        
-                        <div class="formField">
-                            <select name="conselho4" id="conselhoInput" class='input-s' >
-                            <option value="" disabled selected></option>
-                                {% for value, label in conselho_choices %}
-                                <option value="{{ value }}" {% if profissional.conselho4 == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Conselho Comp.</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.num4_conselho }}' name="num4_conselho" id="conselho1Input" type="text" >
-                            <span class="span-s"> Nº Conselho</span>
-                        </div>
-                    </div>
-                        <div class="form_cadastro-nomes">
-                        
-                            <label for="file" class="custum-file-upload">
-                                
-                                {% if profissional.foto %}
-                                <img id="preview" src="{{ profissional.foto.url }}" alt="Foto atual"
-                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                                           object-fit: cover; border-radius: 10px; z-index: 1000; display: block;">
+                    <tr>
+                        <td>{{ nota.paciente.nome }} {{ nota.paciente.sobrenome }}</td>
+                        <td>{{ nota.receita.pacote.servico.nome }} | {{ nota.receita.pacote.servico.qtd_sessoes }} sessões</td>
+                        <td>R$ {{ nota.receita.valor }}</td>
+                        <td>{{ nota.receita.ultimo_pagamento|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if nota.paciente.nf_reembolso_plano %}
+                            <span class="note-type nfse"><i class="fas fa-file-invoice"></i> Reembolso Plano </span></td>
+                            {% elif nota.paciente.nf_imposto_renda %}
+                            <span class="note-type nfe"><i class="fas fa-file-invoice"></i> Imposto de Renda </span></td>
                             {% else %}
-                                <img id="preview" src="#" alt="Preview da imagem"
-                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                                           object-fit: cover; border-radius: 10px; z-index: 1000; display: none;">
+                            <strong><i class="fas fa-file-invoice"></i>Erro! Sem Finalidade</strong>
                             {% endif %}
-                                <div class="text">
-                                    <span>Imagem de perfil</span>
-                                </div>
-                                <div class="icon">
-                                    <svg viewBox="0 0 24 24" fill="" xmlns="http://www.w3.org/2000/svg">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
-                                        </g>
-                                        <g id="SVGRepo_iconCarrier">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z"
-                                                fill=""></path>
-                                        </g>
-                                    </svg>
-                                </div>
-                                <div class="text">
-                                    <span>Clique aqui para enviar a imagem</span>
-                                </div>
-                                <input name='foto' id="file" type="file" accept="image/*" onchange="previewImage(event)">
-                               
-                            </label>
+                        </td>
+                        <td class="editable" data-field="previsao_emissao" data-id='{{nota.id}}' data-model="nota">
+                            <span class="display-text">{{ nota.previsao_emissao|date:'d/m/Y' }}</span>
+                            <input type="date"
+                                            class="edit-input"
+                                            value="{{ nota.previsao_emissao|date:'Y-m-d' }}"
+                                            style="display:none">
+                        </td>
+                    
+                        <td>
+                            {% if nota.status == 'pendente' %}
+                            <span class="status-badge status-pending">Pendente </span></td>
+                            {% elif nota.status == 'emitida' %}
+                            <span class="status-badge status-emitted">Emitida </span></td>
+                            {% elif nota.status == 'atrasado' %}
+                            <span class="status-badge status-overdue">Atrasado </span></td>
+                            {% elif nota.status == 'cancelada' %}
+                            <span class="status-badge status-cancelled">Cancelada </span></td>
+                            {% else %}
+                            <span class="status-badge status-avoled"></i>Não Infomado</span>
+                            {% endif %}
+                        </td>
+ 
 
-                        <div class="formField">
-                            <textarea class='input-s textarea-s' type="textarea" name='observacao' id="observacaoInput"
-                                required></textarea>
-                            <span class="span-s">Observação</span>
-                        </div>
-                    </div>
+                        <td>
+                            <div class="action-buttons">
+                                {% if nota.status == 'emitida' or nota.status == 'cancelada' %}
+                                    <button class="action-btn resolve" title="Ver nota"  data-nota-id='{{ nota.id }}' onclick="openInfoModal(this)">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </button>
+                                {% else %}
+                                    <button class="action-btn resolve" title="Marcar como Resolvido"  data-nota-id='{{ nota.id }}' onclick="openResolveModal(this)">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </button>
+                                    <button class="action-btn cancel" title="Justificar/Cancelar" data-nota-id='{{ nota.id }}' onclick="openCancelModal(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="btn-acao salvar" title="Salvar" style="display: none;"
+                                        onclick="salvarEdicao(this)">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn-acao cancelar" title="Cancelar" style="display: none;"
+                                        onclick="cancelarEdicao(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="btn-acao editar" title="Editar" onclick="iniciarEdicao(this)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+ 
+                </tbody>
+            </table>
+            {% else %}
+             
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="far fa-check-circle"></i>
                 </div>
-
+                <h3 class="empty-title">Nenhuma pendência encontrada</h3>
+                <p class="empty-description">Parabéns! Todas as notas fiscais estão regularizadas. Novas pendências aparecerão aqui automaticamente quando um pagamento exigir emissão de nota.</p>
             </div>
-        </div>
-
-        <div class="form_cadastro-endereco">
-            <div class="form_titulo">Endereço e Contato</div>
-            <div class="form_div">
-                <div class="div_forms">
-
-                    <div class="form_cadastro-nomes">
-                        <div class="formField field_cep">
-                            <input class=' input-s' value='{{ profissional.cep }}' type="text" name="cep" id="cepInput" required>
-                            <span class="span-s">CEP*</span>
-                        </div>
-                        <button type="button" id="btn-cep" onclick="buscarCep()">...</button>
-                        <div class="formField field_rua">
-                            <input class='input-s'  value='{{ profissional.rua }}' type="text" name='rua' id="ruaInput" required>
-                            <span class="span-s">Rua*</span>
-                        </div>
-                    </div>
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class='input-s field_numero'  value='{{ profissional.numero }}' type="text" name='numero' id="numero" required>
-                            <span class="span-s">Numero*</span>
-                        </div>
-
-                        <div class="formField">
-                            <input class='input-s '  value='{{ profissional.complemento }}' type="text" name='complemento' id="complementoInput" required>
-                            <span class="span-s">Complemento</span>
-                        </div>
-                    </div>
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class='input-s'  value='{{ profissional.bairro }}' type="text" name='bairro' id="bairro" required>
-                            <span class="span-s">Bairro*</span>
-                        </div>
-
-                        <div class="formField">
-                            <input class='input-s'  value='{{ profissional.cidade }}' type="text" name='cidade' id="cidade" required>
-                            <span class="span-s">Cidade*</span>
-                        </div>
-                        <div class="formField">
-                            <input class='input-s'  value='{{ profissional.uf }}' type="text" name='estado' id="estado" required>
-                            <span class="span-s">UF*</span>
-                        </div>
-                    </div>
-                </div>
-                <!--FIM - ENDEREÇO-->
-
-                <!--CONTATO-->
-                <div class="div_forms">
-
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.telefone }}' type="text" name="telefone" id="telefoneInput" required>
-                            <span class="span-s">Telefone</span>
-                        </div>
-
-
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.celular }}' type="text" name="celular" id="celularInput" required>
-                            <span class="span-s">Celular*</span>
-                        </div>
-
-                    </div>
-                    <!--CONTATO DE EMERGENCIA-->
-                    <div class="form_cadastro-nomes">
-
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.email }}' type="text" name="email" id="emailInput" required>
-                            <span class="span-s">Email*</span>
-                        </div>
-
-                    </div>
-                    <div class="form_cadastro-nomes">
-                        <div class="formField">
-                            <input class='input-s capitalize-input' value='{{ profissional.nomeEmergencia }}' type="text" name="nomeEmergencia" id="nomeEmergenciaInput" required>
-                            <span class="span-s">Contato de emergência*</span>
-                        </div>
-
-                        <div class="formField">
-                            <select name="vinculo" id="vinculoInput" class='input-s' required>
-                            <option value="" disabled selected></option>
-                                {% for value, label in vinculo_choices %} <!--MUDAR DEPOIS-->
-                                <option value="{{ value }}" {% if profissional.vinculo == value %}selected{% endif %}>
-                                    {{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="span-s">Vínculo*</span>
-                        </div>
-
-                        <div class="formField">
-                            <input class='input-s' value='{{ profissional.telEmergencia }}' type="text" name="telEmergencia" id="telEmergenciaInput" required>
-                            <span class="span-s">Telefone de emergência*</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-     </div>
-    </div>
-</form>
-</div>
-{% if messages %}
-<div class="messages-container" id="alert-container">
-    {% for message in messages %}
-    <div class="alert {{ message.tags }}">
-        <span class="icon">
-            {% if message.tags == 'success' %}
-            ✅
-            {% elif message.tags == 'warning' %}
-            ⚠️
-            {% elif message.tags == 'error' %}
-            ❌
-            {% elif message.tags == 'info' %}
-            ℹ️
             {% endif %}
-        </span>
-        {{ message }}
-
+        </section>
     </div>
-    {% endfor %}
-</div>
-{% endif %}
-        {% endblock %}
 
-        {% block scripts %}
+    <!-- Modal Emitir Nota -->
 
-        <script src="https://unpkg.com/imask"></script>
-        <script src="{% static '/core/js/base/MaskAndInputsBase.js' %}"></script>
-        <script src="{% static '/core/js/base/validadorCpfCnpj.js' %}"></script>
-        <script src="{% static '/core/js/base/cep.js' %}"></script>
-        <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
-        {% endblock %}
+    <div class="modal-overlay" id="emitModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Nova Nota Fiscal</div>
+                <button class="modal-close" onclick="closeModal('emitModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="position: relative;">
+                    <label class="form-label" for="busca">Paciente</label>
+                    <input id="busca" class="form-input" type="text">
+                    <input type="hidden" id="paciente_id">
+                    <div id="sugestoes"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Serviço</label>
+                    <select id="servicoSelect" class="form-input">
+                        <option value="">Selecione um paciente primeiro</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Valor</label>
+                        <input type="text" class="form-input" id='valorPago'>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data do pagamento</label>
+                        <input type="text" class="form-input" id='dataPag'>
+                    </div>
+                </div>
+                
+
+                
+
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo de nota *</label>
+                    <select class="form-input">
+                        <option value="">Selecione o tipo de nota</option>
+                        <option value="nf_reembolso_plano">Reembolso Plano</option>
+                        <option value="nf_imposto_renda">Imposto de Renda</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('emitModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="emitNote()">Salvar Nota</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="infoModal">
+
+        <div class="modal">
+            
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h2>Informações da Nota Fiscal</h2>
+                    <span>Clique em cima das informações para copiar</span>
+                </div>
+                <button class="modal-close" onclick="closeModal('infoModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Paciente</label>
+                        <p id='nfPaciente' type="text"   class="form-input" ></p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Documento</label>
+                        <p id='nfDocumento' type="text"   class="form-input" ></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número da nota *</label>
+                    <p id='nfNumero' type="text"   class="form-input"></p>
+                </div>
+                <div class="form-group" onclick="copiarTextoMensagem(this)">
+                    <label class="form-label">Link da nota *</label>
+                    <p id='nfLink' type="text"   class="form-input"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data de emissão *</label>
+                    <p id='nfData' class="form-input"></p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Observação (opcional)</label>
+                    <p id='nfObs' class="form-textarea"></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Modal Resolver Pendência -->
+    <div class="modal-overlay" id="resolveModal">
+
+        <div class="modal">
+            
+            <div class="modal-header">
+                <div class="modal-title">Marcar como Resolvido</div>
+                <button class="modal-close" onclick="closeModal('resolveModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Número da nota *</label>
+                    <input id='numero_nota' type="text" name='numero_nota' class="form-input" placeholder="Informe o número da nota fiscal" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Link da nota *</label>
+                    <input id='link_nota' type="text" name='link_nota' class="form-input" placeholder="Informe o link da nota fiscal" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data de emissão *</label>
+                    <input id='emissao_nota' type="date" name='emissao_nota' class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Observação (opcional)</label>
+                    <textarea id='observacao_nota' class="form-textarea" name='observacao_nota' placeholder="Adicione observações sobre a resolução"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('resolveModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="resolvePendency()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cancelar/Justificar -->
+    <div class="modal-overlay" id="cancelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Justificar / Cancelar Pendência</div>
+                <button class="modal-close" onclick="closeModal('cancelModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Motivo *</label>
+                    <select id='motivo_canc' class="form-input" required>
+                        <option value="">Selecione o motivo</option>
+                        <option value="p_desconto">Pagamento com desconto</option>
+                        <option value="p_nao_quis">Paciente não quis</option>
+                        <option value="outro">Outro motivo</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Observação *</label>
+                    <textarea id='obs_canc' class="form-textarea" placeholder="Descreva o motivo do cancelamento/justificativa" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('cancelModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="cancelPendency()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+{% include "core/partials/alertas.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static '/core/js/administrativo/nfBase.js' %}"></script>
+ 
+{% endblock %}

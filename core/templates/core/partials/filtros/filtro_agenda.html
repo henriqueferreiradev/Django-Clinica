@@ -54,10 +54,10 @@
                 <option value="pre" {% if request.GET.status == "pre" %}selected{% endif %}>✅ Pré-Agendado</option>
                 <option value="agendado" {% if request.GET.status == "agendado" %}selected{% endif %}>✅ Agendado</option>
                 <option value="finalizado" {% if request.GET.status == "finalizado" %}selected{% endif %}>✅ Consulta finalizada!</option>
-                <option value="desistencia" {% if request.GET.status == "desistencia" %}selected{% endif %}>❌ D - Desmarcação</option>
                 <option value="desistencia_remarcacao" {% if request.GET.status == "desistencia_remarcacao" %}selected{% endif %}>⚠️ DCR - Desmarcação com reposição</option>
                 <option value="falta_remarcacao" {% if request.GET.status == "falta_remarcacao" %}selected{% endif %}>⚠️ FCR - Falta com reposição</option>
                 <option value="falta_cobrada" {% if request.GET.status == "falta_cobrada" %}selected{% endif %}>❌ FC - Falta cobrada</option>
+                <option value="desistencia" {% if request.GET.status == "desistencia" %}selected{% endif %}>❌ D - Desistência</option>
               </select>
 
             </div>       
