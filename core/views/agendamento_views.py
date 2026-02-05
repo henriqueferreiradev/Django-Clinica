@@ -19,6 +19,7 @@ from django.utils.timezone import now
 from datetime import datetime, timedelta
 from math import ceil
 from django.db.models import Case, When, Value, IntegerField
+from django.template.context_processors import request
 import unicodedata
 
 
@@ -1685,3 +1686,49 @@ def preview_receita_desistencia(request, agendamento_id):
 
 
 
+
+
+from django.utils import timezone
+from datetime import timedelta
+
+
+def lembrete_agendamento_dia_seguinte(request):
+
+    return render(request, 'core/agendamentos/lembretes.html')
+
+
+def listar_lembretes_agendamento(request):
+    hoje = timezone.now().date()
+    amanha= hoje + timedelta(days=1)
+    
+    try:
+        agendamentos = Agendamento.objects.filter(data=amanha)
+            
+        
+        agendamentos_data = []
+        for ag in agendamentos:
+            agendamentos_data.append({
+                'id': ag.id,
+                'data': ag.data.strftime('%d/%m/%Y'),
+                'data_completa': ag.data.strftime('%d/%m/%Y - %H:%M'),
+                'paciente':ag.paciente.nome,
+                'hora_inicio':ag.hora_inicio,
+                'hora_fim':ag.hora_fim,
+                'profissional_1':ag.profissional_1.nome,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'agendamentos': agendamentos_data,
+            'total': len(agendamentos_data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'agendamentos': []
+        }, status=500)
+        
+    
+   

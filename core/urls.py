@@ -63,8 +63,8 @@ urlpatterns = [
     path('api/cancelar-nf/', administrativo_views.cancelar_notafiscal, name='cancelar_notafiscal'),
     path('api/salvar-documento/', administrativo_views.salvar_documento_empresa, name='salvar_documento_empresa'),
     path('api/paciente/<int:paciente_id>/servicos/', pacientes_views.servicos_paciente),
-    
-    
+    path('agenda/lembrete/',agendamento_views.lembrete_agendamento_dia_seguinte, name='lembrete_agenda'),
+    path('api/listar-lembretes-agendamentos/', agendamento_views.listar_lembretes_agendamento),
     path('api/detalhe-nf-emitida/pendencia/<int:pendencia_id>/', administrativo_views.api_detalhes_notafiscal_por_pendencia),
     #RECEITAS    
     path('receita/<int:receita_id>/dados-pagamento/', api_views.dados_pagamento, name='dados_pagamento'),

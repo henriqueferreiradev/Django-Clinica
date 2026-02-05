@@ -174,8 +174,9 @@ body {
 }
 
 .inativo td {
-    border-bottom:1px solid #af4c4c;
+    border-bottom: 1px solid #af4c4c;
 }
+
 .content {
     background: transparent;
     border-radius: 15px;
@@ -460,11 +461,13 @@ thead tr th:last-child {
 .linha-pendente {
     background-color: #fff3cd6f !important;
     font-weight: 600;
-    
+
 }
+
 .linha-pendente td {
-    border-bottom:1px solid #f39c12;
+    border-bottom: 1px solid #f39c12;
 }
+
 .status-pendente {
     background-color: #f39c12;
     padding: .4em .8em;
@@ -494,7 +497,7 @@ thead tr th:last-child {
 
 
 .chip-menor {
-    background: var(--roxo-primary-hover) ;
+    background: var(--roxo-primary-hover);
     padding: .2em .8em;
     border-radius: 16px;
     font-size: 10px;
@@ -503,21 +506,114 @@ thead tr th:last-child {
 }
 
 [data-tooltip] {
-  position: relative;
-  cursor: pointer;
+    position: relative;
+    cursor: pointer;
 }
 
 [data-tooltip]:hover::after {
-  content: attr(data-tooltip); /* Get content from the attribute */
+    content: attr(data-tooltip);
+    /* Get content from the attribute */
+    position: absolute;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+   
+    padding: 8px;
+    white-space: nowrap;
+    background-color: var(--preto);
+    border: 1px solid var(--roxoPrincipal);
+    color: var(--branco);
+    border-radius: 4px;
+    z-index: 99999;
+}
+.text-center {
+    text-align: center;
+}
+/* Coluna */
+.consent-col {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Badge do consentimento */
+.consent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+    border: 1px solid transparent;
+    user-select: none;
+    transition: all .2s ease;
+}
+
+/* Ícone */
+.consent-badge i {
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Texto pequeno */
+.consent-badge small {
+    font-size: 11px;
+    font-weight: 700;
+    opacity: .9;
+}
+
+/* Estado OK */
+.consent-badge.ok {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.28);
+    color: #10B981;
+}
+
+/* Estado Pendente */
+.consent-badge.pendente {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #EF4444;
+}
+
+/* Hover */
+.consent-badge:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.02);
+}
+
+/* Opcional: deixar “quadradinho” só com ícone (se quiser compacto) */
+.consent-badge.icon-only {
+    padding: 8px;
+    width: 28px;
+    height: 28px;
+    justify-content: center;
+    gap: 0;
+}
+
+.consent-badge.icon-only small {
+    display: none;
+}
+ 
+
+.consent-badge.ok{
+  background: rgba(16,185,129,.12);
+  color: #10B981;
+  border: 1px solid rgba(16,185,129,.25);
+}
+
+.consent-badge.pendente{
+  background: rgba(239,68,68,.10);
+  color: #EF4444;
+  border: 1px solid rgba(239,68,68,.20);
+}
+
+.sub-ico{
   position: absolute;
-  top: 50%;
-  transform:translateY(-50%) ;
-  left: 30px;
-  padding: 8px;
-  white-space: nowrap;
-  background-color: var(--roxo-primary-hover);
-  border:1px solid var(--roxoPrincipal);
-  color: white;
-  border-radius: 4px;
-  z-index: 20;
+  right: -4px;
+  bottom: -4px;
+  font-size: 12px;
+  background: var(--branco);
+  border-radius: 999px;
+  padding: 1px;
 }

@@ -427,7 +427,7 @@ body {
     gap: 20px; /* Reduzi de 100px para 20px */
     justify-items: center; /* Centraliza cada card dentro da célula */
     width: 100%;
-    padding: 10px;
+    padding-top: 25px;
     box-sizing: border-box;
 }
 
@@ -442,6 +442,47 @@ body {
     transition: transform 0.3s ease;
     position: relative;
 }
+
+.card.inativo{
+    /* visual de desativado */
+    opacity: .75;
+    filter: grayscale(1);
+    background: linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.01));
+    border: 1px solid rgba(0,0,0,.08);
+
+    /* interação */
+    transform: none;
+}
+
+/* corta hover/efeitos quando inativo (se você tiver hover no card) */
+.card.inativo:hover{
+    transform: none;
+}
+
+/* “tag” INATIVO no canto (sem mexer no HTML) */
+.card.inativo::after{
+    content: "INATIVO";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+
+    background: rgba(220, 38, 38, .12);
+    color: rgb(0, 0, 0);
+    border: 1px solid rgba(220, 38, 38, .25);
+}
+
+/* deixa textos/ícones mais “apagados” (ajuste se necessário) */
+.card.inativo *{
+    color: rgba(0,0,0,.65);
+}
+
+ 
 
 /* Para telas maiores, pode ter mais colunas */
 @media (min-width: 1200px) {

@@ -28,29 +28,14 @@
             placeholder="Digite um nome..."
           />
         </div>
-        <div class="filtro-campo">
-            <label for="filtro-status">Status</label>
-            <div class="status-col">
-                  <select name="status" class="filtro-select">
-                      <option value="" disabled selected>Selecione o status</option>
-                      <option value="primeiro_mes">Primeiro Mês</option>
-                      <option value="premium">Premium</option>
-                      <option value="vip">VIP</option>
-                      <option value="plus">Plus</option>
-                      <option value="indefinido">Indefinido</option>
-                  </select>
-              </div>       
-          </div>
           
         <div class="filtro-campo">
           <label for="filtro-status">Situação</label>
           <div class="status-col">
                 <select name="situacao" class="filtro-select">
                     <option value="" disabled selected>Selecione a Situação</option>
-                    <option value="ativo">Ativos</option>
-                    <option value="inativo">Inativos</option>
-                    <option value="pendente">Pendentes</option>
- 
+                    <option value="ativo"{% if request.GET.situacao == 'ativo' %}selected{% endif %} >Ativos</option>
+                    <option value="inativo" {% if request.GET.situacao == 'inativo' %}selected{% endif %}>Inativos</option>
                 </select>
             </div>       
         </div>
@@ -62,7 +47,7 @@
               type="date"
               name="data_inicio"
               id="filtro-data-inicio"
-              value="{{ data_inicio }}"
+              value="{{ request.GET.data_inicio|default_if_none:'' }}"
               class="filtro-input"
             />
           </div>
@@ -75,7 +60,7 @@
               type="date"
               name="data_fim"
               id="filtro-data-fim"
-              value="{{ data_fim }}"
+              value="{{ request.GET.data_fim|default_if_none:'' }}"
               class="filtro-input"
             />
           </div>

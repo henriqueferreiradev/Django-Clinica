@@ -8,68 +8,17 @@
 
 {% block content %}
 {% include "core/partials/_confirm_modal.html" %}
-  <div class="content">
-    {% include "core/partials/_loader.html" %}
-{% include "core/partials/filtros/filtro_profissional.html" %}
-    <div class="content-header">
-      <form method='GET' action="{% url 'profissionais' %}">
-        <div class="filter-container">
-          <div class="filter-container_row">
-       
-            <div class="filter_input">
-              <i class='bx bx-search'></i>
-              <input class="form-input" type="search" placeholder="Pesquisar...">
-            </div>
-            
-            
-            <div class="filter_input">
-              <i class='bx bx-calendar'></i>
-              <input class="form-input" type="date" id="start-date">
-            </div>
-            
-            <div class="filter_input">
-              <i class='bx bx-calendar'></i>
-              <input class="form-input" type="date" id="end-date">
-            </div>
-            
-            <div class="filter_input">
-              <select class="form-select" name="" id="">
-                <option value="1">Ativo</option>
-                <option value="2">Inativo</option>
-                <option value="3">Pendente</option>
-              </select>
-            </div>
+<div class="content">
+  {% include "core/partials/_loader.html" %}
+  {% include "core/partials/filtros/filtro_profissional.html" %}
 
- 
-            <button type="submit" class="btn">
-              <i class='bx bx-filter-alt'></i>
-              <span>Filtrar</span>
-            </button>
-            
-            <button type="button" class="btn">
-              <i class='bx bx-reset'></i>
-              <span>Limpar</span>
-            </button>
-          </div>
-        </div>
-      </form>
-      <!--
-      <h2>Lista de profissionais</h2>
-      <form method="GET" action="{% url 'profissionais' %}" class="search-form" type="search">
-        <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar profissional aqui" />
-      </form>
-      <div>
-        <button class="btn" onclick="window.location.href='{% url 'cadastrar_profissional' %}'">+ Add
-          Profissional</button>
-      </div>-->
-      <button onclick="window.location.href='{% url 'cadastrar_profissional' %}'" class='btn' ><i class="fas fa-plus mr-2"></i>Novo Profissional</button>
+  <div class="card-grid">
+    {% for profissional in page_obj %}
+      
+      
+      <div class="card {% if not profissional.ativo %}inativo{% endif %}">
 
-    </div>
 
-<div class="card-grid">
-    
-    {% for profissional in profissionais %}
-      <div class="card">
         {% include "core/partials/_profissional_dropdown.html" %}
 
         <div class="card-top"></div>
@@ -94,10 +43,40 @@
 
       </div>
     {% endfor %}
-    
   </div>
- 
- 
+
+
+  <div class="pagination">
+    <div class="pagination-info">
+      Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+    </div>
+    <div class="pagination-controls">
+      {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+          class="pagination-btn">Anterior</a>
+      {% else %}
+      <button class="pagination-btn disabled">Anterior</button>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <button class="pagination-btn active">{{ num }}</button>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+            class="pagination-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+          class="pagination-btn">Próxima</a>
+      {% else %}
+      <button class="pagination-btn disabled">Próxima</button>
+      {% endif %}
+    </div>
+  </div>
+
+
 </div>
 {% include "core/partials/alertas.html" %}
 {% endblock %} {% block scripts %}

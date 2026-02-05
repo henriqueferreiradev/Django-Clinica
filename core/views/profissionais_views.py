@@ -12,6 +12,7 @@ from django.db.models import Min, Max,Count
 from django.utils import timezone
  
 from django.template.context_processors import request
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 import json
 from core.views.agendamento_views import listar_agendamentos
 from core.management.commands.importar_pacientes import parse_date
@@ -273,7 +274,7 @@ def editar_profissional_view(request, id):
         profissional.nomeEmergencia = request.POST.get('nomeEmergencia')
         profissional.vinculo = request.POST.get('vinculo')
         profissional.telEmergencia = request.POST.get('telEmergencia')
-
+        profissional.ativo = True
         if 'foto' in request.FILES:
             profissional.foto = request.FILES['foto']
             messages.info(request, 'Foto atualizada com sucesso') 
@@ -397,9 +398,63 @@ def profissionais_view(request):
                 descricao=f'Profissional {profissional.nome} inativado.')
             return redirect('profissionais')
 
+    query = request.GET.get('q', '').strip()
+    situacao = request.GET.get('situacao', '').strip()
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
+
+    profissionais = Profissional.objects.all()
+
+
+
+    # Filtro por status
+ 
+    if situacao == 'inativo':
+        profissionais = profissionais.filter(ativo=False)
+    else:
+        profissionais = profissionais = Profissional.objects.filter(ativo=True)
+
+        print(profissionais.query)
+    # Filtro por nome ou CPF
+    if query:
+        profissionais = profissionais.filter(
+            Q(nome__icontains=query) | Q(cpf__icontains=query)
+        )
+
+    # Filtro por período de datas
+    if data_inicio:
+        profissionais = profissionais.filter(data_cadastro__gte=data_inicio)
+    if data_fim:
+        profissionais = profissionais.filter(data_cadastro__lte=data_fim)
+
+    # Ordenação final
+    profissionais = profissionais.order_by('-id')
+
+    # Totais (antes da paginação)
+    total_ativos = Profissional.objects.filter(ativo=True).count()
+    total_filtrados = profissionais.count()
+    profissionais_ativos = Profissional.objects.filter(ativo=True).order_by('-id')
+    # PAGINAÇÃO - EXATAMENTE COMO NO CONTAS A RECEBER
+    paginator = Paginator(profissionais, 6)  # 10 profissionais por página
+    page_number = request.GET.get('page')
+    
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
+
 
     return render(request, 'core/profissionais/profissionais.html', {
-        "profissionais": profissionais,
+        'page_obj': page_obj,
+        'query': query,
+        'situacao': situacao,
+        'data_inicio': data_inicio,
+        'data_fim': data_fim,
+        'total_ativos': total_ativos,
+        'total_filtrados': total_filtrados,
+        
     })
 
 

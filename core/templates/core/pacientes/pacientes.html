@@ -32,6 +32,7 @@
               <th>Cadastro</th>
               <th>Status no mês</th>
               <th>Situação</th>
+              <th>Consentimentos</th>
               <th class="text-center">Ações</th>
             </tr>
           </thead>
@@ -94,7 +95,53 @@
                   <span class="badge status-inativo">Inativo</span>
                 {% endif %}
               </td>
-     
+              <td class="consent-col">
+                <div class="consent-stack">
+
+                  {# Tratamento #}
+                  {% if paciente.consentimento_tratamento %}
+                    <span class="consent-badge ok icon-only" data-tooltip="Tratamento: consentimento registrado">
+                      <i class="fa-solid fa-image"></i>
+                      <i class="fa-solid fa-circle-check sub-ico"></i>
+                    </span>
+                  {% else %}
+                    <span class="consent-badge pendente icon-only" data-tooltip="Tratamento: sem consentimento">
+                      <i class="fa-solid fa-image"></i>
+                      <i class="fa-solid fa-circle-xmark sub-ico"></i>
+                    </span>
+                  {% endif %}
+
+                  {# LGPD #}
+                  {% if paciente.consentimento_lgpd %}
+                    <span class="consent-badge ok icon-only" data-tooltip="LGPD: consentimento registrado">
+                      <i class="fa-solid fa-shield-halved"></i>
+                      <i class="fa-solid fa-circle-check sub-ico"></i>
+                    </span>
+                  {% else %}
+                    <span class="consent-badge pendente icon-only" data-tooltip="LGPD: sem consentimento">
+                      <i class="fa-solid fa-shield-halved"></i>
+                      <i class="fa-solid fa-circle-xmark sub-ico"></i>
+                    </span>
+                  {% endif %}
+
+                  {# Marketing #}
+                  {% if paciente.consentimento_marketing %}
+                    <span class="consent-badge ok icon-only" data-tooltip="Marketing: consentimento registrado">
+                      <i class="fa-solid fa-bullhorn"></i>
+                      <i class="fa-solid fa-circle-check sub-ico"></i>
+                    </span>
+                  {% else %}
+                    <span class="consent-badge pendente icon-only" data-tooltip="Marketing: sem consentimento">
+                      <i class="fa-solid fa-bullhorn"></i>
+                      <i class="fa-solid fa-circle-xmark sub-ico"></i>
+                    </span>
+                  {% endif %}
+
+                </div>
+              </td>
+
+
+
               <td class="text-center">
                 {% include "core/partials/_paciente_dropdown.html" %}
               </td>
@@ -112,7 +159,6 @@
                         Não encontramos pacientes com os critérios informados. 
                         Tente ajustar os filtros ou realizar um novo cadastro.
                         </p>
-
                     </div> 
               </td>
             </tr>
