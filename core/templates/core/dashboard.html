@@ -154,11 +154,11 @@
               <td>
                 {% if agendamento.sessao_atual %}
                   {% if agendamento.codigo|slice:":3" == "REP" %}
-                    <span class="sessao reposicao">Sessão de Reposição | {{ agendamento.codigo }}</span>
+                    <span class="sessao reposicao"><i class="fa-solid fa-rotate-left"></i>Sessão de Reposição | {{ agendamento.codigo }}</span>
                   {% elif agendamento.codigo|slice:":3" == "BEN" %}
-                    <span class="sessao beneficio">Sessão de Benefício | {{ agendamento.codigo }}</span>
+                     <span class="sessao beneficio"><i class="fa-solid fa-gift"></i>Sessão de Benefício | {{ agendamento.codigo }}</span>
                   {% else %}
-                    <span class="sessao normal">
+                    <span class="sessao normal"><i class="fa-solid fa-calendar-check"></i>
                       Sessão {{ agendamento.sessao_atual }} de {{ agendamento.sessoes_total }} | {{ agendamento.sessoes_restantes }} restante(s) | {{ agendamento.codigo }}
                     </span>
                   {% endif %}
@@ -181,7 +181,7 @@
                     {% if agendamento.status == 'pre' %}✅ Pré-Agendado
                     {% elif agendamento.status == 'agendado' %}✅ Agendado
                     {% elif agendamento.status == 'finalizado' %}✅ Consulta finalizada!
-                    {% elif agendamento.status == 'desistencia' %}❌ D - Desmarcação
+                    {% elif agendamento.status == 'desistencia' %}❌ D - Desistência
                     {% elif agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
                     {% elif agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
                     {% elif agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada

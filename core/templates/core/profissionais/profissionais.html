@@ -9,6 +9,8 @@
 {% block content %}
 {% include "core/partials/_confirm_modal.html" %}
   <div class="content">
+    {% include "core/partials/_loader.html" %}
+{% include "core/partials/filtros/filtro_profissional.html" %}
     <div class="content-header">
       <form method='GET' action="{% url 'profissionais' %}">
         <div class="filter-container">
@@ -100,6 +102,7 @@
 {% include "core/partials/alertas.html" %}
 {% endblock %} {% block scripts %}
 <script src="https://unpkg.com/imask"></script>
+<script src="{% static 'core/js/base/abrirFiltro.js' %}"></script>
 <script src="{% static '/core/js/profissionais/baseProfissionais.js' %}"></script>
 {% endblock %}
 </div>

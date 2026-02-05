@@ -1,0 +1,95 @@
+{% load static %}
+ 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/partials/filtros/filtro_auditoria.css' %}">
+{% endblock %}
+<div class="filtro-universal">
+    <div class="filtro-header">
+        <h2><i class='bx bx-filter-alt'></i> Filtros</h2>
+        <div>
+            <button onclick="window.location.href='{% url 'cadastrar_profissional' %}'"  class="btn btn-new-ag" ><i class="fas fa-plus mr-2"></i>Novo Profissional</button>
+         
+        <button type="button" class="filtro-toggle">
+        <i class='bx bx-chevron-down'></i>
+        </button>
+        </div>
+    </div>
+            <!-- FORM de filtros -->
+    <form method="get">
+        <div class="filtro-body">
+        <div class="filtro-campo">
+            <label for="filtro-nome">Nome</label>
+            <input
+            type="text"
+            name="q"
+            value="{{ query|default:'' }}"
+            id="filtro-nome"
+            class="filtro-input"
+            placeholder="Digite um nome..."
+          />
+        </div>
+        <div class="filtro-campo">
+            <label for="filtro-status">Status</label>
+            <div class="status-col">
+                  <select name="status" class="filtro-select">
+                      <option value="" disabled selected>Selecione o status</option>
+                      <option value="primeiro_mes">Primeiro Mês</option>
+                      <option value="premium">Premium</option>
+                      <option value="vip">VIP</option>
+                      <option value="plus">Plus</option>
+                      <option value="indefinido">Indefinido</option>
+                  </select>
+              </div>       
+          </div>
+          
+        <div class="filtro-campo">
+          <label for="filtro-status">Situação</label>
+          <div class="status-col">
+                <select name="situacao" class="filtro-select">
+                    <option value="" disabled selected>Selecione a Situação</option>
+                    <option value="ativo">Ativos</option>
+                    <option value="inativo">Inativos</option>
+                    <option value="pendente">Pendentes</option>
+ 
+                </select>
+            </div>       
+        </div>
+  
+        <div class="filtro-campo">
+          <label for="filtro-data-inicio">Data Início</label>
+          <div class="filtro-data-wrapper">
+            <input
+              type="date"
+              name="data_inicio"
+              id="filtro-data-inicio"
+              value="{{ data_inicio }}"
+              class="filtro-input"
+            />
+          </div>
+        </div>
+  
+        <div class="filtro-campo">
+          <label for="filtro-data-fim">Data Fim</label>
+          <div class="filtro-data-wrapper">
+            <input
+              type="date"
+              name="data_fim"
+              id="filtro-data-fim"
+              value="{{ data_fim }}"
+              class="filtro-input"
+            />
+          </div>
+        </div>
+      </div>
+  
+      <div class="filtro-acoes">
+       
+        <a href="{% url 'agenda' %}" class="btn btn-secondary"><i class='bx bx-reset'></i> Limpar</a>
+    
+            <button type="submit" name="filtrar" value="1" class="btn btn-primary">
+            <i class='bx bx-filter'></i> Aplicar Filtros
+            </button>
+      </div>
+    </form>
+  </div>
+  
