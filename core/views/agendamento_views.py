@@ -1698,9 +1698,9 @@ def lembrete_agendamento_dia_seguinte(request):
 
 
 def listar_lembretes_agendamento(request):
-    hoje = timezone.now().date()
+    hoje = timezone.localdate()
     amanha= hoje + timedelta(days=1)
-    
+    print(hoje, amanha)
     try:
         agendamentos = Agendamento.objects.filter(data=amanha)
             
@@ -1715,6 +1715,9 @@ def listar_lembretes_agendamento(request):
                 'hora_inicio':ag.hora_inicio,
                 'hora_fim':ag.hora_fim,
                 'profissional_1':ag.profissional_1.nome,
+                'servico':ag.servico.nome,
+                'especialidade':ag.especialidade.nome,
+                
             })
         
         return JsonResponse({
