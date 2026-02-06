@@ -1696,6 +1696,16 @@ def lembrete_agendamento_dia_seguinte(request):
 
     return render(request, 'core/agendamentos/lembretes.html')
 
+DIAS_SEMANA = {
+    0: 'segunda-feira',
+    1: 'terça-feira',
+    2: 'quarta-feira',
+    3: 'quinta-feira',
+    4: 'sexta-feira',
+    5: 'sábado',
+    6: 'domingo',
+}
+
 
 def listar_lembretes_agendamento(request):
     hoje = timezone.localdate()
@@ -1711,12 +1721,15 @@ def listar_lembretes_agendamento(request):
                 'id': ag.id,
                 'data': ag.data.strftime('%d/%m/%Y'),
                 'data_completa': ag.data.strftime('%d/%m/%Y - %H:%M'),
-                'paciente':ag.paciente.nome,
-                'hora_inicio':ag.hora_inicio,
-                'hora_fim':ag.hora_fim,
-                'profissional_1':ag.profissional_1.nome,
+                'paciente':f'{ag.paciente.nome} {ag.paciente.sobrenome}',
+                'hora_inicio': ag.hora_inicio.strftime('%H:%M'),
+                'hora_fim': ag.hora_fim.strftime('%H:%M'),
+                'dia_semana': DIAS_SEMANA[ag.data.weekday()],
+                'profissional': ag.profissional_1.nome,
                 'servico':ag.servico.nome,
                 'especialidade':ag.especialidade.nome,
+                'telefone':ag.paciente.celular,
+                'reminderSent': False,
                 
             })
         

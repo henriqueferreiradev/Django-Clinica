@@ -874,7 +874,18 @@ class Agendamento(models.Model):
     def __str__(self):
         return f"{self.paciente} - {self.data} {self.hora_inicio}"
 
+class LembreteAgenda(models.Model):
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.CASCADE)
+    data_referencia = models.DateField()
+    lembrete_enviado = models.BooleanField(default=False)
+    enviado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    enviado_em = models.DateTimeField(null=True, blank=True)
+
+    
+    
+    
 class Pagamento(models.Model):
+
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     pacote = models.ForeignKey(PacotePaciente, on_delete=models.SET_NULL, null=True, blank=True)
     agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True, blank=True)

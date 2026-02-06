@@ -1,4 +1,113 @@
+// Função para mostrar mensagens
+function mostrarMensagem(mensagem, tipo = 'success') {
+    const toastContainer = document.getElementById('toast-container') || criarToastContainer();
 
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo} toast-slide-in`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    ${getIcon(tipo)}
+                </div>
+                <div class="toast-title">
+                    ${getTitle(tipo)}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div>${mensagem}</div>
+        </div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Remove após 5 segundos
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('toast-slide-out');
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 5000);
+}
+
+// Funções auxiliares
+function criarToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+function getIcon(tipo) {
+    const icons = {
+        'success': '<i class="fas fa-check-circle"></i>',
+        'warning': '<i class="fas fa-exclamation-triangle"></i>',
+        'error': '<i class="fas fa-exclamation-circle"></i>',
+        'info': '<i class="fas fa-info-circle"></i>'
+    };
+    return icons[tipo] || icons['info'];
+}
+
+function getTitle(tipo) {
+    const titles = {
+        'success': 'Sucesso',
+        'warning': 'Aviso',
+        'error': 'Erro',
+        'info': 'Informação'
+    };
+    return titles[tipo] || 'Mensagem';
+}
+
+// Função para copiar mensagem ao clicar no item
+function configurarCliqueParaCopiarMensagem() {
+    // Usar delegação de eventos para funcionar com elementos dinâmicos
+    document.addEventListener('click', function (e) {
+        // Verificar se o clique foi em um item de mensagem (não no template original)
+        const messageItem = e.target.closest('.message-item:not(.template)');
+
+        if (messageItem) {
+            copiarTextoMensagem(messageItem);
+        }
+    });
+}
+
+// Função principal para copiar o texto da mensagem
+function copiarTextoMensagem(messageItem) {
+    // Encontrar o elemento que contém o texto da mensagem
+    const messageTextElement = messageItem.querySelector('p');
+
+    if (!messageTextElement) {
+        mostrarMensagem('Elemento da mensagem não encontrado', 'error');
+        return;
+    }
+
+    // Pegar o texto da mensagem
+    const textoMensagem = messageTextElement.textContent.trim();
+
+    if (!textoMensagem) {
+        mostrarMensagem('Mensagem vazia', 'warning');
+        return;
+    }
+
+    // Usar a Clipboard API para copiar
+    navigator.clipboard.writeText(textoMensagem)
+        .then(() => {
+            // Feedback de sucesso usando a função existente
+            mostrarMensagem('Mensagem copiada para a área de transferência!', 'success');
+
+            // Adicionar feedback visual temporário no item
+            adicionarFeedbackVisual(messageItem);
+        })
+        .catch(err => {
+            console.error('Erro ao copiar:', err);
+
+            // Fallback para navegadores mais antigos
+            copiarComFallback(textoMensagem, messageItem);
+        });
+}
 // Função para formatar data
 function formatDate(date) {
     const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
@@ -12,97 +121,55 @@ function getTomorrowDate() {
     return tomorrow;
 }
 
-// Função para simular dados de pacientes do sistema
-function getPatientsForTomorrow() {
-    // Em um sistema real, isso viria da API/banco de dados
-    // Aqui simulamos alguns pacientes para demonstração
-    const tomorrow = getTomorrowDate();
+ 
+function gerarMensagemLembrete(patient) {
+    return (
+`Olá, ${patient.paciente}! Sua sessão está confirmada! ☺️
+Aqui é a Bem, IA da Ponto de Equilíbrio, tudo bem?
 
-    // Verifica se há dados salvos no localStorage
-    const savedData = localStorage.getItem(`checklist_${tomorrow.toDateString()}`);
-    if (savedData) {
-        return JSON.parse(savedData);
-    }
+Passando para deixar o lembrete de seu(s) próximo(s) horário(s) agendado(s)
 
-    // Dados simulados padrão
-    const patients = [
-        {
-            id: 1,
-            name: "Maria Silva Santos",
-            appointmentTime: "09:30",
-            phone: "(11) 98765-4321",
-            procedure: "Consulta de rotina",
-            reminderSent: false
-        },
-        {
-            id: 2,
-            name: "João Pereira Oliveira",
-            appointmentTime: "10:15",
-            phone: "(11) 99876-5432",
-            procedure: "Avaliação ortodôntica",
-            reminderSent: false
-        },
-        {
-            id: 3,
-            name: "Ana Claudia Mendes",
-            appointmentTime: "11:00",
-            phone: "(11) 97654-3210",
-            procedure: "Limpeza dental",
-            reminderSent: false
-        },
-        {
-            id: 4,
-            name: "Carlos Eduardo Lima",
-            appointmentTime: "14:00",
-            phone: "(11) 96543-2109",
-            procedure: "Restauração",
-            reminderSent: false
-        },
-        {
-            id: 5,
-            name: "Fernanda Costa Rodrigues",
-            appointmentTime: "15:30",
-            phone: "(11) 95432-1098",
-            procedure: "Consulta de rotina",
-            reminderSent: false
-        },
-        {
-            id: 6,
-            name: "Roberto Almeida Souza",
-            appointmentTime: "16:45",
-            phone: "(11) 94321-0987",
-            procedure: "Extração",
-            reminderSent: false
-        }
-    ];
+🟣 *Atividade*: ${patient.especialidade}
+👩‍⚕️ *Profissional:* ${patient.profissional}
+🗓 *Data:* ${patient.data} (${patient.dia_semana})
+⏰ *Horário:* ${patient.hora_inicio} às ${patient.hora_fim}
 
-    // Salva no localStorage para simular persistência
-    localStorage.setItem(`checklist_${tomorrow.toDateString()}`, JSON.stringify(patients));
-    return patients;
+Qualquer dúvida, estou por aqui.
+Até lá! 🌟`
+    );
 }
 
 // Função para salvar o status atualizado
 function savePatientStatus(patientId, status) {
-    const tomorrow = getTomorrowDate();
-    const patients = getPatientsForTomorrow();
-
-    // Atualiza o status do paciente
-    const patientIndex = patients.findIndex(p => p.id === patientId);
-    if (patientIndex !== -1) {
-        patients[patientIndex].reminderSent = status;
-        localStorage.setItem(`checklist_${tomorrow.toDateString()}`, JSON.stringify(patients));
-    }
-
-    return patients;
+ 
 }
-
-// Função para renderizar a lista de pacientes
-function renderPatientsList() {
+let patients = []
+async function renderPatientsList() {
     const patientsList = document.getElementById('patientsList');
     const emptyState = document.getElementById('emptyState');
-    const patients = getPatientsForTomorrow();
+    
+    try {
 
-    // Verifica se há pacientes
+        const res = await fetch('/api/listar-lembretes-agendamentos/', {
+            headers: { 'Accept': 'application/json' }
+        })
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            const text = await res.text();
+            console.error("resposta não é JSON. Provavelmente HTML:", text.slice(0, 200))
+            return
+        }
+        const data = await res.json();
+
+        // ✅ aqui você define o patients pelo fetch
+        patients = data.agendamentos || [];
+
+        console.log('patients:', patients);
+
+    } catch (error) {
+        mostrarMensagem('Erro ao carregar lembretes', error, "error")
+    }
+
     if (patients.length === 0) {
         patientsList.style.display = 'none';
         emptyState.style.display = 'block';
@@ -151,19 +218,19 @@ function renderPatientsList() {
 
         patientCard.innerHTML = `
                     <div class="patient-info ${patient.reminderSent ? 'patient-completed' : ''}">
-                        <div class="patient-name">${patient.name}</div>
+                        <div class="patient-name">${patient.paciente}</div>
                         <div class="patient-details">
                             <div class="patient-detail">
                                 <i class="fas fa-clock"></i>
-                                <span>${patient.appointmentTime}</span>
+                                <span>${patient.hora_inicio} - ${patient.hora_fim}</span>
                             </div>
                             <div class="patient-detail">
                                 <i class="fas fa-phone"></i>
-                                <span>${patient.phone}</span>
+                                <span>${patient.telefone}</span>
                             </div>
                             <div class="patient-detail">
                                 <i class="fas fa-stethoscope"></i>
-                                <span>${patient.procedure}</span>
+                                <span>${patient.especialidade}</span>
                             </div>
                         </div>
                     </div>
@@ -173,7 +240,7 @@ function renderPatientsList() {
                             <span>${patient.reminderSent ? 'Lembrete enviado' : 'Pendente'}</span>
                         </div>
                         <button class="btn-send ${patient.reminderSent ? 'completed' : ''}" 
-                                onclick="sendReminder(${patient.id})"
+                                onclick="openReminderModal(${patient.id})"
                                 ${patient.reminderSent ? 'disabled' : ''}>
                             <i class="fab fa-whatsapp"></i>
                             ${patient.reminderSent ? 'Enviado' : 'Enviar lembrete'}
@@ -184,11 +251,66 @@ function renderPatientsList() {
         patientsList.appendChild(patientCard);
     });
 }
+let selectedPatient = null;
+
+function openReminderModal(patientId) {
+    const patient = patients.find(p => p.id === patientId);
+    if (!patient) return;
+
+    selectedPatient = patient;
+
+    const mensagem = gerarMensagemLembrete(patient);
+    document.getElementById('mensagemLembrete').textContent = mensagem;
+
+    document.getElementById('modalLembrete').style.display = 'flex';
+}
+
+function closeReminderModal() {
+    document.getElementById('modalLembrete').style.display = 'none';
+    selectedPatient = null;
+}
+
+async function confirmSendReminder() {
+    if (!selectedPatient) return;
+
+    const mensagem = document.getElementById('mensagemLembrete').value;
+
+    try {
+        const res = await fetch(`/api/enviar-lembrete/${selectedPatient.id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                mensagem: mensagem
+            })
+        });
+
+        if (!res.ok) throw new Error('Erro ao enviar lembrete');
+
+        closeReminderModal();
+        renderPatientsList();
+
+        mostrarMensagem(
+            'Lembrete enviado',
+            'Mensagem enviada e registrada com sucesso.',
+            'success'
+        );
+
+    } catch (err) {
+        mostrarMensagem(
+            'deu Erro garai',
+            'Não foi possível enviar o lembrete.',
+            'error'
+        );
+    }
+}
+
 
 // Função para enviar lembrete (simulado)
 function sendReminder(patientId) {
-    // Aqui em um sistema real, haveria integração com API para envio real
-    // Neste caso, apenas registramos no sistema que foi enviado
+
     savePatientStatus(patientId, true);
 
     // Atualiza a interface

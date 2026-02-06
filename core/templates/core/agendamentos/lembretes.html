@@ -63,6 +63,30 @@
         </div>
     </div>
 
+<div class="modal-overlay show" id="modalLembrete" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header"  >
+    <div class="modal-header-text">
+      <h3>Envie a mensagem abaixo</h3>
+      <p>Clique na mensagem para copiar.</p>
+      </div>
+      <div class="close-modal" onclick="closeReminderModal()">
+        <i class="fas fa-times"></i>
+      </div>
+    </div>
+
+    <div  onclick="copiarTextoMensagem(this)" class="modal-body">
+      <p id="mensagemLembrete" class="mensagem-lembrete"></p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="mark-all-read" onclick="confirmSendReminder()">
+        Confirmar envio
+      </button>
+    </div>
+  </div>
+</div>
+
 
 
 {% include "core/partials/alertas.html" %}
