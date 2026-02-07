@@ -1,66 +1,40 @@
-/* ===== EDITAR AGENDA — MODAL PREMIUM ===== */
-
-/* Overlay */
-.modal-att-agenda {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, .38);
-    z-index: 9998;
-    display: none;
-
-}
-
-.modal-att-agenda.active {
-    display: flex;
-}
-
-.modal-att-agenda .modal-conteudo {
-    position: fixed;
-    left: 50%;
-    top: 40px;
-
-    transform: translateX(-50%);
-    width: 40%;
-    max-width: 1100px;
-    max-height: calc(100vh - 80px);
-
-    background: var(--branco);
-    border-radius: var(--borda-arredondada);
-    box-shadow: var(--shadowRoxo);
-    z-index: 9999;
+/* Estilo para modal com conteúdo scrollável */
+.modal {
     display: flex;
     flex-direction: column;
-    /* header fixo, form rola */
-    overflow: hidden;
-    animation: fadeInScale .25s ease;
+    max-height: 90vh; /* Altura máxima do modal */
 }
 
-/* Barrinha topo dourado/roxo (igual sidebar) */
-.modal-att-agenda .modal-conteudo::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 6px;
-    background: linear-gradient(to right, var(--roxo-primary-hover), var(--roxoPrincipal));
+.modal-header,
+.modal-footer {
+    flex-shrink: 0; /* Impede que header e footer encolham */
 }
 
-/* Header reaproveita o mesmo estilo da sidebar */
-.modal-att-agenda .header-sidebar {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1em;
- 
+.modal-body.scrollable-content {
+    flex: 1; /* Ocupa o espaço disponível */
+    overflow-y: auto; /* Habilita scroll vertical apenas quando necessário */
+    max-height: calc(90vh - 120px); /* Ajusta a altura máxima considerando header e footer */
+    padding: 20px;
 }
 
-.modal-att-agenda .header-sidebar h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: var(--roxoPrincipal);
-    font-weight: 600;
+/* Opcional: customizar a barra de scroll */
+.modal-body.scrollable-content::-webkit-scrollbar {
+    width: 8px;
 }
 
+.modal-body.scrollable-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.modal-body.scrollable-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.modal-body.scrollable-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
 #closeBtnEdit {
     background: none;
     border: none;

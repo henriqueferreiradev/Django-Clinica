@@ -200,7 +200,9 @@ th {
   outline: none !important;
   border: none !important;
 }
-
+.dropdown-content i{
+  margin-right: 0.5em;
+}
 .dropdown-content a,
 .dropdown-content button {
   color: var(--preto);

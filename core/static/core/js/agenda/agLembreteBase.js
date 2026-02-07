@@ -200,10 +200,10 @@ async function renderPatientsList() {
     // Atualiza a mensagem de resumo
     const summaryMessage = document.getElementById('summaryMessage');
     if (pendingPatients === 0 && totalPatients > 0) {
-        summaryMessage.textContent = "✅ Todos os lembretes foram enviados com sucesso!";
+        summaryMessage.innerHTML = "<i class='fa-solid fa-check'></i> Todos os lembretes foram enviados com sucesso!";
         summaryMessage.className = "summary-message all-completed";
     } else if (pendingPatients > 0) {
-        summaryMessage.textContent = `⚠️ Ainda há ${pendingPatients} paciente(s) pendente(s). Verifique antes de finalizar.`;
+        summaryMessage.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Ainda há ${pendingPatients} paciente(s) pendente(s). Verifique antes de finalizar.`;
         summaryMessage.className = "summary-message pending-exist";
     } else {
         summaryMessage.textContent = "Verifique todos os pacientes pendentes antes de finalizar o dia.";

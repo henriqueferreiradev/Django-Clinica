@@ -258,9 +258,16 @@
                 {{ user.get_full_name }} <i class="bx bx-chevron-down"></i>
               </div>
               <div class="dropdown-content">
-                <a href="{% url 'config' %}">Ver Perfil</a>
-                <button onclick="toggleDarkMode()">Alternar Tema</button>
-                <a href="{% url 'logout' %}">Sair</a>
+                <div class="content-btn">
+                
+
+                <button onclick="toggleDarkMode()"><i class="fas fa-moon"></i>Alternar Tema</button>
+                </div>
+                <div class="content-btn">
+                
+
+                <a href="{% url 'logout' %}"><i class="fas fa-sun"></i>Sair</a>
+                </div>
               </div>
             </div>
           </div>
