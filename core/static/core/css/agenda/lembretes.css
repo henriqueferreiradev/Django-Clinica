@@ -413,20 +413,24 @@
     align-items: center;
     border-bottom: 1px solid #f0f0f0;
 }
+
 .modal-header-text {
     display: flex;
     flex-direction: column;
 }
+
 .modal-header-text h3 {
     font-size: 18px;
     font-weight: 600;
     margin: 0;
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
+
 .modal-header-text p {
     font-size: 16px;
     color: #64748b;
 }
+
 /* FECHAR */
 .close-modal {
     background: rgba(149, 33, 243, 0.12);
@@ -525,4 +529,25 @@
     .modal-header h3 {
         font-size: 16px;
     }
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.status-main {
+    font-weight: 600;
+}
+
+.status-sub {
+    font-size: 12px;
+    opacity: 0.75;
 }

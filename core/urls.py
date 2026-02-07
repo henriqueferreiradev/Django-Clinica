@@ -65,6 +65,7 @@ urlpatterns = [
     path('api/paciente/<int:paciente_id>/servicos/', pacientes_views.servicos_paciente),
     path('agenda/lembrete/',agendamento_views.lembrete_agendamento_dia_seguinte, name='lembrete_agenda'),
     path('api/listar-lembretes-agendamentos/', agendamento_views.listar_lembretes_agendamento),
+    path('api/enviar-lembrete/<int:agendamento_id>/', agendamento_views.enviar_lembrete_agenda, name='enviar_lembrete_agenda'),
     
     
     path('api/detalhe-nf-emitida/pendencia/<int:pendencia_id>/', administrativo_views.api_detalhes_notafiscal_por_pendencia),

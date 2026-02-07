@@ -121,10 +121,10 @@ function getTomorrowDate() {
     return tomorrow;
 }
 
- 
+
 function gerarMensagemLembrete(patient) {
     return (
-`Olá, ${patient.paciente}! Sua sessão está confirmada! ☺️
+        `Olá, ${patient.paciente}! Sua sessão está confirmada! ☺️
 Aqui é a Bem, IA da Ponto de Equilíbrio, tudo bem?
 
 Passando para deixar o lembrete de seu(s) próximo(s) horário(s) agendado(s)
@@ -141,13 +141,13 @@ Até lá! 🌟`
 
 // Função para salvar o status atualizado
 function savePatientStatus(patientId, status) {
- 
+
 }
 let patients = []
 async function renderPatientsList() {
     const patientsList = document.getElementById('patientsList');
     const emptyState = document.getElementById('emptyState');
-    
+
     try {
 
         const res = await fetch('/api/listar-lembretes-agendamentos/', {
@@ -237,8 +237,18 @@ async function renderPatientsList() {
                     <div class="patient-actions">
                         <div class="status-badge ${patient.reminderSent ? 'status-completed' : 'status-pending'}">
                             <i class="fas ${patient.reminderSent ? 'fa-check-circle' : 'fa-clock'}"></i>
-                            <span>${patient.reminderSent ? 'Lembrete enviado' : 'Pendente'}</span>
+                            <div class="status-text">
+                                <span class="status-main">
+                                    ${patient.reminderSent ? 'Lembrete enviado' : 'Pendente'}
+                                </span>
+                                ${patient.reminderSent ? `
+                                    <span class="status-sub">
+                                        por ${patient.enviado_por}
+                                    </span>
+                                ` : ''}
+                            </div>
                         </div>
+
                         <button class="btn-send ${patient.reminderSent ? 'completed' : ''}" 
                                 onclick="openReminderModal(${patient.id})"
                                 ${patient.reminderSent ? 'disabled' : ''}>
@@ -269,7 +279,21 @@ function closeReminderModal() {
     document.getElementById('modalLembrete').style.display = 'none';
     selectedPatient = null;
 }
-
+function getCSRFToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 async function confirmSendReminder() {
     if (!selectedPatient) return;
 
@@ -293,16 +317,14 @@ async function confirmSendReminder() {
         renderPatientsList();
 
         mostrarMensagem(
-            'Lembrete enviado',
+
             'Mensagem enviada e registrada com sucesso.',
             'success'
         );
 
     } catch (err) {
         mostrarMensagem(
-            'deu Erro garai',
-            'Não foi possível enviar o lembrete.',
-            'error'
+            "Erro"
         );
     }
 }

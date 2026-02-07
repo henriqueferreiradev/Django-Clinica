@@ -875,7 +875,7 @@ class Agendamento(models.Model):
         return f"{self.paciente} - {self.data} {self.hora_inicio}"
 
 class LembreteAgenda(models.Model):
-    agendamento = models.OneToOneField(Agendamento, on_delete=models.CASCADE)
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.CASCADE, related_name='lembrete_agenda')
     data_referencia = models.DateField()
     lembrete_enviado = models.BooleanField(default=False)
     enviado_por = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)

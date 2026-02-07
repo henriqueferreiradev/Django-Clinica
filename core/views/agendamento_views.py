@@ -1,3 +1,4 @@
+from venv import create
 from django.urls import reverse
 from datetime import date, datetime, time, timedelta
 from django.utils.timezone import now
@@ -7,9 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
 from core.services.financeiro import criar_receita_pacote
 from core.utils import gerar_mensagem_confirmacao, enviar_lembrete_email, registrar_log
-from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, ConfigAgenda, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, ConfigAgenda, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, LembreteAgenda, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
 from django.http import JsonResponse
-from django.db.models import Sum, Q, Count
+from django.db.models import Prefetch
 from collections import defaultdict
 from django.contrib import messages
 import uuid
@@ -1712,11 +1713,13 @@ def listar_lembretes_agendamento(request):
     amanha= hoje + timedelta(days=1)
     print(hoje, amanha)
     try:
-        agendamentos = Agendamento.objects.filter(data=amanha)
+        lembretes = LembreteAgenda.objects.all()
+        agendamentos = Agendamento.objects.filter(data=amanha,status='agendado').select_related('paciente','profissional_1').prefetch_related(Prefetch('lembrete_agenda', queryset=lembretes))
             
         
         agendamentos_data = []
         for ag in agendamentos:
+            lembrete = getattr(ag, 'lembrete_agenda',None)
             agendamentos_data.append({
                 'id': ag.id,
                 'data': ag.data.strftime('%d/%m/%Y'),
@@ -1729,7 +1732,13 @@ def listar_lembretes_agendamento(request):
                 'servico':ag.servico.nome,
                 'especialidade':ag.especialidade.nome,
                 'telefone':ag.paciente.celular,
-                'reminderSent': False,
+                'reminderSent': lembrete.lembrete_enviado if lembrete else False,
+                'enviado_por': (lembrete.enviado_por.get_full_name()
+                                    if lembrete and lembrete.enviado_por
+                                    else None
+                                )
+
+
                 
             })
         
@@ -1747,4 +1756,27 @@ def listar_lembretes_agendamento(request):
         }, status=500)
         
     
-   
+
+def enviar_lembrete_agenda(request, agendamento_id):
+    agendamento = get_object_or_404(Agendamento, id=agendamento_id)
+
+    body = json.loads(request.body or '{}')
+    mensagem = body.get('mensagem', '')
+
+    lembrete, created = LembreteAgenda.objects.get_or_create(
+        agendamento=agendamento,
+        defaults= {
+            'data_referencia':agendamento.data
+        }
+    )
+
+    lembrete.lembrete_enviado = True
+    lembrete.enviado_por = request.user
+    lembrete.enviado_em = timezone.localdate()
+    lembrete.save()
+
+    return JsonResponse({
+        'success':True,
+        'lembrete_id':lembrete.id,
+        'created':created
+    })
