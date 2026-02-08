@@ -215,3 +215,17 @@ def paginate(request, items, per_page=10, page_param='page'):
     paginator = Paginator(items, per_page)
     page_number = request.GET.get(page_param)
     return paginator.get_page(page_number)
+
+
+
+def proximo_dia_util(data):
+    dia_semana = data.weekday()
+
+    if dia_semana == 4:
+        return data + timedelta(days=3)
+    elif dia_semana == 5:
+        return data + timedelta(days=2)
+    elif dia_semana == 6:
+        return data + timedelta(days=1)
+    else:
+        return data + timedelta(days=1)

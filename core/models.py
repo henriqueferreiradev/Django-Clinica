@@ -3,6 +3,7 @@ from decimal import Decimal
 from doctest import BLANKLINE_MARKER
 from urllib.parse import DefragResult
 from colorama import Fore
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
@@ -996,7 +997,34 @@ class ConfigAgenda(models.Model):
         dia_semana = data_obj.weekday()
         dia_str = dias_map.get(dia_semana, '')
         return dia_str in self.dias_funcionamento
-    
+    from datetime import timedelta
+
+    def proximo_dia_funcionamento(self, data_base):
+        """
+        Retorna o próximo dia válido de funcionamento
+        baseado em dias_funcionamento da clínica
+        """
+        dias_map = {
+            0: 'segunda',
+            1: 'terca',
+            2: 'quarta',
+            3: 'quinta',
+            4: 'sexta',
+            5: 'sabado',
+            6: 'domingo'
+        }
+
+        proximo = data_base + timedelta(days=1)
+
+        # Segurança: evita loop infinito
+        for _ in range(7):
+            dia_str = dias_map[proximo.weekday()]
+            if dia_str in self.dias_funcionamento:
+                return proximo
+            proximo += timedelta(days=1)
+
+        return None  # fallback (não deveria acontecer)
+
     def get_config_dict(self):
         """Retorna configuração como dicionário"""
         return {

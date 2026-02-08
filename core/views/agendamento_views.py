@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.utils.dateparse import parse_date
 from core.services.financeiro import criar_receita_pacote
-from core.utils import gerar_mensagem_confirmacao, enviar_lembrete_email, registrar_log
+from core.utils import gerar_mensagem_confirmacao, enviar_lembrete_email, registrar_log, proximo_dia_util
 from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, ConfigAgenda, ESTADO_CIVIL, Especialidade, MIDIA_ESCOLHA, LembreteAgenda, Paciente, PacotePaciente, Pagamento, Profissional, Receita, SEXO_ESCOLHA, STATUS_CHOICES, Servico, UF_ESCOLHA, VINCULO
 from django.http import JsonResponse
 from django.db.models import Prefetch
@@ -1710,11 +1710,12 @@ DIAS_SEMANA = {
 
 def listar_lembretes_agendamento(request):
     hoje = timezone.localdate()
-    amanha= hoje + timedelta(days=1)
-    print(hoje, amanha)
+    config = ConfigAgenda.objects.first()
+    proximo_dia= config.proximo_dia_funcionamento(hoje)
+    print(hoje, proximo_dia)
     try:
         lembretes = LembreteAgenda.objects.all()
-        agendamentos = Agendamento.objects.filter(data=amanha,status='agendado').select_related('paciente','profissional_1').prefetch_related(Prefetch('lembrete_agenda', queryset=lembretes))
+        agendamentos = Agendamento.objects.filter(data=proximo_dia,status='agendado').select_related('paciente','profissional_1').prefetch_related(Prefetch('lembrete_agenda', queryset=lembretes))
             
         
         agendamentos_data = []
@@ -1724,6 +1725,9 @@ def listar_lembretes_agendamento(request):
                 'id': ag.id,
                 'data': ag.data.strftime('%d/%m/%Y'),
                 'data_completa': ag.data.strftime('%d/%m/%Y - %H:%M'),
+                'usuario_id': request.user.id,
+                'usuario_nome': request.user.get_full_name() or request.user.username,
+
                 'paciente':f'{ag.paciente.nome} {ag.paciente.sobrenome}',
                 'hora_inicio': ag.hora_inicio.strftime('%H:%M'),
                 'hora_fim': ag.hora_fim.strftime('%H:%M'),
@@ -1744,6 +1748,7 @@ def listar_lembretes_agendamento(request):
         
         return JsonResponse({
             'success': True,
+            'data_agenda': proximo_dia.strftime('%Y-%m-%d'),
             'agendamentos': agendamentos_data,
             'total': len(agendamentos_data)
         })

@@ -114,18 +114,16 @@ function formatDate(date) {
     return date.toLocaleDateString('pt-BR', options);
 }
 
-// Função para obter a data de amanhã
-function getTomorrowDate() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow;
+function formatDateFromBackend(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    return formatDate(date);
 }
 
 
 function gerarMensagemLembrete(patient) {
     return (
         `Olá, ${patient.paciente}! Sua sessão está confirmada! ☺️
-Aqui é a Bem, IA da Ponto de Equilíbrio, tudo bem?
+Aqui é a ${patient.usuario_nome}, tudo bem?
 
 Passando para deixar o lembrete de seu(s) próximo(s) horário(s) agendado(s)
 
@@ -161,6 +159,9 @@ async function renderPatientsList() {
         }
         const data = await res.json();
 
+        if (data.data_agenda) {
+            document.getElementById('tomorrowDate').textContent = formatDateFromBackend(data.data_agenda)
+        }
         // ✅ aqui você define o patients pelo fetch
         patients = data.agendamentos || [];
 
@@ -354,40 +355,11 @@ function sendReminder(patientId) {
 
 // Função para inicializar a página
 function initPage() {
-    // Configura a data de amanhã no cabeçalho
-    const tomorrow = getTomorrowDate();
-    document.getElementById('tomorrowDate').textContent = formatDate(tomorrow);
 
-    // Renderiza a lista de pacientes
     renderPatientsList();
 
-    // Simula atualização automática diária
-    // Em um sistema real, isso seria gerenciado pelo backend
-    console.log("Checklist diário carregado para:", formatDate(tomorrow));
+
 }
 
 // Inicializa a página quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', initPage);
-
-// Simula a geração automática diária limpando dados antigos
-// Em um sistema real, isso seria feito pelo backend
-function clearOldChecklists() {
-    const today = new Date().toDateString();
-    const keys = Object.keys(localStorage);
-
-    keys.forEach(key => {
-        if (key.startsWith('checklist_') && !key.includes(today)) {
-            // Remove checklists de dias anteriores (exceto o de amanhã)
-            const keyDate = key.replace('checklist_', '');
-            const keyDateObj = new Date(keyDate);
-            const tomorrow = getTomorrowDate();
-
-            if (keyDateObj.toDateString() !== tomorrow.toDateString()) {
-                localStorage.removeItem(key);
-            }
-        }
-    });
-}
-
-// Executa a limpeza de dados antigos
-clearOldChecklists();
