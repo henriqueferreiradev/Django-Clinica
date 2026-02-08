@@ -137,16 +137,16 @@
                 </div>
                 
                 <div class="actions-col">
-                    <button type="button" class="action-btn tooltip btn-salvar-status" data-agendamento-id="{{ ag.id }}">
+                    <button type="button" class="action-btn tooltip btn-salvar-status" data-tooltip="Salvar Status" data-agendamento-id="{{ ag.id }}">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span class="tooltiptext">Salvar Status</span>
+                        
                     </button>
                     <a href="{% url 'confirmacao_agendamento' ag.id %}">
-                        <button type="button" class="action-btn tooltip"><i class="fa-solid fa-eye"></i>
-                            <span class="tooltiptext">Ver detalhes</span>  </button>
+                        <button type="button" class="action-btn tooltip" data-tooltip="Ver Detalhes"><i class="fa-solid fa-eye"></i>
+                        </button>
                     </a>
                     <button data-id="{{ ag.id }}" type="button" id="openBtnEdit"
-                        class="btn-editar-agendamento action-btn tooltip" ><i class="fa-solid fa-pen-to-square"></i><span class="tooltiptext">Editar agendamento</span>  </button>
+                        class="btn-editar-agendamento action-btn tooltip"data-tooltip="Editar Agendamento" ><i class="fa-solid fa-pen-to-square"></i></button>
                     
                 </div>
             {% endif %}

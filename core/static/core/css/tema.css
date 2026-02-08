@@ -5,7 +5,7 @@
   --roxoPrincipal-hover: #76378f11;
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
-  --roxoPrincialGradient:linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
+  --roxoPrincialGradient: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
   --verdePrincipal: #92cbad;
   --branco: #FFF;
   --bg-btn-1: #eee;
@@ -55,7 +55,7 @@
   --roxoPrincipal-hover: rgba(118, 55, 143, 0.067);
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
-  
+
   --verdePrincipal: #92cbad;
   --cinza-claro: #0E101A;
   --branco: #121623;
@@ -200,9 +200,11 @@ th {
   outline: none !important;
   border: none !important;
 }
-.dropdown-content i{
+
+.dropdown-content i {
   margin-right: 0.5em;
 }
+
 .dropdown-content a,
 .dropdown-content button {
   color: var(--preto);
@@ -574,4 +576,28 @@ select::-ms-expand {
 
 .toast-close:hover {
   color: white;
+}
+
+
+
+[data-tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  /* Get content from the attribute */
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  padding: 8px;
+  white-space: nowrap;
+  background-color: var(--preto);
+  border: 1px solid var(--roxoPrincipal);
+  color: var(--branco);
+  border-radius: 4px;
+  z-index: 99999;
 }

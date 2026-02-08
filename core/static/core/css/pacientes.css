@@ -517,7 +517,7 @@ thead tr th:last-child {
     left: 50%;
     bottom: 30px;
     transform: translateX(-50%);
-   
+
     padding: 8px;
     white-space: nowrap;
     background-color: var(--preto);
@@ -526,9 +526,11 @@ thead tr th:last-child {
     border-radius: 4px;
     z-index: 99999;
 }
+
 .text-center {
     text-align: center;
 }
+
 /* Coluna */
 .consent-col {
     text-align: center;
@@ -594,26 +596,26 @@ thead tr th:last-child {
 .consent-badge.icon-only small {
     display: none;
 }
- 
 
-.consent-badge.ok{
-  background: rgba(16,185,129,.12);
-  color: #10B981;
-  border: 1px solid rgba(16,185,129,.25);
+
+.consent-badge.ok {
+    background: rgba(16, 185, 129, .12);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, .25);
 }
 
-.consent-badge.pendente{
-  background: rgba(239,68,68,.10);
-  color: #EF4444;
-  border: 1px solid rgba(239,68,68,.20);
+.consent-badge.pendente {
+    background: rgba(239, 68, 68, .10);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, .20);
 }
 
-.sub-ico{
-  position: absolute;
-  right: -4px;
-  bottom: -4px;
-  font-size: 12px;
-  background: var(--branco);
-  border-radius: 999px;
-  padding: 1px;
+.sub-ico {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    font-size: 12px;
+    background: var(--branco);
+    border-radius: 999px;
+    padding: 1px;
 }
