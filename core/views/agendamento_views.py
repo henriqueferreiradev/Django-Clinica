@@ -21,6 +21,7 @@ from datetime import datetime, timedelta
 from math import ceil
 from django.db.models import Case, When, Value, IntegerField
 from django.template.context_processors import request
+from django.db import transaction
 import unicodedata
 
 
@@ -410,6 +411,7 @@ def existe_conflito_profissional(profissional, data, hora_inicio, hora_fim, igno
     
     
 @login_required(login_url='login')
+@transaction.atomic
 def criar_agendamento(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Método não permitido'}, status=405)
@@ -788,16 +790,24 @@ def criar_agendamento(request):
     
     # CORREÇÃO: Use valor_pago_inicial APENAS se valor_pago for definido e > 0
     valor_pago_inicial_param = valor_pago if valor_pago and valor_pago > 0 else None
-    
-    # Cria receita com a data correta
-    receita = criar_receita_pacote(
-        paciente=paciente,
-        pacote=pacote,
-        valor_final=valor_final,
-        vencimento=primeira_data_real, 
-        forma_pagamento=forma_pagamento,
-        valor_pago_inicial=valor_pago_inicial_param  # <-- CORRIGIDO
-    )
+
+    # 🔒 TRAVA: impede criar mais de uma receita para o mesmo pacote
+    receita_existente = Receita.objects.filter(
+        pacote=pacote
+    ).first()
+
+    if receita_existente:
+        receita = receita_existente
+        print('impediu criação')
+    else:
+        receita = criar_receita_pacote(
+            paciente=paciente,
+            pacote=pacote,
+            valor_final=valor_final,
+            vencimento=primeira_data_real,
+            forma_pagamento=forma_pagamento,
+            valor_pago_inicial=valor_pago_inicial_param
+        )
 
     # CORREÇÃO: REMOVA esta seção de registrar pagamento
     # A função criar_receita_pacote já faz isso quando valor_pago_inicial é passado

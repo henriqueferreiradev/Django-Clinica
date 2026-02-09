@@ -62,7 +62,7 @@
               type="date"
               name="data_inicio"
               id="filtro-data-inicio"
-              value="{{ data_inicio }}"
+              value="{{ data_inicio|default_if_none:'' }}"
               class="filtro-input"
             />
           </div>
@@ -71,11 +71,12 @@
         <div class="filtro-campo">
           <label for="filtro-data-fim">Data Fim</label>
           <div class="filtro-data-wrapper">
+          
             <input
               type="date"
               name="data_fim"
               id="filtro-data-fim"
-              value="{{ data_fim }}"
+              value="{{ data_fim|default_if_none:'' }}"
               class="filtro-input"
             />
           </div>

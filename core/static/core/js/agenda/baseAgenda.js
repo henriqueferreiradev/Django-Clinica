@@ -114,6 +114,7 @@ if (formCriarAgendamento) {
     formCriarAgendamento.addEventListener('submit', async function (e) {
         e.preventDefault();
         e.stopPropagation();
+
         if (formularioTemErro()) {
             mostrarMensagem(
                 '❌ Corrija a data ou o horário antes de salvar o agendamento.',
@@ -121,6 +122,19 @@ if (formCriarAgendamento) {
             );
             return;
         }
+
+        // 🔒 BLOQUEIO DE DUPLO SUBMIT
+        const btnSubmit = document.querySelector(
+            'button[type="submit"][form="agendamentoForm"]'
+        );
+
+
+        if (btnSubmit.disabled) return;
+
+        btnSubmit.disabled = true;
+        btnSubmit.dataset.loading = 'true';
+        btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+
         const formData = new FormData(this);
 
         try {
@@ -134,32 +148,35 @@ if (formCriarAgendamento) {
             });
 
             const data = await response.json();
+
             if (data.success) {
                 mostrarMensagem(
                     data.message || '✅ Agendamento criado com sucesso!',
                     'success'
                 );
 
-                // aguarda a mensagem e redireciona
                 setTimeout(() => {
                     if (data.redirect_url) {
                         window.location.href = data.redirect_url;
                     } else {
                         window.location.reload();
                     }
-                }, 800); // tempo curto, UX boa
+                }, 800);
             } else {
-                mostrarMensagem(
-                    data.error || '❌ Erro ao criar agendamento',
-                    'error'
-                );
+                throw new Error(data.error || 'Erro ao criar agendamento');
             }
 
         } catch (err) {
             console.error(err);
             mostrarMensagem('❌ Erro de comunicação com o servidor', 'error');
+
+            // 🔓 REABILITA SE DEU ERRO
+            btnSubmit.disabled = false;
+            btnSubmit.dataset.loading = 'false';
+            btnSubmit.innerHTML = 'Salvar agendamento';
         }
     });
+
 }
 
 // =============================================
