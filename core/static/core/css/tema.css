@@ -55,7 +55,7 @@
   --roxoPrincipal-hover: rgba(118, 55, 143, 0.067);
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
-
+  --roxoPrincipalGradient: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
   --verdePrincipal: #92cbad;
   --cinza-claro: #0E101A;
   --branco: #121623;
@@ -129,12 +129,6 @@ input[type="time"] {
   text-align: center
 }
 
-body {
-  background-color: var(--bg-color);
-  color: var(--preto);
-  font-family: var(--fontePrincipal);
-}
-
 input,
 textarea,
 select {
@@ -187,12 +181,14 @@ th {
   display: none;
   position: absolute;
   right: 0;
+
   background-color: var(--branco);
-  min-width: 160px;
+  min-width: 180px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   overflow: hidden;
   z-index: 10;
+  border: 1px solid var(--roxoPrincipal);
 }
 
 .topbar .dropdown .profile-button {
@@ -300,7 +296,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* 2) DATE: esconder ícone/“calendário” */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  display: none;
+
   /* Chrome, Edge, Safari */
 }
 
@@ -308,6 +304,13 @@ input[type="date"] {
   /* Firefox não expõe o indicador via CSS.
      appearance:none já remove boa parte do visual, mas o “picker” ainda abre ao clicar no campo.
      Se quiser eliminar o picker por completo, use type="text" + máscara/validação. */
+}
+
+/* deixa o ícone roxo (ajuste o filter até ficar do tom que você quer) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(25%) sepia(55%) saturate(2500%) hue-rotate(250deg) brightness(90%) contrast(95%);
+  opacity: 0.9;
+  cursor: pointer;
 }
 
 /* 3) TIME: remover relógio/ícones */
@@ -600,4 +603,335 @@ select::-ms-expand {
   color: var(--branco);
   border-radius: 4px;
   z-index: 99999;
+}
+
+/* ===== FLATPICKR CUSTOM STYLES ===== */
+.flatpickr-calendar {
+  background: var(--backgroundCard);
+  border-radius: var(--borda-arredondada);
+  border: 1px solid var(--cinzaBorda);
+  box-shadow: var(--sombra-destaque);
+  font-family: var(--fontePrincipal), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+  width: 320px;
+  animation: slideDown 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== MÊS E ANO ===== */
+.flatpickr-months {
+  background: var(--branco);
+  border-radius: 14px 14px 0 0;
+  padding: .5em 0;
+  position: relative;
+}
+
+.flatpickr-month {
+  color: var(--roxoPrincipal);
+  font-size: 1.1rem;
+  font-weight: 600;
+  height: 44px;
+}
+
+.flatpickr-current-month {
+  color: var(--roxoPrincipal);
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding-top: 6px;
+}
+
+.flatpickr-current-month input.cur-year {
+  font-weight: 700;
+}
+
+.flatpickr-current-month .numInputWrapper span.arrowUp,
+.flatpickr-current-month .numInputWrapper span.arrowDown {
+  border: none;
+  border-radius: var(--borda-radius-sm);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.flatpickr-current-month .numInputWrapper span.arrowUp:hover,
+.flatpickr-current-month .numInputWrapper span.arrowDown:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== SETAS DE NAVEGAÇÃO ===== */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  color: var(--branco) !important;
+  fill: var(--branco) !important;
+  padding: 10px;
+  border-radius: var(--borda-radius);
+  transition: var(--transicao);
+  top: 16px;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* ===== DIAS DA SEMANA ===== */
+.flatpickr-weekdays {
+  background: var(--branco);
+  padding: 12px 0;
+  margin-bottom: 8px;
+}
+
+.flatpickr-weekday {
+  color: var(--roxoPrincipal);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== DIAS DO MÊS ===== */
+.flatpickr-day {
+  border-radius: var(--borda-radius);
+  border: 2px solid transparent;
+  color: var(--preto);
+  font-weight: 500;
+  height: 40px;
+  line-height: 36px;
+  margin: 2px;
+  max-width: 40px;
+  transition: var(--transicao);
+}
+
+.flatpickr-day:hover {
+  background: var(--roxoPrincipal-hover);
+  border-color: var(--roxoPrincipal);
+  color: var(--roxoPrincipal);
+  transform: translateY(-2px);
+  box-shadow: var(--sombra);
+}
+
+.flatpickr-day:focus {
+  background: var(--roxoPrincipal-hover);
+  border-color: var(--roxoPrincipal);
+  outline: none;
+}
+
+/* ===== DIA ATUAL ===== */
+.flatpickr-day.today {
+  background: var(--verdePrincipal);
+  border-color: var(--verdePrincipal);
+  color: var(--preto);
+  font-weight: 600;
+}
+
+.flatpickr-day.today:hover {
+  background: var(--verdePrincipal);
+  border-color: var(--roxoPrincipal);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(146, 203, 173, 0.3);
+}
+
+/* ===== DIAS SELECIONADOS ===== */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: var(--roxoPrincialGradient);
+  border-color: var(--roxoPrincipal);
+  color: var(--branco);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(109, 57, 142, 0.25);
+}
+
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+  background: var(--roxo-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(109, 57, 142, 0.3);
+}
+
+/* ===== DIAS NO INTERVALO (entre start e end) ===== */
+.flatpickr-day.inRange {
+  background: var(--roxoPrincipal-hover);
+  border-color: var(--roxoPrincipal-hover2);
+  color: var(--roxoPrincipal);
+  font-weight: 500;
+}
+
+.flatpickr-day.inRange:hover {
+  background: var(--roxoPrincipal-hover2);
+  color: var(--roxoPrincipal);
+}
+
+/* ===== DIAS DESABILITADOS ===== */
+.flatpickr-day.disabled,
+.flatpickr-day.disabled:hover {
+  color: var(--cinza-medio);
+  background: var(--cinza-claro);
+  cursor: not-allowed;
+  transform: none;
+  border-color: transparent;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+  color: var(--cinza-medio);
+  background: var(--cinza-claro);
+  cursor: not-allowed;
+}
+
+/* ===== MÊS ANTERIOR/PRÓXIMO ===== */
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: var(--cinza-medio);
+  opacity: 0.7;
+}
+
+.flatpickr-day.prevMonthDay:hover,
+.flatpickr-day.nextMonthDay:hover {
+  background: var(--cinza-claro);
+  color: var(--cinza-escuro);
+  opacity: 1;
+}
+
+/* ===== SEMANAS ===== */
+.flatpickr-weekwrapper .flatpickr-weeks {
+  border-left: 1px solid var(--cinza-borda);
+  box-shadow: -1px 0 0 var(--cinza-borda);
+}
+
+.flatpickr-weekwrapper span.flatpickr-day {
+  height: 40px;
+  line-height: 36px;
+}
+
+/* ===== INPUT DO FLATPICKR ===== */
+.flatpickr-input {
+  background: var(--branco);
+  border: 2px solid var(--cinzaBorda);
+  border-radius: var(--borda-radius);
+  color: var(--preto);
+  font-family: var(--fontePrincipal);
+  font-size: 1rem;
+  padding: 12px 16px;
+  transition: var(--transicao);
+  width: 100%;
+}
+
+.flatpickr-input:focus {
+  border-color: var(--roxoPrincipal);
+  box-shadow: var(--sombra-focus);
+  outline: none;
+}
+
+.flatpickr-input:hover {
+  border-color: var(--roxoPrincipal);
+}
+
+/* ===== TIME PICKER (se estiver usando) ===== */
+.flatpickr-time {
+  border-top: 1px solid var(--cinzaBorda);
+  padding: 12px;
+}
+
+.flatpickr-time .numInputWrapper {
+  border-radius: var(--borda-radius);
+  border: 1px solid var(--cinza-borda);
+}
+
+.flatpickr-time .numInputWrapper:hover {
+  border-color: var(--roxoPrincipal);
+}
+
+.flatpickr-time input {
+  color: var(--preto);
+  font-weight: 500;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+  background: var(--roxoPrincipal-hover);
+}
+
+.flatpickr-time .flatpickr-am-pm {
+  color: var(--roxoPrincipal);
+  font-weight: 600;
+}
+
+.flatpickr-time .flatpickr-am-pm:hover {
+  background: var(--roxoPrincipal-hover);
+  color: var(--roxoPrincipal);
+}
+
+/* ===== BOTÕES DE AÇÃO ===== */
+.flatpickr-calendar .flatpickr-time .flatpickr-time-separator,
+.flatpickr-calendar .flatpickr-time .flatpickr-am-pm {
+  color: var(--roxoPrincipal);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 480px) {
+  .flatpickr-calendar {
+    width: 300px;
+    transform: scale(0.95);
+  }
+
+  .flatpickr-day {
+    height: 36px;
+    line-height: 32px;
+    max-width: 36px;
+    font-size: 0.9rem;
+  }
+}
+
+/* ===== MODAL/OVERLAY ===== */
+.flatpickr-calendar.open {
+  z-index: 999999;
+  animation: slideDown 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ===== ESTADO DE FOCUS ===== */
+.flatpickr-day:focus-visible {
+  outline: 2px solid var(--roxoPrincipal);
+  outline-offset: 2px;
+}
+
+/* ===== BOTÃO CLEAR ===== */
+.flatpickr-clear {
+  color: var(--vermelho-alerta);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--borda-radius);
+  transition: var(--transicao);
+}
+
+.flatpickr-clear:hover {
+  background: var(--btn-red-exclude);
+  color: var(--vermelho-alerta);
+}
+
+/* ===== INDICADOR DE HOJE ===== */
+.flatpickr-today-indicator {
+  background: var(--verdePrincipal);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.flatpickr-day.today .flatpickr-today-indicator {
+  background: var(--preto);
 }

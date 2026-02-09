@@ -142,7 +142,7 @@ thead tr th:last-child {
     background: transparent;
     border: none;
     font-size: 20px;
-    color: black;
+    color: var(--roxoPrincipal);
     box-shadow: none;
     padding: .3em;
 

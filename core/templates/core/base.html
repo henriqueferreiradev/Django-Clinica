@@ -2,35 +2,22 @@
 <!DOCTYPE html>
 <html lang="pt-br" class="light" dir="ltr">
   <head>
-    <meta charset="UTF-8" />
-    <script>
-      (function () {
-        const isDark = localStorage.getItem("theme") === "dark";
-        document.documentElement.classList.toggle("dark", isDark);
-      })();
-    </script>
-
-    <title>
-      {% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}
-    </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="icon"
-      href="{% static 'core/img/icons/logoRoxoFull.png' %}"
-      type="image/png"
-    />
-
+    <meta charset="UTF-8">
+    <title>{% block title %}Dashboard - Ponto de Equilíbrio{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png"/>
+    
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}" />
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
     <link rel="stylesheet" href="{% static 'core/css/alerts.css' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
   </head>
 
   <body>
-    <!-- =========================
-       SIDEBAR ORIGINAL (DESKTOP)
-       ========================= -->
     <div class="sidebar close">
       <div class="logo-details">
         <img
@@ -224,9 +211,6 @@
       </ul>
     </div>
 
-    <!-- =========================
-       HOME / TOPBAR
-       ========================= -->
     <section class="home-section">
       <div class="home-content">
         {% block topbar %}
@@ -281,10 +265,7 @@
               </div>
             </div>
             <div class="modal-body">
-              <!-- Notificações serão carregadas dinamicamente -->
               <div id="notificationsList"></div>
-
-              <!-- Template para notificação (oculto) -->
               <div class="notification-item template" style="display: none">
                 <div class="notification-icon">
                   <i class="fas fa-calendar-check"></i>
@@ -319,8 +300,6 @@
               <input class="input-s" type="search" style="width: 100%" />
 
               <div id="messagesList"></div>
-
-              <!-- Template para mensagem (oculto) -->
               <div class="message-item template" style="display: none">
                 <div class="message-text">
                   <h4></h4>
@@ -444,7 +423,6 @@
           </a>
           {% endif %}
 
-          <!-- Accordion: Financeiro -->
           {% if request.user.tipo != 'profissional' %}
           <div class="mobile-menu-accordion">
             <button
@@ -471,7 +449,6 @@
           </div>
           {% endif %}
 
-          <!-- Accordion: Config -->
           {% if request.user.tipo != 'profissional' %}
           <div class="mobile-menu-accordion">
             <button type="button" class="mobile-acc-btn" onclick="toggleSubmenu(this)">
@@ -491,7 +468,6 @@
 
           <div class="mobile-separator"></div>
 
-          <!-- Perfil + Tema + Sair -->
           <a href="{% url 'config' %}" class="mobile-menu-item-link">
             <i class="bx bx-user-circle"></i>
             <span>Meu Perfil</span>
@@ -535,6 +511,11 @@
     </div>
 
     {% block scripts %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+    <script src="{% static 'core/js/global-datepicker.js' %}"></script>
+
     <script type="module" src="{% static 'core/js/alertas/main.js' %}"></script>
     <script src="{% static 'core/js/base/scriptBase.js' %}"></script>
     <script>

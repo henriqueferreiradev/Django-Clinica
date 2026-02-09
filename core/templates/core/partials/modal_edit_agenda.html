@@ -15,7 +15,10 @@
                 <div class='modal_subtitulo'>Editar dados da sessão</div>
                 <div class="form-group sessao-grid">
                     <div class="form-field">
-                        <label class="form-label">Profissional 1 *</label>
+                        <label class="form-label">
+                        <i class="fas fa-user-md"></i> Profissional 1 *
+                        </label>
+
                         <select name="profissional1_id" id="profissional1InputEdicao" class="form-input" required>
                             <option value="" disabled selected>Selecione um profissional</option>
                             {% for profissional in profissionais %}
@@ -26,15 +29,24 @@
                         </select>
                     </div>
                     <div class="form-field">
-                        <label class="form-label">Data *</label>
+                        <label class="form-label">
+                        <i class="fas fa-calendar-day"></i> Data *
+                        </label>
+
                         <input type="date" name="data" id="dataInputEdicao" class="form-input" required>
                     </div>
                     <div class="form-field">
-                        <label class="form-label">Início *</label>
+                        <label class="form-label">
+                        <i class="fas fa-clock"></i> Início *
+                        </label>
+
                         <input type="time" name="hora_inicio" id="horaInicioPrincipal" class="form-input" min="06:00" max="00:00" required>
                     </div>
                     <div class="form-field">
-                        <label class="form-label">Fim *</label>
+                        <label class="form-label">
+                        <i class="fas fa-clock"></i> Fim *
+                        </label>
+
                         <input type="time" name="hora_fim" id="horaFimPrincipal" class="form-input" min="06:00" max="00:00" required>
                     </div>
                 </div>
@@ -42,7 +54,10 @@
                 <div class='modal_subtitulo'>Adicionar atualizações</div>
                 <div class="form-group sessao-grid-2">
                     <div class="form-field">
-                        <label class="form-label">Profissional 2</label>
+                        <label class="form-label">
+                        <i class="fas fa-user-plus"></i> Profissional 2
+                        </label>
+
                         <select name="profissional2_id" id="profissional2InputEdicao" class="form-input">
                             <option value="" selected>Nenhum</option>
                             {% for profissional in profissionais %}
@@ -53,11 +68,17 @@
                         </select>
                     </div>
                     <div class="form-field">
-                        <label class="form-label">Início</label>
+                        <label class="form-label">
+                        <i class="fas fa-hourglass-start"></i> Início
+                        </label>
+
                         <input type="time" name="hora_inicio_aux" id="horaInicioAjuda" class="form-input" min="06:00" max="00:00">
                     </div>
                     <div class="form-field">
-                        <label class="form-label">Fim</label>
+                        <label class="form-label">
+                        <i class="fas fa-hourglass-end"></i> Fim
+                        </label>
+
                         <input type="time" name="hora_fim_aux" id="horaFimAjuda" class="form-input" min="06:00" max="00:00">
                     </div>
                 </div>
@@ -65,7 +86,10 @@
                 <div class='modal_subtitulo'>Observações / Notas internas</div>
                 <div class="form-group">
                     <div class="form-field">
-                        <label class="form-label">Observações</label>
+                        <label class="form-label">
+                        <i class="fas fa-note-sticky"></i> Observações
+                        </label>
+
                         <textarea class="form-textarea textarea-large" name="observacoes">{{ ag.observacoes }}</textarea>
                     </div>
                 </div>
@@ -73,11 +97,16 @@
                 <div class='modal_subtitulo'>Adicionar pagamento</div>
                 <div class="form-group">
                     <div class="form-field">
-                        <label class="form-label">Valor pago</label>
+                        <label class="form-label">
+                        <i class="fas fa-money-bill-wave"></i> Valor pago
+                        </label>
+
                         <input id="valorPagoInput" type="number" name="valor_pago" class="form-input" placeholder="Valor pago" step="0.01">
                     </div>
                     <div class="form-field">
-                        <label class="form-label">Forma de pagamento</label>
+                        <label class="form-label">
+                        <i class="fas fa-credit-card"></i> Forma de pagamento
+                        </label>
                         <select id="formaPagamentoSelect" name="forma_pagamento" class="form-input">
                             <option value="pix">Pix</option>
                             <option value="credito">Cartão de Crédito</option>

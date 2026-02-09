@@ -488,17 +488,6 @@ textarea {
   color: var(--preto);
 }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: var(--branco);
-  min-width: 160px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
-  overflow: hidden;
-  z-index: 10;
-}
 
 .topbar .dropdown .profile-button {
   box-shadow: none !important;
@@ -662,7 +651,7 @@ textarea {
   width: 90%;
   max-width: 600px;
   border-radius: 12px;
-  display: none;
+
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   animation: slideIn 0.3s ease;
@@ -836,7 +825,7 @@ textarea {
   display: flex;
   justify-content: space-between;
   border-top: 1px solid #f0f0f0;
-  background: #fafafa;
+  background: var(--branco);
 }
 
 .modal-footer button {
@@ -1229,140 +1218,4 @@ textarea {
     color: var(--cinzaEscuro);
     font-size: 12px;
   }
-}
-
-/* =========================
-   ✅ AJUSTES FINAIS (MOBILE)
-   Cole depois do bloco anterior
-   ========================= */
-
-/* 1) Evita o body “travado”/cortado no mobile
-   (você tem overflow:hidden no body, no mobile isso atrapalha) */
-@media (max-width: 1024px) {
-  body {
-    overflow: auto !important;
-  }
-
-  /* seu .content tem height calc; em algumas telas isso dá corte.
-     aqui fica mais robusto */
-  .content {
-
-    max-height: calc(100vh - 90px - 92px);
-    overflow: auto !important;
-  }
-}
-
-/* 2) Notificação dropdown: no mobile ela deve ficar por cima certinho */
-@media (max-width: 1024px) {
-  .notification-dropdown {
-    position: fixed !important;
-    top: 70px !important;
-    left: 10px !important;
-    right: 10px !important;
-    min-width: auto !important;
-    max-width: none !important;
-    z-index: 10000 !important;
-    /* acima do resto */
-  }
-}
-
-/* 3) Bottom nav: melhora “tap area” e remove hover estranho */
-@media (max-width: 1024px) {
-  .bottom-nav-bar .nav-item {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .bottom-nav-bar .nav-item:active {
-    transform: scale(0.98);
-  }
-}
-
-/* 4) Overlay/Drawer: garante que o menu abre “em cima” de tudo,
-      e não briga com outros z-index do sistema */
-@media (max-width: 1024px) {
-  .mobile-menu-overlay {
-    z-index: 20000 !important;
-  }
-
-  .bottom-nav-bar {
-    z-index: 19999 !important;
-  }
-}
-
-/* 5) Drawer: melhora a rolagem e evita “scroll duplo” */
-@media (max-width: 1024px) {
-  .mobile-menu {
-    overscroll-behavior: contain;
-  }
-
-  .mobile-menu-body {
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-/* 6) Pequenos refinamentos pra telas menores (celular) */
-@media (max-width: 480px) {
-  .bottom-nav-bar {
-    height: 74px;
-  }
-
-  .bottom-nav-bar .nav-item i {
-    font-size: 23px;
-  }
-
-  .bottom-nav-bar .nav-item {
-    font-size: 10.5px;
-    padding: 8px 8px;
-  }
-
-  .mobile-menu {
-    width: 88%;
-  }
-
-  .mobile-menu-header {
-    padding: 14px;
-  }
-
-  .mobile-menu-item-link,
-  .mobile-menu-item-btn {
-    padding: 13px 12px;
-  }
-}
-
-/* 7) Se quiser bloquear o scroll da página quando o menu estiver aberto */
-@media (max-width: 1024px) {
-  body.menu-mobile-open {
-    overflow: hidden !important;
-  }
-}
-
-/* Estados vazios */
-.empty-state {
-  padding: var(--espaco-xl) var(--espaco-md);
-  text-align: center;
-  color: var(--cinza-medio);
-}
-
-.empty-icon {
-  font-size: 3rem;
-  color: var(--cinza-borda);
-  margin-bottom: var(--espaco-sm);
-}
-
-.empty-title {
-  font-size: 1.2rem;
-  margin-bottom: var(--espaco-xs);
-  color: var(--cinza-escuro);
-}
-
-.empty-description {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.content-btn {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: .5em;
 }
