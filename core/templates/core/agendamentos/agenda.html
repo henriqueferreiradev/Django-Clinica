@@ -245,7 +245,7 @@
                         
                         <optgroup label="Sessões Avulsas">
                             {% for servico in servicos %}
-                            {% if servico.qtd_sessoes < 2 %} 
+                            {% if servico.qtd_sessoes < 2 and not servico.uso_sistema %}
                             <option value="{{ servico.id }}" data-valor="{{ servico.valor }}"
                                 class="servico-banco servico-pacote">
                                 {{ servico.nome }} - R$ {{ servico.valor }}

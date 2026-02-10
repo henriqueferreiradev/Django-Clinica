@@ -432,9 +432,10 @@ def criar_agendamento(request):
     ambiente           = data.get('ambiente')
     observacoes        = data.get('observacoes', '')
     pacote_codigo_form = data.get('pacote_codigo')
-    
+ 
     
     profissional1_id_int = int(profissional1_id)
+ 
     profissional1 = get_object_or_404(Profissional, id=profissional1_id_int)
 
     if status_ag in STATUS_BLOQUEIAM_HORARIO:
@@ -564,7 +565,7 @@ def criar_agendamento(request):
         
         servico, _ = Servico.objects.get_or_create(
             nome='Sessão de Reposição',
-            defaults={'valor': 0.00, 'qtd_sessoes': 1, 'ativo': True}
+            defaults={'valor': 0.00, 'qtd_sessoes': 1, 'ativo': True, 'uso_sistema':True}
         )
         pacote = PacotePaciente.objects.create(
             paciente=paciente,
