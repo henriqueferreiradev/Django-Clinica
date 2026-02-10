@@ -125,8 +125,7 @@ function linhaHTML(item) {
   <td class="col-center">
     <input
       type="number" min="0"
-      class="fp-input${lockClass}"
-      name="freq_programada[]" placeholder="0"
+      class="fp-input freq-input" name="freq_programada[]" placeholder="0"
       value="${fp}" style="width:6rem"
       ${lockAttrs}>
   </td>
@@ -227,11 +226,19 @@ function recalcRow(tr, fpRaw) {
 
 // ----- recalcula enquanto digita (todas as linhas)
 document.addEventListener('input', (e) => {
-  if (!e.target.matches('.fp-input')) return;
+  if (!e.target.matches('.freq-input')) return;
+
   const tr = e.target.closest('tr.table-row');
   if (!tr) return;
+
+  // recalcula %
   recalcRow(tr, e.target.value);
+
+  // marca como alterado
+  const pid = tr.getAttribute('data-paciente-id');
+  markDirty(tr, pid);
 });
+
 
 // ----- faz um passe inicial para preencher %/status se já tiver valor
 document.addEventListener('DOMContentLoaded', () => {
@@ -337,12 +344,15 @@ function statusKeyFromLabel(label) {
 // === KPIs ===
 function calcularKPIs(items) {
   const n = items.length;
-  let soma = 0,
-    count = 0;
-  let premium = 0,
-    vip = 0,
-    plus = 0,
-    indef = 0;
+
+  let soma = 0, count = 0;
+
+  let premium = 0;
+  let vip = 0;
+  let plus = 0;
+  let indef = 0;
+  let primeiroMes = 0; 
+
   for (const it of items) {
     const p =
       typeof it.percentual === "number"
@@ -350,10 +360,12 @@ function calcularKPIs(items) {
         : Number(it.freq_programada) > 0
           ? (Number(it.freq_sistema) / Number(it.freq_programada)) * 100
           : NaN;
+
     if (isFinite(p)) {
       soma += p;
       count++;
     }
+
     const key = it.status
       ? statusKeyFromLabel(it.status)
       : isFinite(p)
@@ -363,19 +375,28 @@ function calcularKPIs(items) {
             ? "vip"
             : "plus"
         : "indefinido";
+
     if (key === "premium") premium++;
     else if (key === "vip") vip++;
     else if (key === "plus") plus++;
+    else if (key === "primeiro_mes") primeiroMes++;   // ✅ aqui
     else indef++;
   }
-  const media = count ? Math.round((soma / count) * 10) / 10 : 0;
+
+ 
+
   document.getElementById("kpiPacientes").textContent = n;
-  document.getElementById("kpiMedia").textContent =
-    (Number.isInteger(media) ? media.toFixed(0) : media.toFixed(1)) + "%";
+ 
+
   document.getElementById("kpiPremium").textContent = premium;
   document.getElementById("kpiVip").textContent = vip;
   document.getElementById("kpiPlus").textContent = plus;
   document.getElementById("kpiIndef").textContent = indef;
+
+  // ✅ não esquece de criar esse elemento no HTML:
+  // <div id="kpiPrimeiroMes">0</div>
+  const elPrimeiroMes = document.getElementById("kpiPrimeiroMes");
+  if (elPrimeiroMes) elPrimeiroMes.textContent = primeiroMes;
 }
 
 // === Salvar bar ===
@@ -501,12 +522,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // abre modal de confirmação
 function abrirConfirmacaoSalvar() {
-  const mes = document.getElementById("mes")?.value;
-  const ano = document.getElementById("ano")?.value;
   document.getElementById("confirmDirtyCount").textContent = DIRTY_SET.size;
-  document.getElementById("confirmMesAno").textContent = `${mes}/${ano}`;
+  document.getElementById("confirmMesAno").textContent =
+    `${document.getElementById('mes')?.value}/${document.getElementById('ano')?.value}`;
   document.getElementById("confirmSaveModal").classList.remove("hidden");
 }
+
 
 // util dos seus modais
 function closeModal(id) {
@@ -517,8 +538,7 @@ async function openBenefits(elementoOuId) {
   const modal = document.getElementById("benefitsModal");
   const body = modal.querySelector(".modal-body");
 
-  // exibe modal
-  modal.style.display = "flex";
+ 
   modal.classList.remove("hidden");
 
   // resolve o pacienteId a partir do elemento

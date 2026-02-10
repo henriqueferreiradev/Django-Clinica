@@ -86,14 +86,14 @@
 
 /* Subtítulo premium */
 .modal_subtitulo {
-    margin: 10px 0 var(--espaco-sm);
+margin: 10px 0 var(--espaco-sm);
     font-weight: 700;
-    color: var(--cinza-escuro);
+    color: var(--roxoPrincipal);
     font-size: 1rem;
     padding: 10px 12px;
-    border-radius: var(--borda-radius);
-    background: linear-gradient(to right, #f8f9fc, #f1f5f9);
-    border: 1px solid var(--cinza-borda);
+    /* border-radius: var(--borda-radius); */
+    background: var(--branco);
+    border-bottom: 1px solid var(--cinza-borda);
 }
 
 /* Grid automático para as linhas (sem precisar cols-2/3) */

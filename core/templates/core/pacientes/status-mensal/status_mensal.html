@@ -9,12 +9,41 @@
 {%endblock%} {% block content %}
 
 <div class="content">
-  <!-- KPIs -->
+ 
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-title">Pacientes</div>
+      <div class="kpi-value" id="kpiPacientes">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Premium</div>
+      <div class="kpi-value" id="kpiPremium">0</div>
+    </div>
 
+    <div class="kpi-card">
+      <div class="kpi-title">VIP</div>
+      <div class="kpi-value" id="kpiVip">0</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Plus</div>
+      <div class="kpi-value" id="kpiPlus">0</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Indef.</div>
+      <div class="kpi-value" id="kpiIndef">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">1º mês</div>
+      <div class="kpi-value" id="kpiPrimeiroMes">0</div>
+    </div>
+
+  </div>
   <div class="filtros_div">
     <div id="filtro-bar">
      <div style="position: relative; flex: 1;">
-        <select class="fp-input" id="filtroMes" style="width: 100%; padding-left: 45px;">
+        <select class="fp-input" id="filtroMes">
           <option selected disabled value="">Selecione um mês...</option>
           <option value="1">Janeiro</option>
           <option value="2">Fevereiro</option>
@@ -29,22 +58,21 @@
           <option value="11">Novembro</option>
           <option value="12">Dezembro</option>
         </select>
-        <i class="fas fa-calendar-alt" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8;"></i>
+       
       </div>
 
       <div style="position: relative; flex: 1;">
-        <select class="fp-input" id="filtroAno" style="width: 100%; padding-left: 45px;"></select>
-        <i class="fas fa-calendar" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8;"></i>
+        <select class="fp-input" id="filtroAno"></select>
+
       </div>
 
-      <button class="btn btn-primary" type="button" id="aplicarFiltro">
+      <button class="btn btn-secondary" type="button" id="aplicarFiltro">
         Filtrar
       </button>
     </div>
     <div class="filtro-chip">
-      <div style="position: relative; width: 100%; max-width: 220px;">
-        <input id="filtroBusca" class="fp-input" type="text" placeholder="Buscar por nome/CPF…" style="width: 100%; padding-left: 45px;" />
-        <i class="fas fa-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8;"></i>
+      <div>
+        <input id="filtroBusca" class="fp-input" type="text" placeholder="Buscar por nome/CPF…">
       </div>
       
       <div class="filtro-chip-btn">
@@ -102,7 +130,8 @@
     </form>
   
     <div id="saveBar" class="save-bar">
- 
+   <span id="dirtyBadge" class="dirty-badge" style="display:none;"></span>
+  <span id="listInfo" style="opacity:.75;"></span>
         <button id="btnSalvarTudo" type="button" class="btn btn-primary">
           Salvar tudo
         </button>

@@ -491,7 +491,6 @@
         </div>
       </div>
     </div>
-
     <div class="section">
       <h2 class="section-title">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -499,43 +498,17 @@
         </svg>
         Endereço
       </h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">Rua</span>
-          <div class="info-value">{{ paciente.rua }}</div>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Número</span>
-          <div class="info-value">{{ paciente.numero }}</div>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Complemento</span>
-          <div class="info-value">{% if paciente.complemento %}{{ paciente.complemento }}{% else %}<span class="empty-value">Não informado</span>{% endif %}</div>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Bairro</span>
-          <div class="info-value">{{ paciente.bairro }}</div>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Cidade</span>
-          <div class="info-value">{{ paciente.cidade }}</div>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Estado</span>
-          <div class="info-value">{{ paciente.estado }}</div>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">CEP</span>
-          <div class="info-value">{{ paciente.cep }}</div>
+
+      <div class="info-inline">
+        <span class="info-label">Endereço</span>
+        <div class="info-value">
+          {{ paciente.rua }}, nº {{ paciente.numero }}
+          {% if paciente.complemento %} — {{ paciente.complemento }}{% else %} — <span class="empty-value">Não informado</span>{% endif %}
+          — {{ paciente.bairro }} — {{ paciente.cidade }}/{{ paciente.estado }} — CEP: {{ paciente.cep }}
         </div>
       </div>
     </div>
+
 
     <div class="section">
       <h2 class="section-title">

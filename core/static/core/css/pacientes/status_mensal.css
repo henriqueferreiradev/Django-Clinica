@@ -1,3 +1,508 @@
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+}
+
+.kpi-card {
+    background: var(--branco);
+    border-radius: 20px;
+    padding: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Gradiente superior com as cores das badges/chips */
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    border-radius: 20px 20px 0 0;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+/* Card 1: Pacientes (roxo principal) */
+.kpi-card:nth-child(1)::before {
+    background: linear-gradient(90deg, var(--roxoPrincipal) 0%, #9f7aea 100%);
+}
+
+/* Card 2: Premium (laranja) */
+.kpi-card:nth-child(2)::before {
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+}
+
+/* Card 3: VIP (roxo escuro/índigo) */
+.kpi-card:nth-child(3)::before {
+    background: linear-gradient(90deg, #4338ca 0%, #5b51d8 100%);
+}
+
+/* Card 4: Plus (turquesa) */
+.kpi-card:nth-child(4)::before {
+    background: linear-gradient(90deg, #2ac4cf 0%, #3dd5e1 100%);
+}
+
+/* Card 5: Indefinido (cinza) */
+.kpi-card:nth-child(5)::before {
+    background: linear-gradient(90deg, #797979 0%, #9ca3af 100%);
+}
+
+/* Card 6: 1º mês (verde) */
+.kpi-card:nth-child(6)::before {
+    background: linear-gradient(90deg, #31ba7a 0%, #3bd48b 100%);
+}
+
+/* Efeitos hover com as respectivas cores */
+.kpi-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Pacientes hover */
+.kpi-card:nth-child(1):hover {
+    border-color: var(--roxoPrincipal);
+    box-shadow: 0 8px 25px rgba(118, 55, 143, 0.2);
+}
+
+/* Premium hover */
+.kpi-card:nth-child(2):hover {
+    border-color: #f59e0b;
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.2);
+}
+
+/* VIP hover */
+.kpi-card:nth-child(3):hover {
+    border-color: #4338ca;
+    box-shadow: 0 8px 25px rgba(67, 56, 202, 0.2);
+}
+
+/* Plus hover */
+.kpi-card:nth-child(4):hover {
+    border-color: #2ac4cf;
+    box-shadow: 0 8px 25px rgba(42, 196, 207, 0.2);
+}
+
+/* Indefinido hover */
+.kpi-card:nth-child(5):hover {
+    border-color: #797979;
+    box-shadow: 0 8px 25px rgba(121, 121, 121, 0.2);
+}
+
+/* 1º mês hover */
+.kpi-card:nth-child(6):hover {
+    border-color: #31ba7a;
+    box-shadow: 0 8px 25px rgba(49, 186, 122, 0.2);
+}
+
+/* Efeito de brilho ao passar o mouse */
+.kpi-card:hover::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.kpi-card:nth-child(1):hover::after {
+    background: radial-gradient(circle at center,
+            rgba(118, 55, 143, 0.08) 0%,
+            transparent 70%);
+    opacity: 1;
+}
+
+.kpi-card:nth-child(2):hover::after {
+    background: radial-gradient(circle at center,
+            rgba(245, 158, 11, 0.08) 0%,
+            transparent 70%);
+    opacity: 1;
+}
+
+.kpi-card:nth-child(3):hover::after {
+    background: radial-gradient(circle at center,
+            rgba(67, 56, 202, 0.08) 0%,
+            transparent 70%);
+    opacity: 1;
+}
+
+.kpi-card:nth-child(4):hover::after {
+    background: radial-gradient(circle at center,
+            rgba(42, 196, 207, 0.08) 0%,
+            transparent 70%);
+    opacity: 1;
+}
+
+.kpi-card:nth-child(5):hover::after {
+    background: radial-gradient(circle at center,
+            rgba(121, 121, 121, 0.08) 0%,
+            transparent 70%);
+    opacity: 1;
+}
+
+.kpi-card:nth-child(6):hover::after {
+    background: radial-gradient(circle at center,
+            rgba(49, 186, 122, 0.08) 0%,
+            transparent 70%);
+    opacity: 1;
+}
+
+.kpi-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--preto);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Ícones com as cores correspondentes */
+.kpi-card:nth-child(1) .kpi-title {
+    color: var(--roxoPrincipal);
+}
+
+.kpi-card:nth-child(2) .kpi-title {
+    color: #f59e0b;
+}
+
+.kpi-card:nth-child(3) .kpi-title {
+    color: #4338ca;
+}
+
+.kpi-card:nth-child(4) .kpi-title {
+    color: #2ac4cf;
+}
+
+.kpi-card:nth-child(5) .kpi-title {
+    color: #797979;
+}
+
+.kpi-card:nth-child(6) .kpi-title {
+    color: #31ba7a;
+}
+
+/* Valores dos KPIs */
+.kpi-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--preto);
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+/* Efeito de sublinhado dinâmico */
+.kpi-value::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    border-radius: 2px;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* Cores do sublinhado correspondentes */
+.kpi-card:nth-child(1) .kpi-value::after {
+    background: var(--roxoPrincipal);
+}
+
+.kpi-card:nth-child(2) .kpi-value::after {
+    background: #f59e0b;
+}
+
+.kpi-card:nth-child(3) .kpi-value::after {
+    background: #4338ca;
+}
+
+.kpi-card:nth-child(4) .kpi-value::after {
+    background: #2ac4cf;
+}
+
+.kpi-card:nth-child(5) .kpi-value::after {
+    background: #797979;
+}
+
+.kpi-card:nth-child(6) .kpi-value::after {
+    background: #31ba7a;
+}
+
+.kpi-card:hover .kpi-value::after {
+    width: 100%;
+}
+
+/* Animações de contagem */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kpi-value.animating {
+    animation: countUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* Badge informativo (opcional) */
+.kpi-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    opacity: 0.9;
+}
+
+.kpi-card:nth-child(1) .kpi-badge {
+    background: rgba(118, 55, 143, 0.1);
+    color: var(--roxoPrincipal);
+    border: 1px solid rgba(118, 55, 143, 0.2);
+}
+
+.kpi-card:nth-child(2) .kpi-badge {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.kpi-card:nth-child(3) .kpi-badge {
+    background: rgba(67, 56, 202, 0.1);
+    color: #4338ca;
+    border: 1px solid rgba(67, 56, 202, 0.2);
+}
+
+.kpi-card:nth-child(4) .kpi-badge {
+    background: rgba(42, 196, 207, 0.1);
+    color: #2ac4cf;
+    border: 1px solid rgba(42, 196, 207, 0.2);
+}
+
+.kpi-card:nth-child(5) .kpi-badge {
+    background: rgba(121, 121, 121, 0.1);
+    color: #797979;
+    border: 1px solid rgba(121, 121, 121, 0.2);
+}
+
+.kpi-card:nth-child(6) .kpi-badge {
+    background: rgba(49, 186, 122, 0.1);
+    color: #31ba7a;
+    border: 1px solid rgba(49, 186, 122, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+    }
+
+    .kpi-value {
+        font-size: 2.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .kpi-card {
+        padding: 1.25rem 1rem;
+    }
+
+    .kpi-value {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .kpi-card {
+        padding: 1.5rem;
+    }
+
+    .kpi-value {
+        font-size: 2.5rem;
+    }
+}
+
+/* Efeito de loading skeleton com as cores correspondentes */
+.kpi-card.loading .kpi-title,
+.kpi-card.loading .kpi-value {
+    border-radius: 4px;
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+.kpi-card.loading .kpi-title {
+    width: 60%;
+    height: 1rem;
+}
+
+.kpi-card.loading .kpi-value {
+    width: 80%;
+    height: 2.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Cores dos skeletons */
+.kpi-card:nth-child(1).loading .kpi-title,
+.kpi-card:nth-child(1).loading .kpi-value {
+    background: linear-gradient(90deg,
+            rgba(118, 55, 143, 0.1) 25%,
+            rgba(118, 55, 143, 0.2) 50%,
+            rgba(118, 55, 143, 0.1) 75%);
+}
+
+.kpi-card:nth-child(2).loading .kpi-title,
+.kpi-card:nth-child(2).loading .kpi-value {
+    background: linear-gradient(90deg,
+            rgba(245, 158, 11, 0.1) 25%,
+            rgba(245, 158, 11, 0.2) 50%,
+            rgba(245, 158, 11, 0.1) 75%);
+}
+
+.kpi-card:nth-child(3).loading .kpi-title,
+.kpi-card:nth-child(3).loading .kpi-value {
+    background: linear-gradient(90deg,
+            rgba(67, 56, 202, 0.1) 25%,
+            rgba(67, 56, 202, 0.2) 50%,
+            rgba(67, 56, 202, 0.1) 75%);
+}
+
+.kpi-card:nth-child(4).loading .kpi-title,
+.kpi-card:nth-child(4).loading .kpi-value {
+    background: linear-gradient(90deg,
+            rgba(42, 196, 207, 0.1) 25%,
+            rgba(42, 196, 207, 0.2) 50%,
+            rgba(42, 196, 207, 0.1) 75%);
+}
+
+.kpi-card:nth-child(5).loading .kpi-title,
+.kpi-card:nth-child(5).loading .kpi-value {
+    background: linear-gradient(90deg,
+            rgba(121, 121, 121, 0.1) 25%,
+            rgba(121, 121, 121, 0.2) 50%,
+            rgba(121, 121, 121, 0.1) 75%);
+}
+
+.kpi-card:nth-child(6).loading .kpi-title,
+.kpi-card:nth-child(6).loading .kpi-value {
+    background: linear-gradient(90deg,
+            rgba(49, 186, 122, 0.1) 25%,
+            rgba(49, 186, 122, 0.2) 50%,
+            rgba(49, 186, 122, 0.1) 75%);
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Tooltip informativo */
+.kpi-card {
+    position: relative;
+}
+
+.kpi-card .info-tooltip {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Cores dos tooltips */
+.kpi-card:nth-child(1) .info-tooltip {
+    background: rgba(118, 55, 143, 0.1);
+    border: 1px solid rgba(118, 55, 143, 0.3);
+    color: var(--roxoPrincipal);
+}
+
+.kpi-card:nth-child(2) .info-tooltip {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+}
+
+.kpi-card:nth-child(3) .info-tooltip {
+    background: rgba(67, 56, 202, 0.1);
+    border: 1px solid rgba(67, 56, 202, 0.3);
+    color: #4338ca;
+}
+
+.kpi-card:nth-child(4) .info-tooltip {
+    background: rgba(42, 196, 207, 0.1);
+    border: 1px solid rgba(42, 196, 207, 0.3);
+    color: #2ac4cf;
+}
+
+.kpi-card:nth-child(5) .info-tooltip {
+    background: rgba(121, 121, 121, 0.1);
+    border: 1px solid rgba(121, 121, 121, 0.3);
+    color: #797979;
+}
+
+.kpi-card:nth-child(6) .info-tooltip {
+    background: rgba(49, 186, 122, 0.1);
+    border: 1px solid rgba(49, 186, 122, 0.3);
+    color: #31ba7a;
+}
+
+.kpi-card .info-tooltip:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.kpi-card .info-tooltip::after {
+    content: 'i';
+}
+
 .chip {
     padding: 10px 20px;
     border: 1px solid var(--roxoPrincipal);
@@ -35,6 +540,11 @@ tr.table-row.dirty {
     color: white;
     display: inline-flex;
     align-items: center;
+}
+
+.chip-all.active {
+    background-color: var(--roxoPrincipal);
+    border: dashed 1px white;
 }
 
 .badge-premium,
@@ -145,6 +655,12 @@ tr.table-row.dirty {
     border: none;
 }
 
+.btn-secondary {
+    background: white;
+    color: var(--roxoPrincipal);
+    border: none;
+}
+
 .btn-primary:hover {
     background-color: var(--roxo-principal-hover);
 }
@@ -225,7 +741,7 @@ tr.table-row.dirty {
 }
 
 .benefit-item {
-    background-color: #090B11;
+    background-color: var(--backgroundCard);
     padding: 1rem;
     border-radius: 0.375rem;
     margin-bottom: 0.75rem;
@@ -280,7 +796,7 @@ tr.table-row.dirty {
     border: none;
     border-radius: 100%;
     background-color: transparent;
-    color: white;
+    color: var(--roxoPrincipal);
     font-weight: 500;
     font-size: 16px;
     cursor: pointer;

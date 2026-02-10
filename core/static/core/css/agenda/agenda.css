@@ -1772,7 +1772,7 @@ button[type="submit"]:disabled:hover {
 
 .form-label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
     font-weight: 500;
     color: var(--cinza-escuro);
     font-size: 0.9rem;
