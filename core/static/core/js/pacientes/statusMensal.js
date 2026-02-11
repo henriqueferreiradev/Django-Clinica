@@ -97,7 +97,7 @@ function linhaHTML(item) {
 
   // 🔒 Regras de bloqueio do input
   const lockByStatus = (statusKey === 'primeiro_mes');  // sua regra
-  const lockByJSON = (item.finalizado === true || item.bloqueado === true); // opcional
+  const lockByJSON = (item.fechado === true);
   const isLocked = lockByStatus || lockByJSON;
 
   // Monta atributos dinamicamente
@@ -151,14 +151,14 @@ window.getFrequencias = async function () {
   try {
     const mes = document.getElementById('mes')?.value;
     const ano = document.getElementById('ano')?.value;
-    
+
     // Verifica se mês foi selecionado
     if (!mes || mes === "") {
       const tbody = document.querySelector('table tbody');
       tbody.innerHTML = `<tr><td colspan="6" style="text-align:center">Por favor, selecione um mês para visualizar as frequências</td></tr>`;
       return;
     }
-    
+
     const data = await pegarFrequencias({ mes, ano });
   } catch (e) {
     console.error(e);
@@ -265,12 +265,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // VERIFICA SE TEM VALOR VÁLIDO antes de selecionar
   const mesInicial = hiddenMes.value;
   const anoInicial = hiddenAno.value;
-  
+
   // Só seleciona se tiver um valor válido (não vazio)
   if (mesInicial && mesInicial !== "") {
     filtroMes.value = String(mesInicial);
   }
-  
+
   if (anoInicial && anoInicial !== "") {
     filtroAno.value = String(anoInicial);
   } else {
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
       filtroMes.focus();
       return;
     }
-    
+
     syncFiltroParaHidden();
     // Se sua função de busca já existir, chama com os novos filtros
     if (typeof getFrequencias === 'function') {
@@ -351,7 +351,7 @@ function calcularKPIs(items) {
   let vip = 0;
   let plus = 0;
   let indef = 0;
-  let primeiroMes = 0; 
+  let primeiroMes = 0;
 
   for (const it of items) {
     const p =
@@ -383,10 +383,10 @@ function calcularKPIs(items) {
     else indef++;
   }
 
- 
+
 
   document.getElementById("kpiPacientes").textContent = n;
- 
+
 
   document.getElementById("kpiPremium").textContent = premium;
   document.getElementById("kpiVip").textContent = vip;
@@ -429,7 +429,23 @@ function markDirty(tr, pacienteId) {
 const _renderOriginal = window.getFrequencias;
 window.getFrequencias = async function () {
   DIRTY_SET.clear();
-  const data = await pegarFrequencias(); // já com ?mes=&ano=
+  const data = await pegarFrequencias();
+  const mesFechado = data.mes_fechado === true;
+
+  // trava tudo se fechado
+  if (mesFechado) {
+    document.querySelectorAll(".freq-input").forEach(inp => {
+      inp.setAttribute("readonly", "readonly");
+      inp.classList.add("fp-locked");
+    });
+
+    // some com a save bar
+    document.getElementById("saveBar")?.classList.add("hidden");
+
+    // opcional: mostra um aviso
+    document.getElementById("listInfo").textContent = "Mês finalizado (somente leitura).";
+  }
+  // já com ?mes=&ano=
   const items = Array.isArray(data) ? data : data.items ?? [];
   DATA_ATUAL = items;
 
@@ -510,14 +526,36 @@ document.addEventListener("DOMContentLoaded", () => {
     abrirConfirmacaoSalvar();
   });
 
-  // modal confirmação
+  // rodapé: topo e salvar
+  document
+    .getElementById("btnScrollTop")
+    ?.addEventListener("click", () =>
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    );
+  document.getElementById("btnSalvarTudo")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    abrirConfirmacaoSalvar();
+  });
+
   document
     .getElementById("cancelConfirmSave")
     ?.addEventListener("click", () => closeModal("confirmSaveModal"));
-  document.getElementById("confirmSave")?.addEventListener("click", () => {
-    // submete o form real
-    document.getElementById("formFreq").submit();
-  });
+
+  // ✅ SALVAR PARCIAL
+  document
+    .getElementById("confirmSavePartial")
+    ?.addEventListener("click", () => {
+      document.getElementById("acaoSalvar").value = "parcial";
+      document.getElementById("formFreq").submit();
+    });
+
+  // ✅ FINALIZAR
+  document
+    .getElementById("confirmFinalize")
+    ?.addEventListener("click", () => {
+      document.getElementById("acaoSalvar").value = "finalizar";
+      document.getElementById("formFreq").submit();
+    });
 });
 
 // abre modal de confirmação
@@ -538,7 +576,7 @@ async function openBenefits(elementoOuId) {
   const modal = document.getElementById("benefitsModal");
   const body = modal.querySelector(".modal-body");
 
- 
+
   modal.classList.remove("hidden");
 
   // resolve o pacienteId a partir do elemento

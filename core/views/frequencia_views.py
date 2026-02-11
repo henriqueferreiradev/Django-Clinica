@@ -49,7 +49,7 @@ def frequencias_get(request):
 
     # sincroniza freq_sistema
     sync_frequencias_mes(mes, ano)
-
+    mes_fechado = FrequenciaMensal.objects.filter(mes=mes, ano=ano, fechado=True).exists()
     fms = (FrequenciaMensal.objects
            .filter(mes=mes, ano=ano)
            .select_related("paciente"))
@@ -67,9 +67,12 @@ def frequencias_get(request):
             "freq_programada": fm.freq_programada,
             "percentual": float(fm.percentual),
             "status": fm.status,
+            'fechado': fm.fechado,
         })
 
-    return JsonResponse({"mes": mes, "ano": ano, "items": items}, safe=False)
+    return JsonResponse({"mes": mes, "ano": ano, "items": items, 'mes_fechado': mes_fechado}, safe=False)
+
+
 def _as_int(v, default=0):
     try:
         return int(v)
@@ -115,7 +118,15 @@ def frequencias_post(request):
             except json.JSONDecodeError as e:
                 return JsonResponse({"detail": f"JSON inválido: {e}"}, status=400)
 
+            print("AÇÃO RECEBIDA:", acao)
+
             mes, ano = _parse_mes_ano(body.get("mes"), body.get("ano"))
+
+            acao = (body.get("acao") or "parcial").strip().lower()
+
+            if FrequenciaMensal.objects.filter(mes=mes, ano=ano, fechado=True).exists():
+                return JsonResponse({"detail": "Mês já fechado. Edição não permitida."}, status=409)
+
             raw_items = body.get("items", [])
             if not isinstance(raw_items, list):
                 return JsonResponse({"detail": "`items` deve ser lista"}, status=400)
@@ -134,6 +145,10 @@ def frequencias_post(request):
         else:
             # FORM (sem JS)
             mes, ano = _parse_mes_ano(request.POST.get("mes"), request.POST.get("ano"))
+            acao = (request.POST.get("acao") or "parcial").strip().lower()
+
+            if FrequenciaMensal.objects.filter(mes=mes, ano=ano, fechado=True).exists():
+                return JsonResponse({"detail": "Mês já fechado. Edição não permitida."}, status=409)
 
             ids   = request.POST.getlist("paciente_id[]") or request.POST.getlist("paciente_id")
             progs = request.POST.getlist("freq_programada[]") or request.POST.getlist("freq_programada")
@@ -186,7 +201,9 @@ def frequencias_post(request):
             # save() deve recalcular percentual/status (conforme sua model)
             fm.save()
             atualizados_ids.append(fm.id)
-
+            
+        if acao == "finalizar":
+            FrequenciaMensal.objects.filter(mes=mes, ano=ano).update(fechado=True)
     # ------- Resposta (retorna os itens atualizados com paciente) -------
     fms = (FrequenciaMensal.objects
            .filter(id__in=atualizados_ids)
@@ -206,7 +223,9 @@ def frequencias_post(request):
             "percentual": float(fm.percentual or 0),
             "status": fm.status,
         })
-    return render(request, 'core/pacientes/status-mensal/sucesso_status.html')
-    # return JsonResponse({"mes": mes, "ano": ano, "items": items_resp})
+    from django.shortcuts import redirect
+    from django.urls import reverse
+
+    return redirect(reverse("status_pacientes") + f"?mes={mes}&ano={ano}")
 
  

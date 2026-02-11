@@ -110,6 +110,7 @@
       <!-- Hidden que o backend já usa -->
       <input type="hidden" id="mes" name="mes">
       <input type="hidden" id="ano" name="ano">
+       <input type="hidden" name="acao" id="acaoSalvar" value="parcial">
 
       <div style="overflow-x: auto">
         <table>
@@ -126,18 +127,18 @@
           <tbody></tbody>
         </table>
       </div>
-
     </form>
   
     <div id="saveBar" class="save-bar">
-   <span id="dirtyBadge" class="dirty-badge" style="display:none;"></span>
-  <span id="listInfo" style="opacity:.75;"></span>
+        <span id="dirtyBadge" class="dirty-badge" style="display:none;"></span>
+        <span id="listInfo" style="opacity:.75;"></span>
         <button id="btnSalvarTudo" type="button" class="btn btn-primary">
           Salvar tudo
         </button>
       </div>
     </div>
   </div>
+ 
 
 
 </div>
@@ -158,8 +159,13 @@
       </div>
       <div class="modal-footer" style="justify-content: space-between">
         <button class="btn-close" id="cancelConfirmSave">Cancelar</button>
-        <button class="btn btn-primary" id="confirmSave">Salvar agora</button>
+
+        <div style="display:flex; gap:.5rem;">
+          <button class="btn" id="confirmSavePartial" type="button">Salvar parcialmente</button>
+          <button class="btn btn-primary" id="confirmFinalize" type="button">Finalizar mês</button>
+        </div>
       </div>
+
     </div>
 
   </div>
