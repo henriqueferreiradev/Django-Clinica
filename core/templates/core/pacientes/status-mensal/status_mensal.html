@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %} {% load static %} {% block title %}Status mensal
 - Ponto de Equilíbrio{% endblock %} {% block extra_css %}
+
 <link rel="stylesheet" href="{% static 'core/css/pacientes/status_mensal.css' %}" />
 <link rel="stylesheet" href="{% static 'core/css/tema.css' %}" />
 <style>
@@ -10,36 +11,7 @@
 
 <div class="content">
  
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-title">Pacientes</div>
-      <div class="kpi-value" id="kpiPacientes">0</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-title">Premium</div>
-      <div class="kpi-value" id="kpiPremium">0</div>
-    </div>
 
-    <div class="kpi-card">
-      <div class="kpi-title">VIP</div>
-      <div class="kpi-value" id="kpiVip">0</div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-title">Plus</div>
-      <div class="kpi-value" id="kpiPlus">0</div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-title">Indef.</div>
-      <div class="kpi-value" id="kpiIndef">0</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-title">1º mês</div>
-      <div class="kpi-value" id="kpiPrimeiroMes">0</div>
-    </div>
-
-  </div>
   <div class="filtros_div">
     <div id="filtro-bar">
      <div style="position: relative; flex: 1;">
@@ -103,10 +75,54 @@
       </div>
     </div>
   </div>
+    <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-title">Pacientes</div>
+      <div class="kpi-value" id="kpiPacientes">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">Premium</div>
+      <div class="kpi-value" id="kpiPremium">0</div>
+    </div>
 
+    <div class="kpi-card">
+      <div class="kpi-title">VIP</div>
+      <div class="kpi-value" id="kpiVip">0</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Plus</div>
+      <div class="kpi-value" id="kpiPlus">0</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Indef.</div>
+      <div class="kpi-value" id="kpiIndef">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">1º mês</div>
+      <div class="kpi-value" id="kpiPrimeiroMes">0</div>
+    </div>
+
+  </div>
   <div class="table-container">
-    <form   id="formFreq" method="post" action="/frequencias/salvar">
+    <form id="formFreq" method="post" action="/frequencias/salvar">
       {% csrf_token %}
+      <div id="saveBar" class="hidden save-bar ">
+        <span id="dirtyBadge" class="dirty-badge" style="display:none;"></span>
+        <span id="listInfo" style="opacity:.75;"></span>
+
+        <div id="saveBarEditable" class="save-editable">
+          <button id="btnSalvarParcial" class="btn">Salvar parcialmente</button>
+          <button id="btnFinalizarMes" class="btn btn-primary">Finalizar mês</button>
+        </div>
+
+        <div id="saveBarLocked" class="save-locked hidden">
+          <span class="lock-dot"></span>
+          <i class="fas fa-lock"></i>
+          <span>Mês finalizado — somente leitura.</span>
+        </div>
+      </div>
       <!-- Hidden que o backend já usa -->
       <input type="hidden" id="mes" name="mes">
       <input type="hidden" id="ano" name="ano">
@@ -124,19 +140,13 @@
               <th class="col-center col-md">Ações</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody style='padding:.5em'></tbody>
         </table>
       </div>
     </form>
   
-    <div id="saveBar" class="save-bar">
-        <span id="dirtyBadge" class="dirty-badge" style="display:none;"></span>
-        <span id="listInfo" style="opacity:.75;"></span>
-        <button id="btnSalvarTudo" type="button" class="btn btn-primary">
-          Salvar tudo
-        </button>
-      </div>
-    </div>
+
+
   </div>
  
 
@@ -150,21 +160,25 @@
         <h3 class="modal-title">Confirmar salvamento</h3>
       </div>
       <div class="modal-body">
-        <p>
+        <p id="confirmText">
           Você está prestes a salvar
           <strong id="confirmDirtyCount">0</strong> alteração(ões) para
           <span id="confirmMesAno">este mês/ano</span>.
         </p>
-        <p style="opacity: 0.8; margin-top: 0.5rem">Deseja continuar?</p>
+
+        <p id="confirmHint" style="opacity: 0.8; margin-top: 0.5rem">
+          Deseja continuar?
+        </p>
       </div>
-      <div class="modal-footer" style="justify-content: space-between">
+
+      <div class="modal-footer">
         <button class="btn-close" id="cancelConfirmSave">Cancelar</button>
 
-        <div style="display:flex; gap:.5rem;">
-          <button class="btn" id="confirmSavePartial" type="button">Salvar parcialmente</button>
-          <button class="btn btn-primary" id="confirmFinalize" type="button">Finalizar mês</button>
-        </div>
+        <button class="btn btn-primary" id="confirmSaveAction">
+          Confirmar
+        </button>
       </div>
+
 
     </div>
 

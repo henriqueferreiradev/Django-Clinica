@@ -595,14 +595,15 @@ select::-ms-expand {
   left: 50%;
   bottom: 30px;
   transform: translateX(-50%);
-  font-size: 14px;
-  padding: 8px;
+  font-size: 12px;
+  padding: 6px;
   white-space: nowrap;
   background-color: var(--preto);
   border: 1px solid var(--roxoPrincipal);
   color: var(--branco);
   border-radius: 4px;
-  z-index: 99999;
+  z-index: 9999999;
+
 }
 
 /* ===== FLATPICKR CUSTOM STYLES ===== */

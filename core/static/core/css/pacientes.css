@@ -504,28 +504,7 @@ thead tr th:last-child {
     font-weight: bold;
     color: white;
 }
-
-[data-tooltip] {
-    position: relative;
-    cursor: pointer;
-}
-
-[data-tooltip]:hover::after {
-    content: attr(data-tooltip);
-    /* Get content from the attribute */
-    position: absolute;
-    left: 50%;
-    bottom: 30px;
-    transform: translateX(-50%);
-
-    padding: 8px;
-    white-space: nowrap;
-    background-color: var(--preto);
-    border: 1px solid var(--roxoPrincipal);
-    color: var(--branco);
-    border-radius: 4px;
-    z-index: 99999;
-}
+ 
 
 .text-center {
     text-align: center;

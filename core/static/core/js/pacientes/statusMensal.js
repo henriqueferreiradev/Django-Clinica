@@ -146,25 +146,6 @@ function linhaHTML(item) {
 }
 
 
-// deixa disponível pro onclick inline
-window.getFrequencias = async function () {
-  try {
-    const mes = document.getElementById('mes')?.value;
-    const ano = document.getElementById('ano')?.value;
-
-    // Verifica se mês foi selecionado
-    if (!mes || mes === "") {
-      const tbody = document.querySelector('table tbody');
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center">Por favor, selecione um mês para visualizar as frequências</td></tr>`;
-      return;
-    }
-
-    const data = await pegarFrequencias({ mes, ano });
-  } catch (e) {
-    console.error(e);
-    alert('Erro ao carregar frequências.');
-  }
-};
 
 // ----- helpers (aceita vírgula, milhar etc.)
 function parseNumberBR(txt) {
@@ -340,7 +321,7 @@ function statusKeyFromLabel(label) {
   if (s.includes("indef")) return "indefinido";
   return "";
 }
-
+let ACAO_PENDENTE = "parcial";
 // === KPIs ===
 function calcularKPIs(items) {
   const n = items.length;
@@ -427,52 +408,128 @@ function markDirty(tr, pacienteId) {
 
 // === Integra com sua renderização existente ===
 const _renderOriginal = window.getFrequencias;
+function emptyStateHTML(mes, ano) {
+  return `
+    <tr>
+      <td colspan="6" style="padding: 16px;">
+        <div class="empty-state">
+          <div class="empty-ico">
+            <i class="fa-solid fa-calendar-xmark"></i>
+          </div>
+          <div>
+            <div class="empty-title">Sem dados neste mês</div>
+            <div class="empty-text">
+              Não encontramos frequências cadastradas para <strong>${mes}/${ano}</strong>.
+            </div>
+            <div class="empty-hint">
+              Dica: escolha outro mês/ano ou gere registros para os pacientes.
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+
 window.getFrequencias = async function () {
-  DIRTY_SET.clear();
-  const data = await pegarFrequencias();
-  const mesFechado = data.mes_fechado === true;
+  try {
+    DIRTY_SET.clear();
 
-  // trava tudo se fechado
-  if (mesFechado) {
-    document.querySelectorAll(".freq-input").forEach(inp => {
-      inp.setAttribute("readonly", "readonly");
-      inp.classList.add("fp-locked");
+    const data = await pegarFrequencias();
+    const mesFechado = data?.mes_fechado === true;
+
+    const items = Array.isArray(data) ? data : data?.items ?? [];
+    DATA_ATUAL = items;
+
+    const tbody = document.querySelector("table tbody");
+    const mes = document.getElementById("mes")?.value;
+    const ano = document.getElementById("ano")?.value;
+
+    const saveBar = document.getElementById("saveBar");
+    const editable = document.getElementById("saveBarEditable");
+    const locked = document.getElementById("saveBarLocked");
+
+    // ===============================
+    // 📭 EMPTY STATE
+    // ===============================
+    if (!items.length) {
+      tbody.innerHTML = emptyStateHTML(mes, ano);
+
+      calcularKPIs([]);
+
+      saveBar?.classList.remove("hidden");
+      editable?.classList.add("hidden");
+      locked?.classList.add("hidden");
+
+      updateSaveBar();
+      return;
+    }
+
+    // ===============================
+    // 📋 RENDER TABELA
+    // ===============================
+    tbody.innerHTML = items.map(linhaHTML).join("");
+
+    // ===============================
+    // 🔒 CONTROLE DE BLOQUEIO
+    // ===============================
+    if (mesFechado) {
+      document.querySelectorAll(".freq-input").forEach(inp => {
+        inp.classList.add("fp-locked");
+        inp.setAttribute("readonly", "readonly");
+      });
+
+      saveBar?.classList.remove("hidden");
+      editable?.classList.add("hidden");
+      locked?.classList.remove("hidden");
+
+    } else {
+      document.querySelectorAll(".freq-input").forEach(inp => {
+        inp.classList.remove("fp-locked");
+        inp.removeAttribute("readonly");
+      });
+
+      saveBar?.classList.remove("hidden");
+      locked?.classList.add("hidden");
+      editable?.classList.remove("hidden");
+    }
+
+    // ===============================
+    // 📊 KPIs
+    // ===============================
+    calcularKPIs(items);
+
+    // ===============================
+    // 🟢 LISTENERS PARA DIRTY
+    // ===============================
+    tbody.querySelectorAll(".fp-input").forEach(inp => {
+      inp.addEventListener("input", (e) => {
+        const tr = e.target.closest("tr.table-row");
+        const pid = tr?.dataset?.pacienteId || tr?.getAttribute("data-paciente-id");
+        markDirty(tr, pid);
+      });
     });
 
-    // some com a save bar
-    document.getElementById("saveBar")?.classList.add("hidden");
+    updateSaveBar();
 
-    // opcional: mostra um aviso
-    document.getElementById("listInfo").textContent = "Mês finalizado (somente leitura).";
+  } catch (error) {
+    console.error("Erro ao carregar frequências:", error);
+
+    const tbody = document.querySelector("table tbody");
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center; padding:2rem;">
+          <i class='bx bx-error-circle' style="font-size:2rem; color:#ef4444;"></i>
+          <div style="margin-top:.5rem; font-weight:600;">
+            Erro ao carregar frequências
+          </div>
+        </td>
+      </tr>
+    `;
   }
-  // já com ?mes=&ano=
-  const items = Array.isArray(data) ? data : data.items ?? [];
-  DATA_ATUAL = items;
-
-  // render normal
-  const tbody = document.querySelector("table tbody");
-  tbody.innerHTML = items.map(linhaHTML).join("");
-
-  // feathers
-  if (window.feather?.replace) feather.replace();
-
-  // KPIs + savebar
-  calcularKPIs(items);
-  updateSaveBar();
-
-  // listeners para cálculo/dirty (você já recalcula %; aqui só marcamos dirty)
-  tbody.querySelectorAll(".fp-input").forEach((inp) => {
-    inp.addEventListener("input", (e) => {
-      const tr = e.target.closest("tr.table-row");
-      const pid =
-        tr?.dataset?.pacienteId || tr?.getAttribute("data-paciente-id");
-      markDirty(tr, pid);
-    });
-  });
-
-  // aplica filtro inicial (se algo estiver setado)
-  aplicarFiltroBuscaEChips();
 };
+
 
 // === Busca + chips ===
 function aplicarFiltroBuscaEChips() {
@@ -527,45 +584,53 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // rodapé: topo e salvar
-  document
-    .getElementById("btnScrollTop")
-    ?.addEventListener("click", () =>
-      window.scrollTo({ top: 0, behavior: "smooth" })
-    );
-  document.getElementById("btnSalvarTudo")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    abrirConfirmacaoSalvar();
+  document.getElementById("confirmSaveAction")?.addEventListener("click", () => {
+    document.getElementById("acaoSalvar").value = ACAO_PENDENTE;
+    document.getElementById("formFreq").submit();
   });
 
-  document
-    .getElementById("cancelConfirmSave")
-    ?.addEventListener("click", () => closeModal("confirmSaveModal"));
 
-  // ✅ SALVAR PARCIAL
-  document
-    .getElementById("confirmSavePartial")
-    ?.addEventListener("click", () => {
-      document.getElementById("acaoSalvar").value = "parcial";
-      document.getElementById("formFreq").submit();
-    });
+  document.getElementById("btnSalvarParcial")?.addEventListener("click", () => {
+    ACAO_PENDENTE = "parcial";
+    abrirConfirmacaoSalvar("Salvar parcialmente");
+  });
 
-  // ✅ FINALIZAR
-  document
-    .getElementById("confirmFinalize")
-    ?.addEventListener("click", () => {
-      document.getElementById("acaoSalvar").value = "finalizar";
-      document.getElementById("formFreq").submit();
-    });
+  document.getElementById("btnFinalizarMes")?.addEventListener("click", () => {
+    ACAO_PENDENTE = "finalizar";
+    abrirConfirmacaoSalvar("Finalizar mês");
+  });
+
 });
 
 // abre modal de confirmação
-function abrirConfirmacaoSalvar() {
+function abrirConfirmacaoSalvar(tituloAcao) {
   document.getElementById("confirmDirtyCount").textContent = DIRTY_SET.size;
+
   document.getElementById("confirmMesAno").textContent =
-    `${document.getElementById('mes')?.value}/${document.getElementById('ano')?.value}`;
+    `${document.getElementById("mes")?.value}/${document.getElementById("ano")?.value}`;
+
+  // muda título do modal
+  document.querySelector("#confirmSaveModal .modal-title").textContent = tituloAcao;
+
+  // texto padrão (parcial)
+  document.getElementById("confirmText").innerHTML =
+    `Você está prestes a salvar <strong>${DIRTY_SET.size}</strong> alteração(ões) para
+     <span id="confirmMesAno">${document.getElementById("mes")?.value}/${document.getElementById("ano")?.value}</span>.`;
+
+  document.getElementById("confirmHint").textContent = "Deseja continuar?";
+
+  // ✅ AQUI entra o seu trecho
+  if (ACAO_PENDENTE === "finalizar") {
+    document.getElementById("confirmText").innerHTML =
+      `Você está prestes a <strong>FINALIZAR o mês</strong> 
+       (<strong>${document.getElementById("mes")?.value}/${document.getElementById("ano")?.value}</strong>).`;
+
+    document.getElementById("confirmHint").textContent =
+      "Após finalizar, ele ficará bloqueado para edição. Deseja continuar?";
+  }
+
   document.getElementById("confirmSaveModal").classList.remove("hidden");
 }
-
 
 // util dos seus modais
 function closeModal(id) {
