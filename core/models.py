@@ -1985,8 +1985,72 @@ class TokenAcessoPublico(models.Model):
 
 
  
+class ProdutividadeMensal(models.Model):
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
+    ano = models.IntegerField()
+    mes = models.IntegerField()
+
+    status = models.CharField(
+        max_length=10,
+        choices=[('aberto', 'Aberto'), ('fechado', 'Fechado')],
+        default='aberto'
+    )
+
+    # SNAPSHOT TOTAL
+    total_previstas_min = models.IntegerField(default=0)
+    total_trabalhadas_min = models.IntegerField(default=0)
+    total_saldo_min = models.IntegerField(default=0)
+
+    total_individual_min = models.IntegerField(default=0)
+    total_conjunto_min = models.IntegerField(default=0)
+    total_prontuario_min = models.IntegerField(default=0)
+    total_coord_min = models.IntegerField(default=0)
+    total_buro_min = models.IntegerField(default=0)
+
+    total_avaliacoes = models.IntegerField(default=0)
+    total_evolucoes = models.IntegerField(default=0)
+    total_prontuarios_qtd = models.IntegerField(default=0)
+
+    perc_horas_trabalhadas = models.IntegerField(default=0)
+    perc_saldo = models.IntegerField(default=0)
+    razao_prontuario = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+
+    fechado_em = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('profissional', 'ano', 'mes')
 
 
+class ProdutividadeDia(models.Model):
+    relatorio = models.ForeignKey(
+        ProdutividadeMensal,
+        on_delete=models.CASCADE,
+        related_name='dias'
+    )
+
+    dia = models.IntegerField()
+
+    tipo_dia = models.CharField(max_length=20)
+    presenca = models.CharField(max_length=20)
+
+    # MANUAL
+    horas_previstas_min = models.IntegerField(default=0)
+    horas_prontuario_min = models.IntegerField(default=0)
+    horas_coord_min = models.IntegerField(default=0)
+    horas_buro_min = models.IntegerField(default=0)
+
+    # AUTOMÁTICO SNAPSHOT
+    individual_min = models.IntegerField(default=0)
+    conjunto_min = models.IntegerField(default=0)
+    avaliacoes_qtd = models.IntegerField(default=0)
+    evolucoes_qtd = models.IntegerField(default=0)
+    prontuarios_qtd = models.IntegerField(default=0)
+
+    total_trabalhado_min = models.IntegerField(default=0)
+    saldo_min = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('relatorio', 'dia')
 
 
 

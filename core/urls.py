@@ -66,7 +66,8 @@ urlpatterns = [
     path('agenda/lembrete/',agendamento_views.lembrete_agendamento_dia_seguinte, name='lembrete_agenda'),
     path('api/listar-lembretes-agendamentos/', agendamento_views.listar_lembretes_agendamento),
     path('api/enviar-lembrete/<int:agendamento_id>/', agendamento_views.enviar_lembrete_agenda, name='enviar_lembrete_agenda'),
-    
+        path('api/produtividade/', administrativo_views.carregar_produtividade, name='carregar_produtividade'),
+
     
     path('api/detalhe-nf-emitida/pendencia/<int:pendencia_id>/', administrativo_views.api_detalhes_notafiscal_por_pendencia),
     #RECEITAS    
@@ -124,6 +125,7 @@ urlpatterns = [
     path('api/notificacoes/', notificacoes_views.listar_notificacoes, name='listar_notificacoes'),
     path('administrativo/dashboard/', administrativo_views.dashboard, name="dashboard_adm"),
     path('administrativo/notas_fiscais/', administrativo_views.notas_fiscais_views,name='notas_fiscais'),
+    path('administrativo/produtividade/', administrativo_views.produtividade_views,name='produtividade'),
     path('administrativo/documentos/', administrativo_views.documentos_clinica_views ,name='documentos_clinica'),
     path('agenda/', agendamento_views.agenda_view, name='agenda'),
     path('agenda_profissional/', profissionais_views.agenda_profissional, name='agenda_profissional'),

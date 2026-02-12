@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>📊 Relatório de Produtividade – Por Profissional (Mensal)</title>
+    <!-- Font Inter e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ----- MEU ROOT (exatamente como fornecido) ----- */
+        :root {
+            --roxoPrincipal: #6D398E;
+            --roxoPrincipal-hover: #76378f11;
+            --roxoPrincipal-hover2: #76378f;
+            --roxo-primary-hover: #9b58b4;
+            --roxoPrincialGradient: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
+            --verdePrincipal: #92cbad;
+            --branco: #FFF;
+            --bg-btn-1: #eee;
+            --preto: #000;
+            --cinzaBorda: #ccc;
+            --cinzaEscuro: #6e6e6e;
+            --fontePrincipal: 'Inter';
+            --bg-color: #E4E9F7;
+            --hover-dropdown: #F0F0F0;
+            --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
+            --btn-red-exclude: #ff000025;
+            --btn-red-font: #efc4c4;
+            --cinza-escuro: #555;
+            --cinza-medio: #888;
+            --cinza-claro: #eee;
+            --cinza-borda: #ddd;
+            --erro: #ff0000;
+            --titulo-perfil: #64748b;
+            --dourado: #D4AF37;
+            --verde-sucesso: #10B981;
+            --vermelho-alerta: #EF4444;
+            --sombra-suave: 0 10px 40px rgba(0, 0, 0, 0.08);
+            --sombra-destaque: 0 15px 35px rgba(109, 57, 142, 0.15);
+            --borda-arredondada: 16px;
+            --transicao: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* Espaçamentos */
+            --espaco-xs: 0.5rem;
+            --espaco-sm: 1rem;
+            --espaco-md: 1.5rem;
+            --espaco-lg: 2rem;
+            --espaco-xl: 3rem;
+            /* Bordas */
+            --borda-radius: 8px;
+            --borda-radius-sm: 4px;
+            /* Sombras */
+            --sombra: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --sombra-focus: 0 0 0 3px rgba(127, 67, 150, 0.3);
+            --backgroundCard: #FFF;
+            --backgroundCard-hover: #6d398e38;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--fontePrincipal), 'Inter', sans-serif;
+            background: var(--bg-color);
+            padding: 24px;
+            color: var(--cinza-escuro);
+        }
+
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--espaco-md);
+        }
+
+        /* 🔹 Filtros superiores com tema roxo */
+        .filters-card {
+            background: var(--branco);
+            border-radius: var(--borda-arredondada);
+            padding: 20px 28px;
+            box-shadow: var(--sombra-suave);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--cinza-borda);
+            transition: var(--transicao);
+        }
+
+        .filters-card:hover {
+            box-shadow: var(--sombra-destaque);
+        }
+
+        .filters-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-item label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--roxoPrincipal);
+        }
+
+        .filter-select {
+            background: var(--bg-color);
+            border: 1px solid var(--cinzaBorda);
+            border-radius: 14px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--preto);
+            min-width: 180px;
+            cursor: pointer;
+            transition: var(--transicao);
+            font-family: var(--fontePrincipal);
+        }
+
+        .filter-select:hover {
+            border-color: var(--roxoPrincipal);
+            background: white;
+            box-shadow: var(--shadowRoxo);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            box-shadow: var(--sombra-focus);
+            border-color: var(--roxoPrincipal);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 14px;
+            padding: 10px 24px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--branco);
+            color: var(--roxoPrincipal);
+            border: 1px solid var(--roxoPrincipal);
+            transition: var(--transicao);
+            cursor: pointer;
+            font-family: var(--fontePrincipal);
+        }
+
+        .btn i {
+            color: var(--roxoPrincipal);
+            transition: var(--transicao);
+        }
+
+        .btn-primary {
+            background: var(--roxoPrincialGradient);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary i {
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--roxoPrincipal-hover2);
+            box-shadow: var(--shadowRoxo);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--roxoPrincipal);
+            color: var(--roxoPrincipal);
+        }
+
+        .btn-outline:hover {
+            background: var(--roxoPrincipal-hover);
+            border-color: var(--roxo-primary-hover);
+        }
+
+        .badge-sector {
+            background: var(--roxoPrincipal-hover);
+            border-radius: 50px;
+            padding: 8px 18px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--roxoPrincipal-hover2);
+            text-transform: uppercase;
+            border: 1px solid var(--roxoPrincipal);
+        }
+
+        /* Grid principal */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ----- TABELA TRANSPOSTA: DIAS EM LINHA, DADOS EM COLUNA ----- */
+        .table-section {
+            background: var(--backgroundCard);
+            border-radius: var(--borda-arredondada);
+            padding: 20px 0 16px 0;
+            box-shadow: var(--sombra-suave);
+            border: 1px solid var(--cinza-borda);
+            overflow-x: auto;
+            transition: var(--transicao);
+        }
+
+        .table-section:hover {
+            box-shadow: var(--sombra-destaque);
+        }
+
+        .table-header-title {
+            padding: 0 20px 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid var(--cinza-borda);
+        }
+
+        .table-header-title i {
+            color: var(--roxoPrincipal);
+        }
+
+        .badge-simples {
+            background: var(--roxoPrincipal-hover);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--roxoPrincipal-hover2);
+        }
+
+        .prod-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 1400px;
+        }
+
+        .prod-table th {
+            background: #f1e6f5;
+            color: var(--roxoPrincipal-hover2);
+            font-weight: 700;
+            padding: 14px 8px;
+            border-bottom: 2px solid var(--roxoPrincipal);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .prod-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--cinza-claro);
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .row-day-label {
+            background: #f6f0fa;
+            font-weight: 700;
+            color: var(--roxoPrincipal-hover2);
+            text-align: center;
+            padding-left: 8px;
+            padding-right: 8px;
+            border-right: 2px solid #d9c0e3;
+            position: sticky;
+            left: 0;
+            min-width: 60px;
+        }
+
+        .time-input {
+            width: 72px;
+            padding: 6px 4px;
+            border-radius: 10px;
+            border: 1px solid var(--cinzaBorda);
+            background: white;
+            font-size: 0.77rem;
+            font-weight: 500;
+            text-align: center;
+            color: var(--preto);
+            transition: var(--transicao);
+        }
+
+        .time-input:focus {
+            border-color: var(--roxoPrincipal);
+            box-shadow: var(--sombra-focus);
+            outline: none;
+        }
+
+        .day-select, .presence-select {
+            width: 115px;
+            padding: 6px 4px;
+            border-radius: 10px;
+            border: 1px solid var(--cinzaBorda);
+            background: white;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--preto);
+        }
+
+        .total-row {
+            background: #efe2f0;
+            font-weight: 800;
+            color: var(--roxoPrincipal-hover2);
+            border-top: 2px solid var(--roxoPrincipal);
+        }
+
+        .saldo-pos {
+            color: var(--verde-sucesso);
+            font-weight: 700;
+            background: #e0f5e9;
+            padding: 4px 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        .saldo-neg {
+            color: var(--vermelho-alerta);
+            font-weight: 700;
+            background: #ffe5e5;
+            padding: 4px 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        .saldo-zero {
+            color: var(--cinza-medio);
+            font-weight: 600;
+            background: #eef2f5;
+            padding: 4px 10px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        /* ----- Painel Lateral Roxo Clean ----- */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .resumo-card {
+            background: var(--backgroundCard);
+            border-radius: var(--borda-arredondada);
+            padding: 22px 20px;
+            border: 1px solid var(--cinza-borda);
+            box-shadow: var(--sombra-suave);
+            transition: var(--transicao);
+        }
+
+        .resumo-card:hover {
+            box-shadow: var(--sombra-destaque);
+            border-color: var(--roxoPrincipal);
+        }
+
+        .resumo-card h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--roxoPrincipal);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            border-bottom: 1px dashed var(--roxoPrincipal-hover);
+            padding-bottom: 12px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .metric-label {
+            color: var(--cinza-escuro);
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-weight: 800;
+            color: var(--roxoPrincipal-hover2);
+        }
+
+        .badge-percent {
+            background: var(--roxoPrincipal-hover);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--roxoPrincipal-hover2);
+            margin-left: 8px;
+        }
+
+        .chart-container {
+            margin-top: 12px;
+            height: 160px;
+            position: relative;
+        }
+
+        .distrib-list {
+            margin-top: 8px;
+        }
+
+        .distrib-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            padding: 7px 0;
+            border-bottom: 1px dotted var(--cinza-claro);
+        }
+
+        .porcentagem {
+            color: var(--roxoPrincipal);
+            font-weight: 700;
+            background: var(--roxoPrincipal-hover);
+            padding: 3px 12px;
+            border-radius: 50px;
+        }
+
+        .ratio-box {
+            background: var(--roxoPrincipal-hover);
+            border-radius: 16px;
+            padding: 16px;
+            margin: 12px 0 0;
+            font-size: 0.85rem;
+            border-left: 6px solid var(--roxoPrincipal);
+        }
+
+        .info-hint {
+            padding: 12px 20px 4px;
+            font-size: 0.7rem;
+            color: var(--cinza-medio);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+
+        <!-- 🔹 1️⃣ Filtro Superior (Tema roxo) -->
+        <div class="filters-card">
+            <div class="filters-group">
+                <div class="filter-item">
+                    <label><i class="fas fa-user-md"></i> Profissional</label>
+                    <select class="filter-select" id="profissionalSelect">
+                        <option value="1">Dra. Carla Mendes (Fisioterapeuta)</option>
+                        <option value="2">Dr. Ricardo Lemos (Fisioterapeuta)</option>
+                        <option value="3">Rafael Oliveira (Educação Física)</option>
+                        <option value="4">Marina Castro (Educação Física)</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label><i class="fas fa-calendar"></i> Mês</label>
+                    <select class="filter-select" id="mesSelect">
+                        <option value="2">Fevereiro 2025</option>
+                        <option value="1">Janeiro 2025</option>
+                        <option value="3">Março 2025</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label><i class="fas fa-calendar-alt"></i> Ano</label>
+                    <select class="filter-select" id="anoSelect">
+                        <option>2025</option>
+                        <option>2024</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="carregarBtn"><i class="fas fa-sync-alt"></i> Carregar relatório</button>
+                <button class="btn btn-outline" id="salvarBtn"><i class="fas fa-save"></i> Salvar alterações</button>
+            </div>
+            <span class="badge-sector" id="setorBadge"><i class="fas fa-stethoscope"></i> Setor: Fisioterapeutas</span>
+        </div>
+
+        <!-- Grid principal: tabela TRANSPOSTA com 30 DIAS + painel -->
+        <div class="main-grid">
+            <!-- 🔹 2️⃣ TABELA MENSAL - DIAS EM LINHA / DADOS EM COLUNA (30 DIAS COMPLETOS) -->
+            <div class="table-section">
+                <div class="table-header-title">
+                    <i class="fas fa-clipboard-list" style="font-size: 1.2rem;"></i>
+                    <span style="font-weight: 700; font-size: 0.95rem; color: var(--roxoPrincipal-hover2);" id="tituloRelatorio">Fevereiro 2025 · Dra. Carla Mendes</span>
+                    <span class="badge-simples"><i class="fas fa-clock"></i> Horas em HH:MM</span>
+                </div>
+                <div style="overflow-x: auto; padding: 0 4px; max-height: 2000px; overflow-y: auto;">
+                <table class="prod-table" id="tabelaProdutividade">
+                    <thead>
+                        <tr>
+                            <th style="position: sticky; left:0; top:0; background:#f1e6f5; z-index:3;">Dia</th>
+                            <th style="min-width:110px;">Tipo de Dia</th>
+                            <th style="min-width:100px;">Presença</th>
+                            <th style="min-width:90px;">Horas Previstas</th>
+                            <th style="min-width:90px;">Atend. Individual</th>
+                            <th style="min-width:90px;">Atend. Conjunto</th>
+                            <th style="min-width:70px;">Avaliações</th>
+                            <th style="min-width:70px;">Evoluções</th>
+                            <th style="min-width:80px;">Prontuários</th>
+                            <th style="min-width:90px;">H. Prontuário</th>
+                            <th style="min-width:90px;">H. Coordenação</th>
+                            <th style="min-width:90px;">H. Burocráticas</th>
+                            <th style="min-width:90px;">Total Dia</th>
+                            <th style="min-width:100px;">Saldo Dia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyDias">
+                        <!-- Os 30 dias serão gerados via JavaScript -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row" id="rowTotalMensal">
+                            <td class="row-day-label" style="background:#e6d3ee;"><strong>TOTAL MÊS</strong></td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td id="totalPrevistas">00:00</td>
+                            <td id="totalIndividual">00:00</td>
+                            <td id="totalConjunto">00:00</td>
+                            <td id="totalAvaliacoes">0</td>
+                            <td id="totalEvolucoes">0</td>
+                            <td id="totalProntuariosQtd">0</td>
+                            <td id="totalHProntuario">00:00</td>
+                            <td id="totalHCoord">00:00</td>
+                            <td id="totalHBuro">00:00</td>
+                            <td id="totalTrabalhado">00:00</td>
+                            <td id="totalSaldo"><span class="saldo-zero">00:00</span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+                <div class="info-hint"><i class="fas fa-info-circle"></i> Campos editáveis: horas previstas, prontuário, coordenação, burocrático. Os cálculos são automáticos.</div>
+            </div>
+
+            <!-- 🔹 3️⃣ PAINEL LATERAL – RESUMO GERAL (ATUALIZADO DINAMICAMENTE) -->
+            <div class="side-panel">
+                <!-- BLOCO A – DIAS -->
+                <div class="resumo-card">
+                    <h3><i class="fas fa-calendar-check"></i> DIAS</h3>
+                    <div class="metric-item"><span class="metric-label">Previstos:</span><span class="metric-value" id="diasPrevistosValor">0 (100%)</span></div>
+                    <div class="metric-item"><span class="metric-label">Cumpridos:</span><span class="metric-value" id="diasCumpridosValor">0 <span class="badge-percent" id="diasCumpridosPercent">0%</span></span></div>
+                </div>
+                <!-- BLOCO B – HORAS -->
+                <div class="resumo-card">
+                    <h3><i class="fas fa-hourglass-half"></i> HORAS</h3>
+                    <div class="metric-item"><span class="metric-label">Previstas (100%):</span><span class="metric-value" id="horasPrevistasValor">00:00</span></div>
+                    <div class="metric-item"><span class="metric-label">Trabalhadas:</span><span class="metric-value" id="horasTrabalhadasValor">00:00 <span class="badge-percent" id="horasPercent">0%</span></span></div>
+                </div>
+                <!-- BLOCO C – Distribuição + Gráfico -->
+                <div class="resumo-card">
+                    <h3><i class="fas fa-chart-pie"></i> DISTRIBUIÇÃO</h3>
+                    <div class="distrib-list" id="distribuicaoList">
+                        <div class="distrib-item"><span>Atend. individual</span> <span><strong id="distribIndividual">00:00</strong> <span class="porcentagem" id="percIndividual">0%</span></span></div>
+                        <div class="distrib-item"><span>Atend. conjunto</span> <span><strong id="distribConjunto">00:00</strong> <span class="porcentagem" id="percConjunto">0%</span></span></div>
+                        <div class="distrib-item"><span>Prontuário</span> <span><strong id="distribProntuario">00:00</strong> <span class="porcentagem" id="percProntuario">0%</span></span></div>
+                        <div class="distrib-item"><span>Coordenação</span> <span><strong id="distribCoord">00:00</strong> <span class="porcentagem" id="percCoord">0%</span></span></div>
+                        <div class="distrib-item"><span>Burocrático</span> <span><strong id="distribBuro">00:00</strong> <span class="porcentagem" id="percBuro">0%</span></span></div>
+                    </div>
+                    <!-- Gráfico de pizza -->
+                    <div class="chart-container">
+                        <canvas id="horasChart" style="width:100%; height:160px;"></canvas>
+                    </div>
+                </div>
+                <!-- BLOCO D – Prontuários + razão -->
+                <div class="resumo-card">
+                    <h3><i class="fas fa-file-medical"></i> PRONTUÁRIOS</h3>
+                    <div class="metric-item"><span class="metric-label">Total prontuários:</span><span class="metric-value" id="prontuariosTotal">0</span></div>
+                    <div class="metric-item"><span class="metric-label">Horas de prontuário:</span><span class="metric-value" id="prontuariosHoras">00:00</span></div>
+                    <div class="ratio-box">
+                        <span style="font-weight: 800; color: var(--roxoPrincipal-hover2);">⚡ Razão produtividade</span><br>
+                        <span style="font-size: 1.4rem; font-weight: 900; color: var(--roxoPrincipal);" id="razaoProntuario">0,00</span> <span style="font-size:0.8rem; color: var(--roxoPrincipal-hover2);">pront./hora</span>
+                        <div style="font-size:0.7rem; color: var(--cinza-escuro);" id="razaoDetalhe">(0 pront ÷ 0h)</div>
+                    </div>
+                </div>
+                <!-- BLOCO E – Indicadores automáticos -->
+                <div class="resumo-card">
+                    <h3><i class="fas fa-chart-line"></i> INDICADORES</h3>
+                    <div class="metric-item"><span class="metric-label">Total avaliações:</span><span class="metric-value" id="totalAvaliacoesInd">0</span></div>
+                    <div class="metric-item"><span class="metric-label">Total evoluções:</span><span class="metric-value" id="totalEvolucoesInd">0</span></div>
+                </div>
+                <!-- BLOCO F – Saldo Final -->
+                <div class="resumo-card" style="background: var(--roxoPrincipal-hover); border: 2px solid var(--roxoPrincipal);">
+                    <h3 style="color: var(--roxoPrincipal-hover2);"><i class="fas fa-flag-checkered"></i> SALDO FINAL</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-size: 1.3rem; font-weight: 900;" id="saldoFinalValor">00:00</span>
+                        <span class="badge-percent" style="font-weight: 800;" id="saldoFinalPercent">0%</span>
+                    </div>
+                    <div style="font-size:0.8rem; color: var(--roxoPrincipal-hover2); margin-top: 4px;">Horas trabalhadas – Previstas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ----- FUNÇÕES DE CONVERSÃO HH:MM <=> MINUTOS -----
+            function timeToMinutes(time) {
+                if (!time || !time.includes(':')) return 0;
+                let [h, m] = time.split(':').map(Number);
+                return (h || 0) * 60 + (m || 0);
+            }
+
+            function minutesToTime(min) {
+                if (min < 0) {
+                    let absMin = Math.abs(min);
+                    let h = Math.floor(absMin / 60);
+                    let m = absMin % 60;
+                    return `-${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                }
+                let h = Math.floor(min / 60);
+                let m = min % 60;
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+            }
+
+            // ----- GERAR 30 DIAS COM DADOS EXEMPLO -----
+            function gerarDados30Dias() {
+                const dias = [];
+                for (let i = 1; i <= 30; i++) {
+                    // Simular alguns dias com férias/atestado
+                    let tipoDia = 'Previsto';
+                    let presenca = 'Presente';
+                    let horasPrevistas = '07:30';
+                    
+                    if (i === 5) { tipoDia = 'Férias'; presenca = 'Férias'; horasPrevistas = '00:00'; }
+                    if (i === 8) { tipoDia = 'Atestado'; presenca = 'Atestado'; horasPrevistas = '00:00'; }
+                    if (i === 15) { tipoDia = 'Não previsto'; presenca = 'Presente'; horasPrevistas = '00:00'; }
+                    if (i === 22) { tipoDia = 'Afastamento'; presenca = 'Afastamento'; horasPrevistas = '00:00'; }
+                    
+                    // Dados automáticos variados
+                    let individual = i % 7 === 0 ? '02:00' : i % 5 === 0 ? '01:30' : i % 3 === 0 ? '03:15' : '01:45';
+                    let conjunto = i % 6 === 0 ? '01:00' : i % 4 === 0 ? '00:45' : '00:30';
+                    let avaliacoes = i % 4 === 0 ? 1 : 0;
+                    let evolucoes = i % 3 === 0 ? 2 : i % 2 === 0 ? 1 : 3;
+                    let prontuarios = i % 3 === 0 ? 2 : i % 2 === 0 ? 1 : 0;
+                    
+                    // Horas manuais editáveis
+                    let hProntuario = i % 5 === 0 ? '00:30' : i % 4 === 0 ? '00:45' : '00:20';
+                    let hCoord = i % 6 === 0 ? '00:25' : i % 3 === 0 ? '00:15' : '00:10';
+                    let hBuro = i % 7 === 0 ? '00:15' : '00:05';
+                    
+                    // Calcular total do dia
+                    let totalMin = timeToMinutes(individual) + timeToMinutes(conjunto) + 
+                                  timeToMinutes(hProntuario) + timeToMinutes(hCoord) + timeToMinutes(hBuro);
+                    let totalDia = minutesToTime(totalMin);
+                    
+                    // Saldo do dia
+                    let saldoMin = totalMin - timeToMinutes(horasPrevistas);
+                    let saldoDia = minutesToTime(saldoMin);
+                    let saldoClass = saldoMin > 0 ? 'saldo-pos' : saldoMin < 0 ? 'saldo-neg' : 'saldo-zero';
+                    
+                    dias.push({
+                        dia: i,
+                        tipoDia, presenca, horasPrevistas,
+                        individual, conjunto, avaliacoes, evolucoes, prontuarios,
+                        hProntuario, hCoord, hBuro,
+                        totalDia, saldoDia, saldoClass, saldoMin
+                    });
+                }
+                return dias;
+            }
+
+            // ----- RENDERIZAR TABELA COM 30 DIAS -----
+            const dadosDias = gerarDados30Dias();
+            const tbody = document.getElementById('tbodyDias');
+            
+            function renderizarTabela(dias) {
+                tbody.innerHTML = '';
+                dias.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.setAttribute('data-dia', d.dia);
+                    
+                    // Coluna dia
+                    const tdDia = document.createElement('td');
+                    tdDia.className = 'row-day-label';
+                    tdDia.textContent = String(d.dia).padStart(2, '0');
+                    tr.appendChild(tdDia);
+                    
+                    // Tipo de Dia
+                    const tdTipo = document.createElement('td');
+                    const selectTipo = document.createElement('select');
+                    selectTipo.className = 'day-select';
+                    ['Previsto', 'Não previsto', 'Férias', 'Afastamento', 'Atestado'].forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt;
+                        option.textContent = opt;
+                        if (opt === d.tipoDia) option.selected = true;
+                        selectTipo.appendChild(option);
+                    });
+                    selectTipo.addEventListener('change', function() { 
+                        // Se mudar tipo, ajustar presença e horas previstas (simplificado)
+                        const valor = this.value;
+                        const row = this.closest('tr');
+                        const selectPresenca = row.cells[2].querySelector('select');
+                        const inputPrevistas = row.cells[3].querySelector('input');
+                        
+                        if (valor === 'Férias' || valor === 'Afastamento' || valor === 'Atestado') {
+                            if (selectPresenca) selectPresenca.value = valor;
+                            if (inputPrevistas) inputPrevistas.value = '00:00';
+                        } else if (valor === 'Não previsto') {
+                            if (selectPresenca) selectPresenca.value = 'Presente';
+                            if (inputPrevistas) inputPrevistas.value = '00:00';
+                        } else {
+                            if (selectPresenca) selectPresenca.value = 'Presente';
+                            if (inputPrevistas) inputPrevistas.value = '07:30';
+                        }
+                        calcularDia(row);
+                        calcularTotaisMensais();
+                    });
+                    tdTipo.appendChild(selectTipo);
+                    tr.appendChild(tdTipo);
+                    
+                    // Presença
+                    const tdPres = document.createElement('td');
+                    const selectPres = document.createElement('select');
+                    selectPres.className = 'presence-select';
+                    ['Presente', 'Falta', 'Justificado', 'Férias', 'Atestado', 'Afastamento'].forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt;
+                        option.textContent = opt;
+                        if (opt === d.presenca) option.selected = true;
+                        selectPres.appendChild(option);
+                    });
+                    selectPres.addEventListener('change', function() { calcularTotaisMensais(); });
+                    tdPres.appendChild(selectPres);
+                    tr.appendChild(tdPres);
+                    
+                    // Horas Previstas (editável)
+                    const tdPrev = document.createElement('td');
+                    const inputPrev = document.createElement('input');
+                    inputPrev.type = 'text';
+                    inputPrev.className = 'time-input';
+                    inputPrev.value = d.horasPrevistas;
+                    inputPrev.addEventListener('blur', function(e) {
+                        let val = e.target.value.trim();
+                        if (!val.match(/^\d{2}:\d{2}$/)) e.target.value = '00:00';
+                        if (val.startsWith('-')) e.target.value = '00:00';
+                        calcularDia(tr);
+                        calcularTotaisMensais();
+                    });
+                    inputPrev.addEventListener('input', function() { calcularDia(tr); });
+                    tdPrev.appendChild(inputPrev);
+                    tr.appendChild(tdPrev);
+                    
+                    // Atend Individual
+                    const tdInd = document.createElement('td');
+                    tdInd.textContent = d.individual;
+                    tr.appendChild(tdInd);
+                    
+                    // Atend Conjunto
+                    const tdConj = document.createElement('td');
+                    tdConj.textContent = d.conjunto;
+                    tr.appendChild(tdConj);
+                    
+                    // Avaliações
+                    const tdAv = document.createElement('td');
+                    tdAv.textContent = d.avaliacoes;
+                    tr.appendChild(tdAv);
+                    
+                    // Evoluções
+                    const tdEv = document.createElement('td');
+                    tdEv.textContent = d.evolucoes;
+                    tr.appendChild(tdEv);
+                    
+                    // Prontuários (qtd)
+                    const tdPrtQtd = document.createElement('td');
+                    tdPrtQtd.textContent = d.prontuarios;
+                    tr.appendChild(tdPrtQtd);
+                    
+                    // H. Prontuário (editável)
+                    const tdHPrt = document.createElement('td');
+                    const inputHPrt = document.createElement('input');
+                    inputHPrt.type = 'text';
+                    inputHPrt.className = 'time-input';
+                    inputHPrt.value = d.hProntuario;
+                    inputHPrt.addEventListener('blur', function(e) {
+                        if (!e.target.value.match(/^\d{2}:\d{2}$/)) e.target.value = '00:00';
+                        if (e.target.value.startsWith('-')) e.target.value = '00:00';
+                        calcularDia(tr);
+                        calcularTotaisMensais();
+                    });
+                    inputHPrt.addEventListener('input', function() { calcularDia(tr); });
+                    tdHPrt.appendChild(inputHPrt);
+                    tr.appendChild(tdHPrt);
+                    
+                    // H. Coordenação
+                    const tdHCoord = document.createElement('td');
+                    const inputHCoord = document.createElement('input');
+                    inputHCoord.type = 'text';
+                    inputHCoord.className = 'time-input';
+                    inputHCoord.value = d.hCoord;
+                    inputHCoord.addEventListener('blur', function(e) {
+                        if (!e.target.value.match(/^\d{2}:\d{2}$/)) e.target.value = '00:00';
+                        if (e.target.value.startsWith('-')) e.target.value = '00:00';
+                        calcularDia(tr);
+                        calcularTotaisMensais();
+                    });
+                    inputHCoord.addEventListener('input', function() { calcularDia(tr); });
+                    tdHCoord.appendChild(inputHCoord);
+                    tr.appendChild(tdHCoord);
+                    
+                    // H. Burocráticas
+                    const tdHBuro = document.createElement('td');
+                    const inputHBuro = document.createElement('input');
+                    inputHBuro.type = 'text';
+                    inputHBuro.className = 'time-input';
+                    inputHBuro.value = d.hBuro;
+                    inputHBuro.addEventListener('blur', function(e) {
+                        if (!e.target.value.match(/^\d{2}:\d{2}$/)) e.target.value = '00:00';
+                        if (e.target.value.startsWith('-')) e.target.value = '00:00';
+                        calcularDia(tr);
+                        calcularTotaisMensais();
+                    });
+                    inputHBuro.addEventListener('input', function() { calcularDia(tr); });
+                    tdHBuro.appendChild(inputHBuro);
+                    tr.appendChild(tdHBuro);
+                    
+                    // Total Dia
+                    const tdTotalDia = document.createElement('td');
+                    tdTotalDia.className = 'total-dia';
+                    tdTotalDia.textContent = d.totalDia;
+                    tr.appendChild(tdTotalDia);
+                    
+                    // Saldo Dia
+                    const tdSaldo = document.createElement('td');
+                    const spanSaldo = document.createElement('span');
+                    spanSaldo.className = d.saldoClass;
+                    spanSaldo.textContent = d.saldoDia;
+                    tdSaldo.appendChild(spanSaldo);
+                    tr.appendChild(tdSaldo);
+                    
+                    tbody.appendChild(tr);
+                });
+            }
+            
+            // ----- CALCULAR LINHA DO DIA (TOTAL E SALDO) -----
+            function calcularDia(row) {
+                const cells = row.cells;
+                if (cells.length < 14) return;
+                
+                const indIndividual = cells[4]?.textContent || '00:00';
+                const indConjunto = cells[5]?.textContent || '00:00';
+                
+                const inputHPrt = cells[9]?.querySelector('input');
+                const inputHCoord = cells[10]?.querySelector('input');
+                const inputHBuro = cells[11]?.querySelector('input');
+                const inputPrev = cells[3]?.querySelector('input');
+                
+                const hPrt = inputHPrt?.value || '00:00';
+                const hCoord = inputHCoord?.value || '00:00';
+                const hBuro = inputHBuro?.value || '00:00';
+                const prev = inputPrev?.value || '00:00';
+                
+                let totalMin = timeToMinutes(indIndividual) + timeToMinutes(indConjunto) + 
+                              timeToMinutes(hPrt) + timeToMinutes(hCoord) + timeToMinutes(hBuro);
+                let totalDia = minutesToTime(totalMin);
+                
+                let saldoMin = totalMin - timeToMinutes(prev);
+                let saldoDia = minutesToTime(saldoMin);
+                let saldoClass = saldoMin > 0 ? 'saldo-pos' : saldoMin < 0 ? 'saldo-neg' : 'saldo-zero';
+                
+                cells[12].textContent = totalDia; // Total dia
+                const spanSaldo = cells[13].querySelector('span');
+                spanSaldo.className = saldoClass;
+                spanSaldo.textContent = saldoDia;
+            }
+            
+            // ----- CALCULAR TOTAIS MENSAIS E ATUALIZAR PAINEL -----
+            function calcularTotaisMensais() {
+                const rows = document.querySelectorAll('#tbodyDias tr');
+                let totalPrevMin = 0, totalIndMin = 0, totalConjMin = 0;
+                let totalAvaliacoes = 0, totalEvolucoes = 0, totalProntuariosQtd = 0;
+                let totalHPrtMin = 0, totalHCoordMin = 0, totalHBuroMin = 0;
+                let totalTrabalhadoMin = 0;
+                let diasPrevistos = 0, diasCumpridos = 0;
+                
+                rows.forEach(row => {
+                    const cells = row.cells;
+                    const tipoSelect = cells[1]?.querySelector('select');
+                    const tipoDia = tipoSelect?.value || 'Previsto';
+                    const presencaSelect = cells[2]?.querySelector('select');
+                    const presenca = presencaSelect?.value || 'Presente';
+                    
+                    // Contagem de dias previstos (considerando que não sejam férias/atestado/afastamento)
+                    if (tipoDia !== 'Férias' && tipoDia !== 'Afastamento' && tipoDia !== 'Atestado' && tipoDia !== 'Não previsto') {
+                        diasPrevistos++;
+                    }
+                    
+                    // Dias cumpridos: presente OU horas trabalhadas > 0 em dias não previstos, etc.
+                    const totalDiaMin = timeToMinutes(cells[12]?.textContent || '00:00');
+                    if (totalDiaMin > 0 || presenca === 'Presente' || presenca === 'Justificado') {
+                        diasCumpridos++;
+                    }
+                    
+                    const prevInput = cells[3]?.querySelector('input');
+                    totalPrevMin += timeToMinutes(prevInput?.value || '00:00');
+                    
+                    totalIndMin += timeToMinutes(cells[4]?.textContent || '00:00');
+                    totalConjMin += timeToMinutes(cells[5]?.textContent || '00:00');
+                    totalAvaliacoes += parseInt(cells[6]?.textContent || 0);
+                    totalEvolucoes += parseInt(cells[7]?.textContent || 0);
+                    totalProntuariosQtd += parseInt(cells[8]?.textContent || 0);
+                    
+                    const hPrtInput = cells[9]?.querySelector('input');
+                    totalHPrtMin += timeToMinutes(hPrtInput?.value || '00:00');
+                    const hCoordInput = cells[10]?.querySelector('input');
+                    totalHCoordMin += timeToMinutes(hCoordInput?.value || '00:00');
+                    const hBuroInput = cells[11]?.querySelector('input');
+                    totalHBuroMin += timeToMinutes(hBuroInput?.value || '00:00');
+                    
+                    totalTrabalhadoMin += totalDiaMin;
+                });
+                
+                // Atualizar totais na tabela
+                document.getElementById('totalPrevistas').textContent = minutesToTime(totalPrevMin);
+                document.getElementById('totalIndividual').textContent = minutesToTime(totalIndMin);
+                document.getElementById('totalConjunto').textContent = minutesToTime(totalConjMin);
+                document.getElementById('totalAvaliacoes').textContent = totalAvaliacoes;
+                document.getElementById('totalEvolucoes').textContent = totalEvolucoes;
+                document.getElementById('totalProntuariosQtd').textContent = totalProntuariosQtd;
+                document.getElementById('totalHProntuario').textContent = minutesToTime(totalHPrtMin);
+                document.getElementById('totalHCoord').textContent = minutesToTime(totalHCoordMin);
+                document.getElementById('totalHBuro').textContent = minutesToTime(totalHBuroMin);
+                document.getElementById('totalTrabalhado').textContent = minutesToTime(totalTrabalhadoMin);
+                
+                const saldoFinalMin = totalTrabalhadoMin - totalPrevMin;
+                const saldoFinal = minutesToTime(saldoFinalMin);
+                const saldoFinalSpan = document.getElementById('totalSaldo').querySelector('span');
+                saldoFinalSpan.textContent = saldoFinal;
+                saldoFinalSpan.className = saldoFinalMin > 0 ? 'saldo-pos' : saldoFinalMin < 0 ? 'saldo-neg' : 'saldo-zero';
+                
+                // ----- ATUALIZAR PAINEL LATERAL -----
+                // Dias
+                const percDiasCumpridos = diasPrevistos ? Math.round((diasCumpridos / diasPrevistos) * 100) : 0;
+                document.getElementById('diasPrevistosValor').innerHTML = `${diasPrevistos} (100%)`;
+                document.getElementById('diasCumpridosValor').innerHTML = `${diasCumpridos} <span class="badge-percent">${percDiasCumpridos}%</span>`;
+                
+                // Horas
+                const percHoras = totalPrevMin ? Math.round((totalTrabalhadoMin / totalPrevMin) * 100) : 0;
+                document.getElementById('horasPrevistasValor').textContent = minutesToTime(totalPrevMin);
+                document.getElementById('horasTrabalhadasValor').innerHTML = `${minutesToTime(totalTrabalhadoMin)} <span class="badge-percent" id="horasPercent">${percHoras}%</span>`;
+                
+                // Distribuição
+                document.getElementById('distribIndividual').textContent = minutesToTime(totalIndMin);
+                document.getElementById('distribConjunto').textContent = minutesToTime(totalConjMin);
+                document.getElementById('distribProntuario').textContent = minutesToTime(totalHPrtMin);
+                document.getElementById('distribCoord').textContent = minutesToTime(totalHCoordMin);
+                document.getElementById('distribBuro').textContent = minutesToTime(totalHBuroMin);
+                
+                const percInd = totalTrabalhadoMin ? Math.round((totalIndMin / totalTrabalhadoMin) * 100) : 0;
+                const percConj = totalTrabalhadoMin ? Math.round((totalConjMin / totalTrabalhadoMin) * 100) : 0;
+                const percPrt = totalTrabalhadoMin ? Math.round((totalHPrtMin / totalTrabalhadoMin) * 100) : 0;
+                const percCoord = totalTrabalhadoMin ? Math.round((totalHCoordMin / totalTrabalhadoMin) * 100) : 0;
+                const percBuro = totalTrabalhadoMin ? Math.round((totalHBuroMin / totalTrabalhadoMin) * 100) : 0;
+                
+                document.getElementById('percIndividual').textContent = percInd + '%';
+                document.getElementById('percConjunto').textContent = percConj + '%';
+                document.getElementById('percProntuario').textContent = percPrt + '%';
+                document.getElementById('percCoord').textContent = percCoord + '%';
+                document.getElementById('percBuro').textContent = percBuro + '%';
+                
+                // Prontuários
+                document.getElementById('prontuariosTotal').textContent = totalProntuariosQtd;
+                document.getElementById('prontuariosHoras').textContent = minutesToTime(totalHPrtMin);
+                const horasDecimais = totalHPrtMin / 60;
+                const razao = horasDecimais > 0 ? (totalProntuariosQtd / horasDecimais).toFixed(2) : '0,00';
+                document.getElementById('razaoProntuario').textContent = razao.replace('.', ',');
+                document.getElementById('razaoDetalhe').innerHTML = `(${totalProntuariosQtd} pront ÷ ${horasDecimais.toFixed(1)}h)`;
+                
+                // Indicadores
+                document.getElementById('totalAvaliacoesInd').textContent = totalAvaliacoes;
+                document.getElementById('totalEvolucoesInd').textContent = totalEvolucoes;
+                
+                // Saldo Final
+                document.getElementById('saldoFinalValor').textContent = saldoFinal;
+                const percSaldo = totalPrevMin ? Math.round((saldoFinalMin / totalPrevMin) * 100) : 0;
+                const sinal = percSaldo > 0 ? '+' : '';
+                document.getElementById('saldoFinalPercent').textContent = `${sinal}${percSaldo}%`;
+                document.getElementById('saldoFinalPercent').style.background = saldoFinalMin > 0 ? '#e0f5e9' : saldoFinalMin < 0 ? '#ffcccc' : '#eef2f5';
+                document.getElementById('saldoFinalPercent').style.color = saldoFinalMin > 0 ? 'var(--verde-sucesso)' : saldoFinalMin < 0 ? 'var(--vermelho-alerta)' : 'var(--cinza-medio)';
+                
+                // Atualizar gráfico
+                atualizarGrafico(totalIndMin, totalConjMin, totalHPrtMin, totalHCoordMin, totalHBuroMin, totalTrabalhadoMin);
+            }
+            
+            // Gráfico
+            let chartInstance = null;
+            function atualizarGrafico(ind, conj, prt, coord, buro, total) {
+                const outros = total - (ind + conj + prt + coord + buro);
+                const ctx = document.getElementById('horasChart').getContext('2d');
+                if (chartInstance) chartInstance.destroy();
+                chartInstance = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Individual', 'Conjunto', 'Prontuário', 'Coordenação', 'Burocrático', 'Outros'],
+                        datasets: [{
+                            data: [ind/60, conj/60, prt/60, coord/60, buro/60, Math.max(0, outros/60)],
+                            backgroundColor: ['#9b58b4', '#b37ac2', '#c69ad0', '#dbbae0', '#eddaf0', '#f3e8f5'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(1)}h` } } },
+                        layout: { padding: 6 }
+                    }
+                });
+            }
+            
+            // Inicialização
+            renderizarTabela(dadosDias);
+            calcularTotaisMensais();
+            
+            // Troca de setor
+            const setorBadge = document.getElementById('setorBadge');
+            const selectProf = document.getElementById('profissionalSelect');
+            function updateSector() {
+                const val = selectProf.value;
+                setorBadge.innerHTML = (val === '1' || val === '2') ? 
+                    '<i class="fas fa-stethoscope"></i> Setor: Fisioterapeutas' : 
+                    '<i class="fas fa-dumbbell"></i> Setor: Educação Física';
+                document.getElementById('tituloRelatorio').innerHTML = 
+                    (val === '1' ? 'Dra. Carla Mendes' : val === '2' ? 'Dr. Ricardo Lemos' : val === '3' ? 'Rafael Oliveira' : 'Marina Castro') + 
+                    ' · Fevereiro 2025';
+            }
+            selectProf.addEventListener('change', updateSector);
+            updateSector();
+            
+            // Botões
+            document.getElementById('carregarBtn').addEventListener('click', function() {
+                alert('📊 Relatório recarregado com dados do período.');
+                calcularTotaisMensais();
+            });
+            document.getElementById('salvarBtn').addEventListener('click', function() {
+                alert('💾 Alterações salvas (simulação).');
+            });
+            
+            // Expor para debug
+            window.calcularTotaisMensais = calcularTotaisMensais;
+        })();
+    </script>
+</body>
+</html>
