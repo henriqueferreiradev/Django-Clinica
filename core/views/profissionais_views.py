@@ -635,8 +635,10 @@ def agenda_profissional(request):
     if profissional:
         agendamentos = Agendamento.objects.filter(
             profissional_1=profissional,
-            data=dia
+            data=dia,
+            status__in=['agendado', 'finalizado']
         )
+
         print(f"DEBUG: Agendamentos encontrados para {profissional.nome}: {agendamentos.count()}")
     else:
         agendamentos = Agendamento.objects.none()

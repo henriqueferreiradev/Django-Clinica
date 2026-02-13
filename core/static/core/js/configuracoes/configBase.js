@@ -1443,6 +1443,230 @@ window.PlanoContasModal = {
     refresh: carregarContas
 };
 
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* =========================
+       VARIÁVEIS GLOBAIS
+    ========================= */
+    const modal = document.getElementById('modalEscala');
+    const closeModalBtn = document.getElementById('closeModal');
+    const btnSalvarModal = document.getElementById('btnSalvarModal');
+    const btnLimparModal = document.getElementById('btnLimparModal');
+
+    let profissionalAtual = null;
+
+    const dias = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
+
+    /* =========================
+       ABRIR MODAL
+    ========================= */
+    document.querySelectorAll('.btn-config').forEach(btn => {
+        btn.addEventListener('click', () => {
+            abrirModalEscala(btn.dataset.profId);
+        });
+    });
+    function adicionarTurno(container, inicio = '', fim = '') {
+
+        const template = document.getElementById("templateTurno");
+        const clone = template.content.cloneNode(true);
+
+        const inicioInput = clone.querySelector(".turno-inicio");
+        const fimInput = clone.querySelector(".turno-fim");
+
+        inicioInput.value = inicio;
+        fimInput.value = fim;
+
+        container.appendChild(clone);
+    }
+
+    function abrirModalEscala(profId) {
+        profissionalAtual = profId;
+        limparModalEscala();
+
+        fetch(`/api/escala-profissional/${profId}/`)
+            .then(res => res.json())
+            .then(data => {
+                Object.entries(data).forEach(([dia, info]) => {
+
+                    const diaItem = document.querySelector(`.dia-escala-item[data-dia="${dia}"]`);
+                    if (!diaItem) return;
+
+                    const checkbox = diaItem.querySelector(".dia-ativo");
+                    const container = diaItem.querySelector(".turnos-container");
+
+                    if (info.ativo) {
+                        checkbox.checked = true;
+
+                        info.turnos.forEach(turno => {
+                            adicionarTurno(container, turno.inicio, turno.fim);
+                        });
+                    }
+
+                });
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            })
+            .catch(() => {
+                mostrarMensagem('Erro ao carregar escala', 'error');
+            });
+    }
+
+    /* =========================
+       FECHAR MODAL
+    ========================= */
+    function fecharModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        profissionalAtual = null;
+    }
+
+    closeModalBtn.addEventListener('click', fecharModal);
+
+    modal.addEventListener('click', e => {
+        if (e.target === modal) fecharModal();
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            fecharModal();
+        }
+    });
+
+    /* =========================
+       PREENCHER MODAL (BANCO → MODAL)
+    ========================= */
+
+    /* =========================
+       LIMPAR MODAL
+    ========================= */
+
+    btnLimparModal.addEventListener('click', () => {
+        if (!confirm('Deseja limpar toda a escala deste profissional?')) return;
+        limparModalEscala();
+    });
+
+    /* =========================
+       SALVAR ESCALA
+    ========================= */
+    btnSalvarModal.addEventListener('click', () => {
+
+        if (!profissionalAtual) return;
+
+        const formData = new FormData();
+        formData.append(
+            'csrfmiddlewaretoken',
+            document.querySelector('[name=csrfmiddlewaretoken]').value
+        );
+
+        formData.append('tipo', 'escala_base_profissional');
+        formData.append('profissional_id', profissionalAtual);
+
+        document.querySelectorAll(".dia-escala-item").forEach(diaItem => {
+
+            const dia = diaItem.dataset.dia;
+            const ativo = diaItem.querySelector(".dia-ativo").checked;
+
+            formData.append(`disp[${dia}][ativo]`, ativo ? "on" : "");
+
+            if (!ativo) return;
+
+            const turnos = [];
+
+            diaItem.querySelectorAll(".turno-item").forEach(turno => {
+
+                const inicio = turno.querySelector(".turno-inicio").value;
+                const fim = turno.querySelector(".turno-fim").value;
+
+                if (inicio && fim) {
+                    turnos.push({ inicio, fim });
+                }
+
+            });
+
+            formData.append(`disp[${dia}][turnos]`, JSON.stringify(turnos));
+
+        });
+
+        fetch('', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarMensagem('Escala salva com sucesso!', 'success');
+                    atualizarStatusProfissional(profissionalAtual);
+                    fecharModal();
+                } else {
+                    mostrarMensagem(data.error || 'Erro ao salvar', 'error');
+                }
+            })
+            .catch(() => {
+                mostrarMensagem('Erro ao salvar escala', 'error');
+            });
+
+    });
+
+    function limparModalEscala() {
+        document.querySelectorAll(".dia-escala-item").forEach(diaItem => {
+            diaItem.querySelector(".dia-ativo").checked = false;
+            diaItem.querySelector(".turnos-container").innerHTML = '';
+        });
+    }
+    document.querySelectorAll(".dia-escala-item").forEach(diaItem => {
+
+        const container = diaItem.querySelector(".turnos-container");
+        const btnAdd = diaItem.querySelector(".btn-add-turno");
+        const template = document.getElementById("templateTurno");
+
+        btnAdd.addEventListener("click", () => {
+            const clone = template.content.cloneNode(true);
+            container.appendChild(clone);
+        });
+
+        container.addEventListener("click", (e) => {
+            if (e.target.classList.contains("btn-remove-turno")) {
+                e.target.closest(".turno-item").remove();
+            }
+        });
+
+    });
+
+    /* =========================
+    STATUS VISUAL
+    ========================= */
+    async function atualizarStatusProfissional(profId) {
+        try {
+            const resp = await fetch(`/api/escala-profissional/${profId}/`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await resp.json();
+
+            // Se qualquer dia tiver ativo = true -> configurado
+            const configurado = Object.values(data).some(d => d && d.ativo === true);
+
+            const el = document.getElementById(`status_${profId}`);
+            if (!el) return;
+
+            if (configurado) {
+                el.innerHTML = `<span class="status-badge configurado"><i class='bx bx-check-circle'></i> Configurado</span>`;
+            } else {
+                el.innerHTML = `<span class="status-badge"><i class='bx bx-time'></i> Não configurado</span>`;
+            }
+        } catch (e) {
+            console.error('Erro ao atualizar status:', e);
+        }
+    }
+
+    // Rodar pra todos ao carregar
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.prof-card-select').forEach(card => {
+            atualizarStatusProfissional(card.dataset.profId);
+        });
+    });
 
 
- 
+});
+
+

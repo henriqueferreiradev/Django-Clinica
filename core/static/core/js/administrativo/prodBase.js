@@ -56,13 +56,27 @@
         mesSelect.value = new Date().getMonth() + 1;
         anoSelect.value = anoAtual;
     }
+    function aplicarCorLinha(tr, tipoDia) {
+        // ===== LINHA =====
+        tr.classList.remove('row-previsto', 'row-nao-previsto');
+        if (tipoDia === 'Previsto') tr.classList.add('row-previsto');
+        if (tipoDia === 'Não previsto') tr.classList.add('row-nao-previsto');
+
+        // ===== SELECT (borda) =====
+        const selectTipo = tr.querySelector('select.day-select');
+        if (!selectTipo) return;
+
+        selectTipo.classList.remove('tipo-previsto', 'tipo-nao-previsto');
+        if (tipoDia === 'Previsto') selectTipo.classList.add('tipo-previsto');
+        if (tipoDia === 'Não previsto') selectTipo.classList.add('tipo-nao-previsto');
+    }
 
     function renderizarTabela(dias) {
         tbody.innerHTML = '';
         dias.forEach(d => {
             const tr = document.createElement('tr');
             tr.setAttribute('data-dia', d.dia);
-
+            aplicarCorLinha(tr, d.tipoDia);
             // Coluna dia
             const tdDia = document.createElement('td');
             tdDia.className = 'row-day-label';
@@ -81,25 +95,40 @@
                 selectTipo.appendChild(option);
             });
             selectTipo.addEventListener('change', function () {
-                // Se mudar tipo, ajustar presença e horas previstas (simplificado)
+
                 const valor = this.value;
                 const row = this.closest('tr');
                 const selectPresenca = row.cells[2].querySelector('select');
                 const inputPrevistas = row.cells[3].querySelector('input');
-
+                aplicarCorLinha(row, valor);
                 if (valor === 'Férias' || valor === 'Afastamento' || valor === 'Atestado') {
-                    if (selectPresenca) selectPresenca.value = valor;
-                    if (inputPrevistas) inputPrevistas.value = '00:00';
+
+                    selectPresenca.value = valor;
+                    inputPrevistas.value = '00:00';
+                     
+
                 } else if (valor === 'Não previsto') {
-                    if (selectPresenca) selectPresenca.value = 'Presente';
-                    if (inputPrevistas) inputPrevistas.value = '00:00';
-                } else {
-                    if (selectPresenca) selectPresenca.value = 'Presente';
-                    if (inputPrevistas) inputPrevistas.value = '07:30';
+
+                    selectPresenca.value = 'Presente';
+                    inputPrevistas.value = '00:00';
+                     
+
+                } else if (valor === 'Previsto') {
+
+                    
+                    // 🔥 NÃO INVENTA MAIS 07:00
+                    // Mantém o valor que já veio do backend
+                    if (inputPrevistas.value === '00:00') {
+                        // opcional: pode deixar assim mesmo
+                    }
+
+                    selectPresenca.value = 'Presente';
                 }
+
                 calcularDia(row);
                 calcularTotaisMensais();
             });
+
             tdTipo.appendChild(selectTipo);
             tr.appendChild(tdTipo);
 
@@ -221,7 +250,7 @@
             spanSaldo.textContent = d.saldoDia;
             tdSaldo.appendChild(spanSaldo);
             tr.appendChild(tdSaldo);
-
+aplicarCorLinha(tr, d.tipoDia);
             tbody.appendChild(tr);
         });
     }
@@ -457,21 +486,30 @@
         return mapa[tipo] || 'Previsto';
     }
 
-
-    // Troca de setor
-    const setorBadge = document.getElementById('setorBadge');
+    // Atualizar título com nome real do profissional + mês + ano
     const selectProf = document.getElementById('profissionalSelect');
-    function updateSector() {
-        const val = selectProf.value;
-        setorBadge.innerHTML = (val === '1' || val === '2') ?
-            '<i class="fas fa-stethoscope"></i> Setor: Fisioterapeutas' :
-            '<i class="fas fa-dumbbell"></i> Setor: Educação Física';
-        document.getElementById('tituloRelatorio').innerHTML =
-            (val === '1' ? 'Dra. Carla Mendes' : val === '2' ? 'Dr. Ricardo Lemos' : val === '3' ? 'Rafael Oliveira' : 'Marina Castro') +
-            ' · Fevereiro 2025';
+    const mesSelect = document.getElementById('mesSelect');
+    const anoSelect = document.getElementById('anoSelect');
+
+    function atualizarTitulo() {
+
+        const profNome = selectProf.options[selectProf.selectedIndex]?.text || '';
+        const mesNome = mesSelect.options[mesSelect.selectedIndex]?.text || '';
+        const anoValor = anoSelect.value || '';
+
+        const titulo = `${profNome} · ${mesNome} ${anoValor}`;
+
+        document.getElementById('tituloRelatorio').textContent = titulo;
     }
-    selectProf.addEventListener('change', updateSector);
-    updateSector();
+
+    // Atualiza quando trocar profissional, mês ou ano
+    selectProf.addEventListener('change', atualizarTitulo);
+    mesSelect.addEventListener('change', atualizarTitulo);
+    anoSelect.addEventListener('change', atualizarTitulo);
+
+    // Atualiza ao carregar página
+    atualizarTitulo();
+
 
     // Botões
     document.getElementById('carregarBtn').addEventListener('click', function () {

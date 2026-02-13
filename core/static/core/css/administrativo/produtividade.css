@@ -441,3 +441,27 @@
      font-size: 0.7rem;
      color: var(--cinza-medio);
  }
+
+ /* verde claro */
+.row-previsto td {
+  background: #e8f7ee !important;
+}
+
+/* vermelho clarinho */
+.row-nao-previsto td {
+  background: #ffe9e9 !important;
+}
+
+/* fundo da row */
+tr.row-previsto { background: rgba(32,177,90,0.10); }
+tr.row-nao-previsto { background: rgba(229,57,53,0.10); }
+
+/* borda do select */
+.day-select.tipo-previsto{
+  border: 1px solid #20b15a !important;
+  box-shadow: 0 0 0 3px rgba(32,177,90,0.12);
+}
+.day-select.tipo-nao-previsto{
+  border: 1px solid #e53935 !important;
+  box-shadow: 0 0 0 3px rgba(229,57,53,0.12);
+}

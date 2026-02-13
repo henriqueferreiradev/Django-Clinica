@@ -490,7 +490,8 @@
                             
                             <div class="prof-info">
                                 <h4 class='status-badge'>{{ prof.nome }}</h4>
-                                <div class="prof-status">
+                                <div class="prof-status" id="status_{{ prof.id }}">
+
                                     {% if prof.escala_configurada %}
                                         <span class="status-badge configurado">
                                             <i class='bx bx-check-circle'></i> Configurado
@@ -527,82 +528,120 @@
                         <div class="escala-form">
                             <div class="dias-escala">
                                 <!-- Segunda -->
-                                <div class="dia-escala-item">
+                                <div class="dia-escala-item" data-dia="seg">
+                                    
                                     <label class="checkbox-option">
-                                        <input type="checkbox" id="modal_seg_ativo">
+                                        <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Segunda</span>
                                     </label>
-                                    <div class="horarios-modal">
-                                        <input type="time" id="modal_seg_inicio" class="time-input-modal" placeholder="08:00">
-                                        <span class="time-sep-modal">às</span>
-                                        <input type="time" id="modal_seg_fim" class="time-input-modal" placeholder="17:00">
-                                    </div>
+
+                                    <div class="turnos-container"></div>
+
+                                    <button type="button" class="btn-add-turno">
+                                        + Adicionar turno
+                                    </button>
+
                                 </div>
+
 
                                 <!-- Terça -->
-                                <div class="dia-escala-item">
+                                <div class="dia-escala-item" data-dia="ter">
+                                    
                                     <label class="checkbox-option">
-                                        <input type="checkbox" id="modal_ter_ativo">
+                                        <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Terça</span>
                                     </label>
-                                    <div class="horarios-modal">
-                                        <input type="time" id="modal_ter_inicio" class="time-input-modal" placeholder="08:00">
-                                        <span class="time-sep-modal">às</span>
-                                        <input type="time" id="modal_ter_fim" class="time-input-modal" placeholder="17:00">
-                                    </div>
+
+                                    <div class="turnos-container"></div>
+
+                                    <button type="button" class="btn-add-turno">
+                                        + Adicionar turno
+                                    </button>
+
                                 </div>
+
 
                                 <!-- Quarta -->
-                                <div class="dia-escala-item">
+                                <div class="dia-escala-item" data-dia="qua">
+                                    
                                     <label class="checkbox-option">
-                                        <input type="checkbox" id="modal_qua_ativo">
+                                        <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Quarta</span>
                                     </label>
-                                    <div class="horarios-modal">
-                                        <input type="time" id="modal_qua_inicio" class="time-input-modal" placeholder="08:00">
-                                        <span class="time-sep-modal">às</span>
-                                        <input type="time" id="modal_qua_fim" class="time-input-modal" placeholder="17:00">
-                                    </div>
+
+                                    <div class="turnos-container"></div>
+
+                                    <button type="button" class="btn-add-turno">
+                                        + Adicionar turno
+                                    </button>
+
                                 </div>
+
 
                                 <!-- Quinta -->
-                                <div class="dia-escala-item">
+                                <div class="dia-escala-item" data-dia="qui">
+                                    
                                     <label class="checkbox-option">
-                                        <input type="checkbox" id="modal_qui_ativo">
+                                        <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Quinta</span>
                                     </label>
-                                    <div class="horarios-modal">
-                                        <input type="time" id="modal_qui_inicio" class="time-input-modal" placeholder="08:00">
-                                        <span class="time-sep-modal">às</span>
-                                        <input type="time" id="modal_qui_fim" class="time-input-modal" placeholder="17:00">
-                                    </div>
+
+                                    <div class="turnos-container"></div>
+
+                                    <button type="button" class="btn-add-turno">
+                                        + Adicionar turno
+                                    </button>
+
                                 </div>
+
 
                                 <!-- Sexta -->
-                                <div class="dia-escala-item">
+                                <div class="dia-escala-item" data-dia="sex">
+                                    
                                     <label class="checkbox-option">
-                                        <input type="checkbox" id="modal_sex_ativo">
+                                        <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Sexta</span>
                                     </label>
-                                    <div class="horarios-modal">
-                                        <input type="time" id="modal_sex_inicio" class="time-input-modal" placeholder="08:00">
-                                        <span class="time-sep-modal">às</span>
-                                        <input type="time" id="modal_sex_fim" class="time-input-modal" placeholder="17:00">
-                                    </div>
+
+                                    <div class="turnos-container"></div>
+
+                                    <button type="button" class="btn-add-turno">
+                                        + Adicionar turno
+                                    </button>
+
                                 </div>
 
+
                                 <!-- Sábado -->
-                                <div class="dia-escala-item">
+                                <div class="dia-escala-item" data-dia="sab">
+                                    
                                     <label class="checkbox-option">
-                                        <input type="checkbox" id="modal_sab_ativo">
+                                        <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Sábado</span>
                                     </label>
-                                    <div class="horarios-modal">
-                                        <input type="time" id="modal_sab_inicio" class="time-input-modal" placeholder="08:00">
-                                        <span class="time-sep-modal">às</span>
-                                        <input type="time" id="modal_sab_fim" class="time-input-modal" placeholder="17:00">
-                                    </div>
+
+                                    <div class="turnos-container"></div>
+
+                                    <button type="button" class="btn-add-turno">
+                                        + Adicionar turno
+                                    </button>
+
                                 </div>
+                                <div class="dia-escala-item" data-dia="dom">
+                                        
+                                        <label class="checkbox-option">
+                                            <input type="checkbox" class="dia-ativo">
+                                            <span class="dia-nome-modal">Domingo</span>
+                                        </label>
+
+                                        <div class="turnos-container"></div>
+
+                                        <button type="button" class="btn-add-turno">
+                                            + Adicionar turno
+                                        </button>
+
+                                    </div>
+
                             </div>
 
                             <div class="modal-actions">
@@ -632,6 +671,14 @@
             </template>
 
         </div>
+        <template id="templateTurno">
+            <div class="turno-item">
+                <input type="time" class="turno-inicio">
+                <span>às</span>
+                <input type="time" class="turno-fim">
+                <button type="button" class="btn-remove-turno">✕</button>
+            </div>
+        </template>
 
         <div class="form">
             <div class="form-header" onclick="toggleFormSection(this)">
@@ -1811,199 +1858,7 @@
 {% endblock %}
 
 {% block scripts %}
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    /* =========================
-       VARIÁVEIS GLOBAIS
-    ========================= */
-    const modal = document.getElementById('modalEscala');
-    const closeModalBtn = document.getElementById('closeModal');
-    const btnSalvarModal = document.getElementById('btnSalvarModal');
-    const btnLimparModal = document.getElementById('btnLimparModal');
-
-    let profissionalAtual = null;
-
-    const dias = ['seg','ter','qua','qui','sex','sab'];
-
-    /* =========================
-       ABRIR MODAL
-    ========================= */
-    document.querySelectorAll('.btn-config').forEach(btn => {
-        btn.addEventListener('click', () => {
-            abrirModalEscala(btn.dataset.profId);
-        });
-    });
-
-    function abrirModalEscala(profId) {
-        profissionalAtual = profId;
-        limparModalEscala();
-
-        fetch(`/api/escala-profissional/${profId}/`)
-            .then(res => res.json())
-            .then(data => {
-                preencherModalEscala(data);
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            })
-            .catch(() => {
-                mostrarMensagem('Erro ao carregar escala', 'error');
-            });
-    }
-
-    /* =========================
-       FECHAR MODAL
-    ========================= */
-    function fecharModal() {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        profissionalAtual = null;
-    }
-
-    closeModalBtn.addEventListener('click', fecharModal);
-
-    modal.addEventListener('click', e => {
-        if (e.target === modal) fecharModal();
-    });
-
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            fecharModal();
-        }
-    });
-
-    /* =========================
-       PREENCHER MODAL (BANCO → MODAL)
-    ========================= */
-    function preencherModalEscala(data) {
-        Object.keys(data).forEach(dia => {
-            const info = data[dia];
-
-            const chk = document.getElementById(`modal_${dia}_ativo`);
-            const inicio = document.getElementById(`modal_${dia}_inicio`);
-            const fim = document.getElementById(`modal_${dia}_fim`);
-
-            if (!chk) return;
-
-            chk.checked = info.ativo;
-            inicio.value = info.inicio || '';
-            fim.value = info.fim || '';
-        });
-    }
-
-    /* =========================
-       LIMPAR MODAL
-    ========================= */
-    function limparModalEscala() {
-        dias.forEach(dia => {
-            document.getElementById(`modal_${dia}_ativo`).checked = false;
-            document.getElementById(`modal_${dia}_inicio`).value = '';
-            document.getElementById(`modal_${dia}_fim`).value = '';
-        });
-    }
-
-    btnLimparModal.addEventListener('click', () => {
-        if (!confirm('Deseja limpar toda a escala deste profissional?')) return;
-        limparModalEscala();
-    });
-
-    /* =========================
-       SALVAR ESCALA
-    ========================= */
-    btnSalvarModal.addEventListener('click', () => {
-        if (!profissionalAtual) return;
-
-        const formData = new FormData();
-        formData.append(
-            'csrfmiddlewaretoken',
-            document.querySelector('[name=csrfmiddlewaretoken]').value
-        );
-        formData.append('tipo', 'escala_base_profissional');
-        formData.append('profissional_id', profissionalAtual);
-
-        dias.forEach(dia => {
-            const ativo = document.getElementById(`modal_${dia}_ativo`).checked;
-            const inicio = document.getElementById(`modal_${dia}_inicio`).value;
-            const fim = document.getElementById(`modal_${dia}_fim`).value;
-
-            if (ativo) {
-                formData.append(`disp[${dia}][ativo]`, 'on');
-                formData.append(`disp[${dia}][inicio]`, inicio || '');
-                formData.append(`disp[${dia}][fim]`, fim || '');
-            }
-        });
-
-        fetch('', {
-            method: 'POST',
-            body: formData,
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                mostrarMensagem('Escala salva com sucesso!', 'success');
-                atualizarStatusProfissional(profissionalAtual, true);
-                fecharModal();
-            } else {
-                mostrarMensagem(data.error || 'Erro ao salvar', 'error');
-            }
-        })
-        .catch(() => {
-            mostrarMensagem('Erro ao salvar escala', 'error');
-        });
-    });
-function limparModalEscala() {
-    dias.forEach(dia => {
-        const chk = document.getElementById(`modal_${dia}_ativo`);
-        const inicio = document.getElementById(`modal_${dia}_inicio`);
-        const fim = document.getElementById(`modal_${dia}_fim`);
-
-        if (!chk || !inicio || !fim) return;
-
-        chk.checked = false;
-        inicio.value = '';
-        fim.value = '';
-    });
-}
-
-    /* =========================
-    STATUS VISUAL
-    ========================= */
-async function atualizarStatusProfissional(profId) {
-  try {
-    const resp = await fetch(`/api/escala-profissional/${profId}/`, {
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    });
-    const data = await resp.json();
-
-    // Se qualquer dia tiver ativo = true -> configurado
-    const configurado = Object.values(data).some(d => d && d.ativo === true);
-
-    const el = document.getElementById(`status_${profId}`);
-    if (!el) return;
-
-    if (configurado) {
-      el.innerHTML = `<span class="status-badge configurado"><i class='bx bx-check-circle'></i> Configurado</span>`;
-    } else {
-      el.innerHTML = `<span class="status-badge"><i class='bx bx-time'></i> Não configurado</span>`;
-    }
-  } catch (e) {
-    console.error('Erro ao atualizar status:', e);
-  }
-}
-
-// Rodar pra todos ao carregar
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.prof-card-select').forEach(card => {
-    atualizarStatusProfissional(card.dataset.profId);
-  });
-});
-
-
-});
-</script>
-
+ 
     <script src="{% static 'core/js/base/MaskAndInputsBase.js' %}"></script>
     <script src="{% static 'core/js/configuracoes/configBase.js' %}"></script>
 {% endblock %}

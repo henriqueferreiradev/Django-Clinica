@@ -376,6 +376,8 @@ def carregar_produtividade(request):
 
     total_dias = monthrange(ano, mes)[1]
 
+    from datetime import datetime
+
     for dia in range(1, total_dias + 1):
 
         tipo_dia = definir_tipo_dia(relatorio.profissional, ano, mes, dia)
@@ -383,14 +385,50 @@ def carregar_produtividade(request):
         if tipo_dia is None:
             continue
 
-        ProdutividadeDia.objects.get_or_create(
+        horas_previstas_min = 0
+
+        if tipo_dia == 'previsto':
+
+            dia_semana = date(ano, mes, dia).weekday()
+
+            map_semana_escala = {
+                0: 'seg',
+                1: 'ter',
+                2: 'qua',
+                3: 'qui',
+                4: 'sex',
+                5: 'sab',
+                6: 'dom'
+            }
+
+            dia_str_escala = map_semana_escala[dia_semana]
+
+            escala = EscalaBaseProfissional.objects.filter(
+                profissional=profissional,
+                dia_semana=dia_str_escala,
+                ativo=True
+            ).first()
+
+            if escala and escala.hora_inicio and escala.hora_fim:
+                inicio = datetime.combine(date(ano, mes, dia), escala.hora_inicio)
+                fim = datetime.combine(date(ano, mes, dia), escala.hora_fim)
+                horas_previstas_min = int((fim - inicio).total_seconds() // 60)
+
+        dia_obj, created = ProdutividadeDia.objects.get_or_create(
             relatorio=relatorio,
             dia=dia,
             defaults={
                 'tipo_dia': tipo_dia,
-                'presenca': 'presente'
+                'presenca': 'presente',
+                'horas_previstas_min': horas_previstas_min
             }
         )
+
+        if not created:
+            dia_obj.tipo_dia = tipo_dia
+            dia_obj.horas_previstas_min = horas_previstas_min
+            dia_obj.save()
+
 
     dias = relatorio.dias.order_by('dia')
 
@@ -434,18 +472,19 @@ def calcular_dados_automaticos_por_dia(profissional, ano, mes, dia):
 
     avaliacoes = AvaliacaoFisioterapeutica.objects.filter(
         profissional=profissional,
-        data_avaliacao=data_ref
+        data_avaliacao__date=data_ref
     ).count()
 
     evolucoes = Evolucao.objects.filter(
         profissional=profissional,
-        data_criacao=data_ref
+        data_criacao__date=data_ref
     ).count()
 
     prontuarios = Prontuario.objects.filter(
         profissional=profissional,
-        data_criacao=data_ref
+        data_criacao__date=data_ref
     ).count()
+
 
     return {
         "individual_min": individual,

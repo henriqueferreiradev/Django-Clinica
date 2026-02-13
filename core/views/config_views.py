@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ConfigAgenda, ContaBancaria, ESTADO_CIVIL, EscalaBaseProfissional, Especialidade, Fornecedor, MIDIA_ESCOLHA, MensagemPadrao, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, UF_ESCOLHA, TipoDocumentoEmpresa, User, VINCULO, ValidadeBeneficios, ValidadeReposicao
+from core.models import Agendamento, CONSELHO_ESCOLHA, COR_RACA, CategoriaContasReceber, ConfigAgenda, ContaBancaria, ESTADO_CIVIL, EscalaBaseProfissional, Especialidade, Fornecedor, MIDIA_ESCOLHA, MensagemPadrao, Paciente, PacotePaciente, Pagamento, Profissional, SEXO_ESCOLHA, Servico, SubgrupoConta, TipoDocumentoEmpresa, TurnoEscalaProfissional, UF_ESCOLHA, User, VINCULO, ValidadeBeneficios, ValidadeReposicao
 from core.utils import filtrar_ativos_inativos, alterar_status_ativo, registrar_log
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -336,26 +336,7 @@ def configuracao_view(request):
         
         elif tipo == 'escala_base_profissional':
 
-            prof_id = request.POST.get('profissional_id')
-            profissional = Profissional.objects.get(id=prof_id)
-
-            for dia in ['seg','ter','qua','qui','sex','sab','dom']:
-
-                ativo = request.POST.get(f'disp[{dia}][ativo]') == 'on'
-                inicio = request.POST.get(f'disp[{dia}][inicio]') or None
-                fim = request.POST.get(f'disp[{dia}][fim]') or None
-
-                EscalaBaseProfissional.objects.update_or_create(
-                    profissional=profissional,
-                    dia_semana=dia,
-                    defaults={
-                        'ativo': ativo,
-                        'hora_inicio': inicio,
-                        'hora_fim': fim
-                    }
-                )
-
-            return JsonResponse({'success': True})
+            return salvar_escala_base_profissional(request)
 
         elif tipo == 'mensagem_padrao':
             titulo = request.POST.get('message_title')
@@ -593,21 +574,157 @@ def configuracao_view(request):
         'config':config,
          
     })
+def validar_turnos(turnos):
+    """
+    turnos: lista de dicts: [{'inicio': time, 'fim': time}, ...]
+    Regras:
+    - inicio < fim
+    - não pode sobrepor
+    """
+    for t in turnos:
+        if not t['inicio'] or not t['fim']:
+            raise ValueError("Turno com horário vazio.")
+        if t['inicio'] >= t['fim']:
+            raise ValueError("Turno inválido: início deve ser menor que fim.")
 
+    ordenados = sorted(turnos, key=lambda x: x['inicio'])
+    for i in range(len(ordenados) - 1):
+        atual = ordenados[i]
+        prox = ordenados[i + 1]
+        # se o próximo começa antes do atual terminar => sobreposição
+        if prox['inicio'] < atual['fim']:
+            raise ValueError("Turnos sobrepostos no mesmo dia.")
+    return ordenados
+
+import json
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils.dateparse import parse_time
+ 
+
+DIAS = ['seg','ter','qua','qui','sex','sab','dom']
+
+
+@transaction.atomic
+def salvar_escala_base_profissional(request):
+    prof_id = request.POST.get('profissional_id')
+    profissional = get_object_or_404(Profissional, id=prof_id)
+
+    for dia in DIAS:
+        ativo = (
+            request.POST.get(f'disp[{dia}][ativo]') == 'on'
+            or request.POST.get(f'disp[{prof_id}][{dia}][ativo]') == 'on'
+        )
+
+
+        # ✅ tenta pegar turnos no formato novo (JSON)
+        # Ex: disp[seg][turnos] = '[{"inicio":"08:00","fim":"12:00"},{"inicio":"14:00","fim":"17:00"}]'
+        raw_turnos = request.POST.get(f'disp[{dia}][turnos]')
+
+        escala, _ = EscalaBaseProfissional.objects.update_or_create(
+            profissional=profissional,
+            dia_semana=dia,
+            defaults={'ativo': ativo}
+        )
+
+        # Se não ativo, zera tudo
+        if not ativo:
+            escala.hora_inicio = None
+            escala.hora_fim = None
+            escala.save(update_fields=['hora_inicio', 'hora_fim'])
+            escala.turnos.all().delete()
+            continue
+
+        # ✅ MODO NOVO: múltiplos turnos
+        if raw_turnos:
+            try:
+                lista = json.loads(raw_turnos) if isinstance(raw_turnos, str) else raw_turnos
+            except Exception:
+                return JsonResponse({'success': False, 'error': f'Turnos inválidos em {dia}.'}, status=400)
+
+            turnos = []
+            for item in lista:
+                inicio = parse_time(item.get('inicio') or '')
+                fim = parse_time(item.get('fim') or '')
+                turnos.append({'inicio': inicio, 'fim': fim})
+
+            try:
+                turnos = validar_turnos(turnos)
+            except ValueError as e:
+                return JsonResponse({'success': False, 'error': f'{dia}: {str(e)}'}, status=400)
+
+            # substitui turnos do dia
+            escala.turnos.all().delete()
+            TurnoEscalaProfissional.objects.bulk_create([
+                TurnoEscalaProfissional(escala=escala, hora_inicio=t['inicio'], hora_fim=t['fim'])
+                for t in turnos
+            ])
+
+            # compatibilidade: preenche campos antigos com o primeiro turno
+            escala.hora_inicio = turnos[0]['inicio']
+            escala.hora_fim = turnos[-1]['fim']  # ou turnos[0]['fim'] se quiser “só o 1º turno”
+            escala.save(update_fields=['hora_inicio', 'hora_fim'])
+            continue
+
+        # ✅ MODO ANTIGO: 1 turno só (seu front atual)
+        inicio_str = (
+            request.POST.get(f'disp[{dia}][inicio]')
+            or request.POST.get(f'disp[{prof_id}][{dia}][inicio]')
+        )
+
+        fim_str = request.POST.get(f'disp[{dia}][fim]') or None
+
+        inicio = parse_time(inicio_str) if inicio_str else None
+        fim = parse_time(fim_str) if fim_str else None
+
+        # se ativo e não mandou horários, deixa vazio (herda geral da clínica como você já faz)
+        escala.hora_inicio = inicio
+        escala.hora_fim = fim
+        escala.save(update_fields=['hora_inicio', 'hora_fim'])
+
+        # sincroniza turnos com o modo antigo (se tiver inicio/fim)
+        escala.turnos.all().delete()
+        if inicio and fim:
+            if inicio >= fim:
+                return JsonResponse({'success': False, 'error': f'{dia}: início deve ser menor que fim.'}, status=400)
+            TurnoEscalaProfissional.objects.create(escala=escala, hora_inicio=inicio, hora_fim=fim)
+
+    return JsonResponse({'success': True})
+
+
+
+
+@login_required
 def obter_escala_profissional(request, prof_id):
-    escalas = EscalaBaseProfissional.objects.filter(profissional_id=prof_id)
+    profissional = get_object_or_404(Profissional, id=prof_id)
+
+    escalas = (
+        EscalaBaseProfissional.objects
+        .filter(profissional=profissional)
+        .prefetch_related('turnos')
+    )
+
     data = {}
-    
     for escala in escalas:
+        turnos = [
+            {'inicio': t.hora_inicio.strftime('%H:%M'), 'fim': t.hora_fim.strftime('%H:%M')}
+            for t in escala.turnos.all()
+        ]
+
         data[escala.dia_semana] = {
-            'profissional': escala.profissional.nome,
+            'profissional': profissional.nome,
             'ativo': escala.ativo,
+
+            # ✅ novo
+            'turnos': turnos,
+
+            # ✅ legado (pra você não se perder enquanto migra o front)
             'inicio': escala.hora_inicio.strftime('%H:%M') if escala.hora_inicio else '',
             'fim': escala.hora_fim.strftime('%H:%M') if escala.hora_fim else '',
         }
-        
+
     return JsonResponse(data)
-    
 def obter_mensagem_padrao(request):
     mensagens =  MensagemPadrao.objects.filter(ativo=True)
     data = []

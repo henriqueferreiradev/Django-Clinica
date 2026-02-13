@@ -121,7 +121,7 @@ def paciente_detalhes_basicos(request, paciente_id):
         proxima_consulta = (
     Agendamento.objects.filter(paciente=paciente, data__gte=timezone.now()).order_by('data').first()
 )
-
+        print("aqui", proxima_consulta.profissional_1)
         foto_url = (
         paciente.foto.url
         if (paciente.foto and paciente.foto.name)       
@@ -137,7 +137,8 @@ def paciente_detalhes_basicos(request, paciente_id):
                 'email':paciente.email,
                 'foto': request.build_absolute_uri(foto_url), 
                 'inicio_tratamento':paciente.data_cadastro.strftime('%d/%m/%Y'),
-                'proxima_consulta':f"{proxima_consulta.data.strftime('%d/%m/%Y')} às {proxima_consulta.hora_inicio.strftime('%H:%M')} com {proxima_consulta.profissional_1}" if proxima_consulta  else 'Sem próximo agendamento',
+                'proxima_consulta':f"{proxima_consulta.data.strftime('%d/%m/%Y')} às {proxima_consulta.hora_inicio.strftime('%H:%M')} com {proxima_consulta.profissional_1}"
+                if proxima_consulta  else 'Sem próximo agendamento',
 
             }
         }
@@ -490,17 +491,19 @@ def salvar_prontuario(request):
         else:
             return JsonResponse({'success': False, 'error': 'Content-Type must be application/json'}, status=400)
 
-        required_fields = ['paciente_id', 'profissional_id']
+        required_fields = ['paciente_id']
         for field in required_fields:
             if field not in data:
                 return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
 
         nao_se_aplica = data.get('nao_se_aplica', False)
-                
+        profissional = request.user.profissional
+
         if nao_se_aplica:
             prontuario = Prontuario.objects.create(
                 paciente_id=data['paciente_id'],
-                profissional_id=data['profissional_id'],
+                profissional=profissional,
+
                 agendamento_id=data.get('agendamento_id'),
                 queixa_principal='',
                 feedback_paciente='',
@@ -515,7 +518,7 @@ def salvar_prontuario(request):
         else:
             prontuario = Prontuario.objects.create(
                 paciente_id=data['paciente_id'],
-                profissional_id=data['profissional_id'],
+                profissional=profissional,
                 agendamento_id=data.get('agendamento_id'),
                 queixa_principal=data['queixa_principal'],
                 feedback_paciente=data.get('historia_doenca', ''),
@@ -557,8 +560,9 @@ def listar_prontuarios(request, paciente_id):
                 'id': prontuario.id,
                 'data': prontuario.data_criacao.strftime('%d/%m/%Y'),
                 'data_completa': prontuario.data_criacao.strftime('%d/%m/%Y - %H:%M'),
-                'agendamento_atual_id':prontuario.agendamento.id,
-                'agendamento_atual': prontuario.agendamento.data.strftime('%d/%m/%Y') if prontuario.agendamento else 'Não informado',
+'agendamento_atual_id': prontuario.agendamento.id if prontuario.agendamento else None,
+'agendamento_atual': prontuario.agendamento.data.strftime('%d/%m/%Y') if prontuario.agendamento else 'Não informado',
+
                 'profissional_nome': prontuario.profissional.nome if prontuario.profissional else 'Não informado',
                 'profissional_id': prontuario.profissional.id if prontuario.profissional else None,
                 'queixa_principal': prontuario.queixa_principal or '',
@@ -592,17 +596,19 @@ def salvar_evolucao(request):
         else:
             return JsonResponse({'success': False, 'error': 'Content-Type must be application/json'}, status=400)
 
-        required_fields = ['paciente_id', 'profissional_id']
+        required_fields = ['paciente_id']
         for field in required_fields:
             if field not in data:
                 return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
 
         nao_se_aplica = data.get('nao_se_aplica', False)
+        profissional = request.user.profissional
 
         if nao_se_aplica:
             evolucao = Evolucao.objects.create(
                 paciente_id=data['paciente_id'],
-                profissional_id=data['profissional_id'],
+                profissional=profissional,
+
                 agendamento_id=data.get('agendamento_id'),
                 nao_se_aplica=True,
                 queixa_principal_inicial="",
@@ -657,7 +663,7 @@ def salvar_evolucao(request):
         else:
             evolucao = Evolucao.objects.create(
                 paciente_id=data['paciente_id'],
-                profissional_id=data['profissional_id'],
+                profissional=profissional,
                 agendamento_id=data.get('agendamento_id'),
                 queixa_principal_inicial=data.get('queixa_principal'),
                 processo_terapeutico=data.get('processo_terapeutico'),
@@ -744,8 +750,9 @@ def listar_evolucoes(request, paciente_id):
                 'id': evolucao.id,
                 'data': evolucao.data_criacao.strftime('%d/%m/%Y'),
                 'data_completa': evolucao.data_criacao.strftime('%d/%m/%Y - %H:%M'),
-                'agendamento_atual_id':evolucao.agendamento.id,
+                'agendamento_atual_id': evolucao.agendamento.id if evolucao.agendamento else None,
                 'agendamento_atual': evolucao.agendamento.data.strftime('%d/%m/%Y') if evolucao.agendamento else 'Não informado',
+
                 'profissional_nome': evolucao.profissional.nome if evolucao.profissional else 'Não informado',
                 'profissional_id': evolucao.profissional.id if evolucao.profissional else None,
                  
@@ -780,13 +787,16 @@ def salvar_avaliacao(request):
             else:
                 return JsonResponse({'success': False, 'error': 'Content-Type must be application/json'}, status=400)
 
-            required_fields = ['paciente_id', 'profissional_id']
+            required_fields = ['paciente_id']
             for field in required_fields:
                 if field not in data:
                     return JsonResponse({'success': False, 'error': f'Campo obrigatório faltando: {field}'}, status=400)
             criado_por = request.user if request.user.is_authenticated else None
 
             nao_se_aplica = data.get('nao_se_aplica', False)
+            profissional = request.user.profissional
+
+
             print(f'nao_se_aplica {nao_se_aplica}')
             
             
@@ -794,7 +804,8 @@ def salvar_avaliacao(request):
                 print("entrou no bloco ")
                 avaliacao = AvaliacaoFisioterapeutica.objects.create(
                     paciente_id=data['paciente_id'],
-                    profissional_id=data['profissional_id'],
+                    profissional=profissional,
+
                     agendamento_id=data.get('agendamento_id'),
                     criado_por=criado_por,
                     foi_preenchido=False,
@@ -894,7 +905,7 @@ def salvar_avaliacao(request):
 
                 avaliacao = AvaliacaoFisioterapeutica.objects.create(
                     paciente_id=data['paciente_id'],
-                    profissional_id=data['profissional_id'],
+                    profissional=profissional,
                     agendamento_id=data.get('agendamento_id'),
                     criado_por=criado_por,
                     queixa_principal=data.get('queixa_principal', ""),
@@ -1035,8 +1046,9 @@ def listar_avaliacoes(request, paciente_id):
                 'id': avaliacao.id,
                 'data': avaliacao.data_avaliacao.strftime('%d/%m/%Y'),
                 'data_completa': avaliacao.data_avaliacao.strftime('%d/%m/%Y - %H:%M'),
-                'agendamento_atual_id':avaliacao.agendamento.id,
+                'agendamento_atual_id': avaliacao.agendamento.id if avaliacao.agendamento else None,
                 'agendamento_atual': avaliacao.agendamento.data.strftime('%d/%m/%Y') if avaliacao.agendamento else 'Não informado',
+
                 'profissional_nome': avaliacao.profissional.nome if avaliacao.profissional else 'Não informado',
                 'profissional_id': avaliacao.profissional.id if avaliacao.profissional else None,
                  

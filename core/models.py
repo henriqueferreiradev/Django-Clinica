@@ -1034,26 +1034,51 @@ class ConfigAgenda(models.Model):
             'dias_formatados': self.dias_formatados() if hasattr(self, 'dias_formatados') else ', '.join(self.dias_funcionamento)
         }
         
+from django.db import models
+from django.core.exceptions import ValidationError
+
 class EscalaBaseProfissional(models.Model):
-    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE,related_name="escala_base")
-    dia_semana = models.CharField(max_length=3, choices=[
-            ('seg', 'Segunda'),
-            ('ter', 'Terça'),
-            ('qua', 'Quarta'),
-            ('qui', 'Quinta'),
-            ('sex', 'Sexta'),
-            ('sab', 'Sábado'),
-            ('dom', 'Domingo'),
-        ]
+    profissional = models.ForeignKey(
+        'Profissional',
+        on_delete=models.CASCADE,
+        related_name="escala_base"
     )
 
+    dia_semana = models.CharField(max_length=3, choices=[
+        ('seg', 'Segunda'),
+        ('ter', 'Terça'),
+        ('qua', 'Quarta'),
+        ('qui', 'Quinta'),
+        ('sex', 'Sexta'),
+        ('sab', 'Sábado'),
+        ('dom', 'Domingo'),
+    ])
+
     ativo = models.BooleanField(default=False)
+
+    # ✅ mantém por compatibilidade (front antigo ainda usa isso)
     hora_inicio = models.TimeField(null=True, blank=True)
     hora_fim = models.TimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ('profissional', 'dia_semana')
 
+
+class TurnoEscalaProfissional(models.Model):
+    escala = models.ForeignKey(
+        EscalaBaseProfissional,
+        on_delete=models.CASCADE,
+        related_name='turnos'
+    )
+    hora_inicio = models.TimeField()
+    hora_fim = models.TimeField()
+
+    class Meta:
+        ordering = ['hora_inicio']
+
+    def clean(self):
+        if self.hora_inicio >= self.hora_fim:
+            raise ValidationError("Hora início deve ser menor que hora fim.")
 
 class MensagemPadrao(models.Model):
     titulo = models.CharField(max_length=150)
