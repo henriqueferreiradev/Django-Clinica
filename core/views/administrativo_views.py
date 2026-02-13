@@ -299,8 +299,9 @@ def salvar_documento_empresa(request):
         
         
 def produtividade_views(request):
-    
-    return render(request, 'core/administrativo/produtividade.html')
+    profissionais = Profissional.objects.filter(ativo=True)
+
+    return render(request, 'core/administrativo/produtividade.html', {'profissionais': profissionais})
 
 def definir_tipo_dia(profissional, ano, mes, dia):
 
@@ -398,13 +399,18 @@ def carregar_produtividade(request):
     else:
         return JsonResponse(montar_json_dinamico(relatorio, dias))
 
+from django.db.models import Q
+
+from datetime import datetime, date
+from django.db.models import Q
+
 def calcular_dados_automaticos_por_dia(profissional, ano, mes, dia):
-    from datetime import date
 
     data_ref = date(ano, mes, dia)
 
     ags = Agendamento.objects.filter(
-        profissional=profissional,
+        Q(profissional_1=profissional) |
+        Q(profissional_2=profissional),
         data=data_ref
     )
 
@@ -412,15 +418,34 @@ def calcular_dados_automaticos_por_dia(profissional, ano, mes, dia):
     conjunto = 0
 
     for ag in ags:
-        duracao = (ag.hora_fim - ag.hora_inicio).seconds // 60
-        if ag.tipo == 'individual':
-            individual += duracao
-        elif ag.tipo == 'conjunto':
-            conjunto += duracao
 
-    avaliacoes = AvaliacaoFisioterapeutica.objects.filter(profissional=profissional, data=data_ref).count()
-    evolucoes = Evolucao.objects.filter(profissional=profissional, data=data_ref).count()
-    prontuarios = Prontuario.objects.filter(profissional=profissional, data=data_ref).count()
+        if not ag.hora_inicio or not ag.hora_fim:
+            continue
+
+        inicio = datetime.combine(data_ref, ag.hora_inicio)
+        fim = datetime.combine(data_ref, ag.hora_fim)
+
+        duracao = int((fim - inicio).total_seconds() // 60)
+
+        if ag.profissional_2:
+            conjunto += duracao
+        else:
+            individual += duracao
+
+    avaliacoes = AvaliacaoFisioterapeutica.objects.filter(
+        profissional=profissional,
+        data_avaliacao=data_ref
+    ).count()
+
+    evolucoes = Evolucao.objects.filter(
+        profissional=profissional,
+        data_criacao=data_ref
+    ).count()
+
+    prontuarios = Prontuario.objects.filter(
+        profissional=profissional,
+        data_criacao=data_ref
+    ).count()
 
     return {
         "individual_min": individual,
@@ -429,7 +454,7 @@ def calcular_dados_automaticos_por_dia(profissional, ano, mes, dia):
         "evolucoes": evolucoes,
         "prontuarios": prontuarios
     }
-from django.utils import timezone
+
 
 def fechar_mes(relatorio):
 
