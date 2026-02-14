@@ -437,7 +437,7 @@ aplicarCorLinha(tr, d.tipoDia);
         const ano = document.getElementById("anoSelect").value;
 
         if (!profissional || !mes || !ano) {
-            alert("Selecione profissional, mês e ano.");
+             
             return;
         }
 

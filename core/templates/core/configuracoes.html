@@ -514,7 +514,7 @@
  
             </div>
 
-            <!-- Modal para configuração - FORA DO FORM, NO FINAL DO BODY -->
+
             <div class="modal-overlay" id="modalEscala">
                 <div class="modal-container">
                     <div class="modal-header">
@@ -522,142 +522,102 @@
                         <button class="modal-close" id="closeModal">&times;</button>
                     </div>
                     
+                    <!-- APENAS O CONTEÚDO QUE DEVE ROLAR FICA AQUI -->
                     <div class="modal-body">
- 
-
                         <div class="escala-form">
                             <div class="dias-escala">
                                 <!-- Segunda -->
                                 <div class="dia-escala-item" data-dia="seg">
-                                    
                                     <label class="checkbox-option">
                                         <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Segunda</span>
                                     </label>
-
                                     <div class="turnos-container"></div>
-
                                     <button type="button" class="btn-add-turno">
                                         + Adicionar turno
                                     </button>
-
                                 </div>
-
-
                                 <!-- Terça -->
                                 <div class="dia-escala-item" data-dia="ter">
-                                    
                                     <label class="checkbox-option">
                                         <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Terça</span>
                                     </label>
-
                                     <div class="turnos-container"></div>
-
                                     <button type="button" class="btn-add-turno">
                                         + Adicionar turno
                                     </button>
-
                                 </div>
-
-
                                 <!-- Quarta -->
                                 <div class="dia-escala-item" data-dia="qua">
-                                    
                                     <label class="checkbox-option">
                                         <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Quarta</span>
                                     </label>
-
                                     <div class="turnos-container"></div>
-
                                     <button type="button" class="btn-add-turno">
                                         + Adicionar turno
                                     </button>
-
                                 </div>
-
-
                                 <!-- Quinta -->
                                 <div class="dia-escala-item" data-dia="qui">
-                                    
                                     <label class="checkbox-option">
                                         <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Quinta</span>
                                     </label>
-
                                     <div class="turnos-container"></div>
-
                                     <button type="button" class="btn-add-turno">
                                         + Adicionar turno
                                     </button>
-
                                 </div>
-
-
                                 <!-- Sexta -->
                                 <div class="dia-escala-item" data-dia="sex">
-                                    
                                     <label class="checkbox-option">
                                         <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Sexta</span>
                                     </label>
-
                                     <div class="turnos-container"></div>
-
                                     <button type="button" class="btn-add-turno">
                                         + Adicionar turno
                                     </button>
-
                                 </div>
-
-
                                 <!-- Sábado -->
                                 <div class="dia-escala-item" data-dia="sab">
-                                    
                                     <label class="checkbox-option">
                                         <input type="checkbox" class="dia-ativo">
                                         <span class="dia-nome-modal">Sábado</span>
                                     </label>
-
                                     <div class="turnos-container"></div>
-
                                     <button type="button" class="btn-add-turno">
                                         + Adicionar turno
                                     </button>
-
                                 </div>
+                                <!-- Domingo -->
                                 <div class="dia-escala-item" data-dia="dom">
-                                        
-                                        <label class="checkbox-option">
-                                            <input type="checkbox" class="dia-ativo">
-                                            <span class="dia-nome-modal">Domingo</span>
-                                        </label>
-
-                                        <div class="turnos-container"></div>
-
-                                        <button type="button" class="btn-add-turno">
-                                            + Adicionar turno
-                                        </button>
-
-                                    </div>
-
-                            </div>
-
-                            <div class="modal-actions">
-                                <button type="button" class="btn btn-secondary" id="btnLimparModal">
-                                    <i class='bx bx-trash'></i> Limpar
-                                </button>
-                                <button type="button" class="btn btn-primary" id="btnSalvarModal">
-                                    <i class='bx bx-check'></i> Salvar
-                                </button>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" class="dia-ativo">
+                                        <span class="dia-nome-modal">Domingo</span>
+                                    </label>
+                                    <div class="turnos-container"></div>
+                                    <button type="button" class="btn-add-turno">
+                                        + Adicionar turno
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    </div> <!-- FIM DO MODAL-BODY -->
+
+                    <!-- AÇÕES FIXAS FORA DO BODY (NÃO ROLAM) -->
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="btnLimparModal">
+                            <i class='bx bx-trash'></i> Limpar
+                        </button>
+                        <button type="button" class="btn btn-primary" id="btnSalvarModal">
+                            <i class='bx bx-check'></i> Salvar
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- Template para status badge (usado no JavaScript) -->
             <template id="statusConfigurado">
                 <span class="status-badge configurado">
                     <i class='bx bx-check-circle'></i> Configurado

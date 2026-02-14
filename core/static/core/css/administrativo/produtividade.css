@@ -195,7 +195,6 @@
  /* Grid principal */
  .main-grid {
      display: grid;
-     grid-template-columns: 1fr 380px;
      gap: 24px;
      align-items: start;
  }
@@ -464,4 +463,37 @@ tr.row-nao-previsto { background: rgba(229,57,53,0.10); }
 .day-select.tipo-nao-previsto{
   border: 1px solid #e53935 !important;
   box-shadow: 0 0 0 3px rgba(229,57,53,0.12);
+}
+.side-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: 
+        "dias horas distribuicao"
+        "prontuarios indicadores distribuicao"
+        "prontuarios saldo distribuicao";
+    gap: 1rem;
+}
+
+.card-dias {
+    grid-area: dias;
+}
+
+.card-horas {
+    grid-area: horas;
+}
+
+.card-distribuicao {
+    grid-area: distribuicao;
+}
+
+.card-prontuarios {
+    grid-area: prontuarios;
+}
+
+.card-indicadores {
+    grid-area: indicadores;
+}
+
+.card-saldo {
+    grid-area: saldo;
 }

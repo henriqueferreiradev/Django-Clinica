@@ -6,6 +6,7 @@
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
   --roxoPrincialGradient: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
+  --roxoPrincipalGradientReverse: linear-gradient(to right, var(--roxo-primary-hover), var(--roxoPrincipal));
   --verdePrincipal: #92cbad;
   --branco: #FFF;
   --branco2: #f8fafc;

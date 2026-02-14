@@ -255,12 +255,12 @@ def get_sessoes_simultaneas(request):
             'paciente', 
             'especialidade', 
             'pacote'
-        )  # Removemos 'ambiente' se não for ForeignKey
+        )  
         
-        # Filtrar os que se sobrepõem ao horário
+       
         sessoes = []
         for ag in agendamentos:
-            # Verificar se o horário está dentro do intervalo do agendamento
+           
             horario_dentro = False
             
             if ag.hora_inicio and ag.hora_fim:

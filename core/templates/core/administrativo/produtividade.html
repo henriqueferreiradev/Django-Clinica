@@ -7,8 +7,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
-    <title>📊 Relatório de Produtividade – Por Profissional (Mensal)</title>
-    <!-- Font Inter e ícones -->
+    <title>Relatório de Produtividade – Por Profissional (Mensal)</title>
+        <link
+      rel="icon"
+      href="{% static 'core/img/icons/logoRoxoFull.png' %}"
+      type="image/png"
+    />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
    <link rel="stylesheet" href="{% static 'core/css/administrativo/produtividade.css' %}" />
@@ -49,7 +53,67 @@
             </div>
             <span class="badge-sector" id="setorBadge"><i class="fas fa-stethoscope"></i> Setor: Fisioterapeutas</span>
         </div>
-
+<!-- HTML com classes específicas (modificado) -->
+        <div class="side-panel">
+            <!-- BLOCO A – DIAS -->
+            <div class="resumo-card card-dias">
+                <h3><i class="fas fa-calendar-check"></i> DIAS</h3>
+                <div class="metric-item"><span class="metric-label">Previstos:</span><span class="metric-value" id="diasPrevistosValor">0 (100%)</span></div>
+                <div class="metric-item"><span class="metric-label">Cumpridos:</span><span class="metric-value" id="diasCumpridosValor">0 <span class="badge-percent" id="diasCumpridosPercent">0%</span></span></div>
+            </div>
+            
+            <!-- BLOCO B – HORAS -->
+            <div class="resumo-card card-horas">
+                <h3><i class="fas fa-hourglass-half"></i> HORAS</h3>
+                <div class="metric-item"><span class="metric-label">Previstas (100%):</span><span class="metric-value" id="horasPrevistasValor">00:00</span></div>
+                <div class="metric-item"><span class="metric-label">Trabalhadas:</span><span class="metric-value" id="horasTrabalhadasValor">00:00 <span class="badge-percent" id="horasPercent">0%</span></span></div>
+            </div>
+            
+            <!-- BLOCO C – Distribuição + Gráfico -->
+            <div class="resumo-card card-distribuicao">
+                <h3><i class="fas fa-chart-pie"></i> DISTRIBUIÇÃO</h3>
+                <div class="distrib-list" id="distribuicaoList">
+                    <div class="distrib-item"><span>Atend. individual</span> <span><strong id="distribIndividual">00:00</strong> <span class="porcentagem" id="percIndividual">0%</span></span></div>
+                    <div class="distrib-item"><span>Atend. conjunto</span> <span><strong id="distribConjunto">00:00</strong> <span class="porcentagem" id="percConjunto">0%</span></span></div>
+                    <div class="distrib-item"><span>Prontuário</span> <span><strong id="distribProntuario">00:00</strong> <span class="porcentagem" id="percProntuario">0%</span></span></div>
+                    <div class="distrib-item"><span>Coordenação</span> <span><strong id="distribCoord">00:00</strong> <span class="porcentagem" id="percCoord">0%</span></span></div>
+                    <div class="distrib-item"><span>Burocrático</span> <span><strong id="distribBuro">00:00</strong> <span class="porcentagem" id="percBuro">0%</span></span></div>
+                </div>
+                <!-- Gráfico de pizza -->
+                <div class="chart-container">
+                    <canvas id="horasChart" style="width:100%; height:160px;"></canvas>
+                </div>
+            </div>
+            
+            <!-- BLOCO D – Prontuários + razão -->
+            <div class="resumo-card card-prontuarios">
+                <h3><i class="fas fa-file-medical"></i> PRONTUÁRIOS</h3>
+                <div class="metric-item"><span class="metric-label">Total prontuários:</span><span class="metric-value" id="prontuariosTotal">0</span></div>
+                <div class="metric-item"><span class="metric-label">Horas de prontuário:</span><span class="metric-value" id="prontuariosHoras">00:00</span></div>
+                <div class="ratio-box">
+                    <span style="font-weight: 800; color: var(--roxoPrincipal-hover2);">⚡ Razão produtividade</span><br>
+                    <span style="font-size: 1.4rem; font-weight: 900; color: var(--roxoPrincipal);" id="razaoProntuario">0,00</span> <span style="font-size:0.8rem; color: var(--roxoPrincipal-hover2);">pront./hora</span>
+                    <div style="font-size:0.7rem; color: var(--cinza-escuro);" id="razaoDetalhe">(0 pront ÷ 0h)</div>
+                </div>
+            </div>
+            
+            <!-- BLOCO E – Indicadores automáticos -->
+            <div class="resumo-card card-indicadores">
+                <h3><i class="fas fa-chart-line"></i> INDICADORES</h3>
+                <div class="metric-item"><span class="metric-label">Total avaliações:</span><span class="metric-value" id="totalAvaliacoesInd">0</span></div>
+                <div class="metric-item"><span class="metric-label">Total evoluções:</span><span class="metric-value" id="totalEvolucoesInd">0</span></div>
+            </div>
+            
+            <!-- BLOCO F – Saldo Final -->
+            <div class="resumo-card card-saldo">
+                <h3 style="color: var(--roxoPrincipal-hover2);"><i class="fas fa-flag-checkered"></i> SALDO FINAL</h3>
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <span style="font-size: 1.3rem; font-weight: 900;" id="saldoFinalValor">00:00</span>
+                    <span class="badge-percent" style="font-weight: 800;" id="saldoFinalPercent">0%</span>
+                </div>
+                <div style="font-size:0.8rem; color: var(--roxoPrincipal-hover2); margin-top: 4px;">Horas trabalhadas – Previstas</div>
+            </div>
+        </div>
         <!-- Grid principal: tabela TRANSPOSTA com 30 DIAS + painel -->
         <div class="main-grid">
             <!-- 🔹 2️⃣ TABELA MENSAL - DIAS EM LINHA / DADOS EM COLUNA (30 DIAS COMPLETOS) -->
@@ -106,61 +170,7 @@
             </div>
 
             <!-- 🔹 3️⃣ PAINEL LATERAL – RESUMO GERAL (ATUALIZADO DINAMICAMENTE) -->
-            <div class="side-panel">
-                <!-- BLOCO A – DIAS -->
-                <div class="resumo-card">
-                    <h3><i class="fas fa-calendar-check"></i> DIAS</h3>
-                    <div class="metric-item"><span class="metric-label">Previstos:</span><span class="metric-value" id="diasPrevistosValor">0 (100%)</span></div>
-                    <div class="metric-item"><span class="metric-label">Cumpridos:</span><span class="metric-value" id="diasCumpridosValor">0 <span class="badge-percent" id="diasCumpridosPercent">0%</span></span></div>
-                </div>
-                <!-- BLOCO B – HORAS -->
-                <div class="resumo-card">
-                    <h3><i class="fas fa-hourglass-half"></i> HORAS</h3>
-                    <div class="metric-item"><span class="metric-label">Previstas (100%):</span><span class="metric-value" id="horasPrevistasValor">00:00</span></div>
-                    <div class="metric-item"><span class="metric-label">Trabalhadas:</span><span class="metric-value" id="horasTrabalhadasValor">00:00 <span class="badge-percent" id="horasPercent">0%</span></span></div>
-                </div>
-                <!-- BLOCO C – Distribuição + Gráfico -->
-                <div class="resumo-card">
-                    <h3><i class="fas fa-chart-pie"></i> DISTRIBUIÇÃO</h3>
-                    <div class="distrib-list" id="distribuicaoList">
-                        <div class="distrib-item"><span>Atend. individual</span> <span><strong id="distribIndividual">00:00</strong> <span class="porcentagem" id="percIndividual">0%</span></span></div>
-                        <div class="distrib-item"><span>Atend. conjunto</span> <span><strong id="distribConjunto">00:00</strong> <span class="porcentagem" id="percConjunto">0%</span></span></div>
-                        <div class="distrib-item"><span>Prontuário</span> <span><strong id="distribProntuario">00:00</strong> <span class="porcentagem" id="percProntuario">0%</span></span></div>
-                        <div class="distrib-item"><span>Coordenação</span> <span><strong id="distribCoord">00:00</strong> <span class="porcentagem" id="percCoord">0%</span></span></div>
-                        <div class="distrib-item"><span>Burocrático</span> <span><strong id="distribBuro">00:00</strong> <span class="porcentagem" id="percBuro">0%</span></span></div>
-                    </div>
-                    <!-- Gráfico de pizza -->
-                    <div class="chart-container">
-                        <canvas id="horasChart" style="width:100%; height:160px;"></canvas>
-                    </div>
-                </div>
-                <!-- BLOCO D – Prontuários + razão -->
-                <div class="resumo-card">
-                    <h3><i class="fas fa-file-medical"></i> PRONTUÁRIOS</h3>
-                    <div class="metric-item"><span class="metric-label">Total prontuários:</span><span class="metric-value" id="prontuariosTotal">0</span></div>
-                    <div class="metric-item"><span class="metric-label">Horas de prontuário:</span><span class="metric-value" id="prontuariosHoras">00:00</span></div>
-                    <div class="ratio-box">
-                        <span style="font-weight: 800; color: var(--roxoPrincipal-hover2);">⚡ Razão produtividade</span><br>
-                        <span style="font-size: 1.4rem; font-weight: 900; color: var(--roxoPrincipal);" id="razaoProntuario">0,00</span> <span style="font-size:0.8rem; color: var(--roxoPrincipal-hover2);">pront./hora</span>
-                        <div style="font-size:0.7rem; color: var(--cinza-escuro);" id="razaoDetalhe">(0 pront ÷ 0h)</div>
-                    </div>
-                </div>
-                <!-- BLOCO E – Indicadores automáticos -->
-                <div class="resumo-card">
-                    <h3><i class="fas fa-chart-line"></i> INDICADORES</h3>
-                    <div class="metric-item"><span class="metric-label">Total avaliações:</span><span class="metric-value" id="totalAvaliacoesInd">0</span></div>
-                    <div class="metric-item"><span class="metric-label">Total evoluções:</span><span class="metric-value" id="totalEvolucoesInd">0</span></div>
-                </div>
-                <!-- BLOCO F – Saldo Final -->
-                <div class="resumo-card" style="background: var(--roxoPrincipal-hover); border: 2px solid var(--roxoPrincipal);">
-                    <h3 style="color: var(--roxoPrincipal-hover2);"><i class="fas fa-flag-checkered"></i> SALDO FINAL</h3>
-                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span style="font-size: 1.3rem; font-weight: 900;" id="saldoFinalValor">00:00</span>
-                        <span class="badge-percent" style="font-weight: 800;" id="saldoFinalPercent">0%</span>
-                    </div>
-                    <div style="font-size:0.8rem; color: var(--roxoPrincipal-hover2); margin-top: 4px;">Horas trabalhadas – Previstas</div>
-                </div>
-            </div>
+ 
         </div>
     </div>
 

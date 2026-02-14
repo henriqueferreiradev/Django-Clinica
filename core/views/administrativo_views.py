@@ -469,18 +469,23 @@ def calcular_dados_automaticos_por_dia(profissional, ano, mes, dia):
 
     for ag in ags:
 
-        if not ag.hora_inicio or not ag.hora_fim:
-            continue
+        # PROFISSIONAL PRINCIPAL
+        if ag.profissional_1 == profissional:
 
-        inicio = datetime.combine(data_ref, ag.hora_inicio)
-        fim = datetime.combine(data_ref, ag.hora_fim)
+            if ag.hora_inicio and ag.hora_fim:
+                inicio = datetime.combine(data_ref, ag.hora_inicio)
+                fim = datetime.combine(data_ref, ag.hora_fim)
+                duracao = int((fim - inicio).total_seconds() // 60)
+                individual += duracao
 
-        duracao = int((fim - inicio).total_seconds() // 60)
+        # PROFISSIONAL AUXILIAR
+        if ag.profissional_2 == profissional:
 
-        if ag.profissional_2:
-            conjunto += duracao
-        else:
-            individual += duracao
+            if ag.hora_inicio_aux and ag.hora_fim_aux:
+                inicio = datetime.combine(data_ref, ag.hora_inicio_aux)
+                fim = datetime.combine(data_ref, ag.hora_fim_aux)
+                duracao = int((fim - inicio).total_seconds() // 60)
+                conjunto += duracao
 
     avaliacoes = AvaliacaoFisioterapeutica.objects.filter(
         profissional=profissional,
