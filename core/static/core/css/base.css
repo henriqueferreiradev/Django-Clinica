@@ -712,7 +712,13 @@ textarea {
 }
 
 .modal-body {
-  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: var(--branco);
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color, #6D398E) transparent;
 }
 
 #notificationsList:empty::before {

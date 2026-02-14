@@ -1174,7 +1174,7 @@ select.input-field {
     background: white;
     border-radius: 16px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     max-height: 85vh;
     overflow-y: auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -1264,13 +1264,14 @@ select.input-field {
     align-items: center;
     justify-content: space-between;
     padding: .5em;
-    background: #f8fafc;
+    background: var(--branco);
+    border: 1px solid var(--cinzaBorda);
     border-radius: 8px;
     transition: all 0.2s;
 }
 
 .dia-escala-item:hover {
-    background: #f1f5f9;
+    background: var(--branco2);
 }
 
 .dia-checkbox-modal {
@@ -1378,4 +1379,42 @@ select.input-field {
     .time-input-modal {
         width: 100%;
     }
+}
+
+.btn-add-turno {
+    background: var(--roxoPrincipalGradient);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-add-turno:hover {
+    background: var(--roxoPrincipalGradientReverse);
+}
+
+.btn-remove-turno {
+    background: transparent;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--cinzaBorda);
+    color: var(--cinzaBorda);
+}
+
+.btn-remove-turno:hover {
+    border: 1px solid red;
+    color: red;
+}
+
+
+.modal {
+    max-width: 500px;
 }

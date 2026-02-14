@@ -409,10 +409,22 @@ def carregar_produtividade(request):
                 ativo=True
             ).first()
 
-            if escala and escala.hora_inicio and escala.hora_fim:
-                inicio = datetime.combine(date(ano, mes, dia), escala.hora_inicio)
-                fim = datetime.combine(date(ano, mes, dia), escala.hora_fim)
-                horas_previstas_min = int((fim - inicio).total_seconds() // 60)
+            if escala:
+
+                total_min = 0
+
+                for turno in escala.turnos.all():
+
+                    if not turno.hora_inicio or not turno.hora_fim:
+                        continue
+
+                    inicio = datetime.combine(date(ano, mes, dia), turno.hora_inicio)
+                    fim = datetime.combine(date(ano, mes, dia), turno.hora_fim)
+
+                    total_min += int((fim - inicio).total_seconds() // 60)
+
+                horas_previstas_min = total_min
+
 
         dia_obj, created = ProdutividadeDia.objects.get_or_create(
             relatorio=relatorio,

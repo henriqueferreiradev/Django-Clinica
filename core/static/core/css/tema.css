@@ -8,6 +8,7 @@
   --roxoPrincialGradient: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
   --verdePrincipal: #92cbad;
   --branco: #FFF;
+  --branco2: #f8fafc;
   --bg-btn-1: #eee;
   --preto: #000;
   --cinzaBorda: #ccc;
@@ -56,10 +57,11 @@
   --roxoPrincipal-hover2: #76378f;
   --roxo-primary-hover: #9b58b4;
   --roxoPrincipalGradient: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
+  --roxoPrincipalGradientReverse: linear-gradient(to right, var(--roxo-primary-hover), var(--roxoPrincipal));
   --verdePrincipal: #92cbad;
   --cinza-claro: #0E101A;
   --branco: #121623;
-
+  --branco2: #091725;
   --preto: #f1f1f1;
 
   --cinzaBorda: #444;
