@@ -156,7 +156,7 @@ header {
 .section-subtitle {
     font-size: 16px;
     font-weight: 600;
-    margin-bottom: 16px;
+    margin: 16px 0;
     position: relative;
     padding-left: 16px;
 }
@@ -371,6 +371,7 @@ header {
     opacity: 1;
     visibility: visible;
 }
+
 .finalidade_link {
     text-decoration: underline;
     color: #2563eb;
@@ -380,7 +381,7 @@ header {
     gap: .5em;
 
 }
- 
+
 .timeline-content {
     background-color: var(--backgroundCard);
     padding: 12px;
@@ -493,7 +494,6 @@ header {
 .financial-label {
     font-size: 14px;
     color: var(--titulo-perfil);
-    border-bottom: 1px solid #eee;
 
 }
 
@@ -531,6 +531,12 @@ header {
     overflow-x: auto;
 }
 
+.financial-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .ranking-table {
     width: 100%;
     border-collapse: collapse;
@@ -558,6 +564,10 @@ header {
 
 .ranking-table i {
     font-size: 1.1rem;
+}
+
+.ranking-table td {
+    background-color: var(--branco);
 }
 
 .payment-icon {
@@ -810,6 +820,20 @@ select {
 
 }
 
+.prontuario-detalhes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ver-detalhes {
+    background: var(--roxoPrincipal);
+    padding: 6px;
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+}
+
 #observacao {
     width: 96%;
     height: 250px;
@@ -844,8 +868,16 @@ select {
     font-size: 12px;
 }
 
-.text-green-600 {
+td.green {
     color: #16a34a;
+}
+
+.green {
+    color: #16a34a;
+}
+
+.red {
+    color: #dc2626;
 }
 
 .font-medium {
@@ -1051,8 +1083,29 @@ select {
     gap: 10px;
     margin-top: 20px;
 }
- 
+
 
 .hidden {
     display: none;
+}
+
+
+.badge-premium {
+    background-color: #f59e0b;
+}
+
+.badge-vip {
+    background-color: #4338CA;
+}
+
+.badge-plus {
+    background-color: #2AC4CF;
+}
+
+.badge-primeiro_mes {
+    background-color: #31BA7A;
+}
+
+.badge-indefinido {
+    background-color: #797979ff;
 }

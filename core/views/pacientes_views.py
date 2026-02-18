@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from core.models import Agendamento, COR_RACA, ESTADO_CIVIL, Especialidade, FrequenciaMensal, HistoricoStatus, Lembrete, MIDIA_ESCOLHA, NotaFiscalEmitida, Notificacao, Paciente, PacotePaciente, Pagamento, Pendencia, Receita, RespostaFormulario, RespostaPergunta, SEXO_ESCOLHA, Servico, TIPO_VINCULO, UF_ESCOLHA, User, VINCULO, VinculoFamiliar
+from core.models import Agendamento, COR_RACA, ESTADO_CIVIL, AvaliacaoFisioterapeutica, Especialidade, Evolucao, FrequenciaMensal, HistoricoStatus, Lembrete, MIDIA_ESCOLHA, NotaFiscalEmitida, Notificacao, Paciente, PacotePaciente, Pagamento, Pendencia, Prontuario, Receita, RespostaFormulario, RespostaPergunta, SEXO_ESCOLHA, Servico, TIPO_VINCULO, UF_ESCOLHA, User, VINCULO, VinculoFamiliar
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from datetime import date, datetime, timedelta
@@ -355,16 +355,22 @@ def editar_paciente_view(request,id):
 
         paciente.pre_cadastro=False         
         paciente.conferido=True     
-        paciente.consentimento_tratamento = request.POST.get('consentimento_tratamento') == 'true'
-        paciente.consentimento_imagem = request.POST.get('consentimento_imagem') == 'true'
-        paciente.consent_marketing = request.POST.get('consentimento_marketing') == 'true'
+
+        consentimento_tratamento = request.POST.get('consentimento_tratamento') == 'true'
+        consentimento_lgpd = request.POST.get('consentimento_imagem') == 'true'
+        consentimento_marketing = request.POST.get('consentimento_marketing') == 'true'
+        print(consentimento_marketing, consentimento_lgpd, consentimento_tratamento)
+
+        paciente.consentimento_tratamento = consentimento_tratamento
+        paciente.consentimento_lgpd = consentimento_lgpd
+        paciente.consentimento_marketing = consentimento_marketing
         paciente.nf_nao_aplica = request.POST.get('nf_nao_aplica') == 'true'
         paciente.nf_imposto_renda =request.POST.get('nf_imposto_renda') == 'true'
         paciente.nf_reembolso_plano =request.POST.get('nf_reembolso_plano') == 'true'    
         paciente.ativo = True
-        
-        
-        
+
+        paciente.save()
+
         if 'foto' in request.FILES:
             paciente.foto = request.FILES['foto']
         
@@ -890,6 +896,13 @@ def perfil_paciente(request,paciente_id):
     agendamentos_select =Agendamento.objects.filter(paciente=paciente).select_related('observacao_autor').order_by('-data', '-hora_inicio')[:10]
 
 
+    # PRONTUARIO / EVOLUCAO / AVALIACAO
+
+    prontuarios = Prontuario.objects.filter(paciente__id=paciente_id, foi_preenchido=True).order_by('-data_criacao')[:3]
+    evolucoes = Evolucao.objects.filter(paciente__id=paciente_id, foi_preenchido=True).order_by('-data_criacao')[:3]
+    avaliacoes = AvaliacaoFisioterapeutica.objects.filter(paciente__id=paciente_id, foi_preenchido=True).order_by('-data_avaliacao')[:3]
+
+
     if request.method == "POST":
         agendamento_id = request.POST.get('agendamento_id')
         observacao = request.POST.get('observacao')
@@ -946,6 +959,9 @@ def perfil_paciente(request,paciente_id):
                 'vinculos_dependente':vinculos_como_dependente,
                 'vinculos_responsavel':vinculos_como_responsavel,
                 'eh_menor':eh_menor,
+                'prontuarios': prontuarios,
+                'evolucoes': evolucoes,
+                'avaliacoes': avaliacoes,
                 }
     return render(request, 'core/pacientes/perfil_paciente.html', context)
 
@@ -1018,3 +1034,39 @@ def lista_notas_fiscais_paciente(request, paciente_id):
     }
     
     return render(request, 'core/pacientes/notas_fiscais/lista_notas_fiscais_paciente.html', context)
+
+
+
+def visualizar_prontuario(request, prontuario_id):
+    prontuario = get_object_or_404(Prontuario, id=prontuario_id)
+    paciente = prontuario.paciente
+    context = {
+        'prontuario': prontuario,
+        'paciente': paciente
+    }
+    
+    return render(request, 'core/pacientes/historico/visualizar_prontuario.html', context)
+
+def visualizar_evolucao(request, evolucao_id):
+    evolucao = get_object_or_404(Evolucao, id=evolucao_id)
+    paciente = evolucao.paciente
+ 
+    context = {
+        
+        'paciente': paciente,
+        'evolucao': evolucao
+    }
+    return render(request, 'core/pacientes/historico/visualizar_evolucao.html', context)
+
+
+def visualizar_avaliacao(request, avaliacao_id):
+    avaliacao = get_object_or_404(AvaliacaoFisioterapeutica, id=avaliacao_id)
+    paciente = avaliacao.paciente
+
+    context = {
+
+        'paciente': paciente,
+        'avaliacao': avaliacao
+    }
+    return render(request, 'core/pacientes/historico/visualizar_avaliacao.html', context)
+ 

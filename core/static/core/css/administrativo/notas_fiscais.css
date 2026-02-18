@@ -648,6 +648,7 @@ body {
     border-radius: var(--borda-radius);
     background: var(--branco);
     font-size: 0.9rem;
+    display: none;
 }
 
 .editable .display-text {

@@ -77,6 +77,7 @@ function iniciarEdicao(button) {
         cancelarEdicao(editingRow.querySelector('.cancelar'));
     }
 
+
     editingRow = row;
     originalValues = {};
 
@@ -121,6 +122,15 @@ function iniciarEdicao(button) {
             editContaContainer.style.gap = '5px';
         } else if (editInput) {
             editInput.style.display = 'block';
+
+            // Se ainda não foi inicializado
+            if (!editInput._flatpickr) {
+                flatpickr(editInput, {
+                    dateFormat: "d/m/Y",
+                    allowInput: true
+                });
+            }
+
             editInput.focus();
         }
     });
@@ -646,7 +656,7 @@ function configurarAutocompletePacientes() {
 
                 sugestoes.appendChild(div);
             });
-            
+
         } catch (error) {
             console.error('Erro ao buscar pacientes:', error);
         }
@@ -674,14 +684,14 @@ async function carregarServicosPaciente(pacienteId) {
 }
 
 document.getElementById('servicoSelect').addEventListener('change', () => {
-  const select = document.getElementById('servicoSelect');
-  const opt = select.options[select.selectedIndex];
+    const select = document.getElementById('servicoSelect');
+    const opt = select.options[select.selectedIndex];
 
-  // pega do dataset da option
-  const valor = opt.dataset.valor;
-  const data = opt.dataset.data;
+    // pega do dataset da option
+    const valor = opt.dataset.valor;
+    const data = opt.dataset.data;
 
-  // preenche inputs
-  document.getElementById('valorPago').value = valor ? `R$ ${valor}` : '';
-  document.getElementById('dataPag').value = data || '';
+    // preenche inputs
+    document.getElementById('valorPago').value = valor ? `R$ ${valor}` : '';
+    document.getElementById('dataPag').value = data || '';
 });

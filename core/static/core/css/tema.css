@@ -297,17 +297,7 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* 2) DATE: esconder ícone/“calendário” */
-input[type="date"]::-webkit-calendar-picker-indicator {
 
-  /* Chrome, Edge, Safari */
-}
-
-input[type="date"] {
-  /* Firefox não expõe o indicador via CSS.
-     appearance:none já remove boa parte do visual, mas o “picker” ainda abre ao clicar no campo.
-     Se quiser eliminar o picker por completo, use type="text" + máscara/validação. */
-}
 
 /* deixa o ícone roxo (ajuste o filter até ficar do tom que você quer) */
 input[type="date"]::-webkit-calendar-picker-indicator {

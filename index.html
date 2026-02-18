@@ -1,700 +1,406 @@
-{% extends 'core/base.html' %}
-{% load static %}
-
-{% block title %}Notas Fiscais - Ponto de Equilíbrio{% endblock %}
-
-{% block extra_css %}
-
-<link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
-
-{% endblock %}
-
-{% block topbar_title %}Documentos{% endblock %}
-
-{% block content %}
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist Diário de Lembretes</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Central de Relatórios · Ponto de Equilíbrio</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        :root {
-          --roxoPrincipal: #6D398E;
-          --roxoPrincipal-hover: #76378f11;
-          --roxoPrincipal-hover2: #76378f;
-          --roxo-primary-hover: #9b58b4;
-          
-          --verdePrincipal: #92cbad;
-          --branco: #FFF;
-          --bg-btn-1: #eee;
-          --preto: #000;
-          --cinzaBorda: #ccc;
-          --cinzaEscuro: #6e6e6e;
-          --fontePrincipal: 'Inter';
-          --bg-color: #E4E9F7;
-          --hover-dropdown: #F0F0F0;
-          --shadowRoxo: rgba(118, 55, 143, 0.24) 0px 3px 6px, rgba(118, 55, 143, 0.24) 0px 3px 6px;
-          --btn-red-exclude: #ff000025;
-          --btn-red-font: #efc4c4;
-          --cinza-escuro: #555;
-          --cinza-medio: #888;
-          --cinza-claro: #eee;
-          --cinza-borda: #ddd;
-          --erro: #ff0000;
-          --titulo-perfil: #64748b;
-          --dourado: #D4AF37;
-          --verde-sucesso: #10B981;
-          --vermelho-alerta: #EF4444;
-          --sombra-suave: 0 10px 40px rgba(0, 0, 0, 0.08);
-          --sombra-destaque: 0 15px 35px rgba(109, 57, 142, 0.15);
-          --borda-arredondada: 16px;
-          --transicao: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-          /* Espaçamentos */
-          --espaco-xs: 0.5rem;
-          --espaco-sm: 1rem;
-          --espaco-md: 1.5rem;
-          --espaco-lg: 2rem;
-          --espaco-xl: 3rem;
-
-          /* Bordas */
-          --borda-radius: 8px;
-          --borda-radius-sm: 4px;
-
-          /* Sombras */
-          --sombra: 0 2px 10px rgba(0, 0, 0, 0.1);
-          --sombra-focus: 0 0 0 3px rgba(127, 67, 150, 0.3);
-
-          --backgroundCard: #FFF;
-          --backgroundCard-hover: #6d398e38;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        :root {
+            --roxoPrincipal: #6D398E;
+            --roxoPrincipal-hover: #76378f11;
+            --roxo-primary-hover: #9b58b4;
+            --roxoPrincialGradient: linear-gradient(to right, var(--roxoPrincipal), var(--roxo-primary-hover));
+            --verdePrincipal: #92cbad;
+            --branco: #FFF;
+            --preto: #000;
+            --cinzaBorda: #ccc;
+            --cinzaEscuro: #6e6e6e;
+            --bg-color: #E4E9F7;
         }
 
         body {
-            font-family: var(--fontePrincipal), sans-serif;
             background-color: var(--bg-color);
-            color: var(--cinza-escuro);
-            line-height: 1.5;
-            padding: var(--espaco-md);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
-            max-width: 1000px;
-            margin: 0 auto;
+            max-width: 1400px;
+            width: 100%;
         }
 
-        /* Header */
-        .header {
-            margin-bottom: var(--espaco-lg);
-            text-align: center;
+        .page-header {
+            margin-bottom: 2rem;
         }
 
-        .header h1 {
-            color: var(--roxoPrincipal);
-            font-size: 2rem;
-            margin-bottom: var(--espaco-xs);
-        }
-
-        .header-subtitle {
-            color: var(--cinza-medio);
-            font-size: 1rem;
-            font-weight: 400;
-        }
-
-        /* Data e resumo */
-        .date-summary {
-            background: var(--backgroundCard);
-            border-radius: var(--borda-arredondada);
-            padding: var(--espaco-md);
-            margin-bottom: var(--espaco-lg);
-            box-shadow: var(--sombra-suave);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .date-info {
-            display: flex;
-            flex-direction: column;
-            gap: var(--espaco-xs);
-        }
-
-        .date-title {
-            font-weight: 600;
-            color: var(--roxoPrincipal);
-            font-size: 1.2rem;
-        }
-
-        .tomorrow-date {
-            font-weight: 500;
-            color: var(--cinza-escuro);
-            font-size: 1.1rem;
-        }
-
-        .summary-box {
-            display: flex;
-            gap: var(--espaco-lg);
-            text-align: center;
-        }
-
-        .summary-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .summary-value {
-            font-size: 1.8rem;
+        .page-header h1 {
+            font-size: 2.5rem;
             font-weight: 700;
-        }
-
-        .summary-label {
-            font-size: 0.9rem;
-            color: var(--cinza-medio);
-        }
-
-        .total-patients .summary-value {
             color: var(--roxoPrincipal);
-        }
-
-        .pending-patients .summary-value {
-            color: var(--vermelho-alerta);
-        }
-
-        .completed-patients .summary-value {
-            color: var(--verde-sucesso);
-        }
-
-        /* Lista de pacientes */
-        .patients-list {
-            display: flex;
-            flex-direction: column;
-            gap: var(--espaco-sm);
-            margin-bottom: var(--espaco-lg);
-        }
-
-        .patient-card {
-            background: var(--backgroundCard);
-            border-radius: var(--borda-radius);
-            padding: var(--espaco-md);
-            box-shadow: var(--sombra);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: var(--transicao);
-            border-left: 4px solid var(--roxoPrincipal);
-        }
-
-        .patient-card:hover {
-            box-shadow: var(--sombra-destaque);
-            background-color: var(--backgroundCard-hover);
-        }
-
-        .patient-card.completed {
-            border-left-color: var(--verde-sucesso);
-            opacity: 0.85;
-        }
-
-        .patient-info {
-            display: flex;
-            flex-direction: column;
-            gap: var(--espaco-xs);
-        }
-
-        .patient-name {
-            font-weight: 600;
-            color: var(--roxoPrincipal);
-            font-size: 1.1rem;
-        }
-
-        .patient-completed .patient-name {
-            color: var(--verde-sucesso);
-        }
-
-        .patient-details {
-            display: flex;
-            gap: var(--espaco-md);
-            flex-wrap: wrap;
-        }
-
-        .patient-detail {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--cinza-medio);
-            font-size: 0.9rem;
         }
 
-        .patient-detail i {
-            color: var(--roxoPrincipal);
-        }
-
-        .patient-completed .patient-detail i {
-            color: var(--verde-sucesso);
-        }
-
-        .patient-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--espaco-sm);
-        }
-
-        .status-badge {
-            padding: 0.4rem 0.8rem;
-            border-radius: var(--borda-radius-sm);
-            font-size: 0.85rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .status-pending {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: var(--vermelho-alerta);
-        }
-
-        .status-completed {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--verde-sucesso);
-        }
-
-        .btn-send {
+        .page-header h1 i {
             background: var(--roxoPrincialGradient);
-            color: var(--branco);
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: var(--borda-radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transicao);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: var(--shadowRoxo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.8rem;
         }
 
-        .btn-send:hover {
-            background: var(--roxo-primary-hover);
-            box-shadow: 0 5px 15px rgba(118, 55, 143, 0.3);
-        }
-
-        .btn-send:disabled {
-            background: var(--cinza-medio);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .btn-send.completed {
-            background: var(--verde-sucesso);
-        }
-
-        /* Footer e resumo final */
-        .footer-summary {
-            background: var(--backgroundCard);
-            border-radius: var(--borda-arredondada);
-            padding: var(--espaco-md);
-            box-shadow: var(--sombra-suave);
-            margin-top: var(--espaco-xl);
-            text-align: center;
-        }
-
-        .summary-message {
-            margin-bottom: var(--espaco-sm);
+        .page-header .subtitle {
             font-size: 1.1rem;
-            font-weight: 500;
+            color: var(--cinzaEscuro);
+            margin-top: 0.25rem;
+            font-weight: 400;
+            border-left: 4px solid var(--verdePrincipal);
+            padding-left: 1rem;
         }
 
-        .all-completed {
-            color: var(--verde-sucesso);
+        .search-wrapper {
+            margin-bottom: 2.5rem;
+            display: flex;
+            justify-content: center;
         }
 
-        .pending-exist {
-            color: var(--vermelho-alerta);
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+            background: var(--branco);
+            border-radius: 60px;
+            padding: 0.5rem 1rem 0.5rem 1.8rem;
+            box-shadow: 0 8px 20px rgba(109, 57, 142, 0.1);
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+            border: 1px solid transparent;
         }
 
-        .progress-bar {
-            height: 8px;
-            background-color: var(--cinza-claro);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: var(--espaco-sm);
+        .search-box:focus-within {
+            border-color: var(--roxoPrincipal);
+            box-shadow: 0 8px 25px rgba(109, 57, 142, 0.2);
         }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--roxoPrincialGradient);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-
-        .progress-text {
-            font-size: 0.9rem;
-            color: var(--cinza-medio);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: var(--espaco-xl);
-            color: var(--cinza-medio);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: var(--espaco-sm);
-            color: var(--cinza-borda);
-        }
-
-        .empty-state h3 {
+        .search-box i {
+            color: var(--roxoPrincipal);
             font-size: 1.3rem;
-            margin-bottom: var(--espaco-xs);
-            color: var(--cinza-escuro);
+            margin-right: 0.8rem;
         }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .patient-card {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--espaco-sm);
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .search-box input::placeholder {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .setor-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .setor-titulo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--roxoPrincipal);
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid var(--roxoPrincipal-hover);
+            padding-bottom: 0.4rem;
+        }
+
+        .setor-titulo i {
+            font-size: 2rem;
+            color: var(--roxo-primary-hover);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-relatorio {
+            background: var(--branco);
+            border-radius: 20px;
+            padding: 1.2rem 1rem 1rem 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02), 0 6px 6px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .card-relatorio:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -12px var(--roxoPrincipal-hover), 0 0 0 2px rgba(109, 57, 142, 0.15);
+            border-color: rgba(109, 57, 142, 0.2);
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            color: var(--roxoPrincipal);
+            margin-bottom: 0.7rem;
+            background: var(--roxoPrincipal-hover);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+        }
+
+        .card-relatorio h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--preto);
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--cinzaEscuro);
+            margin-bottom: 1.2rem;
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .btn-abrir {
+            background: var(--roxoPrincipal);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            transition: 0.2s;
+            width: fit-content;
+            min-width: 90px;
+            box-shadow: 0 4px 8px rgba(109, 57, 142, 0.2);
+        }
+
+        .btn-abrir i {
+            font-size: 0.8rem;
+        }
+
+        .btn-abrir:hover {
+            background: var(--roxo-primary-hover);
+            box-shadow: 0 8px 14px rgba(109, 57, 142, 0.3);
+            transform: scale(1.02);
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background: var(--branco);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 32px;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-card h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--roxoPrincipal);
+            margin-bottom: 1.5rem;
+            border-left: 6px solid var(--verdePrincipal);
+            padding-left: 1rem;
+        }
+
+        .campo-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .campo-group label {
+            font-weight: 500;
+            color: var(--roxoPrincipal);
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+
+        .campo-group input,
+        .campo-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--cinzaBorda);
+            border-radius: 16px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.15s;
+            background: #fafafa;
+        }
+
+        .campo-group input:focus,
+        .campo-group select:focus {
+            border-color: var(--roxoPrincipal);
+            box-shadow: 0 0 0 3px var(--roxoPrincipal-hover);
+        }
+
+        .extra-fields {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--cinzaBorda);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-cancelar {
+            background: transparent;
+            border: 1px solid var(--cinzaBorda);
+            padding: 0.7rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 500;
+            color: var(--cinzaEscuro);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-cancelar:hover {
+            background: #f2f2f2;
+        }
+
+        .btn-confirmar {
+            background: var(--verdePrincipal);
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            color: var(--preto);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(146, 203, 173, 0.3);
+            transition: 0.2s;
+        }
+
+        .btn-confirmar:hover {
+            filter: brightness(0.95);
+            transform: scale(1.02);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
             }
 
-            .patient-actions {
-                width: 100%;
-                justify-content: space-between;
+            .page-header h1 {
+                font-size: 2rem;
             }
 
-            .date-summary {
-                flex-direction: column;
-                gap: var(--espaco-md);
-                align-items: flex-start;
-            }
-
-            .summary-box {
-                width: 100%;
-                justify-content: space-between;
+            .cards-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
-    <div class="content">
-        <!-- Cabeçalho -->
-        <header class="header">
-            <h1><i class="fas fa-check-circle"></i> Checklist Diário de Lembretes</h1>
-            <p class="header-subtitle">Controle, conferência e segurança do processo de envio de lembretes</p>
-        </header>
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-chart-pie"></i> 📊 Central de Relatórios</h1>
+            <div class="subtitle">Visualize dados estratégicos por setor da clínica · Ponto de Equilíbrio</div>
+        </div>
 
-        <!-- Informações de data e resumo -->
-        <div class="date-summary">
-            <div class="date-info">
-                <div class="date-title">Pacientes agendados para:</div>
-                <div class="tomorrow-date" id="tomorrowDate">Carregando data...</div>
-            </div>
-            <div class="summary-box">
-                <div class="summary-item total-patients">
-                    <div class="summary-value" id="totalPatients">0</div>
-                    <div class="summary-label">Total</div>
-                </div>
-                <div class="summary-item pending-patients">
-                    <div class="summary-value" id="pendingPatients">0</div>
-                    <div class="summary-label">Pendentes</div>
-                </div>
-                <div class="summary-item completed-patients">
-                    <div class="summary-value" id="completedPatients">0</div>
-                    <div class="summary-label">Concluídos</div>
-                </div>
+        <div class="search-wrapper">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar relatório por nome (ex: financeiro, faltas...)">
             </div>
         </div>
 
-        <!-- Lista de pacientes -->
-        <div class="patients-list" id="patientsList">
-            <!-- Os pacientes serão inseridos aqui via JavaScript -->
-        </div>
+        <div id="setoresContainer"></div>
+    </div>
 
-        <!-- Mensagem de lista vazia -->
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <i class="fas fa-calendar-check"></i>
-            <h3>Nenhum paciente agendado para amanhã</h3>
-            <p>Não há consultas agendadas para o dia seguinte. O checklist será atualizado automaticamente amanhã.</p>
-        </div>
-
-        <!-- Resumo final -->
-        <div class="footer-summary">
-            <div class="summary-message" id="summaryMessage">
-                Verifique todos os pacientes pendentes antes de finalizar o dia.
+    <!-- MODAL DE FILTROS -->
+    <div class="modal-overlay" id="modalFiltros">
+        <div class="modal-card">
+            <h2 id="modalTitulo">Filtrar Relatório</h2>
+            <div class="campos-base">
+                <div class="campo-group">
+                    <label>Data inicial</label>
+                    <input type="date" id="dataInicio" value="2026-01-01">
+                </div>
+                <div class="campo-group">
+                    <label>Data final</label>
+                    <input type="date" id="dataFim" value="2026-01-31">
+                </div>
             </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            <div id="extraFieldsContainer" class="extra-fields"></div>
+            <div class="modal-actions">
+                <button class="btn-cancelar" id="btnCancelarModal">Cancelar</button>
+                <button class="btn-confirmar" id="btnConfirmarModal">Confirmar</button>
             </div>
-            <div class="progress-text" id="progressText">0% concluído</div>
         </div>
     </div>
 
+    <script src="ijs.js"></script>
 
 
-{% include "core/partials/alertas.html" %}
-{% endblock %}
+    <div
+        style="margin-top: 3rem; font-size:0.8rem; color:var(--cinzaEscuro); text-align:center; border-top:1px solid #ccc; padding-top:1rem;">
+        <i class="fas fa-clinic-medical"></i> Ponto de Equilíbrio · Central de Relatórios (hub administrativo)
+    </div>
+</body>
 
-{% block scripts %}
-<script src="{% static '/core/js/administrativo/nfBase.js' %}"></script>
-     <script>
-        // Função para formatar data
-        function formatDate(date) {
-            const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
-            return date.toLocaleDateString('pt-BR', options);
-        }
-
-        // Função para obter a data de amanhã
-        function getTomorrowDate() {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            return tomorrow;
-        }
-
-        // Função para simular dados de pacientes do sistema
-        function getPatientsForTomorrow() {
-            // Em um sistema real, isso viria da API/banco de dados
-            // Aqui simulamos alguns pacientes para demonstração
-            const tomorrow = getTomorrowDate();
-            
-            // Verifica se há dados salvos no localStorage
-            const savedData = localStorage.getItem(`checklist_${tomorrow.toDateString()}`);
-            if (savedData) {
-                return JSON.parse(savedData);
-            }
-            
-            // Dados simulados padrão
-            const patients = [
-                {
-                    id: 1,
-                    name: "Maria Silva Santos",
-                    appointmentTime: "09:30",
-                    phone: "(11) 98765-4321",
-                    procedure: "Consulta de rotina",
-                    reminderSent: false
-                },
-                {
-                    id: 2,
-                    name: "João Pereira Oliveira",
-                    appointmentTime: "10:15",
-                    phone: "(11) 99876-5432",
-                    procedure: "Avaliação ortodôntica",
-                    reminderSent: false
-                },
-                {
-                    id: 3,
-                    name: "Ana Claudia Mendes",
-                    appointmentTime: "11:00",
-                    phone: "(11) 97654-3210",
-                    procedure: "Limpeza dental",
-                    reminderSent: false
-                },
-                {
-                    id: 4,
-                    name: "Carlos Eduardo Lima",
-                    appointmentTime: "14:00",
-                    phone: "(11) 96543-2109",
-                    procedure: "Restauração",
-                    reminderSent: false
-                },
-                {
-                    id: 5,
-                    name: "Fernanda Costa Rodrigues",
-                    appointmentTime: "15:30",
-                    phone: "(11) 95432-1098",
-                    procedure: "Consulta de rotina",
-                    reminderSent: false
-                },
-                {
-                    id: 6,
-                    name: "Roberto Almeida Souza",
-                    appointmentTime: "16:45",
-                    phone: "(11) 94321-0987",
-                    procedure: "Extração",
-                    reminderSent: false
-                }
-            ];
-            
-            // Salva no localStorage para simular persistência
-            localStorage.setItem(`checklist_${tomorrow.toDateString()}`, JSON.stringify(patients));
-            return patients;
-        }
-
-        // Função para salvar o status atualizado
-        function savePatientStatus(patientId, status) {
-            const tomorrow = getTomorrowDate();
-            const patients = getPatientsForTomorrow();
-            
-            // Atualiza o status do paciente
-            const patientIndex = patients.findIndex(p => p.id === patientId);
-            if (patientIndex !== -1) {
-                patients[patientIndex].reminderSent = status;
-                localStorage.setItem(`checklist_${tomorrow.toDateString()}`, JSON.stringify(patients));
-            }
-            
-            return patients;
-        }
-
-        // Função para renderizar a lista de pacientes
-        function renderPatientsList() {
-            const patientsList = document.getElementById('patientsList');
-            const emptyState = document.getElementById('emptyState');
-            const patients = getPatientsForTomorrow();
-            
-            // Verifica se há pacientes
-            if (patients.length === 0) {
-                patientsList.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            } else {
-                patientsList.style.display = 'flex';
-                emptyState.style.display = 'none';
-            }
-            
-            // Limpa a lista
-            patientsList.innerHTML = '';
-            
-            // Calcula totais
-            const totalPatients = patients.length;
-            const completedPatients = patients.filter(p => p.reminderSent).length;
-            const pendingPatients = totalPatients - completedPatients;
-            
-            // Atualiza os contadores
-            document.getElementById('totalPatients').textContent = totalPatients;
-            document.getElementById('pendingPatients').textContent = pendingPatients;
-            document.getElementById('completedPatients').textContent = completedPatients;
-            
-            // Atualiza a barra de progresso
-            const progressPercent = totalPatients > 0 ? Math.round((completedPatients / totalPatients) * 100) : 0;
-            document.getElementById('progressFill').style.width = `${progressPercent}%`;
-            document.getElementById('progressText').textContent = `${progressPercent}% concluído`;
-            
-            // Atualiza a mensagem de resumo
-            const summaryMessage = document.getElementById('summaryMessage');
-            if (pendingPatients === 0 && totalPatients > 0) {
-                summaryMessage.textContent = "✅ Todos os lembretes foram enviados com sucesso!";
-                summaryMessage.className = "summary-message all-completed";
-            } else if (pendingPatients > 0) {
-                summaryMessage.textContent = `⚠️ Ainda há ${pendingPatients} paciente(s) pendente(s). Verifique antes de finalizar.`;
-                summaryMessage.className = "summary-message pending-exist";
-            } else {
-                summaryMessage.textContent = "Verifique todos os pacientes pendentes antes de finalizar o dia.";
-                summaryMessage.className = "summary-message";
-            }
-            
-            // Renderiza cada paciente
-            patients.forEach(patient => {
-                const patientCard = document.createElement('div');
-                patientCard.className = `patient-card ${patient.reminderSent ? 'completed' : ''}`;
-                patientCard.id = `patient-${patient.id}`;
-                
-                patientCard.innerHTML = `
-                    <div class="patient-info ${patient.reminderSent ? 'patient-completed' : ''}">
-                        <div class="patient-name">${patient.name}</div>
-                        <div class="patient-details">
-                            <div class="patient-detail">
-                                <i class="fas fa-clock"></i>
-                                <span>${patient.appointmentTime}</span>
-                            </div>
-                            <div class="patient-detail">
-                                <i class="fas fa-phone"></i>
-                                <span>${patient.phone}</span>
-                            </div>
-                            <div class="patient-detail">
-                                <i class="fas fa-stethoscope"></i>
-                                <span>${patient.procedure}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="patient-actions">
-                        <div class="status-badge ${patient.reminderSent ? 'status-completed' : 'status-pending'}">
-                            <i class="fas ${patient.reminderSent ? 'fa-check-circle' : 'fa-clock'}"></i>
-                            <span>${patient.reminderSent ? 'Lembrete enviado' : 'Pendente'}</span>
-                        </div>
-                        <button class="btn-send ${patient.reminderSent ? 'completed' : ''}" 
-                                onclick="sendReminder(${patient.id})"
-                                ${patient.reminderSent ? 'disabled' : ''}>
-                            <i class="fab fa-whatsapp"></i>
-                            ${patient.reminderSent ? 'Enviado' : 'Enviar lembrete'}
-                        </button>
-                    </div>
-                `;
-                
-                patientsList.appendChild(patientCard);
-            });
-        }
-
-        // Função para enviar lembrete (simulado)
-        function sendReminder(patientId) {
-            // Aqui em um sistema real, haveria integração com API para envio real
-            // Neste caso, apenas registramos no sistema que foi enviado
-            savePatientStatus(patientId, true);
-            
-            // Atualiza a interface
-            renderPatientsList();
-            
-            // Feedback visual para o usuário
-            const patientCard = document.getElementById(`patient-${patientId}`);
-            patientCard.classList.add('completed');
-            
-            // Exibe mensagem de sucesso
-            const patients = getPatientsForTomorrow();
-            const patient = patients.find(p => p.id === patientId);
-            
-            alert(`Lembrete registrado como enviado para ${patient.name}.`);
-            
-            // Em um sistema real, aqui poderia ser acionada uma API para envio real pelo WhatsApp
-            console.log(`Lembrete enviado para: ${patient.name} - Telefone: ${patient.phone}`);
-        }
-
-        // Função para inicializar a página
-        function initPage() {
-            // Configura a data de amanhã no cabeçalho
-            const tomorrow = getTomorrowDate();
-            document.getElementById('tomorrowDate').textContent = formatDate(tomorrow);
-            
-            // Renderiza a lista de pacientes
-            renderPatientsList();
-            
-            // Simula atualização automática diária
-            // Em um sistema real, isso seria gerenciado pelo backend
-            console.log("Checklist diário carregado para:", formatDate(tomorrow));
-        }
-
-        // Inicializa a página quando o DOM estiver carregado
-        document.addEventListener('DOMContentLoaded', initPage);
-        
-        // Simula a geração automática diária limpando dados antigos
-        // Em um sistema real, isso seria feito pelo backend
-        function clearOldChecklists() {
-            const today = new Date().toDateString();
-            const keys = Object.keys(localStorage);
-            
-            keys.forEach(key => {
-                if (key.startsWith('checklist_') && !key.includes(today)) {
-                    // Remove checklists de dias anteriores (exceto o de amanhã)
-                    const keyDate = key.replace('checklist_', '');
-                    const keyDateObj = new Date(keyDate);
-                    const tomorrow = getTomorrowDate();
-                    
-                    if (keyDateObj.toDateString() !== tomorrow.toDateString()) {
-                        localStorage.removeItem(key);
-                    }
-                }
-            });
-        }
-        
-        // Executa a limpeza de dados antigos
-        clearOldChecklists();
-    </script>
- 
-{% endblock %}
+</html>

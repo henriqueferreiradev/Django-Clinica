@@ -96,8 +96,10 @@ urlpatterns = [
     path('api/paciente/<int:paciente_id>/', pacientes_views.dados_paciente, name='dados_paciente'),
     path('paciente/perfil/<int:paciente_id>/', pacientes_views.perfil_paciente, name='perfil_paciente'),
     path('paciente/nota-fiscal/<int:paciente_id>/', pacientes_views.lista_notas_fiscais_paciente, name='nota_fiscal_paciente'),
-    
-    
+    path('paciente/prontuario/<int:prontuario_id>/', pacientes_views.visualizar_prontuario, name='visualizar_prontuario'),
+    path('paciente/evolucao/<int:evolucao_id>/', pacientes_views.visualizar_evolucao, name='visualizar_evolucao'),
+    path('paciente/avaliacao/<int:avaliacao_id>/', pacientes_views.visualizar_avaliacao, name='visualizar_avaliacao'),
+
     #path('paciente/perfil/<int:paciente_id>/todos_agendamentos', pacientes_views.todos_agendamentos, name='todos_agendamentos_paciente'),
     path("api/buscar-pacientes/", pacientes_views.buscar_pacientes, name="buscar_pacientes"),
     path('pacientes/pre_cadastro/', pacientes_views.pre_cadastro, name='pre_cadastro'),
@@ -142,6 +144,7 @@ urlpatterns = [
     path('config/', config_views.configuracao_view, name='config'),
     
     path('auditoria/', logs_views.logs_view, name='auditoria_logs'),
+    
     
     
     path('respostas/<int:resposta_id>/', pacientes_views.visualizar_respostas_formulario, name='visualizar_respostas'),
