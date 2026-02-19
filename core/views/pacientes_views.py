@@ -18,6 +18,7 @@ import qrcode
 import base64
 from io import BytesIO
 from core.views.frequencia_views import sync_frequencias_mes
+from .notificacoes_views import marcar_notificacao_lida
  
 def calcular_idade(data_nascimento):
     hoje = date.today()
@@ -369,22 +370,29 @@ def editar_paciente_view(request,id):
         paciente.nf_reembolso_plano =request.POST.get('nf_reembolso_plano') == 'true'    
         paciente.ativo = True
 
-        paciente.save()
+        
 
         if 'foto' in request.FILES:
             paciente.foto = request.FILES['foto']
         
         paciente.save()
         messages.success(request, f'Dados de {paciente.nome} atualizados!')
-        Notificacao.objects.filter(
-            titulo='Responsável por paciente menor de idade',
-            url=f'/pacientes/editar/{paciente.id}/',
+
+        notificacao = Notificacao.objects.filter(
+            paciente=paciente,
+            usuario=request.user,
             lida=False
-        ).update(lida=True)
-        
+        ).first()
+
+        if notificacao:
+            notificacao.lida = True
+            notificacao.save()
+
+
         print("Conferido:", paciente.conferido)
         print("Pré-cadastro:", paciente.pre_cadastro)   
         
+ 
         registrar_log(usuario=request.user,
             acao='Edição',
             modelo='Paciente',
