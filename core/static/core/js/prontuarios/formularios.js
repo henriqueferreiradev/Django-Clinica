@@ -1141,18 +1141,7 @@ async function renderizarDetalhesProntuario(agendamentoId = null) {
         const prontuario = res.prontuarios[0]
         console.log(res, agendamentoId)
         container.innerHTML = `<div class="prontuario-meta mb-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Data:</strong> <span>${prontuario.data}</span>
-                                <strong>Pacote:</strong> <span">${prontuario.pacote}</span=></p>
-                                <p><strong>Registrado por:</strong> <span id="viewProntuarioAutor">${prontuario.profissional_nome}</span>
-                                </p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Paciente:</strong> <span id="viewProntuarioPaciente">${prontuario.nome_paciente}</span>
-                                </p>
-                            </div>
-                        </div>
+                        <h2 class="section-title">Prontuário Nº ${prontuario.id}</h2>
                     </div>
   
                     <div class="prontuario-content">
@@ -1247,9 +1236,10 @@ async function renderizarDetalhesEvolucao(agendamentoId = null) {
         const evolucao = res.evolucoes[0]
         console.log(res, agendamentoId)
         container.innerHTML = `
-        <h6 class="section-title habitos-col">1. Evolução do estado de saúde e tratamento</h6>
+                <h2 class="section-title">Evolução Nº ${evolucao.id}</h2>
+                <h6 class="section-title habitos-col">1. Evolução do estado de saúde e tratamento</h6>
                     <div class="habitos-grid">
-    
+
 
                     <div class="habitos-col">
                         <label class="form-label">Queixa principal inicial</label>
@@ -1500,18 +1490,7 @@ async function renderizarDetalhesAvaliacao(agendamentoId = null) {
         const avaliacao = res.avaliacoes[0]
         console.log(res, agendamentoId)
         container.innerHTML = `
-                    <div class="prontuario-meta mb-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Data:</strong> <span id="viewAvaliacaoData">15/05/2023</span></p>
-                                <p><strong>Avaliador:</strong> <span id="viewAvaliacaoAutor">Dra. Ana Silva</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Paciente:</strong> <span id="viewAvaliacaoPaciente">Maria Oliveira</span></p>
-                                <p><strong>ID:</strong> <span id="viewAvaliacaoId">#AVA001</span></p>
-                            </div>
-                        </div>
-                    </div>
+                    <h2 class="section-title">Avaliação Nº ${avaliacao.id}</h2>
 
                     <!-- 1. Anamnese / Histórico Clínico -->
                     <div class="mb-4">

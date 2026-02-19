@@ -1,186 +1,425 @@
-{% load static %} {% block content %}
-<style>
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Prontuários - {{ paciente.nome }}{% endblock %}
+{% block extra_css %}
+ 
+    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/pacientes/visualizar_historico.css' %}">
+    <style>
+ 
+
+        .header-lista {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
         }
 
-        to {
-            opacity: 1;
+        .header-lista h1 {
+            color: var(--q-preto);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-    }
 
-    .animate-fade-in {
-        animation: fadeIn 0.8s ease-in-out;
-    }
+        .header-lista h1 i {
+            color: var(--roxoPrincipal);
+        }
 
-    .header-curve {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        overflow: hidden;
-        line-height: 0;
-        filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
-    }
+        .btn-novo {
+            background: var(--roxoPrincipal);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
 
-    .header-curve svg {
-        position: relative;
-        display: block;
-        width: calc(100% + 1.3px);
-        height: 100px;
-    }
+        .btn-novo:hover {
+            background: var(--roxo-primary-hover);
+        }
 
-    .header-curve .shape-fill {
-        fill: url(#gradient);
-    }
+        .filtros {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
 
-    .gradient-bg {
-        background: linear-gradient(135deg, #7f4396 0%, #9c50c0 100%);
-    }
+        .filtro-group {
+            flex: 1;
+            min-width: 200px;
+        }
 
-    .form-container {
-        position: relative;
-        z-index: 10;
-        margin-top: -4rem;
-    }
+        .filtro-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
 
-    .btn-voltar {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background-color: #ffffff;
-        color: #6d398e;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        box-shadow:
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        transition:
-            background-color 300ms ease,
-            box-shadow 300ms ease,
-            transform 300ms ease;
-    }
+        .filtro-group input,
+        .filtro-group select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
 
-    .btn-voltar:hover {
-        background-color: #f3f4f6;
-        box-shadow:
-            0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        transform: translateY(-0.25rem);
-    }
-</style>
+        .filtro-group input:focus,
+        .filtro-group select:focus {
+            outline: none;
+            border-color: var(--roxoPrincipal);
+        } 
 
-<!-- Header Section with Curve -->
-<div class="relative gradient-bg text-white pt-16 pb-32 overflow-hidden">
-    <div class="container mx-auto px-4 md:px-6">
-        <div class="max-w-3xl mx-auto text-center relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">
-                Prontuário do Paciente
-            </h1>
+        .lista-prontuarios {
+            display: grid;
+            gap: 1rem;
+        }
 
-            <div class="border-b pb-4 mb-6">
-                <h1 class="text-2xl font-bold">{{ prontuario.paciente.nome }}</h1>
+        .prontuario-card {
+            background: var(--backgroundCard);
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--cinza-borda);
+        }
 
-                <p class="">
-                    Registrado por: {{ prontuario.profissional.nome }} em {{ prontuario.data_criacao|date:"d/m/Y H:i" }}
-                </p>
+        .prontuario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.1);
+            border-color: var(--roxoPrincipal);
+        }
 
-                {% if prontuario.pacote %}
-                <p class="mt-2">
-                    Pacote: <strong>{{ prontuario.pacote.nome }}</strong>
-                </p>
+        .prontuario-info {
+            flex: 1;
+        }
+
+        .prontuario-titulo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--q-preto);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .prontuario-titulo i {
+            color: var(--roxoPrincipal);
+            font-size: 1rem;
+        }
+
+        .prontuario-metadata {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .metadata-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .metadata-item i {
+            color: var(--roxoPrincipal);
+            width: 16px;
+        }
+
+        .metadata-item strong {
+            color: var(--q-preto);
+            margin-right: 0.2rem;
+        }
+
+        .prontuario-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-visualizar {
+            background: var(--roxoPrincipal);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-visualizar:hover {
+            background: var(--roxo-primary-hover);
+        }
+
+        .btn-editar {
+            background: #edf2f7;
+            color: #4a5568;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-editar:hover {
+            background: #e2e8f0;
+        }
+
+      .status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border-radius: 999px;
+          font-weight: 600;
+          font-size: 12px;
+          white-space: nowrap;
+      }
+
+      .status-badge.status-pre {
+          border: 1px solid #5a5753;
+          background-color: rgba(90, 87, 83, 0.15);
+      }
+
+      .status-badge.status-agendado {
+          border: 1px solid #01D4D6;
+          background-color: hsla(181, 99%, 42%, 0.15);
+      }
+
+      .status-badge.status-finalizado {
+          border: 1px solid #23D31D;
+          background-color: rgba(35, 211, 29, 0.15);
+      }
+
+      .status-badge.status-desistencia {
+          border: 1px solid #F70000;
+          background-color: rgba(247, 0, 0, 0.15);
+      }
+
+      .status-badge.status-dcr {
+          border: 1px solid #F7F700;
+          background-color: rgba(247, 247, 0, 0.15);
+      }
+        .empty {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px dashed #e2e8f0;
+            text-align: center;
+            color: #718096;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .prontuario-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .prontuario-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .prontuario-metadata { gap: 1rem; }
+        }
+    </style>
+ 
+
+{% endblock %}
+{% block topbar_title %}
+  <span class="text">             
+                <i class="fas fa-file-medical"></i>
+                Prontuários
+                {% if paciente %}
+                    <span style="font-size:0.95rem; font-weight:600; color:#718096;">
+                        • {{ paciente.nome }} {{ paciente.sobrenome }}
+                    </span>
                 {% endif %}
+             
+{% endblock %}
 
-                <div class="mt-8 text-center">
-                    <a href="{% url 'perfil_paciente' prontuario.paciente.id %}" class="btn-voltar">
-                        Voltar ao Perfil
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+{% block content %}
+     <div class="content">
 
  
-    <div class="header-curve">
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#8641a1" />
-                    <stop offset="100%" stop-color="#7F4396" />
-                </linearGradient>
-            </defs>
-            <path
-                d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-                opacity=".25" class="shape-fill"></path>
-            <path
-                d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
-                opacity=".5" class="shape-fill"></path>
-            <path
-                d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
-                class="shape-fill"></path>
-        </svg>
-    </div>
-</div>
- 
-<div class="container mx-auto px-4 md:px-6 form-container">
-    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-xl animate-fade-in">
-        <div class="space-y-6">
-            <div class="mt-12 border-t pt-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">
-                    Detalhes do Prontuário
-                </h2>
 
-                <div class="bg-white border rounded-lg shadow-md overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b">
-                        <p class="text-sm text-gray-600">
-                            <strong>Data:</strong> {{ prontuario.data_criacao|date:"d/m/Y H:i" }}
-                        </p>
-                        <p class="text-sm text-gray-600">
-                            <strong>Registrado por:</strong> {{ prontuario.profissional.nome }}
-                        </p>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <div>
-                            <h4 class="font-medium text-gray-700">Queixa Principal</h4>
-                            <div class="bg-gray-50 p-3 rounded-md mt-1">
-                                {{ prontuario.queixa_principal|default:"Não informado" }}
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="font-medium text-gray-700">Conduta</h4>
-                            <div class="bg-gray-50 p-3 rounded-md mt-1">
-                                {{ prontuario.conduta|default:"Não informado" }}
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="font-medium text-gray-700">Evolução</h4>
-                            <div class="bg-gray-50 p-3 rounded-md mt-1">
-                                {{ prontuario.evolucao|default:"Não informado" }}
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="font-medium text-gray-700">Diagnóstico</h4>
-                            <div class="bg-gray-50 p-3 rounded-md mt-1">
-                                {{ prontuario.diagnostico|default:"Não informado" }}
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="font-medium text-gray-700">Observações</h4>
-                            <div class="bg-gray-50 p-3 rounded-md mt-1">
-                                {{ prontuario.observacoes|default:"Não informado" }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Filtros (somente visual; sem JS) -->
+        <div class="filtros">
+            <div class="filtro-group">
+                <label>Buscar</label>
+                <input type="text" placeholder="Título, paciente, etc..." disabled>
+            </div>
+            <div class="filtro-group">
+                <label>Status</label>
+                <select disabled>
+                    <option value="">Todos</option>
+                    <option>Concluído</option>
+                    <option>Em andamento</option>
+                    <option>Pendente</option>
+                </select>
+            </div>
+            <div class="filtro-group">
+                <label>Data inicial</label>
+                <input type="date" disabled>
+            </div>
+            <div class="filtro-group">
+                <label>Data final</label>
+                <input type="date" disabled>
             </div>
         </div>
+
+        <!-- Lista de Prontuários (Django) -->
+        <div class="lista-prontuarios">
+
+            {% if prontuarios %}
+                {% for prontuario in prontuarios %}
+                    <div class="prontuario-card">
+                        <div class="prontuario-info">
+                            <div class="prontuario-titulo">
+                                <i class="fas fa-file-alt"></i>
+
+                                Sessão de {{ prontuario.agendamento.especialidade.nome }} • Prontuário #{{ prontuario.id }}
+                  <span class="status-badge
+                    {% if prontuario.agendamento.status == 'pre' %} status-pre
+                    {% elif prontuario.agendamento.status == 'agendado' %} status-agendado
+                    {% elif prontuario.agendamento.status == 'finalizado' %} status-finalizado
+                    {% elif prontuario.agendamento.status == 'desistencia' %} status-desistencia
+                    {% elif prontuario.agendamento.status == 'desistencia_remarcacao' %} status-dcr
+                    {% elif prontuario.agendamento.status == 'falta_remarcacao' %} status-fcr
+                    {% elif prontuario.agendamento.status == 'falta_cobrada' %} status-falta
+                    {% else %} status-default
+                    {% endif %}
+                ">
+                    {% if prontuario.agendamento.status == 'pre' %}✅ Pré-Agendado
+                    {% elif prontuario.agendamento.status == 'agendado' %}✅ Agendado
+                    {% elif prontuario.agendamento.status == 'finalizado' %}✅ Consulta finalizada!
+                    {% elif prontuario.agendamento.status == 'desistencia' %}❌ D - Desistência
+                    {% elif prontuario.agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
+                    {% elif prontuario.agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
+                    {% elif prontuario.agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada
+                    {% else %}—{% endif %}
+                </span>
+
+                            </div>
+
+                            <div class="prontuario-metadata">
+                                <div class="metadata-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>
+                                        <strong>Criado por:</strong>
+                                        {% if prontuario.profissional %}
+                                            {{ prontuario.profissional.nome }} {{ prontuario.profissional.sobrenome }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="metadata-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>
+                                        <strong>Criado em:</strong>
+                                        {% if prontuario.data_criacao %}
+                                            {{ prontuario.data_criacao|date:"d/m/Y H:i" }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                {# Se você tiver agendamento e quiser mostrar data da consulta (opcional) #}
+                                {# <div class="metadata-item">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <span><strong>Data da consulta:</strong> {{ prontuario.agendamento.data|date:"d/m/Y" }}</span>
+                                </div> #}
+                            </div>
+                        </div>
+
+                        <div class="prontuario-actions">
+                            {# Ajuste a URL: se for visualizar 1 prontuário, passe prontuario.id #}
+                            <a class="btn-visualizar" href="#">
+                                <i class="fas fa-eye"></i>
+                                Visualizar
+                            </a>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">
+                    <i class="fas fa-notes-medical" style="font-size:1.6rem; color:var(--roxoPrincipal); margin-bottom:.5rem;"></i>
+                    <h3 style="color:var(--q-preto); margin-bottom:.4rem;">Nenhum prontuário encontrado</h3>
+                    <p>Esse paciente ainda não possui prontuários cadastrados.</p>
+                </div>
+            {% endif %}
+
+        </div>
+
+        {# Paginação: só coloca se você usar paginator no backend #}
+        {# 
+            <div class="pagination">
+      <div class="pagination-info">
+        Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+      </div>
+      <div class="pagination-controls">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+           class="pagination-btn">Anterior</a>
+        {% else %}
+        <button class="pagination-btn disabled">Anterior</button>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+          <button class="pagination-btn active">{{ num }}</button>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+             class="pagination-btn">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
+           class="pagination-btn">Próxima</a>
+        {% else %}
+        <button class="pagination-btn disabled">Próxima</button>
+        {% endif %}
+      </div>
+    </div> #}
+
     </div>
-    {% endblock %} {% block scripts %}
-    <script src="https://cdn.tailwindcss.com"></script>
-    {% endblock %}
-</div>
+{% endblock %}
+ 

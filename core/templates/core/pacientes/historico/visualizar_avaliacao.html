@@ -1,353 +1,91 @@
+{% extends 'core/base.html' %}
 {% load static %}
 
-{% block content %}
-<style>
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    .animate-fade-in {
-        animation: fadeIn 0.8s ease-in-out;
-    }
-    
-    .header-curve {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        overflow: hidden;
-        line-height: 0;
-        filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
-    }
-    
-    .header-curve svg {
-        position: relative;
-        display: block;
-        width: calc(100% + 1.3px);
-        height: 100px;
-    }
-    
-    .header-curve .shape-fill {
-        fill: url(#gradient);
-    }
-    
-    .gradient-bg {
-        background: linear-gradient(135deg, #7F4396 0%, #9c50c0 100%);
-    }
-    
-    .form-container {
-        position: relative;
-        z-index: 10;
-        margin-top: -4rem;
-    }
+{% block title %}Avaliações - {{ paciente.nome }}{% endblock %}
+{% block extra_css %}
+ 
+    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/pacientes/visualizar_historico.css' %}">
 
-    .btn-voltar {
-        display: inline-block;                 
-        padding: 0.75rem 1.5rem;               
-        background-color: #ffffff;             
-        color: #6D398E;                        
-        border-radius: 0.5rem;                
-        font-weight: 600;                      
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,.1),
-                    0 2px 4px -1px rgba(0,0,0,.06); 
-        transition: background-color 300ms ease,
-                    box-shadow 300ms ease,
-                    transform 300ms ease;   
-        }
-    .btn-voltar:hover {
-        background-color: #f3f4f6;              
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,.1),
-              0 4px 6px -2px rgba(0,0,0,.05);  
-        transform: translateY(-0.25rem);
-    }
-</style>
-
-<!-- Header Section with Curve -->
-<div class="relative gradient-bg text-white pt-16 pb-32 overflow-hidden">
-    <div class="container mx-auto px-4 md:px-6">
-    <div class="max-w-3xl mx-auto text-center relative z-10">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">Avaliação do Paciente</h1>
-
-        <div class="border-b pb-4 mb-6">
-        <h1 class="text-2xl font-bold">
-            {{ avaliacao.paciente.nome }}
-        </h1>
  
 
-        <p class="">
-            Registrado por: {{ avaliacao.profissional.nome }}
-            em {{ avaliacao.data_avaliacao|date:"d/m/Y H:i" }}
-        </p>
-
-     
-
-        <div class="mt-8 text-center">
-            <a href="{% url 'perfil_paciente' avaliacao.paciente.id %}" class="btn-voltar">
-            Voltar ao Perfil
-            </a>
-        </div>
-        </div>
-    </div>
-    </div>
-
-    
-    <!-- SVG Curve -->
-    <div class="header-curve">
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#8641a1" />
-                    <stop offset="100%" stop-color="#7F4396" />
-                </linearGradient>
-            </defs>
-            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
-            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
-            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
-        </svg>
-    </div>
-</div>
-
-<!-- Answers Section -->
-<div class="container mx-auto px-4 md:px-6 form-container">
-    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-xl animate-fade-in">
-        <!-- Cabeçalho -->
-
-
-        <!-- Lista de Perguntas e Respostas -->
-        <div class="space-y-6">
- 
-<div class="p-6 space-y-6">
-
-            <!-- 1. ANAMNESE -->
-            <div>
-                <h4 class="font-semibold text-gray-800 mb-2">
-                    1. Anamnese / Histórico Clínico
-                </h4>
-
-                <div class="space-y-3">
-
-                    <div>
-                        <strong>Queixa principal:</strong>
-                        <div class="bg-gray-50 p-3 rounded mt-1">
-                            {{ avaliacao.queixa_principal|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Início do problema:</strong>
-                        <div class="bg-gray-50 p-3 rounded mt-1">
-                            {{ avaliacao.inicio_problema|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Causa do problema:</strong>
-                        <div class="bg-gray-50 p-3 rounded mt-1">
-                            {{ avaliacao.causa_problema|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- HISTÓRICO DA DOENÇA ATUAL -->
-            <div>
-                <h4 class="font-semibold text-gray-800 mb-2">
-                    Histórico da Doença Atual
-                </h4>
-
-                <div class="space-y-2">
-
-                    <p><strong>Dor recente ou antiga:</strong> {{ avaliacao.dor_recente_antiga|default:"Não informado" }}</p>
-
-                    <p><strong>Episódios anteriores:</strong> {{ avaliacao.episodios_anteriores|default:"Não informado" }}</p>
-
-                    <p>
-                        <strong>Tratamento anterior:</strong>
-                        {% if avaliacao.tratamento_anterior == True %}
-                            Sim
-                        {% elif avaliacao.tratamento_anterior == False %}
-                            Não
-                        {% else %}
-                            Não informado
-                        {% endif %}
-                    </p>
-
-                    <p><strong>Qual tratamento:</strong> {{ avaliacao.qual_tratamento|default:"Não informado" }}</p>
-
-                    <p><strong>Cirurgia/procedimento:</strong> {{ avaliacao.cirurgia_procedimento|default:"Não informado" }}</p>
-
-                    <p>
-                        <strong>Acompanhamento médico:</strong>
-                        {% if avaliacao.acompanhamento_medico == True %}
-                            Sim
-                        {% elif avaliacao.acompanhamento_medico == False %}
-                            Não
-                        {% else %}
-                            Não informado
-                        {% endif %}
-                    </p>
-
-                    <p><strong>Especialidade médica:</strong> {{ avaliacao.medico_especialidade|default:"Não informado" }}</p>
-
-                    <p><strong>Diagnóstico médico:</strong> {{ avaliacao.diagnostico_medico|default:"Não informado" }}</p>
-
-                    <p><strong>Uso de medicamentos:</strong> {{ avaliacao.uso_medicamentos|default:"Não informado" }}</p>
-
-                    <p>
-                        <strong>Exames trazidos:</strong>
-                        {% if avaliacao.exames_trazidos == True %}
-                            Sim
-                        {% elif avaliacao.exames_trazidos == False %}
-                            Não
-                        {% else %}
-                            Não informado
-                        {% endif %}
-                    </p>
-
-                    <p><strong>Tipo de exame:</strong> {{ avaliacao.tipo_exame|default:"Não informado" }}</p>
-
-                    <p><strong>Histórico de lesões:</strong> {{ avaliacao.historico_lesoes|default:"Não informado" }}</p>
-
-                </div>
-            </div>
-
-            <!-- HÁBITOS -->
-            <div>
-                <h4 class="font-semibold text-gray-800 mb-2">
-                    Hábitos e Estilo de Vida
-                </h4>
-
-                <p><strong>Qualidade do sono:</strong> {{ avaliacao.qualidade_sono|default:"Não informado" }}</p>
-                <p><strong>Horas de sono:</strong> {{ avaliacao.horas_sono|default:"Não informado" }}</p>
-                <p><strong>Alimentação:</strong> {{ avaliacao.alimentacao|default:"Não informado" }}</p>
-                <p><strong>Nível de atividade:</strong> {{ avaliacao.nivel_atividade|default:"Não informado" }}</p>
-                <p><strong>Tipo de exercício:</strong> {{ avaliacao.tipo_exercicio|default:"Não informado" }}</p>
-                <p><strong>Nível de estresse:</strong> {{ avaliacao.nivel_estresse|default:"Não informado" }}</p>
-                <p><strong>Rotina de trabalho:</strong> {{ avaliacao.rotina_trabalho|default:"Não informado" }}</p>
-                <p><strong>Aspectos emocionais:</strong> {{ avaliacao.aspectos_emocionais|default:"Não informado" }}</p>
-            </div>
-
-            <!-- DIAGNÓSTICO FISIOTERAPÊUTICO -->
-            <div>
-                <h4 class="font-semibold text-gray-800 mb-2">
-                    Diagnóstico Fisioterapêutico
-                </h4>
-
-                <div class="bg-gray-50 p-3 rounded">
-                    {{ avaliacao.diagnostico_completo|default:"Não informado" }}
-                </div>
-
-                <p><strong>Grau de dor:</strong> {{ avaliacao.grau_dor|default:"Não informado" }}</p>
-                <p><strong>Limitação funcional:</strong> {{ avaliacao.limitacao_funcional|default:"Não informado" }}</p>
-                <p><strong>Grau de inflamação:</strong> {{ avaliacao.grau_inflamacao_num|default:"Não informado" }}</p>
-                <p><strong>Grau de edema:</strong> {{ avaliacao.grau_edema|default:"Não informado" }}</p>
-                <p><strong>Receptividade:</strong> {{ avaliacao.receptividade|default:"Não informado" }}</p>
-                <p><strong>Autonomia AVD:</strong> {{ avaliacao.autonomia_avd|default:"Não informado" }}</p>
-            </div>
-
-            <!-- PLANO TERAPÊUTICO -->
-            <div>
-                <h4 class="font-semibold text-gray-800 mb-2">
-                    Plano Terapêutico
-                </h4>
-
-                <div class="space-y-3">
-                    <div>
-                        <strong>Objetivo geral:</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.objetivo_geral|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Objetivo principal:</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.objetivo_principal|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Objetivo secundário:</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.objetivo_secundario|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Pontos de atenção:</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.pontos_atencao|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Descrição do plano:</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.descricao_plano|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <p><strong>Frequência:</strong> {{ avaliacao.frequencia|default:"Não informado" }}</p>
-                    <p><strong>Duração:</strong> {{ avaliacao.duracao|default:"Não informado" }}</p>
-                    <p><strong>Reavaliação:</strong> {{ avaliacao.reavaliacao_sessao|default:"Não informado" }}</p>
-
-                </div>
-            </div>
-
-            <!-- PROGNÓSTICO -->
-            <div>
-                <h4 class="font-semibold text-gray-800 mb-2">
-                    Prognóstico e Orientações
-                </h4>
-
-                <div class="space-y-3">
-
-                    <div>
-                        <strong>Evolução esperada (1ª sessão):</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.evolucao_primeira_sessao|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Evolução esperada (próximas sessões):</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.evolucao_proximas_sessoes|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Expectativas 1ª etapa:</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.expectativas_primeira_etapa|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Próximos passos:</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.proximos_passos|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <strong>Observações finais:</strong>
-                        <div class="bg-gray-50 p-3 rounded">
-                            {{ avaliacao.observacoes_finais|default:"Não informado" }}
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-       
-
-    </div>
-</div>
+{% endblock %}
+{% block topbar_title %}
+  <span class="text">Avaliações</span>
 {% endblock %}
 
-{% block scripts %} 
-<script src="https://cdn.tailwindcss.com"></script>
+{% block content %}
+<div class="content">
+
+  <header class="page-header">
+    <div class="page-title">
+      <h2>Avaliações de {{ paciente.nome }} {{ paciente.sobrenome }}</h2>
+      <p>Lista de avaliações cadastrados para este paciente.</p>
+    </div>
+
+    <div class="page-actions">
+      <div class="count-box">
+        <span class="count-number">{{ avaliacoes|length }}</span>
+        <span class="count-label">Registros</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="list-section">
+    {% if avaliacoes %}
+      <div class="cards">
+        {% for avaliacao in avaliacoes %}
+          <article class="card">
+            <div class="card-header">
+              <div class="left">
+                <span class="badge">
+                  <i class="fas fa-hashtag"></i>
+                  {{ avaliacao.id }}
+                </span>
+
+                <h4 class="card-title">
+                  Avaliação #{{ avaliacao.id }}
+                </h4>
+              </div>
+
+              <div class="right">
+                <!-- Troque o nome da sua URL aqui -->
+                <a class="btn btn-primary" href="#">
+                  <i class="fas fa-eye"></i>
+                  Visualizar
+                </a>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="meta">
+                <div class="meta-item">
+                  <span class="meta-label">Criado por</span>
+                  <span class="meta-value">
+                    {{ avaliacao.profissional.nome }} {{ avaliacao.profissional.sobrenome }}
+                  </span>
+                </div>
+
+                <div class="meta-item">
+                  <span class="meta-label">Criado em</span>
+                  <span class="meta-value">
+                    {{ avaliacao.data_avaliacao|date:"d/m/Y H:i" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-notes-medical"></i>
+        <h3>Nenhum Avaliação encontrado</h3>
+        <p>Esse paciente ainda não possui Avaliações registrados.</p>
+      </div>
+    {% endif %}
+  </section>
+
+</div>
+ 
 {% endblock %}

@@ -1045,36 +1045,52 @@ def lista_notas_fiscais_paciente(request, paciente_id):
 
 
 
-def visualizar_prontuario(request, prontuario_id):
-    prontuario = get_object_or_404(Prontuario, id=prontuario_id)
-    paciente = prontuario.paciente
+def visualizar_prontuarios_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    prontuarios = (
+        Prontuario.objects
+        .filter(paciente_id=paciente_id)
+        .select_related('profissional', 'paciente')
+        .order_by('-data_criacao')
+    )
+
     context = {
-        'prontuario': prontuario,
-        'paciente': paciente
+        'paciente': paciente,
+        'prontuarios': prontuarios,
     }
-    
     return render(request, 'core/pacientes/historico/visualizar_prontuario.html', context)
 
-def visualizar_evolucao(request, evolucao_id):
-    evolucao = get_object_or_404(Evolucao, id=evolucao_id)
-    paciente = evolucao.paciente
- 
+def visualizar_evolucoes_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    evolucoes = (
+        Evolucao.objects
+        .filter(paciente_id=paciente_id)
+        .select_related('profissional', 'paciente')
+        .order_by('-data_criacao')
+    )
+
     context = {
-        
         'paciente': paciente,
-        'evolucao': evolucao
+        'evolucoes': evolucoes,
     }
     return render(request, 'core/pacientes/historico/visualizar_evolucao.html', context)
 
 
-def visualizar_avaliacao(request, avaliacao_id):
-    avaliacao = get_object_or_404(AvaliacaoFisioterapeutica, id=avaliacao_id)
-    paciente = avaliacao.paciente
+def visualizar_avaliacoes_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    avaliacoes = (
+        AvaliacaoFisioterapeutica.objects
+        .filter(paciente_id=paciente_id)
+        .select_related('profissional', 'paciente')
+        .order_by('-data_avaliacao')
+    )
 
     context = {
-
         'paciente': paciente,
-        'avaliacao': avaliacao
+        'avaliacoes': avaliacoes,
     }
     return render(request, 'core/pacientes/historico/visualizar_avaliacao.html', context)
  

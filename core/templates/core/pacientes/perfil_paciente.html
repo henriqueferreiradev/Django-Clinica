@@ -1,27 +1,21 @@
+{% extends 'core/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-      <script>
+
+{% block title %}Perfil - {{ paciente.nome }}{% endblock %}
+
+{% block extra_css %}
  
-    (function() {
-      const isDark = localStorage.getItem('theme') === 'dark';
-      document.documentElement.classList.toggle('dark', isDark);
-    })();
-  </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{% static 'core/img/icons/logoRoxoFull.png' %}" type="image/png"/>
-    <title>Perfil do Paciente | Ponto de Equilíbrio</title>
-    
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
-    <link rel="stylesheet" href="{% static 'core/css/pacientes/perfil_paciente.css' %}">
+        <link rel="stylesheet" href="{% static 'core/css/pacientes/perfil_paciente.css' %}">
     <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
- 
-</head>             
-<body>
-    <div class="container">
+
+{% endblock %}
+
+{% block topbar_title %}Pendências de Nota Fiscal{% endblock %}
+
+{% block content %}
+    <div class="content">
         <!-- Header Section -->
         <header>
             <div class="header-content">
@@ -264,7 +258,11 @@
                 <section class="section">
                     <h2 class="section-title">Prontuários • Evoluções • Avaliações</h2>
                     <div class='section-hist'>
+                    <div class='div-section'>
                         <h2 class="section-subtitle">Prontuários</h2>
+                        <a  href="{% url 'visualizar_prontuarios_paciente' paciente.id %}" class="ver-tudo">Ver todos<i class="fa-solid fa-arrow-right"></i></a>
+
+                    </div>
                         <div class="space-y-3">
                         {% if prontuarios %}
                             {% for prontuario in prontuarios %}
@@ -286,7 +284,12 @@
                                                 Criado em: {{ prontuario.data_criacao|date:"d/m/Y" }} às {{ prontuario.data_criacao|time:"H:i" }}
                                             </p>
                                         </div>
-                                        <a href="{% url 'visualizar_prontuario' prontuario.id %}" data-tooltip='Ver Prontuário'  class="ver-detalhes"><i class="fas fa-eye"></i></a>
+                                        <button type="button"
+                                                onclick="renderizarDetalhesProntuario('{{ prontuario.agendamento.id }}')"
+                                                data-tooltip="Ver Prontuário"
+                                                class="ver-detalhes btn-sem-estilo">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                     </div>
                                         
 
@@ -298,10 +301,13 @@
                             {% endif %}
                             
                         </div>
-                        <a href="#" class="ver-tudo"><i class="fas fa-eye"></i>Ver todos</a>
                     </div>
                     <div class='section-hist'>
+                        <div class='div-section'>
                         <h2 class="section-subtitle">Evoluções</h2>
+                        <a href="{% url 'visualizar_evolucoes_paciente' paciente.id %}" class="ver-tudo">Ver todos<i class="fa-solid fa-arrow-right"></i></a>
+
+                    </div>
                         <div class="space-y-3">
                         {% if evolucoes %}
                             {% for evolucao in evolucoes %}
@@ -324,7 +330,12 @@
                                                 Criado em: {{ prontuario.data_criacao|date:"d/m/Y" }} às {{ prontuario.data_criacao|time:"H:i" }}
                                             </p>
                                         </div>
-                                        <a href="{% url 'visualizar_evolucao' evolucao.id %}" data-tooltip='Ver Evolução'  class="ver-detalhes"><i class="fas fa-eye"></i></a>
+                                        <button type="button"
+                                                onclick="renderizarDetalhesEvolucao('{{ evolucao.agendamento.id }}')"
+                                                data-tooltip="Ver Evolução"
+                                                class="ver-detalhes btn-sem-estilo">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -332,10 +343,13 @@
                         <h4 class="package-title text-sm">Não há informações no momento.</h4>
                         {% endif %}
                         </div>
-                        <a href="#" class="ver-tudo"><i class="fas fa-eye"></i>Ver todos</a>
-                    </div>
+                     </div>
                     <div class='section-hist'>
-                        <h2 class="section-subtitle">Avaliações Fisioterapêuticas</h2>
+                        <div class='div-section'>
+                            <h2 class="section-subtitle">Avaliações Fisioterapêuticas</h2>
+                            <a href="{% url 'visualizar_avaliacoes_paciente' paciente.id %}" class="ver-tudo">Ver todos<i class="fa-solid fa-arrow-right"></i></a>
+
+                        </div>                        
                         <div class="space-y-3">
                         {% if avaliacoes %}
                             {% for avaliacao in avaliacoes %}
@@ -358,7 +372,12 @@
                                                 Criado em: {{ avaliacao.data_criacao|date:"d/m/Y" }} às {{ avaliacao.data_criacao|time:"H:i" }}
                                             </p>
                                         </div>
-                                        <a href="{% url 'visualizar_avaliacao' avaliacao.id %}"  data-tooltip='Ver Avaliação' class="ver-detalhes"><i class="fas fa-eye"></i></a>
+                                        <button type="button"
+                                                onclick="renderizarDetalhesAvaliacao('{{ avaliacao.agendamento.id }}')"
+                                                data-tooltip="Ver Avaliação"
+                                                class="ver-detalhes btn-sem-estilo">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -366,8 +385,7 @@
                         <h4 class="package-title text-sm">Não há informações no momento.</h4>
                         {% endif %}
                         </div>
-                        <a href="#" class="ver-tudo"><i class="fas fa-eye"></i>Ver todos</a>
-                    </div>
+                     </div>
                 </section>
                 
                 <section class="section">
@@ -815,41 +833,43 @@
             </button>
         </div>
     </div>
-    {% include "core/partials/alertas.html" %}
+ 
+{% include "core/partials/alertas.html" %}
+{% include "core/partials/_view_prontuario_modal.html" %}
+{% endblock %}
 
-    {% block scripts %}
+{% block scripts %}
 <script>
 
 
-const btnToggleObs = document.getElementById('btnToggleObs');
-const btnCancelObs = document.getElementById('btnCancelObs');
-const obsContainer = document.getElementById('obs-container');
-const btnSave = document.getElementById('btnSave');
+    const btnToggleObs = document.getElementById('btnToggleObs');
+    const btnCancelObs = document.getElementById('btnCancelObs');
+    const obsContainer = document.getElementById('obs-container');
+    const btnSave = document.getElementById('btnSave');
 
-function toggleObservacao() {
-    const isVisible = obsContainer.style.display === 'block';
+    function toggleObservacao() {
+        const isVisible = obsContainer.style.display === 'block';
 
-    if (isVisible) {
-        // Ocultar observação
-        obsContainer.style.display = 'none';
-        btnSave.style.display = 'none';
-        btnToggleObs.style.display = 'inline-block';
-    } else {
-        // Mostrar observação
-        obsContainer.style.display = 'block';
-        btnSave.style.display = 'block';
-        btnToggleObs.style.display = 'none';
+        if (isVisible) {
+            // Ocultar observação
+            obsContainer.style.display = 'none';
+            btnSave.style.display = 'none';
+            btnToggleObs.style.display = 'inline-block';
+        } else {
+            // Mostrar observação
+            obsContainer.style.display = 'block';
+            btnSave.style.display = 'block';
+            btnToggleObs.style.display = 'none';
+        }
     }
-}
 
 </script>
   
 <script src="https://unpkg.com/imask"></script>
 
 <script src="{% static '/core/js/pacientes/base.js' %}"></script>
+<script src="{% static '/core/js/prontuarios/formularios.js' %}"></script>
 <script src="{% static '/core/js/base/base.js' %}"></script>
 <script src="{% static '/core/js/pacientes/cep.js' %}"></script>
+ 
 {% endblock %}
-</body>
-
-</html>

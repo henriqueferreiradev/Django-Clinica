@@ -96,9 +96,9 @@ urlpatterns = [
     path('api/paciente/<int:paciente_id>/', pacientes_views.dados_paciente, name='dados_paciente'),
     path('paciente/perfil/<int:paciente_id>/', pacientes_views.perfil_paciente, name='perfil_paciente'),
     path('paciente/nota-fiscal/<int:paciente_id>/', pacientes_views.lista_notas_fiscais_paciente, name='nota_fiscal_paciente'),
-    path('paciente/prontuario/<int:prontuario_id>/', pacientes_views.visualizar_prontuario, name='visualizar_prontuario'),
-    path('paciente/evolucao/<int:evolucao_id>/', pacientes_views.visualizar_evolucao, name='visualizar_evolucao'),
-    path('paciente/avaliacao/<int:avaliacao_id>/', pacientes_views.visualizar_avaliacao, name='visualizar_avaliacao'),
+    path('paciente/prontuario/<int:paciente_id>/', pacientes_views.visualizar_prontuarios_paciente, name='visualizar_prontuarios_paciente'),
+    path('paciente/evolucao/<int:paciente_id>/', pacientes_views.visualizar_evolucoes_paciente, name='visualizar_evolucoes_paciente'),
+    path('paciente/avaliacao/<int:paciente_id>/', pacientes_views.visualizar_avaliacoes_paciente, name='visualizar_avaliacoes_paciente'),
 
     #path('paciente/perfil/<int:paciente_id>/todos_agendamentos', pacientes_views.todos_agendamentos, name='todos_agendamentos_paciente'),
     path("api/buscar-pacientes/", pacientes_views.buscar_pacientes, name="buscar_pacientes"),
