@@ -24,102 +24,97 @@
 
 {% block content %}
      <div class="content">
-      {% include "core/partials/filtros/filtro_historico.html" %}
+        {% include "core/partials/filtros/filtro_historico.html" %}
+        <div class='content-list'>
+            <div class="lista-evolucoes">
 
+                {% if page_obj %}
+                    {% for evolucao in page_obj %}
+                        <div class="evolucao-card">
+                            <div class="evolucao-info">
+                                <div class="evolucao-titulo">
+                                    <i class="fas fa-file-alt"></i>
 
-        <!-- Lista de Evoluções (Django) -->
-        <div class="lista-evolucoes">
+                                    Sessão de {{ evolucao.agendamento.especialidade.nome }} • Prontuário #{{ evolucao.id }}
+                                    <span class="status-badge
+                                    {% if evolucao.agendamento.status == 'pre' %} status-pre
+                                    {% elif evolucao.agendamento.status == 'agendado' %} status-agendado
+                                    {% elif evolucao.agendamento.status == 'finalizado' %} status-finalizado
+                                    {% elif evolucao.agendamento.status == 'desistencia' %} status-desistencia
+                                    {% elif evolucao.agendamento.status == 'desistencia_remarcacao' %} status-dcr
+                                    {% elif evolucao.agendamento.status == 'falta_remarcacao' %} status-fcr
+                                    {% elif evolucao.agendamento.status == 'falta_cobrada' %} status-falta
+                                    {% else %} status-default
+                                    {% endif %}
+                                ">
+                                    {% if evolucao.agendamento.status == 'pre' %}✅ Pré-Agendado
+                                    {% elif evolucao.agendamento.status == 'agendado' %}✅ Agendado
+                                    {% elif evolucao.agendamento.status == 'finalizado' %}✅ Consulta finalizada!
+                                    {% elif evolucao.agendamento.status == 'desistencia' %}❌ D - Desistência
+                                    {% elif evolucao.agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
+                                    {% elif evolucao.agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
+                                    {% elif evolucao.agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada
+                                    {% else %}—{% endif %}
+                                </span>
 
-            {% if page_obj %}
-                {% for evolucao in page_obj %}
-                    <div class="evolucao-card">
-                        <div class="evolucao-info">
-                            <div class="evolucao-titulo">
-                                <i class="fas fa-file-alt"></i>
-
-                                Sessão de {{ evolucao.agendamento.especialidade.nome }} • Prontuário #{{ evolucao.id }}
-                                <span class="status-badge
-                                  {% if evolucao.agendamento.status == 'pre' %} status-pre
-                                  {% elif evolucao.agendamento.status == 'agendado' %} status-agendado
-                                  {% elif evolucao.agendamento.status == 'finalizado' %} status-finalizado
-                                  {% elif evolucao.agendamento.status == 'desistencia' %} status-desistencia
-                                  {% elif evolucao.agendamento.status == 'desistencia_remarcacao' %} status-dcr
-                                  {% elif evolucao.agendamento.status == 'falta_remarcacao' %} status-fcr
-                                  {% elif evolucao.agendamento.status == 'falta_cobrada' %} status-falta
-                                  {% else %} status-default
-                                  {% endif %}
-                              ">
-                                  {% if evolucao.agendamento.status == 'pre' %}✅ Pré-Agendado
-                                  {% elif evolucao.agendamento.status == 'agendado' %}✅ Agendado
-                                  {% elif evolucao.agendamento.status == 'finalizado' %}✅ Consulta finalizada!
-                                  {% elif evolucao.agendamento.status == 'desistencia' %}❌ D - Desistência
-                                  {% elif evolucao.agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
-                                  {% elif evolucao.agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
-                                  {% elif evolucao.agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada
-                                  {% else %}—{% endif %}
-                              </span>
-
-                            </div>
-
-                            <div class="evolucao-metadata">
-                                <div class="metadata-item">
-                                    <i class="fas fa-user"></i>
-                                    <span>
-                                        <strong>Criado por:</strong>
-                                        {% if evolucao.profissional %}
-                                            {{ evolucao.profissional.nome }} {{ evolucao.profissional.sobrenome }}
-                                        {% else %}
-                                            —
-                                        {% endif %}
-                                    </span>
                                 </div>
 
-                                <div class="metadata-item">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>
-                                        <strong>Criado em:</strong>
-                                        {% if evolucao.data_criacao %}
-                                            {{ evolucao.data_criacao|date:"d/m/Y H:i" }}
-                                        {% else %}
-                                            —
-                                        {% endif %}
-                                    </span>
-                                </div>
+                                <div class="evolucao-metadata">
+                                    <div class="metadata-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>
+                                            <strong>Criado por:</strong>
+                                            {% if evolucao.profissional %}
+                                                {{ evolucao.profissional.nome }} {{ evolucao.profissional.sobrenome }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </div>
 
-                                {# Se você tiver agendamento e quiser mostrar data da consulta (opcional) #}
-                                <div class="metadata-item">
-                                    <i class="fas fa-calendar-day"></i>
-                                    <span><strong>Data da consulta:</strong> {{ evolucao.agendamento.data|date:"d/m/Y" }}</span>
-                                </div> 
+                                    <div class="metadata-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>
+                                            <strong>Criado em:</strong>
+                                            {% if evolucao.data_criacao %}
+                                                {{ evolucao.data_criacao|date:"d/m/Y H:i" }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </div>
+
+                                    {# Se você tiver agendamento e quiser mostrar data da consulta (opcional) #}
+                                    <div class="metadata-item">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <span><strong>Data da consulta:</strong> {{ evolucao.agendamento.data|date:"d/m/Y" }}</span>
+                                    </div> 
+                                </div>
+                            </div>
+
+                            <div class="evolucao-actions">
+                                <button type="button"
+                                        onclick="renderizarDetalhesEvolucao('{{ evolucao.agendamento.id }}')"
+                                        data-tooltip="Ver Evolução"
+                                        class="btn-visualizar">
+                                    <i class="fas fa-eye"></i>Visualizar
+                                </button>
+    
+
                             </div>
                         </div>
-
-                        <div class="evolucao-actions">
-                            <button type="button"
-                                    onclick="renderizarDetalhesEvolucao('{{ evolucao.agendamento.id }}')"
-                                    data-tooltip="Ver Evolução"
-                                    class="btn-visualizar">
-                                <i class="fas fa-eye"></i>Visualizar
-                            </button>
- 
-
-                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty">
+                        <i class="fas fa-notes-medical" style="font-size:1.6rem; color:var(--roxoPrincipal); margin-bottom:.5rem;"></i>
+                        <h3 style="color:var(--q-preto); margin-bottom:.4rem;">Nenhuma evolução encontrada</h3>
+                        <p>Esse paciente ainda não possui evoluções cadastradas.</p>
                     </div>
-                {% endfor %}
-            {% else %}
-                <div class="empty">
-                    <i class="fas fa-notes-medical" style="font-size:1.6rem; color:var(--roxoPrincipal); margin-bottom:.5rem;"></i>
-                    <h3 style="color:var(--q-preto); margin-bottom:.4rem;">Nenhuma evolução encontrada</h3>
-                    <p>Esse paciente ainda não possui evoluções cadastradas.</p>
-                </div>
-            {% endif %}
+                {% endif %}
 
+            </div>
+            {% include "core/partials/_paginacao.html" %}
         </div>
-
-        {# Paginação: só coloca se você usar paginator no backend #}
-         
-        {% include "core/partials/_paginacao.html" %}
-
     </div>
     {% include "core/partials/_view_prontuario_modal.html" %}
 

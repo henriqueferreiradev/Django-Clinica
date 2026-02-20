@@ -12,10 +12,10 @@
 
 {% block content %}
      <div class="content">
-    {% include "core/partials/filtros/filtro_historico.html" %}
+        {% include "core/partials/filtros/filtro_historico.html" %}
 
-
-        <!-- Lista de Prontuários (Django) -->
+        <div class='content-list'>
+         
         <div class="lista-prontuarios">
 
             {% if page_obj %}
@@ -26,26 +26,26 @@
                                 <i class="fas fa-file-alt"></i>
 
                                 Sessão de {{ prontuario.agendamento.especialidade.nome }} • Prontuário #{{ prontuario.id }}
-                  <span class="status-badge
-                    {% if prontuario.agendamento.status == 'pre' %} status-pre
-                    {% elif prontuario.agendamento.status == 'agendado' %} status-agendado
-                    {% elif prontuario.agendamento.status == 'finalizado' %} status-finalizado
-                    {% elif prontuario.agendamento.status == 'desistencia' %} status-desistencia
-                    {% elif prontuario.agendamento.status == 'desistencia_remarcacao' %} status-dcr
-                    {% elif prontuario.agendamento.status == 'falta_remarcacao' %} status-fcr
-                    {% elif prontuario.agendamento.status == 'falta_cobrada' %} status-falta
-                    {% else %} status-default
-                    {% endif %}
-                ">
-                    {% if prontuario.agendamento.status == 'pre' %}✅ Pré-Agendado
-                    {% elif prontuario.agendamento.status == 'agendado' %}✅ Agendado
-                    {% elif prontuario.agendamento.status == 'finalizado' %}✅ Consulta finalizada!
-                    {% elif prontuario.agendamento.status == 'desistencia' %}❌ D - Desistência
-                    {% elif prontuario.agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
-                    {% elif prontuario.agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
-                    {% elif prontuario.agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada
-                    {% else %}—{% endif %}
-                </span>
+                                <span class="status-badge
+                                    {% if prontuario.agendamento.status == 'pre' %} status-pre
+                                    {% elif prontuario.agendamento.status == 'agendado' %} status-agendado
+                                    {% elif prontuario.agendamento.status == 'finalizado' %} status-finalizado
+                                    {% elif prontuario.agendamento.status == 'desistencia' %} status-desistencia
+                                    {% elif prontuario.agendamento.status == 'desistencia_remarcacao' %} status-dcr
+                                    {% elif prontuario.agendamento.status == 'falta_remarcacao' %} status-fcr
+                                    {% elif prontuario.agendamento.status == 'falta_cobrada' %} status-falta
+                                    {% else %} status-default
+                                    {% endif %}
+                                ">
+                                    {% if prontuario.agendamento.status == 'pre' %}✅ Pré-Agendado
+                                    {% elif prontuario.agendamento.status == 'agendado' %}✅ Agendado
+                                    {% elif prontuario.agendamento.status == 'finalizado' %}✅ Consulta finalizada!
+                                    {% elif prontuario.agendamento.status == 'desistencia' %}❌ D - Desistência
+                                    {% elif prontuario.agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
+                                    {% elif prontuario.agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
+                                    {% elif prontuario.agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada
+                                    {% else %}—{% endif %}
+                                </span>
 
                             </div>
 
@@ -102,10 +102,8 @@
 
         </div>
 
-        {# Paginação: só coloca se você usar paginator no backend #}
-         
-       {% include "core/partials/_paginacao.html" %}
-
+        {% include "core/partials/_paginacao.html" %}
+        </div>
 
     </div>
     {% include "core/partials/_view_prontuario_modal.html" %}

@@ -1,0 +1,141 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Agendamentos - {{ paciente.nome }}{% endblock %}
+
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/pacientes/visualizar_historico.css' %}">
+{% endblock %}
+
+
+{% block topbar_title %}
+  <span class="text">             
+      <i class="fas fa-file-medical"></i>
+      Agendamentos
+      {% if paciente %}
+          <span style="font-size:0.95rem; font-weight:600; color:#718096;">
+              • {{ paciente.nome }} {{ paciente.sobrenome }}
+          </span>
+      {% endif %}
+  </span>
+{% endblock %}
+
+{% block content %}
+     <div class="content">
+        {% include "core/partials/filtros/filtro_historico.html" %}
+        <div class='content-list'>
+            <div class="lista-agendamentos">
+
+                {% if page_obj %}
+                    {% for agendamento in page_obj %}
+                        <div class="agendamento-card">
+                            <div class="agendamento-info">
+                                <div class="agendamento-titulo">
+                                    <i class="fas fa-file-alt"></i>
+
+                                    Agendamento <span class="status-badge status-pre">#{{ agendamento.id}}</span>
+
+
+                                </div>
+
+                                <div class="agendamento-metadata">
+                                    <div class="metadata-item">
+                                        <i class="fa-solid fa-box-open"></i>
+                                        <span>
+                                            <strong>Pacote:</strong>
+                                            {% if agendamento.pacote %}
+                                                {{ agendamento.pacote.codigo }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="metadata-item">
+                                        <i class="fa-solid fa-book-medical"></i>
+                                        <span>
+                                            <strong>Especialidade:</strong>
+                                            {% if agendamento.especialidade %}
+                                                {{ agendamento.especialidade.nome }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="metadata-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>
+                                            <strong>Profissional:</strong>
+                                            {% if agendamento.profissional_1 %}
+                                                {{ agendamento.profissional_1.nome }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="metadata-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>
+                                            <strong>Data da Consulta:</strong>
+                                            {% if agendamento.data %}
+                                                {{ agendamento.data|date:"d/m/Y" }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </div>
+
+                                    {# Se você tiver agendamento e quiser mostrar data da consulta (opcional) #}
+                                    <div class="metadata-item">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <span><strong>Horário:</strong> {{ agendamento.hora_inicio|time:"H:i" }} às {{ agendamento.hora_fim|time:"H:i" }}</span>
+                                    </div> 
+                                </div>
+                            </div>
+
+                            <div class="agendamento-actions">
+                                    <span class="status-badge
+                                    {% if agendamento.status == 'pre' %} status-pre
+                                    {% elif agendamento.status == 'agendado' %} status-agendado
+                                    {% elif agendamento.status == 'finalizado' %} status-finalizado
+                                    {% elif agendamento.status == 'desistencia' %} status-desistencia
+                                    {% elif agendamento.status == 'desistencia_remarcacao' %} status-dcr
+                                    {% elif agendamento.status == 'falta_remarcacao' %} status-fcr
+                                    {% elif agendamento.status == 'falta_cobrada' %} status-falta
+                                    {% else %} status-default
+                                    {% endif %}
+                                ">
+                                    {% if agendamento.status == 'pre' %}✅ Pré-Agendado
+                                    {% elif agendamento.status == 'agendado' %}✅ Agendado
+                                    {% elif agendamento.status == 'finalizado' %}✅ Consulta finalizada!
+                                    {% elif agendamento.status == 'desistencia' %}❌ D - Desistência
+                                    {% elif agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
+                                    {% elif agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
+                                    {% elif agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada
+                                    {% else %}—{% endif %}
+                                </span>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty">
+                        <i class="fas fa-calendar-alt" style="font-size:1.6rem; color:var(--roxoPrincipal); margin-bottom:.5rem;"></i>
+                        <h3 style="color:var(--q-preto); margin-bottom:.4rem;">Nenhum agendamento encontrado</h3>
+                        <p>Esse paciente ainda não possui agendamentos cadastradas.</p>
+                    </div>
+                {% endif %}
+
+            </div>
+            {% include "core/partials/_paginacao.html" %}
+        </div>
+    </div>
+    {% include "core/partials/_view_prontuario_modal.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static '/core/js/prontuarios/formularios.js' %}"></script>
+<script src="{% static 'core/js/base/abrirFiltro.js' %}"></script>
+{% endblock %}

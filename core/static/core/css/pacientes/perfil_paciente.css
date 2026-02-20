@@ -363,13 +363,11 @@ header {
 .ver-tudo{
   display: flex;
   width: fit-content;   /* ou inline-block */
-   
   color: var(--roxoPrincipal);
-  
- 
   gap: .5em;
   align-items: center;
   font-size: 14px;
+  margin-bottom: 16px;
 }
 .ver-tudo:hover {
     color: var(--roxo-primary-hover);

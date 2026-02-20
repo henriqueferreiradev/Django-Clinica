@@ -203,6 +203,8 @@ class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     nome =  models.CharField(max_length=100)
     sobrenome =  models.CharField(max_length=150,blank=True, null=True)
+    slug = models.SlugField(max_length=255, blank=True, db_index=True)
+
     nomeSocial = models.CharField(default='Não informado', max_length=100, blank=True)
     rg = models.CharField(max_length=12, blank=True, null=True)
     cpf = models.CharField(max_length=14, blank=True, null=True)
@@ -306,6 +308,11 @@ class Paciente(models.Model):
         if (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day):
             idade -= 1
         return idade < 18
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = f"{self.nome} {self.sobrenome or ''}".strip()
+            self.slug = slugify(base)
+        super().save(*args, **kwargs)
 
 class VinculoFamiliar(models.Model):
     paciente = models.ForeignKey(Paciente, related_name='vinculos', on_delete=models.CASCADE)

@@ -772,11 +772,16 @@ def gerar_link_publico_precadastro(request):
 
 FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
 PENDENTES = ['pre','agendado']
+def redirect_perfil_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    return redirect("perfil_paciente", paciente_id=paciente.id, slug=paciente.slug)
 
-def perfil_paciente(request,paciente_id):
+def perfil_paciente(request,paciente_id, slug):
     inicio_semana, fim_semana = get_semana_atual()
 
     paciente = get_object_or_404(Paciente, id=paciente_id)
+    if paciente.slug != slug:
+        return redirect("paciente_detail", id=paciente.id, slug=paciente.slug)
     pacotes = PacotePaciente.objects.filter(paciente__id=paciente_id,).order_by('-data_inicio')
  
     
@@ -1178,4 +1183,51 @@ def visualizar_avaliacoes_paciente(request, paciente_id):
         'page_obj': page_obj,
     }
     return render(request, 'core/pacientes/historico/visualizar_avaliacao.html', context)
- 
+
+
+def visualizar_agendamentos_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    
+    query = request.GET.get('q', '').strip()
+    situacao = request.GET.get('situacao', '').strip()
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
+
+    agendamentos = (
+        Agendamento.objects
+        .filter(paciente_id=paciente_id)
+        .select_related('profissional_1', 'paciente')
+        .order_by('-data')
+    )
+    
+    if query:
+        agendamentos = agendamentos.filter(
+            Q(profissional__nome__icontains=query) | 
+            Q(profissional__sobrenome__icontains=query)
+        )
+
+    # Filtro por período de datas
+    if data_inicio:
+        agendamentos = agendamentos.filter(data_criacao__date__gte=data_inicio)
+    if data_fim:
+        agendamentos = agendamentos.filter(data_criacao__date__lte=data_fim)
+
+
+    paginator = Paginator(agendamentos, 13)
+    page_number = request.GET.get('page')
+    
+
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger :
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
+
+    
+    context = {
+        'paciente': paciente,
+        'agendamentos': agendamentos,
+        'page_obj': page_obj,
+    }
+    return render(request, 'core/pacientes/historico/visualizar_agendamentos.html', context)
