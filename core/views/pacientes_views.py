@@ -1047,7 +1047,12 @@ def lista_notas_fiscais_paciente(request, paciente_id):
 
 def visualizar_prontuarios_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
+    query = request.GET.get('q', '').strip()
+    situacao = request.GET.get('situacao', '').strip()
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
 
+     
     prontuarios = (
         Prontuario.objects
         .filter(paciente_id=paciente_id)
@@ -1055,14 +1060,42 @@ def visualizar_prontuarios_paciente(request, paciente_id):
         .order_by('-data_criacao')
     )
 
+    # Filtro por nome ou CPF
+    if query:
+        prontuarios = prontuarios.filter(
+            Q(profissional__nome__icontains=query) | 
+            Q(profissional__sobrenome__icontains=query)
+        )
+
+    # Filtro por período de datas
+    if data_inicio:
+        prontuarios = prontuarios.filter(data_criacao__date__gte=data_inicio)
+    if data_fim:
+        prontuarios = prontuarios.filter(data_criacao__date__lte=data_fim)
+
+
+    paginator = Paginator(prontuarios, 13)
+    page_number = request.GET.get('page')
+    
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger :
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
     context = {
         'paciente': paciente,
         'prontuarios': prontuarios,
+        'page_obj': page_obj,
     }
     return render(request, 'core/pacientes/historico/visualizar_prontuario.html', context)
 
 def visualizar_evolucoes_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
+    query = request.GET.get('q', '').strip()
+    situacao = request.GET.get('situacao', '').strip()
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
 
     evolucoes = (
         Evolucao.objects
@@ -1070,16 +1103,43 @@ def visualizar_evolucoes_paciente(request, paciente_id):
         .select_related('profissional', 'paciente')
         .order_by('-data_criacao')
     )
+        # Filtro por nome ou CPF
+    if query:
+        evolucoes = evolucoes.filter(
+            Q(profissional__nome__icontains=query) | 
+            Q(profissional__sobrenome__icontains=query)
+        )
+
+    # Filtro por período de datas
+    if data_inicio:
+        evolucoes = evolucoes.filter(data_criacao__date__gte=data_inicio)
+    if data_fim:
+        evolucoes = evolucoes.filter(data_criacao__date__lte=data_fim)
+
+    paginator = Paginator(evolucoes, 13)
+    page_number = request.GET.get('page')
+    
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger :
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
 
     context = {
         'paciente': paciente,
         'evolucoes': evolucoes,
+        'page_obj': page_obj,
     }
     return render(request, 'core/pacientes/historico/visualizar_evolucao.html', context)
 
 
 def visualizar_avaliacoes_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
+    query = request.GET.get('q', '').strip()
+    situacao = request.GET.get('situacao', '').strip()
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
 
     avaliacoes = (
         AvaliacaoFisioterapeutica.objects
@@ -1087,10 +1147,35 @@ def visualizar_avaliacoes_paciente(request, paciente_id):
         .select_related('profissional', 'paciente')
         .order_by('-data_avaliacao')
     )
+    
+    if query:
+        avaliacoes = avaliacoes.filter(
+            Q(profissional__nome__icontains=query) | 
+            Q(profissional__sobrenome__icontains=query)
+        )
+
+    # Filtro por período de datas
+    if data_inicio:
+        avaliacoes = avaliacoes.filter(data_criacao__date__gte=data_inicio)
+    if data_fim:
+        avaliacoes = avaliacoes.filter(data_criacao__date__lte=data_fim)
+
+
+    paginator = Paginator(avaliacoes, 13)
+    page_number = request.GET.get('page')
+    
+
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger :
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
 
     context = {
         'paciente': paciente,
         'avaliacoes': avaliacoes,
+        'page_obj': page_obj,
     }
     return render(request, 'core/pacientes/historico/visualizar_avaliacao.html', context)
  

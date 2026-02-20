@@ -3,309 +3,23 @@
 
 {% block title %}Prontuários - {{ paciente.nome }}{% endblock %}
 {% block extra_css %}
- 
     <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/pacientes/visualizar_historico.css' %}">
-    <style>
- 
-
-        .header-lista {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .header-lista h1 {
-            color: var(--q-preto);
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .header-lista h1 i {
-            color: var(--roxoPrincipal);
-        }
-
-        .btn-novo {
-            background: var(--roxoPrincipal);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background 0.3s;
-            text-decoration: none;
-        }
-
-        .btn-novo:hover {
-            background: var(--roxo-primary-hover);
-        }
-
-        .filtros {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .filtro-group {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .filtro-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: #718096;
-            margin-bottom: 0.3rem;
-            font-weight: 600;
-        }
-
-        .filtro-group input,
-        .filtro-group select {
-            width: 100%;
-            padding: 0.6rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 0.95rem;
-        }
-
-        .filtro-group input:focus,
-        .filtro-group select:focus {
-            outline: none;
-            border-color: var(--roxoPrincipal);
-        } 
-
-        .lista-prontuarios {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .prontuario-card {
-            background: var(--backgroundCard);
-            border-radius: 12px;
-            padding: 1.2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid var(--cinza-borda);
-        }
-
-        .prontuario-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.1);
-            border-color: var(--roxoPrincipal);
-        }
-
-        .prontuario-info {
-            flex: 1;
-        }
-
-        .prontuario-titulo {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--q-preto);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .prontuario-titulo i {
-            color: var(--roxoPrincipal);
-            font-size: 1rem;
-        }
-
-        .prontuario-metadata {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .metadata-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #718096;
-            font-size: 0.9rem;
-        }
-
-        .metadata-item i {
-            color: var(--roxoPrincipal);
-            width: 16px;
-        }
-
-        .metadata-item strong {
-            color: var(--q-preto);
-            margin-right: 0.2rem;
-        }
-
-        .prontuario-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-visualizar {
-            background: var(--roxoPrincipal);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background 0.3s;
-            text-decoration: none;
-        }
-
-        .btn-visualizar:hover {
-            background: var(--roxo-primary-hover);
-        }
-
-        .btn-editar {
-            background: #edf2f7;
-            color: #4a5568;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background 0.3s;
-            text-decoration: none;
-        }
-
-        .btn-editar:hover {
-            background: #e2e8f0;
-        }
-
-      .status-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 12px;
-          border-radius: 999px;
-          font-weight: 600;
-          font-size: 12px;
-          white-space: nowrap;
-      }
-
-      .status-badge.status-pre {
-          border: 1px solid #5a5753;
-          background-color: rgba(90, 87, 83, 0.15);
-      }
-
-      .status-badge.status-agendado {
-          border: 1px solid #01D4D6;
-          background-color: hsla(181, 99%, 42%, 0.15);
-      }
-
-      .status-badge.status-finalizado {
-          border: 1px solid #23D31D;
-          background-color: rgba(35, 211, 29, 0.15);
-      }
-
-      .status-badge.status-desistencia {
-          border: 1px solid #F70000;
-          background-color: rgba(247, 0, 0, 0.15);
-      }
-
-      .status-badge.status-dcr {
-          border: 1px solid #F7F700;
-          background-color: rgba(247, 247, 0, 0.15);
-      }
-        .empty {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            border: 1px dashed #e2e8f0;
-            text-align: center;
-            color: #718096;
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 1rem; }
-            .prontuario-card {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            .prontuario-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-            .prontuario-metadata { gap: 1rem; }
-        }
-    </style>
- 
-
 {% endblock %}
 {% block topbar_title %}
-  <span class="text">             
-                <i class="fas fa-file-medical"></i>
-                Prontuários
-                {% if paciente %}
-                    <span style="font-size:0.95rem; font-weight:600; color:#718096;">
-                        • {{ paciente.nome }} {{ paciente.sobrenome }}
-                    </span>
-                {% endif %}
-             
+                <span class="text"><i class="fas fa-file-medical"></i>Prontuários</span>
 {% endblock %}
 
 {% block content %}
      <div class="content">
+    {% include "core/partials/filtros/filtro_historico.html" %}
 
- 
-
-        <!-- Filtros (somente visual; sem JS) -->
-        <div class="filtros">
-            <div class="filtro-group">
-                <label>Buscar</label>
-                <input type="text" placeholder="Título, paciente, etc..." disabled>
-            </div>
-            <div class="filtro-group">
-                <label>Status</label>
-                <select disabled>
-                    <option value="">Todos</option>
-                    <option>Concluído</option>
-                    <option>Em andamento</option>
-                    <option>Pendente</option>
-                </select>
-            </div>
-            <div class="filtro-group">
-                <label>Data inicial</label>
-                <input type="date" disabled>
-            </div>
-            <div class="filtro-group">
-                <label>Data final</label>
-                <input type="date" disabled>
-            </div>
-        </div>
 
         <!-- Lista de Prontuários (Django) -->
         <div class="lista-prontuarios">
 
-            {% if prontuarios %}
-                {% for prontuario in prontuarios %}
+            {% if page_obj %}
+                {% for prontuario in page_obj %}
                     <div class="prontuario-card">
                         <div class="prontuario-info">
                             <div class="prontuario-titulo">
@@ -361,20 +75,20 @@
                                 </div>
 
                                 {# Se você tiver agendamento e quiser mostrar data da consulta (opcional) #}
-                                {# <div class="metadata-item">
+                               <div class="metadata-item">
                                     <i class="fas fa-calendar-day"></i>
                                     <span><strong>Data da consulta:</strong> {{ prontuario.agendamento.data|date:"d/m/Y" }}</span>
-                                </div> #}
+                                </div>  
                             </div>
                         </div>
 
                         <div class="prontuario-actions">
-                            {# Ajuste a URL: se for visualizar 1 prontuário, passe prontuario.id #}
-                            <a class="btn-visualizar" href="#">
-                                <i class="fas fa-eye"></i>
-                                Visualizar
-                            </a>
-
+                            <button type="button"
+                                    onclick="renderizarDetalhesEvolucao('{{ prontuario.agendamento.id }}')"
+                                    data-tooltip="Ver Evolução"
+                                    class="btn-visualizar">
+                                <i class="fas fa-eye"></i>Visualizar
+                            </button>
                         </div>
                     </div>
                 {% endfor %}
@@ -389,37 +103,17 @@
         </div>
 
         {# Paginação: só coloca se você usar paginator no backend #}
-        {# 
-            <div class="pagination">
-      <div class="pagination-info">
-        Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
-      </div>
-      <div class="pagination-controls">
-        {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
-           class="pagination-btn">Anterior</a>
-        {% else %}
-        <button class="pagination-btn disabled">Anterior</button>
-        {% endif %}
+         
+       {% include "core/partials/_paginacao.html" %}
 
-        {% for num in page_obj.paginator.page_range %}
-          {% if page_obj.number == num %}
-          <button class="pagination-btn active">{{ num }}</button>
-          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
-             class="pagination-btn">{{ num }}</a>
-          {% endif %}
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if situacao %}&situacao={{ situacao }}{% endif %}{% if data_inicio %}&data_inicio={{ data_inicio }}{% endif %}{% if data_fim %}&data_fim={{ data_fim }}{% endif %}{% if mostrar_todos %}&mostrar_todos=on{% endif %}{% if filtra_inativo %}&filtra_inativo=on{% endif %}" 
-           class="pagination-btn">Próxima</a>
-        {% else %}
-        <button class="pagination-btn disabled">Próxima</button>
-        {% endif %}
-      </div>
-    </div> #}
 
     </div>
+    {% include "core/partials/_view_prontuario_modal.html" %}
+
 {% endblock %}
- 
+
+{% block scripts %}
+<script src="{% static '/core/js/prontuarios/formularios.js' %}"></script>
+<script src="{% static 'core/js/base/abrirFiltro.js' %}"></script>
+
+{% endblock %}

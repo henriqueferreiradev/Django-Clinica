@@ -306,3 +306,25 @@
         grid-template-columns: 1fr;
     }
 }
+
+.filtro-body {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    /* alinha com os inputs */
+    flex-wrap: wrap;
+}
+
+.filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 220px;
+    flex: 1;
+}
+
+.filtro-acoes {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}

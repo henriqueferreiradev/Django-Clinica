@@ -1,0 +1,73 @@
+{% load static %}
+ 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/partials/filtros/filtro_auditoria.css' %}">
+{% endblock %}
+<div class="filtro-universal">
+    <div class="filtro-header">
+        <h2><i class='bx bx-filter-alt'></i> Filtros</h2>
+        <div>
+            <button class="btn btn-new-ag" onclick="window.location.href='{% url 'cadastrar_paciente' %}'"><i class="fas fa-plus mr-2"></i>Novo Paciente</button>
+        
+        <button type="button" class="filtro-toggle">
+        <i class='bx bx-chevron-down'></i>
+        </button>
+        </div>
+    </div>
+            <!-- FORM de filtros -->
+    <form method="get">
+        <div class="filtro-body">
+          <div class="filtro-campo">
+              <label for="filtro-nome">Nome</label>
+              <input
+              type="text"
+              name="q"
+              value="{{ query|default:'' }}"
+              id="filtro-nome"
+              class="filtro-input"
+              placeholder="Digite um nome..."
+            />
+          </div>
+  
+    
+          <div class="filtro-campo">
+            <label for="filtro-data-inicio">Data Início</label>
+            <div class="filtro-data-wrapper">
+              <input
+                type="date"
+                name="data_inicio"
+                id="filtro-data-inicio"
+                value="{{ data_inicio|default_if_none:'' }}"
+                class="filtro-input"
+              />
+            </div>
+          </div>
+    
+          <div class="filtro-campo">
+            <label for="filtro-data-fim">Data Fim</label>
+            <div class="filtro-data-wrapper">
+            
+              <input
+                type="date"
+                name="data_fim"
+                id="filtro-data-fim"
+                value="{{ data_fim|default_if_none:'' }}"
+                class="filtro-input"
+              />
+            </div>
+          </div>
+
+          
+      </div>
+  
+      <div class="filtro-acoes">
+       
+        <a href="{% url 'agenda' %}" class="btn btn-secondary"><i class='bx bx-reset'></i> Limpar</a>
+    
+            <button type="submit" name="filtrar" value="1" class="btn btn-primary">
+            <i class='bx bx-filter'></i> Aplicar Filtros
+            </button>
+      </div>
+    </form>
+  </div>
+  
