@@ -623,7 +623,7 @@
     </div>
     <footer>
       <p>Av. Prof Romanda Gonçalves, nº 2657 | Itaipu Niterói-RJ | 21 3254-7682 | 21 990841-8739</p>
-      <p>Documento gerado em {{ data_geracao|date:"d/m/Y H:i" }}</p>
+      <p class='data-geracao'></p>
     </footer>
   </div>
   <div class="print-tip-card no-print">
@@ -643,10 +643,10 @@
     // Adiciona a data de geração do documento
     document.addEventListener('DOMContentLoaded', function() {
       const now = new Date();
-      const dataGeracaoElements = document.querySelectorAll('[data-geracao]');
+      const dataGeracaoElements = document.querySelectorAll('.data-geracao');
       
       dataGeracaoElements.forEach(el => {
-        el.textContent = now.toLocaleString('pt-BR');
+        el.textContent = `Documento gerado em: ${now.toLocaleString('pt-BR')}`;
       });
     });
   </script>

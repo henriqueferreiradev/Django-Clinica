@@ -424,7 +424,10 @@
                 </section>
 
                 <section class="section">
-                    <h2 class="section-title">Formulários Respondidos</h2>
+                    <div class='div-section'>
+                        <h2 class="section-title">Formulários Respondidos</h2>
+                        <a href="{% url 'visualizar_agendamentos_paciente' paciente.id %}" class="ver-tudo">Ver todos<i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
                     <div class="data-grid">
                     {% if respostas_formularios %}
                         {% for resposta in respostas_formularios %}

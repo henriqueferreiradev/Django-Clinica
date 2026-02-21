@@ -1,0 +1,117 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Formulários Respondidos - {{ paciente.nome }}{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/css/tema.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/pacientes/visualizar_historico.css' %}">
+{% endblock %}
+{% block topbar_title %}
+                <span class="text"><i class="fas fa-file-medical"></i>Formulários Respondidos</span>
+{% endblock %}
+
+{% block content %}
+     <div class="content">
+        {% include "core/partials/filtros/filtro_historico.html" %}
+
+        <div class='content-list'>
+         
+        <div class="lista-prontuarios">
+
+            {% if page_obj %}
+                {% for prontuario in page_obj %}
+                    <div class="prontuario-card">
+                        <div class="prontuario-info">
+                            <div class="prontuario-titulo">
+                                <i class="fas fa-file-alt"></i>
+
+                                Sessão de {{ prontuario.agendamento.especialidade.nome }} • Prontuário #{{ prontuario.id }}
+                                <span class="status-badge
+                                    {% if prontuario.agendamento.status == 'pre' %} status-pre
+                                    {% elif prontuario.agendamento.status == 'agendado' %} status-agendado
+                                    {% elif prontuario.agendamento.status == 'finalizado' %} status-finalizado
+                                    {% elif prontuario.agendamento.status == 'desistencia' %} status-desistencia
+                                    {% elif prontuario.agendamento.status == 'desistencia_remarcacao' %} status-dcr
+                                    {% elif prontuario.agendamento.status == 'falta_remarcacao' %} status-fcr
+                                    {% elif prontuario.agendamento.status == 'falta_cobrada' %} status-falta
+                                    {% else %} status-default
+                                    {% endif %}
+                                ">
+                                    {% if prontuario.agendamento.status == 'pre' %}✅ Pré-Agendado
+                                    {% elif prontuario.agendamento.status == 'agendado' %}✅ Agendado
+                                    {% elif prontuario.agendamento.status == 'finalizado' %}✅ Consulta finalizada!
+                                    {% elif prontuario.agendamento.status == 'desistencia' %}❌ D - Desistência
+                                    {% elif prontuario.agendamento.status == 'desistencia_remarcacao' %}⚠️ DCR - Desmarcação com reposição
+                                    {% elif prontuario.agendamento.status == 'falta_remarcacao' %}⚠️ FCR - Falta com reposição
+                                    {% elif prontuario.agendamento.status == 'falta_cobrada' %}❌ FC - Falta cobrada
+                                    {% else %}—{% endif %}
+                                </span>
+
+                            </div>
+
+                            <div class="prontuario-metadata">
+                                <div class="metadata-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>
+                                        <strong>Criado por:</strong>
+                                        {% if prontuario.profissional %}
+                                            {{ prontuario.profissional.nome }} {{ prontuario.profissional.sobrenome }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="metadata-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>
+                                        <strong>Criado em:</strong>
+                                        {% if prontuario.data_criacao %}
+                                            {{ prontuario.data_criacao|date:"d/m/Y H:i" }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                {# Se você tiver agendamento e quiser mostrar data da consulta (opcional) #}
+                               <div class="metadata-item">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <span><strong>Data da consulta:</strong> {{ prontuario.agendamento.data|date:"d/m/Y" }}</span>
+                                </div>  
+                            </div>
+                        </div>
+
+                        <div class="prontuario-actions">
+                            <button type="button"
+                                    onclick="renderizarDetalhesEvolucao('{{ prontuario.agendamento.id }}')"
+                                    data-tooltip="Ver Evolução"
+                                    class="btn-visualizar">
+                                <i class="fas fa-eye"></i>Visualizar
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">
+                    <i class="fas fa-notes-medical" style="font-size:1.6rem; color:var(--roxoPrincipal); margin-bottom:.5rem;"></i>
+                    <h3 style="color:var(--q-preto); margin-bottom:.4rem;">Nenhum prontuário encontrado</h3>
+                    <p>Esse paciente ainda não possui prontuários cadastrados.</p>
+                </div>
+            {% endif %}
+
+        </div>
+
+        {% include "core/partials/_paginacao.html" %}
+        </div>
+
+    </div>
+    {% include "core/partials/_view_prontuario_modal.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static '/core/js/prontuarios/formularios.js' %}"></script>
+<script src="{% static 'core/js/base/abrirFiltro.js' %}"></script>
+
+{% endblock %}
