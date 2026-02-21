@@ -11,9 +11,12 @@
     >
       <i class="fas fa-edit"></i> Editar
     </button>
-    <button onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">
-      <i class="fas fa-file-alt"></i> Gerar Ficha
-    </button>
+    <a href="{% url 'ficha_paciente' paciente.id %}" target="_blank">
+      <button>
+        <i class="fas fa-file-alt"></i> Gerar Ficha
+      </button>
+    </a>
+ 
     <button onclick="window.location.href='{% url 'nota_fiscal_paciente' paciente.id %}'">
       <i class="fas fa-file-invoice"></i>Notas Fiscais
     </button>

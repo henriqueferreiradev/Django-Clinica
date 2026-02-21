@@ -772,6 +772,8 @@ def gerar_link_publico_precadastro(request):
 
 FINALIZADOS = ['desistencia','desistencia_remarcacao','falta_remarcacao','falta_cobrada']
 PENDENTES = ['pre','agendado']
+
+
 def redirect_perfil_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
     return redirect("perfil_paciente", paciente_id=paciente.id, slug=paciente.slug)

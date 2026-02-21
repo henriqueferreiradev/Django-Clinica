@@ -834,9 +834,12 @@
             <button class="action-btn action-btn-instagram" onclick="window.open('https://instagram.com/{{ paciente.redeSocial }}', '_blank')">
                 <i class="fab fa-instagram"></i>
             </button>
-            <button  class="action-btn action-btn-dark" onclick="abrirFicha('{% url 'ficha_paciente' paciente.id %}')">
-                <i class="fas fa-file-pdf"></i>
-            </button>
+            <a class="action-btn action-btn-dark"
+            href="{% url 'ficha_paciente' paciente.id %}"
+            target="_blank"
+            rel="noopener">
+            <i class="fas fa-file-pdf"></i>
+            </a>
         </div>
     </div>
  
